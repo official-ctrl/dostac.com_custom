@@ -19,7 +19,7 @@ function ContactContent() {
       <section className="relative w-full h-[400px] flex items-center">
         <div className="absolute inset-0 z-0">
           <img src="/__mockup/images/dostac/hero-contact.png" alt="" className="w-full h-full object-cover object-center" />
-          <div className="absolute inset-0 bg-primary/80 mix-blend-multiply"></div>
+          <div className="absolute inset-0 bg-gradient-to-b from-primary/55 via-primary/45 to-primary/65"></div>
         </div>
         <div className="container relative z-10 mx-auto px-6 text-center text-white">
           <h1 className="font-display text-4xl md:text-5xl font-bold leading-tight mb-6">{t("contact.heroTitle")}</h1>
@@ -157,7 +157,7 @@ function ContactContent() {
 
               {/* MAP PLACEHOLDER */}
               <div className="bg-muted rounded-xl overflow-hidden aspect-video border relative">
-                <img src="/__mockup/images/dostac/hero-about.png" className="w-full h-full object-cover opacity-50 grayscale" alt="" />
+                <img src="/__mockup/images/dostac/hero-about.png" className="w-full h-full object-cover opacity-60" alt="" />
                 <div className="absolute inset-0 flex items-center justify-center flex-col text-primary">
                   <MapPin className="w-8 h-8 mb-2" />
                   <span className="font-semibold text-sm">{t("contact.seoulLabel")}</span>

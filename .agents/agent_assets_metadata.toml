@@ -5,31 +5,31 @@ outputs = []
 id = "74hg_YNlYd6lyW_1vdD-k"
 uri = "file://artifacts/mockup-sandbox/public/images/dostac/hero-home.png"
 type = "image"
-title = "Home hero background"
+title = "generated_image"
 
 [[generated]]
 id = "d1qcCyAwbfzl4RiJw5v5e"
 uri = "file://artifacts/mockup-sandbox/public/images/dostac/hero-about.png"
 type = "image"
-title = "About hero background"
+title = "generated_image"
 
 [[generated]]
 id = "CbALN_1NULO2Y813MdLj4"
 uri = "file://artifacts/mockup-sandbox/public/images/dostac/hero-production.png"
 type = "image"
-title = "Production hero background"
+title = "generated_image"
 
 [[generated]]
 id = "fp-MhbnHgwGKoAdHex0iJ"
 uri = "file://artifacts/mockup-sandbox/public/images/dostac/hero-products.png"
 type = "image"
-title = "Products hero background"
+title = "generated_image"
 
 [[generated]]
 id = "kMPtAvblBlV6881EPG6YK"
 uri = "file://artifacts/mockup-sandbox/public/images/dostac/hero-contact.png"
 type = "image"
-title = "Contact hero background"
+title = "generated_image"
 
 [[generated]]
 id = "Zs5oPuI60G-2ZZOQITBPL"
@@ -96,3 +96,21 @@ id = "WZR5x5VL0BPtlF8dfr5I2"
 uri = "file://artifacts/mockup-sandbox/public/images/dostac/product-10.png"
 type = "image"
 title = "Deodorant Cooling Tissues product"
+
+[[generated]]
+id = "vPvdCw3D7NjDsZMBXTCkL"
+uri = "file://artifacts/mockup-sandbox/public/images/dostac/product-pore-strips.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "VVRRW07x5iPknKcmlnk_X"
+uri = "file://artifacts/mockup-sandbox/public/images/dostac/product-spot-patches.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "d_qrHkKAAQwyfSQgd6t1c"
+uri = "file://artifacts/mockup-sandbox/public/images/dostac/product-baby-wipes.png"
+type = "image"
+title = "generated_image"

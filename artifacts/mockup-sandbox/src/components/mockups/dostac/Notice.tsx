@@ -35,7 +35,7 @@ function NoticeContent() {
       <section className="relative w-full h-[360px] flex items-center">
         <div className="absolute inset-0 z-0">
           <img src="/__mockup/images/dostac/hero-home.png" alt="" className="w-full h-full object-cover object-center" />
-          <div className="absolute inset-0 bg-primary/85 mix-blend-multiply"></div>
+          <div className="absolute inset-0 bg-gradient-to-r from-primary/75 via-primary/45 to-primary/30"></div>
         </div>
         <div className="container relative z-10 mx-auto px-6 text-white">
           <p className="uppercase tracking-[0.3em] text-xs text-accent mb-4">{t("notice.eyebrow")}</p>

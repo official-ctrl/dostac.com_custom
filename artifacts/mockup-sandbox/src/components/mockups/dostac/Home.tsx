@@ -26,7 +26,7 @@ function HomeContent() {
       <section className="relative w-full h-[600px] flex items-center">
         <div className="absolute inset-0 z-0">
           <img src="/__mockup/images/dostac/hero-home.png" alt="" className="w-full h-full object-cover object-center" />
-          <div className="absolute inset-0 hero-overlay"></div>
+          <div className="absolute inset-0 bg-gradient-to-r from-primary/75 via-primary/40 to-transparent"></div>
         </div>
         <div className="container relative z-10 mx-auto px-6 text-white">
           <div className="max-w-3xl">

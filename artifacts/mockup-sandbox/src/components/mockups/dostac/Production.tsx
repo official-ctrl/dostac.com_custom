@@ -15,7 +15,7 @@ function ProductionContent() {
       <section className="relative w-full h-[400px] flex items-center">
         <div className="absolute inset-0 z-0">
           <img src="/__mockup/images/dostac/hero-production.png" alt="" className="w-full h-full object-cover object-center" />
-          <div className="absolute inset-0 bg-primary/80 mix-blend-multiply"></div>
+          <div className="absolute inset-0 bg-gradient-to-b from-primary/55 via-primary/45 to-primary/65"></div>
         </div>
         <div className="container relative z-10 mx-auto px-6 text-center text-white">
           <h1 className="font-display text-4xl md:text-5xl font-bold leading-tight mb-4">{t("production.heroTitle")}</h1>
