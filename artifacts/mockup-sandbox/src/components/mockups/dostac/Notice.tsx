@@ -140,7 +140,7 @@ export function Notice() {
             alt="dostac newsroom"
             className="w-full h-full object-cover object-center"
           />
-          <div className="absolute inset-0 bright-overlay"></div>
+          <div className="absolute inset-0 bg-primary/85 mix-blend-multiply"></div>
         </div>
         <div className="container relative z-10 mx-auto px-6 text-white">
           <p className="uppercase tracking-[0.3em] text-xs text-accent mb-4">

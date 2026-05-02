@@ -5,37 +5,37 @@ outputs = []
 id = "74hg_YNlYd6lyW_1vdD-k"
 uri = "file://artifacts/mockup-sandbox/public/images/dostac/hero-home.png"
 type = "image"
-title = "generated_image"
+title = "Home hero background"
 
 [[generated]]
 id = "d1qcCyAwbfzl4RiJw5v5e"
 uri = "file://artifacts/mockup-sandbox/public/images/dostac/hero-about.png"
 type = "image"
-title = "generated_image"
+title = "About hero background"
 
 [[generated]]
 id = "CbALN_1NULO2Y813MdLj4"
 uri = "file://artifacts/mockup-sandbox/public/images/dostac/hero-production.png"
 type = "image"
-title = "generated_image"
+title = "Production hero background"
 
 [[generated]]
 id = "fp-MhbnHgwGKoAdHex0iJ"
 uri = "file://artifacts/mockup-sandbox/public/images/dostac/hero-products.png"
 type = "image"
-title = "generated_image"
+title = "Products hero background"
 
 [[generated]]
 id = "kMPtAvblBlV6881EPG6YK"
 uri = "file://artifacts/mockup-sandbox/public/images/dostac/hero-contact.png"
 type = "image"
-title = "generated_image"
+title = "Contact hero background"
 
 [[generated]]
 id = "Zs5oPuI60G-2ZZOQITBPL"
 uri = "file://artifacts/mockup-sandbox/public/images/dostac/ceo-portrait.png"
 type = "image"
-title = "generated_image"
+title = "CEO portrait abstract"
 
 [[generated]]
 id = "ofOC3nh0MDjFImW3IyYoK"

@@ -21,7 +21,7 @@ export function Production() {
       <section className="relative w-full h-[400px] flex items-center">
         <div className="absolute inset-0 z-0">
           <img src="/__mockup/images/dostac/hero-production.png" alt="Automated cosmetic production line" className="w-full h-full object-cover object-center" />
-          <div className="absolute inset-0 bright-overlay"></div>
+          <div className="absolute inset-0 bg-primary/80 mix-blend-multiply"></div>
         </div>
         <div className="container relative z-10 mx-auto px-6 text-center text-white">
           <h1 className="font-display text-4xl md:text-5xl font-bold leading-tight mb-4">
