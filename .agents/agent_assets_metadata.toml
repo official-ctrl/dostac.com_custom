@@ -1,0 +1,98 @@
+uploads = []
+outputs = []
+
+[[generated]]
+id = "74hg_YNlYd6lyW_1vdD-k"
+uri = "file://artifacts/mockup-sandbox/public/images/dostac/hero-home.png"
+type = "image"
+title = "Home hero background"
+
+[[generated]]
+id = "d1qcCyAwbfzl4RiJw5v5e"
+uri = "file://artifacts/mockup-sandbox/public/images/dostac/hero-about.png"
+type = "image"
+title = "About hero background"
+
+[[generated]]
+id = "CbALN_1NULO2Y813MdLj4"
+uri = "file://artifacts/mockup-sandbox/public/images/dostac/hero-production.png"
+type = "image"
+title = "Production hero background"
+
+[[generated]]
+id = "fp-MhbnHgwGKoAdHex0iJ"
+uri = "file://artifacts/mockup-sandbox/public/images/dostac/hero-products.png"
+type = "image"
+title = "Products hero background"
+
+[[generated]]
+id = "kMPtAvblBlV6881EPG6YK"
+uri = "file://artifacts/mockup-sandbox/public/images/dostac/hero-contact.png"
+type = "image"
+title = "Contact hero background"
+
+[[generated]]
+id = "Zs5oPuI60G-2ZZOQITBPL"
+uri = "file://artifacts/mockup-sandbox/public/images/dostac/ceo-portrait.png"
+type = "image"
+title = "CEO portrait abstract"
+
+[[generated]]
+id = "ofOC3nh0MDjFImW3IyYoK"
+uri = "file://artifacts/mockup-sandbox/public/images/dostac/product-01.png"
+type = "image"
+title = "Pore Strips product"
+
+[[generated]]
+id = "HXzUGptXyXqPY5jfWFAWC"
+uri = "file://artifacts/mockup-sandbox/public/images/dostac/product-02.png"
+type = "image"
+title = "Micro Needle Patches product"
+
+[[generated]]
+id = "b0PxdMv4uUeejb2BPRYjX"
+uri = "file://artifacts/mockup-sandbox/public/images/dostac/product-03.png"
+type = "image"
+title = "Lip Eye Remover Tissues product"
+
+[[generated]]
+id = "-G7u3NcyrNns87UFaNJ5k"
+uri = "file://artifacts/mockup-sandbox/public/images/dostac/product-04.png"
+type = "image"
+title = "Spot Patches product"
+
+[[generated]]
+id = "AfWrXWFGqrLeXh3cHL_4d"
+uri = "file://artifacts/mockup-sandbox/public/images/dostac/product-05.png"
+type = "image"
+title = "Fruit Pads product"
+
+[[generated]]
+id = "ar-024ip9hdkkNuBrufwc"
+uri = "file://artifacts/mockup-sandbox/public/images/dostac/product-06.png"
+type = "image"
+title = "Oil Control Films product"
+
+[[generated]]
+id = "Iw_TUAjFEwyPMANPLDN_w"
+uri = "file://artifacts/mockup-sandbox/public/images/dostac/product-07.png"
+type = "image"
+title = "Oral Cleansing Tissues product"
+
+[[generated]]
+id = "RD13SlgXfS2xlCR36ufD6"
+uri = "file://artifacts/mockup-sandbox/public/images/dostac/product-08.png"
+type = "image"
+title = "Baby Wet Wipes product"
+
+[[generated]]
+id = "PXe8pau64q3UuNaAw8_7h"
+uri = "file://artifacts/mockup-sandbox/public/images/dostac/product-09.png"
+type = "image"
+title = "Feminine Cleansing Tissues product"
+
+[[generated]]
+id = "WZR5x5VL0BPtlF8dfr5I2"
+uri = "file://artifacts/mockup-sandbox/public/images/dostac/product-10.png"
+type = "image"
+title = "Deodorant Cooling Tissues product"
