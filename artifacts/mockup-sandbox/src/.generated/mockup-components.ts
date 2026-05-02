@@ -4,6 +4,7 @@ export const modules: ModuleMap = {
   "./components/mockups/dostac/About.tsx": () => import("../components/mockups/dostac/About.tsx"),
   "./components/mockups/dostac/Contact.tsx": () => import("../components/mockups/dostac/Contact.tsx"),
   "./components/mockups/dostac/Home.tsx": () => import("../components/mockups/dostac/Home.tsx"),
+  "./components/mockups/dostac/Notice.tsx": () => import("../components/mockups/dostac/Notice.tsx"),
   "./components/mockups/dostac/Production.tsx": () => import("../components/mockups/dostac/Production.tsx"),
   "./components/mockups/dostac/Products.tsx": () => import("../components/mockups/dostac/Products.tsx")
 };

@@ -16,7 +16,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
             <a href="/__mockup/preview/dostac/About" className="text-sm font-medium text-foreground hover:text-accent transition-colors">ABOUT DOSTAC</a>
             <a href="/__mockup/preview/dostac/Production" className="text-sm font-medium text-foreground hover:text-accent transition-colors">PRODUCTION</a>
             <a href="/__mockup/preview/dostac/Products" className="text-sm font-medium text-foreground hover:text-accent transition-colors">PRODUCT</a>
-            <a href="#" className="text-sm font-medium text-foreground hover:text-accent transition-colors">NOTICE</a>
+            <a href="/__mockup/preview/dostac/Notice" className="text-sm font-medium text-foreground hover:text-accent transition-colors">NOTICE</a>
             <a href="/__mockup/preview/dostac/Contact" className="text-sm font-medium text-foreground hover:text-accent transition-colors">CONTACT US</a>
           </nav>
           
@@ -52,6 +52,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
               <li><a href="/__mockup/preview/dostac/About" className="text-primary-foreground/80 hover:text-white transition-colors">About Us</a></li>
               <li><a href="/__mockup/preview/dostac/Production" className="text-primary-foreground/80 hover:text-white transition-colors">Production Standards</a></li>
               <li><a href="/__mockup/preview/dostac/Products" className="text-primary-foreground/80 hover:text-white transition-colors">Product Categories</a></li>
+              <li><a href="/__mockup/preview/dostac/Notice" className="text-primary-foreground/80 hover:text-white transition-colors">Notice & News</a></li>
               <li><a href="/__mockup/preview/dostac/Contact" className="text-primary-foreground/80 hover:text-white transition-colors">Contact Global Sales</a></li>
             </ul>
           </div>
