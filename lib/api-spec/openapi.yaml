@@ -3,34 +3,652 @@ info:
   # Do not change the title, if the title changes, the import paths will be broken
   title: Api
   version: 0.1.0
-  description: API specification
+  description: DOSTAC website + admin API
 servers:
   - url: /api
     description: Base API path
 tags:
   - name: health
-    description: Health operations
+  - name: public-products
+  - name: public-notices
+  - name: public-contact
+  - name: admin-auth
+  - name: admin-products
+  - name: admin-notices
+  - name: admin-inquiries
+  - name: admin-translate
+  - name: admin-uploads
 paths:
   /healthz:
     get:
       operationId: healthCheck
       tags: [health]
       summary: Health check
-      description: Returns server health status
       responses:
         "200":
           description: Healthy
           content:
             application/json:
+              schema: { $ref: "#/components/schemas/HealthStatus" }
+
+  # ───────────────────── PUBLIC ─────────────────────
+  /public/products:
+    get:
+      operationId: listPublicProducts
+      tags: [public-products]
+      summary: List published products in a given language
+      parameters:
+        - { name: lang, in: query, required: true, schema: { $ref: "#/components/schemas/Lang" } }
+        - { name: category, in: query, required: false, schema: { type: string } }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
               schema:
-                $ref: "#/components/schemas/HealthStatus"
+                type: array
+                items: { $ref: "#/components/schemas/PublicProduct" }
+  /public/products/{slug}:
+    get:
+      operationId: getPublicProduct
+      tags: [public-products]
+      parameters:
+        - { name: slug, in: path, required: true, schema: { type: string } }
+        - { name: lang, in: query, required: true, schema: { $ref: "#/components/schemas/Lang" } }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/PublicProduct" }
+        "404": { $ref: "#/components/responses/NotFound" }
+
+  /public/notices:
+    get:
+      operationId: listPublicNotices
+      tags: [public-notices]
+      parameters:
+        - { name: lang, in: query, required: true, schema: { $ref: "#/components/schemas/Lang" } }
+        - { name: category, in: query, required: false, schema: { type: string } }
+        - { name: search, in: query, required: false, schema: { type: string } }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/PublicNotice" }
+  /public/notices/{slug}:
+    get:
+      operationId: getPublicNotice
+      tags: [public-notices]
+      parameters:
+        - { name: slug, in: path, required: true, schema: { type: string } }
+        - { name: lang, in: query, required: true, schema: { $ref: "#/components/schemas/Lang" } }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/PublicNotice" }
+        "404": { $ref: "#/components/responses/NotFound" }
+
+  /public/contact-inquiries:
+    post:
+      operationId: createContactInquiry
+      tags: [public-contact]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/ContactInquiryInput" }
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Ok" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+
+  # ───────────────────── ADMIN AUTH ─────────────────────
+  /admin/auth/login:
+    post:
+      operationId: adminLogin
+      tags: [admin-auth]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/AdminLoginInput" }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/AdminUser" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+  /admin/auth/logout:
+    post:
+      operationId: adminLogout
+      tags: [admin-auth]
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Ok" }
+  /admin/auth/me:
+    get:
+      operationId: adminGetMe
+      tags: [admin-auth]
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/AdminUser" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+
+  # ───────────────────── ADMIN PRODUCTS ─────────────────────
+  /admin/products:
+    get:
+      operationId: adminListProducts
+      tags: [admin-products]
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/AdminProduct" }
+    post:
+      operationId: adminCreateProduct
+      tags: [admin-products]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/AdminProductInput" }
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/AdminProduct" }
+  /admin/products/{id}:
+    get:
+      operationId: adminGetProduct
+      tags: [admin-products]
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: integer } }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/AdminProduct" }
+        "404": { $ref: "#/components/responses/NotFound" }
+    put:
+      operationId: adminUpdateProduct
+      tags: [admin-products]
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: integer } }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/AdminProductInput" }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/AdminProduct" }
+    delete:
+      operationId: adminDeleteProduct
+      tags: [admin-products]
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: integer } }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Ok" }
+
+  # ───────────────────── ADMIN NOTICES ─────────────────────
+  /admin/notices:
+    get:
+      operationId: adminListNotices
+      tags: [admin-notices]
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/AdminNotice" }
+    post:
+      operationId: adminCreateNotice
+      tags: [admin-notices]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/AdminNoticeInput" }
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/AdminNotice" }
+  /admin/notices/{id}:
+    get:
+      operationId: adminGetNotice
+      tags: [admin-notices]
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: integer } }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/AdminNotice" }
+        "404": { $ref: "#/components/responses/NotFound" }
+    put:
+      operationId: adminUpdateNotice
+      tags: [admin-notices]
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: integer } }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/AdminNoticeInput" }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/AdminNotice" }
+    delete:
+      operationId: adminDeleteNotice
+      tags: [admin-notices]
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: integer } }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Ok" }
+
+  # ───────────────────── ADMIN INQUIRIES ─────────────────────
+  /admin/inquiries:
+    get:
+      operationId: adminListInquiries
+      tags: [admin-inquiries]
+      parameters:
+        - { name: status, in: query, required: false, schema: { type: string } }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/Inquiry" }
+  /admin/inquiries/summary:
+    get:
+      operationId: adminInquiriesSummary
+      tags: [admin-inquiries]
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/InquirySummary" }
+  /admin/inquiries/{id}:
+    get:
+      operationId: adminGetInquiry
+      tags: [admin-inquiries]
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: integer } }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Inquiry" }
+        "404": { $ref: "#/components/responses/NotFound" }
+    patch:
+      operationId: adminUpdateInquiry
+      tags: [admin-inquiries]
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: integer } }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/InquiryUpdate" }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Inquiry" }
+
+  # ───────────────────── ADMIN TRANSLATE ─────────────────────
+  /admin/translate:
+    post:
+      operationId: adminTranslate
+      tags: [admin-translate]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/TranslateInput" }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/TranslateResult" }
+
+  # ───────────────────── ADMIN UPLOADS ─────────────────────
+  /admin/uploads/sign:
+    post:
+      operationId: adminSignUpload
+      tags: [admin-uploads]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/UploadSignInput" }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/UploadSignResult" }
+
 components:
+  responses:
+    NotFound:
+      description: Not found
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/ApiError" }
+    Unauthorized:
+      description: Unauthorized
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/ApiError" }
+    BadRequest:
+      description: Bad request
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/ApiError" }
   schemas:
     HealthStatus:
       type: object
+      required: [status]
       properties:
-        status:
-          type: string
-      required:
-        - status
+        status: { type: string }
 
+    Ok:
+      type: object
+      required: [ok]
+      properties:
+        ok: { type: boolean }
+
+    ApiError:
+      type: object
+      required: [error]
+      properties:
+        error: { type: string }
+
+    Lang:
+      type: string
+      enum: [ko, en, ja, zh, vi]
+
+    Translation:
+      type: object
+      required: [lang, name, headline, body]
+      properties:
+        lang: { $ref: "#/components/schemas/Lang" }
+        name: { type: string }
+        headline: { type: string }
+        body: { type: string }
+
+    NoticeTranslation:
+      type: object
+      required: [lang, title, excerpt, body]
+      properties:
+        lang: { $ref: "#/components/schemas/Lang" }
+        title: { type: string }
+        excerpt: { type: string }
+        body: { type: string }
+
+    PublicProduct:
+      type: object
+      required: [id, slug, category, sortOrder, name, headline, body]
+      properties:
+        id: { type: integer }
+        slug: { type: string }
+        category: { type: string }
+        sortOrder: { type: integer }
+        imageUrl: { type: ["string", "null"] }
+        name: { type: string }
+        headline: { type: string }
+        body: { type: string }
+
+    PublicNotice:
+      type: object
+      required: [id, slug, category, region, publishedAt, title, excerpt, body]
+      properties:
+        id: { type: integer }
+        slug: { type: string }
+        category: { type: string }
+        region: { type: string }
+        publishedAt: { type: string, format: date-time }
+        thumbnailUrl: { type: ["string", "null"] }
+        title: { type: string }
+        excerpt: { type: string }
+        body: { type: string }
+
+    AdminUser:
+      type: object
+      required: [id, email, name, role]
+      properties:
+        id: { type: integer }
+        email: { type: string }
+        name: { type: string }
+        role: { type: string }
+
+    AdminLoginInput:
+      type: object
+      required: [email, password]
+      properties:
+        email: { type: string }
+        password: { type: string }
+
+    AdminProduct:
+      type: object
+      required: [id, slug, category, sortOrder, published, translations]
+      properties:
+        id: { type: integer }
+        slug: { type: string }
+        category: { type: string }
+        sortOrder: { type: integer }
+        imageUrl: { type: ["string", "null"] }
+        published: { type: boolean }
+        translations:
+          type: array
+          items: { $ref: "#/components/schemas/Translation" }
+
+    AdminProductInput:
+      type: object
+      required: [slug, category, sortOrder, published, translations]
+      properties:
+        slug: { type: string }
+        category: { type: string }
+        sortOrder: { type: integer }
+        imageUrl: { type: ["string", "null"] }
+        published: { type: boolean }
+        translations:
+          type: array
+          items: { $ref: "#/components/schemas/Translation" }
+
+    AdminNotice:
+      type: object
+      required: [id, slug, category, region, published, publishedAt, translations]
+      properties:
+        id: { type: integer }
+        slug: { type: string }
+        category: { type: string }
+        region: { type: string }
+        thumbnailUrl: { type: ["string", "null"] }
+        published: { type: boolean }
+        publishedAt: { type: string, format: date-time }
+        translations:
+          type: array
+          items: { $ref: "#/components/schemas/NoticeTranslation" }
+
+    AdminNoticeInput:
+      type: object
+      required: [slug, category, region, published, publishedAt, translations]
+      properties:
+        slug: { type: string }
+        category: { type: string }
+        region: { type: string }
+        thumbnailUrl: { type: ["string", "null"] }
+        published: { type: boolean }
+        publishedAt: { type: string, format: date-time }
+        translations:
+          type: array
+          items: { $ref: "#/components/schemas/NoticeTranslation" }
+
+    Inquiry:
+      type: object
+      required:
+        [
+          id,
+          company,
+          name,
+          email,
+          phone,
+          country,
+          projectType,
+          productInterest,
+          monthlyVolume,
+          message,
+          status,
+          adminNote,
+          source,
+          createdAt,
+        ]
+      properties:
+        id: { type: integer }
+        company: { type: string }
+        name: { type: string }
+        email: { type: string }
+        phone: { type: string }
+        country: { type: string }
+        projectType: { type: string }
+        productInterest:
+          type: array
+          items: { type: string }
+        monthlyVolume: { type: string }
+        message: { type: string }
+        status: { type: string }
+        adminNote: { type: string }
+        source: { type: string }
+        createdAt: { type: string, format: date-time }
+
+    InquirySummary:
+      type: object
+      required: [total, byStatus, recent]
+      properties:
+        total: { type: integer }
+        byStatus:
+          type: object
+          required: [new, in_progress, done]
+          properties:
+            new: { type: integer }
+            in_progress: { type: integer }
+            done: { type: integer }
+        recent:
+          type: array
+          items: { $ref: "#/components/schemas/Inquiry" }
+
+    InquiryUpdate:
+      type: object
+      properties:
+        status: { type: string }
+        adminNote: { type: string }
+
+    ContactInquiryInput:
+      type: object
+      required: [company, name, email, message]
+      properties:
+        company: { type: string }
+        name: { type: string }
+        email: { type: string }
+        phone: { type: string }
+        country: { type: string }
+        projectType: { type: string }
+        productInterest:
+          type: array
+          items: { type: string }
+        monthlyVolume: { type: string }
+        message: { type: string }
+
+    TranslateInput:
+      type: object
+      required: [sourceText, targetLangs]
+      properties:
+        sourceText: { type: string }
+        sourceLang:
+          $ref: "#/components/schemas/Lang"
+        targetLangs:
+          type: array
+          items: { $ref: "#/components/schemas/Lang" }
+        context:
+          type: string
+          description: Hint about the field — e.g. "product name", "marketing headline", "rich html body"
+        format:
+          type: string
+          enum: [text, html]
+          default: text
+
+    TranslateResult:
+      type: object
+      required: [translations]
+      properties:
+        translations:
+          type: array
+          items:
+            type: object
+            required: [lang, text]
+            properties:
+              lang: { $ref: "#/components/schemas/Lang" }
+              text: { type: string }
+
+    UploadSignInput:
+      type: object
+      required: [filename, contentType]
+      properties:
+        filename: { type: string }
+        contentType: { type: string }
+
+    UploadSignResult:
+      type: object
+      required: [uploadUrl, publicUrl, key]
+      properties:
+        uploadUrl: { type: string }
+        publicUrl: { type: string }
+        key: { type: string }

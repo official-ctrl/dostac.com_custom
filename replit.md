@@ -1,27 +1,47 @@
-# Workspace
+# DOSTAC — Corporate Website + Admin CMS
 
 ## Overview
 
-pnpm workspace monorepo using TypeScript. Each package manages its own dependencies.
+Full-stack DOSTAC corporate site (Korean cosmetic OEM/ODM) with multilingual public site and a Korean admin CMS. Built as a pnpm monorepo with strict OpenAPI-first contracts.
+
+## Architecture
+
+- **`artifacts/api-server`** — Express 5 API at `/api`. Drizzle/Postgres, Zod-validated routes, pino logging, cookie-session admin auth (bcrypt + secure HttpOnly cookie `dostac_admin_session`), Replit AI Integrations OpenAI proxy (`gpt-5.4`) for KO→en/ja/zh/vi auto-translate, Replit Object Storage (presigned URL upload), Gmail integration for inquiry alerts.
+- **`artifacts/web`** — Public website at `/`. React + Vite + wouter. 6 pages: Home, About, Production, Products, Notices, Contact. i18n with 5 languages (ko/en/ja/zh/vi); language switcher in header. Pulls product/notice content from API.
+- **`artifacts/admin`** — Admin CMS at `/admin/`. React + Vite. Self email/password login, Tiptap WYSIWYG, per-field/per-lang/all-fields "KO → translate" buttons, image upload via Replit Object Storage, dashboard + Products/Notices/Inquiries CRUD.
+- **`lib/db`** — Drizzle schemas: `admin_users`, `products`, `product_translations`, `notices`, `notice_translations`, `contact_inquiries`. Multilingual content stored as separate `*_translations` rows keyed by `lang`.
+- **`lib/api-spec`** — Single OpenAPI spec (`openapi.yaml`); orval generates `@workspace/api-zod` schemas + `@workspace/api-client-react` TanStack Query hooks.
 
 ## Stack
 
-- **Monorepo tool**: pnpm workspaces
-- **Node.js version**: 24
-- **Package manager**: pnpm
-- **TypeScript version**: 5.9
-- **API framework**: Express 5
-- **Database**: PostgreSQL + Drizzle ORM
-- **Validation**: Zod (`zod/v4`), `drizzle-zod`
-- **API codegen**: Orval (from OpenAPI spec)
-- **Build**: esbuild (CJS bundle)
+- **Monorepo**: pnpm workspaces, Node 24, TypeScript 5.9
+- **Backend**: Express 5, Postgres + Drizzle, Zod, pino, bcryptjs
+- **Frontend**: React 18 + Vite 7, TanStack Query v5, wouter, shadcn/ui, Tailwind, Tiptap (StarterKit + Underline + Link + Image + Placeholder)
+- **AI translate**: Replit AI Integrations OpenAI proxy (`gpt-5.4`)
+- **Email**: Replit `@replit/connectors-sdk` Gmail proxy → admin@dostac.co.kr
+- **Storage**: Replit Object Storage (`@google-cloud/storage` via Replit sidecar)
+
+## Admin
+
+- URL: `/admin/`
+- Email: `admin@dostac.co.kr`
+- Password: `dostac1234!`
+- New inquiries trigger an email alert to `admin@dostac.co.kr` (fire-and-forget; visitor request always succeeds).
+
+## Languages
+
+- Korean (input/source), English, Japanese (日本語), Chinese (中文), Vietnamese (Tiếng Việt)
+- KO is the canonical source; admin can press "KO → 전체 번역" to fill the other four via OpenAI, with manual override per field.
 
 ## Key Commands
 
-- `pnpm run typecheck` — full typecheck across all packages
-- `pnpm run build` — typecheck + build all packages
-- `pnpm --filter @workspace/api-spec run codegen` — regenerate API hooks and Zod schemas from OpenAPI spec
-- `pnpm --filter @workspace/db run push` — push DB schema changes (dev only)
-- `pnpm --filter @workspace/api-server run dev` — run API server locally
+- `pnpm run typecheck` — full typecheck (libs first, then artifacts).
+- `pnpm --filter @workspace/api-spec run codegen` — regenerate API client + Zod schemas after editing `lib/api-spec/openapi.yaml`.
+- `pnpm --filter @workspace/db run push` — push DB schema changes (dev only).
+- Run any artifact via its workflow (`artifacts/<name>: …`); never `pnpm dev` at the workspace root.
 
-See the `pnpm-workspace` skill for workspace structure, TypeScript setup, and package details.
+## Routes (high-level)
+
+Public (`/api/public/*`): products, notices, contact-inquiries (POST).  
+Admin (`/api/admin/*`, cookie-auth): auth (login/logout/me), products CRUD, notices CRUD, inquiries list/update, translate, uploads/sign.  
+Storage (`/api/storage/*`): `objects/*` and `public-objects/*` serve uploaded/public bucket files.
