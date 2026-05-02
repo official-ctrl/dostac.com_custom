@@ -1,17 +1,17 @@
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap');
 
 :root {
-  --primary: 210 60% 25%; /* Deep Navy */
+  --primary: 205 75% 38%;          /* Bright Sky Blue - lighter, more uplifting */
   --primary-foreground: 0 0% 100%;
-  --secondary: 180 30% 90%; /* Soft Teal */
-  --secondary-foreground: 210 60% 25%;
-  --accent: 180 50% 40%; /* Ocean Teal */
+  --secondary: 185 60% 94%;        /* Very light mint */
+  --secondary-foreground: 205 65% 28%;
+  --accent: 175 70% 42%;           /* Vibrant fresh teal */
   --accent-foreground: 0 0% 100%;
   --background: 0 0% 100%;
-  --foreground: 210 20% 15%;
-  --muted: 210 20% 95%;
-  --muted-foreground: 210 10% 40%;
-  --border: 210 20% 90%;
+  --foreground: 210 25% 18%;
+  --muted: 200 30% 97%;            /* Airy off-white */
+  --muted-foreground: 210 12% 42%;
+  --border: 205 25% 90%;
   
   --font-sans: 'Plus Jakarta Sans', sans-serif;
   --font-display: 'Space Grotesk', sans-serif;
@@ -28,5 +28,9 @@ h1, h2, h3, h4, h5, h6, .font-display {
 }
 
 .hero-overlay {
-  background: linear-gradient(to right, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.2));
+  background: linear-gradient(135deg, rgba(255,255,255,0.55), rgba(186, 230, 253, 0.35) 40%, rgba(255,255,255,0.15));
+}
+
+.bright-overlay {
+  background: linear-gradient(135deg, rgba(15, 76, 117, 0.55), rgba(56, 161, 192, 0.30) 60%, rgba(186, 230, 253, 0.20));
 }
