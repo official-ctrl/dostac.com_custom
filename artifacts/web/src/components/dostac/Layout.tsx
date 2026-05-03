@@ -82,8 +82,7 @@ function Header() {
     <header className="sticky top-0 z-50 bg-white/95 backdrop-blur border-b border-slate-200/70">
       <div className="container mx-auto px-6 h-20 flex items-center justify-between">
         <Link href="/" className="flex items-center gap-2">
-          <span className="font-display text-2xl font-bold tracking-tight text-primary">DIO STAC</span>
-          <span className="hidden sm:inline text-xs uppercase tracking-[0.25em] text-accent">dostac</span>
+          <span className="font-display text-2xl font-bold tracking-tight text-primary">dostac</span>
         </Link>
 
         <nav className="hidden lg:flex items-center gap-8">
@@ -150,7 +149,7 @@ function Footer() {
     <footer className="bg-slate-900 text-slate-200 mt-0">
       <div className="container mx-auto px-6 py-16 grid grid-cols-1 md:grid-cols-4 gap-10">
         <div className="md:col-span-2">
-          <div className="font-display text-2xl font-bold text-white mb-4">DIO STAC Co., Ltd.</div>
+          <div className="font-display text-2xl font-bold text-white mb-4">dostac Co., Ltd.</div>
           <p className="text-sm text-slate-400 leading-relaxed max-w-md">{t("footer.tagline") as string}</p>
           <p className="text-xs text-slate-500 mt-6">{t("footer.secure") as string}</p>
         </div>

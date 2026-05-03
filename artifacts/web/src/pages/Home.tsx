@@ -25,7 +25,7 @@ function HomeContent() {
           <div className="absolute inset-0 bg-gradient-to-r from-primary/85 via-primary/65 to-primary/35"></div>
         </div>
         <div className="container relative z-10 mx-auto px-6 text-white max-w-4xl">
-          <p className="uppercase tracking-[0.3em] text-xs text-accent font-semibold mb-5">DIO STAC Co., Ltd.</p>
+          <p className="uppercase tracking-[0.3em] text-xs text-accent font-semibold mb-5">dostac Co., Ltd.</p>
           <h1 className="font-display text-4xl md:text-6xl font-bold leading-[1.1] mb-6">{t("home.heroTitle") as string}</h1>
           <p className="text-lg md:text-xl text-white/85 leading-relaxed mb-10 max-w-2xl">{t("home.heroBody") as string}</p>
           <div className="flex flex-wrap gap-4">
