@@ -6,9 +6,100 @@ import {
   productTranslationsTable,
   noticesTable,
   noticeTranslationsTable,
+  bannersTable,
 } from "@workspace/db";
 import { hashPassword } from "./lib/auth";
 import { logger } from "./lib/logger";
+
+interface BannerSeed {
+  imageUrl: string;
+  sortOrder: number;
+  translations: Record<
+    "ko" | "en" | "ja" | "zh" | "vi",
+    { title: string; description: string }
+  >;
+}
+
+const BANNERS: BannerSeed[] = [
+  {
+    imageUrl: "/images/dostac/hero-home.png",
+    sortOrder: 0,
+    translations: {
+      ko: {
+        title: "뷰티 & 헬스 혁신을 위한 최고의 OEM/ODM 파트너",
+        description: "글로벌 시장을 선도하는 K-Beauty 제조 솔루션",
+      },
+      en: {
+        title: "Your trusted OEM/ODM partner for beauty & health innovation",
+        description: "K-Beauty manufacturing solutions that lead global markets",
+      },
+      ja: {
+        title: "ビューティー＆ヘルス革新のための最高のOEM/ODMパートナー",
+        description: "グローバル市場をリードするK-Beauty製造ソリューション",
+      },
+      zh: {
+        title: "美容与健康创新的优秀OEM/ODM合作伙伴",
+        description: "引领全球市场的K-Beauty制造解决方案",
+      },
+      vi: {
+        title: "Đối tác OEM/ODM hàng đầu cho đổi mới làm đẹp & sức khỏe",
+        description: "Giải pháp sản xuất K-Beauty dẫn đầu thị trường toàn cầu",
+      },
+    },
+  },
+  {
+    imageUrl: "/images/dostac/hero-production.png",
+    sortOrder: 1,
+    translations: {
+      ko: {
+        title: "GMP/ISO 인증 첨단 제조 네트워크",
+        description: "디자인부터 양산까지, 한 번에 완성하는 통합 제조",
+      },
+      en: {
+        title: "GMP/ISO certified advanced manufacturing network",
+        description: "From design to mass production, integrated manufacturing in one place",
+      },
+      ja: {
+        title: "GMP/ISO認証の先進的な製造ネットワーク",
+        description: "デザインから量産まで、一気通貫の統合製造",
+      },
+      zh: {
+        title: "GMP/ISO认证的先进制造网络",
+        description: "从设计到量产，一站式集成制造",
+      },
+      vi: {
+        title: "Mạng lưới sản xuất tiên tiến đạt chuẩn GMP/ISO",
+        description: "Từ thiết kế đến sản xuất hàng loạt, tích hợp toàn diện",
+      },
+    },
+  },
+  {
+    imageUrl: "/images/dostac/hero-products.png",
+    sortOrder: 2,
+    translations: {
+      ko: {
+        title: "검증된 제품 포트폴리오로 빠른 시장 진입",
+        description: "스킨케어, 헤어케어, 바디케어까지 풀라인업 OEM/ODM",
+      },
+      en: {
+        title: "Speed-to-market with a proven product portfolio",
+        description: "Skincare, haircare, bodycare — full lineup OEM/ODM",
+      },
+      ja: {
+        title: "実績ある製品ポートフォリオで迅速な市場参入",
+        description: "スキンケア、ヘアケア、ボディケアのフルラインOEM/ODM",
+      },
+      zh: {
+        title: "成熟产品组合助您快速进入市场",
+        description: "护肤、护发、身体护理全系列OEM/ODM",
+      },
+      vi: {
+        title: "Tốc độ ra thị trường với danh mục sản phẩm đã chứng minh",
+        description: "Chăm sóc da, tóc, cơ thể — đầy đủ dòng OEM/ODM",
+      },
+    },
+  },
+];
 
 type Lang = "ko" | "en" | "ja" | "zh" | "vi";
 
@@ -576,6 +667,33 @@ async function seed(): Promise<void> {
     );
   }
   logger.info({ count: NOTICES.length }, "Notices seeded");
+
+  const existingBanners = await db.select({ id: bannersTable.id }).from(bannersTable);
+  if (existingBanners.length === 0) {
+    for (const b of BANNERS) {
+      await db.insert(bannersTable).values({
+        imageUrl: b.imageUrl,
+        sortOrder: b.sortOrder,
+        active: true,
+        titleKo: b.translations.ko.title,
+        titleEn: b.translations.en.title,
+        titleJa: b.translations.ja.title,
+        titleZh: b.translations.zh.title,
+        titleVi: b.translations.vi.title,
+        descriptionKo: b.translations.ko.description,
+        descriptionEn: b.translations.en.description,
+        descriptionJa: b.translations.ja.description,
+        descriptionZh: b.translations.zh.description,
+        descriptionVi: b.translations.vi.description,
+      });
+    }
+    logger.info({ count: BANNERS.length }, "Banners seeded");
+  } else {
+    logger.info(
+      { count: existingBanners.length },
+      "Banners already exist, skipping seed",
+    );
+  }
 
   logger.info("Seed complete");
 }

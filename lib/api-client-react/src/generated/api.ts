@@ -17,6 +17,8 @@ import type {
 } from "@tanstack/react-query";
 
 import type {
+  AdminBanner,
+  AdminBannerInput,
   AdminListInquiriesParams,
   AdminLoginInput,
   AdminNotice,
@@ -25,6 +27,7 @@ import type {
   AdminProductInput,
   AdminUser,
   BadRequestResponse,
+  BannerReorderInput,
   ContactInquiryInput,
   GetPublicNoticeParams,
   GetPublicProductParams,
@@ -36,6 +39,7 @@ import type {
   ListPublicProductsParams,
   NotFoundResponse,
   Ok,
+  PublicBanner,
   PublicNotice,
   PublicProduct,
   TranslateInput,
@@ -513,6 +517,81 @@ export function useGetPublicNotice<
   },
 ): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
   const queryOptions = getGetPublicNoticeQueryOptions(slug, params, options);
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey;
+  };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+/**
+ * @summary List active banners ordered for the landing slider
+ */
+export const getListPublicBannersUrl = () => {
+  return `/api/public/banners`;
+};
+
+export const listPublicBanners = async (
+  options?: RequestInit,
+): Promise<PublicBanner[]> => {
+  return customFetch<PublicBanner[]>(getListPublicBannersUrl(), {
+    ...options,
+    method: "GET",
+  });
+};
+
+export const getListPublicBannersQueryKey = () => {
+  return [`/api/public/banners`] as const;
+};
+
+export const getListPublicBannersQueryOptions = <
+  TData = Awaited<ReturnType<typeof listPublicBanners>>,
+  TError = ErrorType<unknown>,
+>(options?: {
+  query?: UseQueryOptions<
+    Awaited<ReturnType<typeof listPublicBanners>>,
+    TError,
+    TData
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getListPublicBannersQueryKey();
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof listPublicBanners>>
+  > = ({ signal }) => listPublicBanners({ signal, ...requestOptions });
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof listPublicBanners>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey };
+};
+
+export type ListPublicBannersQueryResult = NonNullable<
+  Awaited<ReturnType<typeof listPublicBanners>>
+>;
+export type ListPublicBannersQueryError = ErrorType<unknown>;
+
+/**
+ * @summary List active banners ordered for the landing slider
+ */
+
+export function useListPublicBanners<
+  TData = Awaited<ReturnType<typeof listPublicBanners>>,
+  TError = ErrorType<unknown>,
+>(options?: {
+  query?: UseQueryOptions<
+    Awaited<ReturnType<typeof listPublicBanners>>,
+    TError,
+    TData
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getListPublicBannersQueryOptions(options);
 
   const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
     queryKey: QueryKey;
@@ -1911,6 +1990,473 @@ export const useAdminUpdateInquiry = <
   TContext
 > => {
   return useMutation(getAdminUpdateInquiryMutationOptions(options));
+};
+
+export const getAdminListBannersUrl = () => {
+  return `/api/admin/banners`;
+};
+
+export const adminListBanners = async (
+  options?: RequestInit,
+): Promise<AdminBanner[]> => {
+  return customFetch<AdminBanner[]>(getAdminListBannersUrl(), {
+    ...options,
+    method: "GET",
+  });
+};
+
+export const getAdminListBannersQueryKey = () => {
+  return [`/api/admin/banners`] as const;
+};
+
+export const getAdminListBannersQueryOptions = <
+  TData = Awaited<ReturnType<typeof adminListBanners>>,
+  TError = ErrorType<unknown>,
+>(options?: {
+  query?: UseQueryOptions<
+    Awaited<ReturnType<typeof adminListBanners>>,
+    TError,
+    TData
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getAdminListBannersQueryKey();
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof adminListBanners>>
+  > = ({ signal }) => adminListBanners({ signal, ...requestOptions });
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof adminListBanners>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey };
+};
+
+export type AdminListBannersQueryResult = NonNullable<
+  Awaited<ReturnType<typeof adminListBanners>>
+>;
+export type AdminListBannersQueryError = ErrorType<unknown>;
+
+export function useAdminListBanners<
+  TData = Awaited<ReturnType<typeof adminListBanners>>,
+  TError = ErrorType<unknown>,
+>(options?: {
+  query?: UseQueryOptions<
+    Awaited<ReturnType<typeof adminListBanners>>,
+    TError,
+    TData
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getAdminListBannersQueryOptions(options);
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey;
+  };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+export const getAdminCreateBannerUrl = () => {
+  return `/api/admin/banners`;
+};
+
+export const adminCreateBanner = async (
+  adminBannerInput: AdminBannerInput,
+  options?: RequestInit,
+): Promise<AdminBanner> => {
+  return customFetch<AdminBanner>(getAdminCreateBannerUrl(), {
+    ...options,
+    method: "POST",
+    headers: { "Content-Type": "application/json", ...options?.headers },
+    body: JSON.stringify(adminBannerInput),
+  });
+};
+
+export const getAdminCreateBannerMutationOptions = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof adminCreateBanner>>,
+    TError,
+    { data: BodyType<AdminBannerInput> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof adminCreateBanner>>,
+  TError,
+  { data: BodyType<AdminBannerInput> },
+  TContext
+> => {
+  const mutationKey = ["adminCreateBanner"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof adminCreateBanner>>,
+    { data: BodyType<AdminBannerInput> }
+  > = (props) => {
+    const { data } = props ?? {};
+
+    return adminCreateBanner(data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type AdminCreateBannerMutationResult = NonNullable<
+  Awaited<ReturnType<typeof adminCreateBanner>>
+>;
+export type AdminCreateBannerMutationBody = BodyType<AdminBannerInput>;
+export type AdminCreateBannerMutationError = ErrorType<unknown>;
+
+export const useAdminCreateBanner = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof adminCreateBanner>>,
+    TError,
+    { data: BodyType<AdminBannerInput> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof adminCreateBanner>>,
+  TError,
+  { data: BodyType<AdminBannerInput> },
+  TContext
+> => {
+  return useMutation(getAdminCreateBannerMutationOptions(options));
+};
+
+export const getAdminReorderBannersUrl = () => {
+  return `/api/admin/banners/reorder`;
+};
+
+export const adminReorderBanners = async (
+  bannerReorderInput: BannerReorderInput,
+  options?: RequestInit,
+): Promise<Ok> => {
+  return customFetch<Ok>(getAdminReorderBannersUrl(), {
+    ...options,
+    method: "POST",
+    headers: { "Content-Type": "application/json", ...options?.headers },
+    body: JSON.stringify(bannerReorderInput),
+  });
+};
+
+export const getAdminReorderBannersMutationOptions = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof adminReorderBanners>>,
+    TError,
+    { data: BodyType<BannerReorderInput> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof adminReorderBanners>>,
+  TError,
+  { data: BodyType<BannerReorderInput> },
+  TContext
+> => {
+  const mutationKey = ["adminReorderBanners"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof adminReorderBanners>>,
+    { data: BodyType<BannerReorderInput> }
+  > = (props) => {
+    const { data } = props ?? {};
+
+    return adminReorderBanners(data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type AdminReorderBannersMutationResult = NonNullable<
+  Awaited<ReturnType<typeof adminReorderBanners>>
+>;
+export type AdminReorderBannersMutationBody = BodyType<BannerReorderInput>;
+export type AdminReorderBannersMutationError = ErrorType<unknown>;
+
+export const useAdminReorderBanners = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof adminReorderBanners>>,
+    TError,
+    { data: BodyType<BannerReorderInput> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof adminReorderBanners>>,
+  TError,
+  { data: BodyType<BannerReorderInput> },
+  TContext
+> => {
+  return useMutation(getAdminReorderBannersMutationOptions(options));
+};
+
+export const getAdminGetBannerUrl = (id: number) => {
+  return `/api/admin/banners/${id}`;
+};
+
+export const adminGetBanner = async (
+  id: number,
+  options?: RequestInit,
+): Promise<AdminBanner> => {
+  return customFetch<AdminBanner>(getAdminGetBannerUrl(id), {
+    ...options,
+    method: "GET",
+  });
+};
+
+export const getAdminGetBannerQueryKey = (id: number) => {
+  return [`/api/admin/banners/${id}`] as const;
+};
+
+export const getAdminGetBannerQueryOptions = <
+  TData = Awaited<ReturnType<typeof adminGetBanner>>,
+  TError = ErrorType<NotFoundResponse>,
+>(
+  id: number,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof adminGetBanner>>,
+      TError,
+      TData
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getAdminGetBannerQueryKey(id);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof adminGetBanner>>> = ({
+    signal,
+  }) => adminGetBanner(id, { signal, ...requestOptions });
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!id,
+    ...queryOptions,
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof adminGetBanner>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey };
+};
+
+export type AdminGetBannerQueryResult = NonNullable<
+  Awaited<ReturnType<typeof adminGetBanner>>
+>;
+export type AdminGetBannerQueryError = ErrorType<NotFoundResponse>;
+
+export function useAdminGetBanner<
+  TData = Awaited<ReturnType<typeof adminGetBanner>>,
+  TError = ErrorType<NotFoundResponse>,
+>(
+  id: number,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof adminGetBanner>>,
+      TError,
+      TData
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getAdminGetBannerQueryOptions(id, options);
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey;
+  };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+export const getAdminUpdateBannerUrl = (id: number) => {
+  return `/api/admin/banners/${id}`;
+};
+
+export const adminUpdateBanner = async (
+  id: number,
+  adminBannerInput: AdminBannerInput,
+  options?: RequestInit,
+): Promise<AdminBanner> => {
+  return customFetch<AdminBanner>(getAdminUpdateBannerUrl(id), {
+    ...options,
+    method: "PUT",
+    headers: { "Content-Type": "application/json", ...options?.headers },
+    body: JSON.stringify(adminBannerInput),
+  });
+};
+
+export const getAdminUpdateBannerMutationOptions = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof adminUpdateBanner>>,
+    TError,
+    { id: number; data: BodyType<AdminBannerInput> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof adminUpdateBanner>>,
+  TError,
+  { id: number; data: BodyType<AdminBannerInput> },
+  TContext
+> => {
+  const mutationKey = ["adminUpdateBanner"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof adminUpdateBanner>>,
+    { id: number; data: BodyType<AdminBannerInput> }
+  > = (props) => {
+    const { id, data } = props ?? {};
+
+    return adminUpdateBanner(id, data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type AdminUpdateBannerMutationResult = NonNullable<
+  Awaited<ReturnType<typeof adminUpdateBanner>>
+>;
+export type AdminUpdateBannerMutationBody = BodyType<AdminBannerInput>;
+export type AdminUpdateBannerMutationError = ErrorType<unknown>;
+
+export const useAdminUpdateBanner = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof adminUpdateBanner>>,
+    TError,
+    { id: number; data: BodyType<AdminBannerInput> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof adminUpdateBanner>>,
+  TError,
+  { id: number; data: BodyType<AdminBannerInput> },
+  TContext
+> => {
+  return useMutation(getAdminUpdateBannerMutationOptions(options));
+};
+
+export const getAdminDeleteBannerUrl = (id: number) => {
+  return `/api/admin/banners/${id}`;
+};
+
+export const adminDeleteBanner = async (
+  id: number,
+  options?: RequestInit,
+): Promise<Ok> => {
+  return customFetch<Ok>(getAdminDeleteBannerUrl(id), {
+    ...options,
+    method: "DELETE",
+  });
+};
+
+export const getAdminDeleteBannerMutationOptions = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof adminDeleteBanner>>,
+    TError,
+    { id: number },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof adminDeleteBanner>>,
+  TError,
+  { id: number },
+  TContext
+> => {
+  const mutationKey = ["adminDeleteBanner"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof adminDeleteBanner>>,
+    { id: number }
+  > = (props) => {
+    const { id } = props ?? {};
+
+    return adminDeleteBanner(id, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type AdminDeleteBannerMutationResult = NonNullable<
+  Awaited<ReturnType<typeof adminDeleteBanner>>
+>;
+
+export type AdminDeleteBannerMutationError = ErrorType<unknown>;
+
+export const useAdminDeleteBanner = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof adminDeleteBanner>>,
+    TError,
+    { id: number },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof adminDeleteBanner>>,
+  TError,
+  { id: number },
+  TContext
+> => {
+  return useMutation(getAdminDeleteBannerMutationOptions(options));
 };
 
 export const getAdminTranslateUrl = () => {

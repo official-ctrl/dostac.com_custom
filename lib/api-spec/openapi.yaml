@@ -18,6 +18,8 @@ tags:
   - name: admin-inquiries
   - name: admin-translate
   - name: admin-uploads
+  - name: public-banners
+  - name: admin-banners
 paths:
   /healthz:
     get:
@@ -93,6 +95,20 @@ paths:
             application/json:
               schema: { $ref: "#/components/schemas/PublicNotice" }
         "404": { $ref: "#/components/responses/NotFound" }
+
+  /public/banners:
+    get:
+      operationId: listPublicBanners
+      tags: [public-banners]
+      summary: List active banners ordered for the landing slider
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/PublicBanner" }
 
   /public/contact-inquiries:
     post:
@@ -340,6 +356,89 @@ paths:
           content:
             application/json:
               schema: { $ref: "#/components/schemas/Inquiry" }
+
+  # ───────────────────── ADMIN BANNERS ─────────────────────
+  /admin/banners:
+    get:
+      operationId: adminListBanners
+      tags: [admin-banners]
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/AdminBanner" }
+    post:
+      operationId: adminCreateBanner
+      tags: [admin-banners]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/AdminBannerInput" }
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/AdminBanner" }
+  /admin/banners/reorder:
+    post:
+      operationId: adminReorderBanners
+      tags: [admin-banners]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/BannerReorderInput" }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Ok" }
+  /admin/banners/{id}:
+    get:
+      operationId: adminGetBanner
+      tags: [admin-banners]
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: integer } }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/AdminBanner" }
+        "404": { $ref: "#/components/responses/NotFound" }
+    put:
+      operationId: adminUpdateBanner
+      tags: [admin-banners]
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: integer } }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/AdminBannerInput" }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/AdminBanner" }
+    delete:
+      operationId: adminDeleteBanner
+      tags: [admin-banners]
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: integer } }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Ok" }
 
   # ───────────────────── ADMIN TRANSLATE ─────────────────────
   /admin/translate:
@@ -644,6 +743,60 @@ components:
       properties:
         filename: { type: string }
         contentType: { type: string }
+
+    BannerTranslations:
+      type: object
+      required: [titleKo, titleEn, titleJa, titleZh, titleVi, descriptionKo, descriptionEn, descriptionJa, descriptionZh, descriptionVi]
+      properties:
+        titleKo: { type: string }
+        titleEn: { type: string }
+        titleJa: { type: string }
+        titleZh: { type: string }
+        titleVi: { type: string }
+        descriptionKo: { type: string }
+        descriptionEn: { type: string }
+        descriptionJa: { type: string }
+        descriptionZh: { type: string }
+        descriptionVi: { type: string }
+
+    PublicBanner:
+      type: object
+      required: [id, imageUrl, sortOrder, translations]
+      properties:
+        id: { type: integer }
+        imageUrl: { type: string }
+        linkUrl: { type: ["string", "null"] }
+        sortOrder: { type: integer }
+        translations: { $ref: "#/components/schemas/BannerTranslations" }
+
+    AdminBanner:
+      type: object
+      required: [id, imageUrl, sortOrder, active, translations]
+      properties:
+        id: { type: integer }
+        imageUrl: { type: string }
+        linkUrl: { type: ["string", "null"] }
+        sortOrder: { type: integer }
+        active: { type: boolean }
+        translations: { $ref: "#/components/schemas/BannerTranslations" }
+
+    AdminBannerInput:
+      type: object
+      required: [imageUrl, active, translations]
+      properties:
+        imageUrl: { type: string }
+        linkUrl: { type: ["string", "null"] }
+        sortOrder: { type: integer }
+        active: { type: boolean }
+        translations: { $ref: "#/components/schemas/BannerTranslations" }
+
+    BannerReorderInput:
+      type: object
+      required: [order]
+      properties:
+        order:
+          type: array
+          items: { type: integer }
 
     UploadSignResult:
       type: object

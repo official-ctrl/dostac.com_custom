@@ -40,8 +40,7 @@ export default function Login() {
       <div className="w-full max-w-md">
         <div className="mb-8 text-center">
           <div className="inline-flex items-baseline gap-2 mb-2">
-            <span className="text-3xl font-bold tracking-tight text-primary">DIO</span>
-            <span className="text-3xl font-bold tracking-tight text-accent">STAC</span>
+            <span className="text-3xl font-bold tracking-tight text-primary">dostac</span>
           </div>
           <p className="text-xs uppercase tracking-[0.3em] text-muted-foreground">
             Content Management
@@ -93,7 +92,7 @@ export default function Login() {
         </Card>
 
         <p className="mt-6 text-center text-xs text-muted-foreground">
-          DOSTAC Cosmetics ODM/OEM · Admin Console
+          dostac Co., Ltd. · Admin Console
         </p>
       </div>
     </div>

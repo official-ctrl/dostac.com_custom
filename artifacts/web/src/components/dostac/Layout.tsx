@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link, useLocation } from "wouter";
-import { Menu, X, Globe, ChevronDown, Mail, Phone, MapPin, ArrowRight } from "lucide-react";
+import { Menu, X, Globe, ChevronDown, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useT, useLang, type Lang } from "./i18n";
 
@@ -146,37 +146,18 @@ function Header() {
 function Footer() {
   const { t } = useT();
   return (
-    <footer className="bg-slate-900 text-slate-200 mt-0">
-      <div className="container mx-auto px-6 py-16 grid grid-cols-1 md:grid-cols-4 gap-10">
-        <div className="md:col-span-2">
-          <div className="font-display text-2xl font-bold text-white mb-4">dostac Co., Ltd.</div>
-          <p className="text-sm text-slate-400 leading-relaxed max-w-md">{t("footer.tagline") as string}</p>
-          <p className="text-xs text-slate-500 mt-6">{t("footer.secure") as string}</p>
-        </div>
-        <div>
-          <h4 className="font-semibold text-white mb-4 text-sm uppercase tracking-wider">{t("footer.quickLinks") as string}</h4>
-          <ul className="space-y-2 text-sm text-slate-400">
-            <li><Link href="/about" className="hover:text-accent">{t("footer.aboutUs") as string}</Link></li>
-            <li><Link href="/production" className="hover:text-accent">{t("footer.production") as string}</Link></li>
-            <li><Link href="/products" className="hover:text-accent">{t("footer.products") as string}</Link></li>
-            <li><Link href="/notice" className="hover:text-accent">{t("footer.notice") as string}</Link></li>
-            <li><Link href="/contact" className="hover:text-accent">{t("footer.contact") as string}</Link></li>
-          </ul>
-        </div>
-        <div>
-          <h4 className="font-semibold text-white mb-4 text-sm uppercase tracking-wider">{t("footer.hq") as string}</h4>
-          <ul className="space-y-2.5 text-sm text-slate-400">
-            <li className="flex items-start gap-2"><MapPin className="h-4 w-4 mt-0.5 shrink-0 text-accent" /><span>{t("footer.addr") as string}</span></li>
-            <li className="flex items-start gap-2"><Mail className="h-4 w-4 mt-0.5 shrink-0 text-accent" /><span>{t("footer.email") as string}</span></li>
-            <li className="flex items-start gap-2"><Phone className="h-4 w-4 mt-0.5 shrink-0 text-accent" /><span>{t("footer.phone") as string}</span></li>
-            <li className="text-xs text-slate-500 pt-2">{t("footer.hours") as string}</li>
-          </ul>
-        </div>
-      </div>
-      <div className="border-t border-slate-800">
-        <div className="container mx-auto px-6 py-5 text-xs text-slate-500 text-center">
-          {t("footer.copyright") as string}
-        </div>
+    <footer className="bg-slate-900 text-slate-200">
+      <div className="container mx-auto px-6 py-8 flex flex-col md:flex-row items-center justify-between gap-4">
+        <div className="text-xs text-slate-400">{t("footer.copyright") as string}</div>
+        <Link href="/contact">
+          <Button
+            size="sm"
+            className="rounded-sm bg-accent hover:bg-accent/90 text-white h-9 px-5 text-sm font-medium"
+            data-testid="footer-contact-cta"
+          >
+            {t("footer.contact") as string} <ArrowRight className="ml-1.5 h-3.5 w-3.5" />
+          </Button>
+        </Link>
       </div>
     </footer>
   );

@@ -7,6 +7,7 @@ import {
   Inbox,
   LogOut,
   ExternalLink,
+  Image as ImageIcon,
 } from "lucide-react";
 import { useAuth } from "./AuthProvider";
 import { cn } from "@/lib/utils";
@@ -20,6 +21,7 @@ type NavItem = {
 
 const NAV: NavItem[] = [
   { href: "/", label: "Dashboard", icon: LayoutDashboard, match: (p) => p === "/" },
+  { href: "/banners", label: "Banners", icon: ImageIcon, match: (p) => p.startsWith("/banners") },
   { href: "/products", label: "Products", icon: Package, match: (p) => p.startsWith("/products") },
   { href: "/notices", label: "Notices", icon: Megaphone, match: (p) => p.startsWith("/notices") },
   { href: "/inquiries", label: "Inquiries", icon: Inbox, match: (p) => p.startsWith("/inquiries") },
@@ -34,8 +36,7 @@ export function AdminLayout({ children }: { children: ReactNode }) {
       <aside className="w-64 shrink-0 flex flex-col bg-sidebar text-sidebar-foreground border-r border-sidebar-border">
         <div className="px-6 pt-6 pb-4">
           <div className="flex items-baseline gap-2">
-            <span className="text-xl font-bold tracking-tight text-white">DIO</span>
-            <span className="text-xl font-bold tracking-tight text-white">STAC</span>
+            <span className="text-xl font-bold tracking-tight text-white">dostac</span>
             <span className="text-xs uppercase tracking-[0.25em] text-sidebar-foreground/60 ml-1">
               Admin
             </span>

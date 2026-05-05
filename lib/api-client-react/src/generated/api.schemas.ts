@@ -199,6 +199,51 @@ export interface UploadSignInput {
   contentType: string;
 }
 
+export interface BannerTranslations {
+  titleKo: string;
+  titleEn: string;
+  titleJa: string;
+  titleZh: string;
+  titleVi: string;
+  descriptionKo: string;
+  descriptionEn: string;
+  descriptionJa: string;
+  descriptionZh: string;
+  descriptionVi: string;
+}
+
+export interface PublicBanner {
+  id: number;
+  imageUrl: string;
+  /** @nullable */
+  linkUrl?: string | null;
+  sortOrder: number;
+  translations: BannerTranslations;
+}
+
+export interface AdminBanner {
+  id: number;
+  imageUrl: string;
+  /** @nullable */
+  linkUrl?: string | null;
+  sortOrder: number;
+  active: boolean;
+  translations: BannerTranslations;
+}
+
+export interface AdminBannerInput {
+  imageUrl: string;
+  /** @nullable */
+  linkUrl?: string | null;
+  sortOrder?: number;
+  active: boolean;
+  translations: BannerTranslations;
+}
+
+export interface BannerReorderInput {
+  order: number[];
+}
+
 export interface UploadSignResult {
   uploadUrl: string;
   publicUrl: string;

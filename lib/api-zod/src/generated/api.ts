@@ -96,6 +96,31 @@ export const GetPublicNoticeResponse = zod.object({
   body: zod.string(),
 });
 
+/**
+ * @summary List active banners ordered for the landing slider
+ */
+export const ListPublicBannersResponseItem = zod.object({
+  id: zod.number(),
+  imageUrl: zod.string(),
+  linkUrl: zod.string().nullish(),
+  sortOrder: zod.number(),
+  translations: zod.object({
+    titleKo: zod.string(),
+    titleEn: zod.string(),
+    titleJa: zod.string(),
+    titleZh: zod.string(),
+    titleVi: zod.string(),
+    descriptionKo: zod.string(),
+    descriptionEn: zod.string(),
+    descriptionJa: zod.string(),
+    descriptionZh: zod.string(),
+    descriptionVi: zod.string(),
+  }),
+});
+export const ListPublicBannersResponse = zod.array(
+  ListPublicBannersResponseItem,
+);
+
 export const CreateContactInquiryBody = zod.object({
   company: zod.string(),
   name: zod.string(),
@@ -434,6 +459,129 @@ export const AdminUpdateInquiryResponse = zod.object({
   adminNote: zod.string(),
   source: zod.string(),
   createdAt: zod.coerce.date(),
+});
+
+export const AdminListBannersResponseItem = zod.object({
+  id: zod.number(),
+  imageUrl: zod.string(),
+  linkUrl: zod.string().nullish(),
+  sortOrder: zod.number(),
+  active: zod.boolean(),
+  translations: zod.object({
+    titleKo: zod.string(),
+    titleEn: zod.string(),
+    titleJa: zod.string(),
+    titleZh: zod.string(),
+    titleVi: zod.string(),
+    descriptionKo: zod.string(),
+    descriptionEn: zod.string(),
+    descriptionJa: zod.string(),
+    descriptionZh: zod.string(),
+    descriptionVi: zod.string(),
+  }),
+});
+export const AdminListBannersResponse = zod.array(AdminListBannersResponseItem);
+
+export const AdminCreateBannerBody = zod.object({
+  imageUrl: zod.string(),
+  linkUrl: zod.string().nullish(),
+  sortOrder: zod.number().optional(),
+  active: zod.boolean(),
+  translations: zod.object({
+    titleKo: zod.string(),
+    titleEn: zod.string(),
+    titleJa: zod.string(),
+    titleZh: zod.string(),
+    titleVi: zod.string(),
+    descriptionKo: zod.string(),
+    descriptionEn: zod.string(),
+    descriptionJa: zod.string(),
+    descriptionZh: zod.string(),
+    descriptionVi: zod.string(),
+  }),
+});
+
+export const AdminReorderBannersBody = zod.object({
+  order: zod.array(zod.number()),
+});
+
+export const AdminReorderBannersResponse = zod.object({
+  ok: zod.boolean(),
+});
+
+export const AdminGetBannerParams = zod.object({
+  id: zod.coerce.number(),
+});
+
+export const AdminGetBannerResponse = zod.object({
+  id: zod.number(),
+  imageUrl: zod.string(),
+  linkUrl: zod.string().nullish(),
+  sortOrder: zod.number(),
+  active: zod.boolean(),
+  translations: zod.object({
+    titleKo: zod.string(),
+    titleEn: zod.string(),
+    titleJa: zod.string(),
+    titleZh: zod.string(),
+    titleVi: zod.string(),
+    descriptionKo: zod.string(),
+    descriptionEn: zod.string(),
+    descriptionJa: zod.string(),
+    descriptionZh: zod.string(),
+    descriptionVi: zod.string(),
+  }),
+});
+
+export const AdminUpdateBannerParams = zod.object({
+  id: zod.coerce.number(),
+});
+
+export const AdminUpdateBannerBody = zod.object({
+  imageUrl: zod.string(),
+  linkUrl: zod.string().nullish(),
+  sortOrder: zod.number().optional(),
+  active: zod.boolean(),
+  translations: zod.object({
+    titleKo: zod.string(),
+    titleEn: zod.string(),
+    titleJa: zod.string(),
+    titleZh: zod.string(),
+    titleVi: zod.string(),
+    descriptionKo: zod.string(),
+    descriptionEn: zod.string(),
+    descriptionJa: zod.string(),
+    descriptionZh: zod.string(),
+    descriptionVi: zod.string(),
+  }),
+});
+
+export const AdminUpdateBannerResponse = zod.object({
+  id: zod.number(),
+  imageUrl: zod.string(),
+  linkUrl: zod.string().nullish(),
+  sortOrder: zod.number(),
+  active: zod.boolean(),
+  translations: zod.object({
+    titleKo: zod.string(),
+    titleEn: zod.string(),
+    titleJa: zod.string(),
+    titleZh: zod.string(),
+    titleVi: zod.string(),
+    descriptionKo: zod.string(),
+    descriptionEn: zod.string(),
+    descriptionJa: zod.string(),
+    descriptionZh: zod.string(),
+    descriptionVi: zod.string(),
+  }),
+});
+
+export const AdminDeleteBannerParams = zod.object({
+  id: zod.coerce.number(),
+});
+
+export const AdminDeleteBannerResponse = zod.object({
+  ok: zod.boolean(),
 });
 
 export const adminTranslateBodyFormatDefault = `text`;

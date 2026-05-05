@@ -13,6 +13,8 @@ import Notices from "@/pages/Notices";
 import NoticeEdit from "@/pages/NoticeEdit";
 import Inquiries from "@/pages/Inquiries";
 import InquiryDetail from "@/pages/InquiryDetail";
+import Banners from "@/pages/Banners";
+import BannerEdit from "@/pages/BannerEdit";
 import NotFound from "@/pages/not-found";
 
 const queryClient = new QueryClient({
@@ -50,6 +52,9 @@ function ProtectedRoutes() {
           <Redirect to="/" />
         </Route>
         <Route path="/" component={Dashboard} />
+        <Route path="/banners" component={Banners} />
+        <Route path="/banners/new" component={BannerEdit} />
+        <Route path="/banners/:id" component={BannerEdit} />
         <Route path="/products" component={Products} />
         <Route path="/products/new" component={ProductEdit} />
         <Route path="/products/:id" component={ProductEdit} />
