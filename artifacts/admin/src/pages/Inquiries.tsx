@@ -11,20 +11,32 @@ const STATUSES = [
   { value: "all", label: "전체" },
   { value: "new", label: "신규" },
   { value: "in_progress", label: "진행 중" },
-  { value: "done", label: "완료" },
+  { value: "completed", label: "완료" },
 ];
 
-const STATUS_BADGE: Record<string, { label: string; variant: "default" | "secondary" | "outline" }> = {
+const STATUS_BADGE: Record<
+  string,
+  { label: string; variant: "default" | "secondary" | "outline" }
+> = {
   new: { label: "신규", variant: "default" },
   in_progress: { label: "진행", variant: "secondary" },
-  done: { label: "완료", variant: "outline" },
+  completed: { label: "완료", variant: "outline" },
+};
+
+const INQUIRY_TYPE_LABEL: Record<string, string> = {
+  oem: "OEM",
+  odm: "ODM",
+  sample: "Sample",
+  other: "기타",
 };
 
 export default function Inquiries() {
   const [status, setStatus] = useState<string>("all");
   const [search, setSearch] = useState("");
   const { data: inquiries, isLoading } = useAdminListInquiries(
-    status === "all" ? undefined : { status },
+    status === "all"
+      ? undefined
+      : { status: status as "new" | "in_progress" | "completed" },
   );
 
   const filtered = useMemo(() => {
@@ -33,11 +45,10 @@ export default function Inquiries() {
     if (!q) return inquiries;
     return inquiries.filter(
       (i) =>
-        i.company.toLowerCase().includes(q) ||
         i.name.toLowerCase().includes(q) ||
         i.email.toLowerCase().includes(q) ||
         i.message.toLowerCase().includes(q) ||
-        (i.country?.toLowerCase().includes(q) ?? false),
+        i.company.toLowerCase().includes(q),
     );
   }, [inquiries, search]);
 
@@ -46,7 +57,7 @@ export default function Inquiries() {
       <header>
         <h1 className="text-3xl font-bold tracking-tight">문의함</h1>
         <p className="text-muted-foreground mt-1">
-          공개 사이트에서 접수된 견적 및 OEM/ODM 문의 목록입니다.
+          공개 사이트에서 접수된 문의 목록입니다.
         </p>
       </header>
 
@@ -56,7 +67,7 @@ export default function Inquiries() {
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
               type="search"
-              placeholder="회사·이름·이메일·메시지 검색"
+              placeholder="이름·이메일·회사·메시지 검색"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="pl-9"
@@ -88,17 +99,21 @@ export default function Inquiries() {
               <thead className="text-left text-xs uppercase tracking-wider text-muted-foreground border-b border-border">
                 <tr>
                   <th className="px-4 py-2 font-medium">상태</th>
-                  <th className="px-4 py-2 font-medium">회사 / 담당자</th>
-                  <th className="px-4 py-2 font-medium">국가</th>
-                  <th className="px-4 py-2 font-medium">관심 카테고리</th>
-                  <th className="px-4 py-2 font-medium">월 발주량</th>
+                  <th className="px-4 py-2 font-medium">담당자 / 이메일</th>
+                  <th className="px-4 py-2 font-medium">회사</th>
+                  <th className="px-4 py-2 font-medium">유형</th>
+                  <th className="px-4 py-2 font-medium">메시지</th>
                   <th className="px-4 py-2 font-medium">접수일</th>
                   <th className="px-4 py-2 font-medium text-right">상세</th>
                 </tr>
               </thead>
               <tbody>
                 {filtered.map((i) => {
-                  const sb = STATUS_BADGE[i.status] ?? { label: i.status, variant: "outline" as const };
+                  const sb =
+                    STATUS_BADGE[i.status] ?? { label: i.status, variant: "outline" as const };
+                  const typeLabel = i.inquiryType
+                    ? INQUIRY_TYPE_LABEL[i.inquiryType] ?? i.inquiryType
+                    : "—";
                   return (
                     <tr
                       key={i.id}
@@ -109,17 +124,13 @@ export default function Inquiries() {
                         <Badge variant={sb.variant}>{sb.label}</Badge>
                       </td>
                       <td className="px-4 py-3">
-                        <div className="font-medium text-foreground">{i.company}</div>
-                        <div className="text-xs text-muted-foreground">
-                          {i.name} · {i.email}
-                        </div>
+                        <div className="font-medium text-foreground">{i.name}</div>
+                        <div className="text-xs text-muted-foreground">{i.email}</div>
                       </td>
-                      <td className="px-4 py-3 text-muted-foreground">{i.country || "—"}</td>
-                      <td className="px-4 py-3 text-muted-foreground text-xs max-w-[180px] truncate">
-                        {i.productInterest.length > 0 ? i.productInterest.join(", ") : "—"}
-                      </td>
-                      <td className="px-4 py-3 text-muted-foreground text-xs">
-                        {i.monthlyVolume || "—"}
+                      <td className="px-4 py-3 text-muted-foreground">{i.company || "—"}</td>
+                      <td className="px-4 py-3 text-muted-foreground text-xs">{typeLabel}</td>
+                      <td className="px-4 py-3 text-muted-foreground text-xs max-w-[260px] truncate">
+                        {i.message}
                       </td>
                       <td className="px-4 py-3 text-muted-foreground text-xs">
                         {new Date(i.createdAt).toISOString().slice(0, 10)}

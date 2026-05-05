@@ -31,7 +31,9 @@ export interface Translation {
   lang: Lang;
   name: string;
   headline: string;
+  valueProp: string;
   body: string;
+  features: string;
 }
 
 export interface NoticeTranslation {
@@ -50,7 +52,10 @@ export interface PublicProduct {
   imageUrl?: string | null;
   name: string;
   headline: string;
+  valueProp: string;
   body: string;
+  features: string[];
+  certs: string[];
 }
 
 export interface PublicNotice {
@@ -86,6 +91,7 @@ export interface AdminProduct {
   /** @nullable */
   imageUrl?: string | null;
   published: boolean;
+  certs: string[];
   translations: Translation[];
 }
 
@@ -96,6 +102,7 @@ export interface AdminProductInput {
   /** @nullable */
   imageUrl?: string | null;
   published: boolean;
+  certs: string[];
   translations: Translation[];
 }
 
@@ -122,18 +129,33 @@ export interface AdminNoticeInput {
   translations: NoticeTranslation[];
 }
 
+export type InquiryInquiryType =
+  (typeof InquiryInquiryType)[keyof typeof InquiryInquiryType];
+
+export const InquiryInquiryType = {
+  "": "",
+  oem: "oem",
+  odm: "odm",
+  sample: "sample",
+  other: "other",
+} as const;
+
+export type InquiryStatus = (typeof InquiryStatus)[keyof typeof InquiryStatus];
+
+export const InquiryStatus = {
+  new: "new",
+  in_progress: "in_progress",
+  completed: "completed",
+} as const;
+
 export interface Inquiry {
   id: number;
-  company: string;
   name: string;
   email: string;
-  phone: string;
-  country: string;
-  projectType: string;
-  productInterest: string[];
-  monthlyVolume: string;
+  company: string;
+  inquiryType: InquiryInquiryType;
   message: string;
-  status: string;
+  status: InquiryStatus;
   adminNote: string;
   source: string;
   createdAt: string;
@@ -142,7 +164,7 @@ export interface Inquiry {
 export type InquirySummaryByStatus = {
   new: number;
   in_progress: number;
-  done: number;
+  completed: number;
 };
 
 export interface InquirySummary {
@@ -151,20 +173,36 @@ export interface InquirySummary {
   recent: Inquiry[];
 }
 
+export type InquiryUpdateStatus =
+  (typeof InquiryUpdateStatus)[keyof typeof InquiryUpdateStatus];
+
+export const InquiryUpdateStatus = {
+  new: "new",
+  in_progress: "in_progress",
+  completed: "completed",
+} as const;
+
 export interface InquiryUpdate {
-  status?: string;
+  status?: InquiryUpdateStatus;
   adminNote?: string;
 }
 
+export type ContactInquiryInputInquiryType =
+  (typeof ContactInquiryInputInquiryType)[keyof typeof ContactInquiryInputInquiryType];
+
+export const ContactInquiryInputInquiryType = {
+  "": "",
+  oem: "oem",
+  odm: "odm",
+  sample: "sample",
+  other: "other",
+} as const;
+
 export interface ContactInquiryInput {
-  company: string;
   name: string;
   email: string;
-  phone?: string;
-  country?: string;
-  projectType?: string;
-  productInterest?: string[];
-  monthlyVolume?: string;
+  company?: string;
+  inquiryType?: ContactInquiryInputInquiryType;
   message: string;
 }
 
@@ -244,6 +282,114 @@ export interface BannerReorderInput {
   order: number[];
 }
 
+export interface HistoryItem {
+  year: string;
+  textKo: string;
+  textEn: string;
+  textJa: string;
+  textZh: string;
+  textVi: string;
+}
+
+export interface WorldwideItem {
+  /** @nullable */
+  imageUrl?: string | null;
+  region: string;
+  titleKo: string;
+  titleEn: string;
+  titleJa: string;
+  titleZh: string;
+  titleVi: string;
+  descriptionKo: string;
+  descriptionEn: string;
+  descriptionJa: string;
+  descriptionZh: string;
+  descriptionVi: string;
+}
+
+export interface AboutContent {
+  /** @nullable */
+  greetingImageUrl?: string | null;
+  greetingMessageKo: string;
+  greetingMessageEn: string;
+  greetingMessageJa: string;
+  greetingMessageZh: string;
+  greetingMessageVi: string;
+  greetingSignatureKo: string;
+  greetingSignatureEn: string;
+  greetingSignatureJa: string;
+  greetingSignatureZh: string;
+  greetingSignatureVi: string;
+  historyItems: HistoryItem[];
+  /** @nullable */
+  worldwideImageUrl?: string | null;
+  worldwideIntroKo: string;
+  worldwideIntroEn: string;
+  worldwideIntroJa: string;
+  worldwideIntroZh: string;
+  worldwideIntroVi: string;
+  worldwideItems: WorldwideItem[];
+  directionsAddressKo: string;
+  directionsAddressEn: string;
+  directionsAddressJa: string;
+  directionsAddressZh: string;
+  directionsAddressVi: string;
+  /** @nullable */
+  directionsMapEmbed?: string | null;
+  /** @nullable */
+  directionsImageUrl?: string | null;
+}
+
+export type AboutContentInput = AboutContent;
+
+export interface OemStep {
+  titleKo: string;
+  titleEn: string;
+  titleJa: string;
+  titleZh: string;
+  titleVi: string;
+  descriptionKo: string;
+  descriptionEn: string;
+  descriptionJa: string;
+  descriptionZh: string;
+  descriptionVi: string;
+}
+
+export interface CertItem {
+  /** @nullable */
+  imageUrl?: string | null;
+  code: string;
+  nameKo: string;
+  nameEn: string;
+  nameJa: string;
+  nameZh: string;
+  nameVi: string;
+  descriptionKo: string;
+  descriptionEn: string;
+  descriptionJa: string;
+  descriptionZh: string;
+  descriptionVi: string;
+}
+
+export interface ProcessContent {
+  /** @nullable */
+  oemImageUrl?: string | null;
+  oemDescriptionKo: string;
+  oemDescriptionEn: string;
+  oemDescriptionJa: string;
+  oemDescriptionZh: string;
+  oemDescriptionVi: string;
+  oemSteps: OemStep[];
+  certIntroKo: string;
+  certIntroEn: string;
+  certIntroJa: string;
+  certIntroZh: string;
+  certIntroVi: string;
+  certItems: CertItem[];
+}
+
+export type ProcessContentInput = ProcessContent;
+
 export interface UploadSignResult {
   uploadUrl: string;
   publicUrl: string;
@@ -285,5 +431,14 @@ export type GetPublicNoticeParams = {
 };
 
 export type AdminListInquiriesParams = {
-  status?: string;
+  status?: AdminListInquiriesStatus;
 };
+
+export type AdminListInquiriesStatus =
+  (typeof AdminListInquiriesStatus)[keyof typeof AdminListInquiriesStatus];
+
+export const AdminListInquiriesStatus = {
+  new: "new",
+  in_progress: "in_progress",
+  completed: "completed",
+} as const;

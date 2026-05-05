@@ -15,5 +15,6 @@ export interface AdminProduct {
   /** @nullable */
   imageUrl?: string | null;
   published: boolean;
+  certs: string[];
   translations: Translation[];
 }

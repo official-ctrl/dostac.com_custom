@@ -5,19 +5,17 @@
  * DOSTAC website + admin API
  * OpenAPI spec version: 0.1.0
  */
+import type { InquiryInquiryType } from "./inquiryInquiryType";
+import type { InquiryStatus } from "./inquiryStatus";
 
 export interface Inquiry {
   id: number;
-  company: string;
   name: string;
   email: string;
-  phone: string;
-  country: string;
-  projectType: string;
-  productInterest: string[];
-  monthlyVolume: string;
+  company: string;
+  inquiryType: InquiryInquiryType;
   message: string;
-  status: string;
+  status: InquiryStatus;
   adminNote: string;
   source: string;
   createdAt: Date;

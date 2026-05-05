@@ -11,5 +11,7 @@ export interface Translation {
   lang: Lang;
   name: string;
   headline: string;
+  valueProp: string;
   body: string;
+  features: string;
 }

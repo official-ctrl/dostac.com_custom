@@ -5,8 +5,9 @@
  * DOSTAC website + admin API
  * OpenAPI spec version: 0.1.0
  */
+import type { InquiryUpdateStatus } from "./inquiryUpdateStatus";
 
 export interface InquiryUpdate {
-  status?: string;
+  status?: InquiryUpdateStatus;
   adminNote?: string;
 }

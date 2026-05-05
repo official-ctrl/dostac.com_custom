@@ -20,14 +20,21 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
-import { ArrowLeft, Loader2, Save, Mail, Phone, Globe, Building2, Package, BarChart3 } from "lucide-react";
+import { ArrowLeft, Loader2, Save, Mail, Building2, Tag } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 const STATUS_OPTIONS = [
   { value: "new", label: "신규 (New)" },
   { value: "in_progress", label: "진행 중 (In Progress)" },
-  { value: "done", label: "완료 (Done)" },
+  { value: "completed", label: "완료 (Completed)" },
 ];
+
+const INQUIRY_TYPE_LABEL: Record<string, string> = {
+  oem: "OEM",
+  odm: "ODM",
+  sample: "Sample",
+  other: "기타 (Other)",
+};
 
 export default function InquiryDetail() {
   const params = useParams<{ id: string }>();
@@ -50,7 +57,13 @@ export default function InquiryDetail() {
 
   const onSave = async () => {
     try {
-      await updateMut.mutateAsync({ id, data: { status, adminNote } });
+      await updateMut.mutateAsync({
+        id,
+        data: {
+          status: status as "new" | "in_progress" | "completed",
+          adminNote,
+        },
+      });
       await Promise.all([
         qc.invalidateQueries({ queryKey: getAdminGetInquiryQueryKey(id) }),
         qc.invalidateQueries({ queryKey: getAdminListInquiriesQueryKey() }),
@@ -74,16 +87,20 @@ export default function InquiryDetail() {
     );
   }
 
+  const typeLabel = inquiry.inquiryType
+    ? INQUIRY_TYPE_LABEL[inquiry.inquiryType] ?? inquiry.inquiryType
+    : "—";
+
   return (
     <div className="px-8 py-8 space-y-6 max-w-4xl">
       <div className="flex items-center gap-3">
         <Link href="/inquiries">
-          <Button variant="ghost" size="icon">
+          <Button variant="ghost" size="icon" data-testid="button-back">
             <ArrowLeft className="h-4 w-4" />
           </Button>
         </Link>
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">{inquiry.company}</h1>
+          <h1 className="text-2xl font-bold tracking-tight">{inquiry.name}</h1>
           <p className="text-xs text-muted-foreground mt-0.5">
             #{inquiry.id} · 접수: {new Date(inquiry.createdAt).toLocaleString("ko-KR")}
           </p>
@@ -98,38 +115,35 @@ export default function InquiryDetail() {
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-                <InfoRow icon={Building2} label="회사" value={inquiry.company} />
-                <InfoRow icon={Globe} label="국가" value={inquiry.country || "—"} />
                 <InfoRow icon={Mail} label="이메일">
-                  <a href={`mailto:${inquiry.email}`} className="text-accent hover:underline">
+                  <a
+                    href={`mailto:${inquiry.email}`}
+                    className="text-accent hover:underline break-all"
+                    data-testid="link-email"
+                  >
                     {inquiry.email}
                   </a>
                 </InfoRow>
-                <InfoRow icon={Phone} label="전화" value={inquiry.phone || "—"} />
-                <InfoRow icon={Package} label="프로젝트 유형" value={inquiry.projectType || "—"} />
-                <InfoRow icon={BarChart3} label="월 발주량" value={inquiry.monthlyVolume || "—"} />
+                <InfoRow icon={Building2} label="회사" value={inquiry.company || "—"} />
+                <InfoRow icon={Tag} label="문의 유형">
+                  {inquiry.inquiryType ? (
+                    <Badge variant="secondary" data-testid="badge-inquiry-type">
+                      {typeLabel}
+                    </Badge>
+                  ) : (
+                    <span className="text-muted-foreground">—</span>
+                  )}
+                </InfoRow>
               </div>
-
-              {inquiry.productInterest.length > 0 && (
-                <div className="pt-2 border-t border-border">
-                  <Label className="text-xs uppercase tracking-wider text-muted-foreground">
-                    관심 카테고리
-                  </Label>
-                  <div className="flex flex-wrap gap-1.5 mt-2">
-                    {inquiry.productInterest.map((p) => (
-                      <Badge key={p} variant="outline">
-                        {p}
-                      </Badge>
-                    ))}
-                  </div>
-                </div>
-              )}
 
               <div className="pt-2 border-t border-border">
                 <Label className="text-xs uppercase tracking-wider text-muted-foreground">
                   메시지
                 </Label>
-                <p className="mt-2 text-sm text-foreground whitespace-pre-wrap leading-relaxed">
+                <p
+                  className="mt-2 text-sm text-foreground whitespace-pre-wrap leading-relaxed"
+                  data-testid="text-message"
+                >
                   {inquiry.message}
                 </p>
               </div>
@@ -191,22 +205,19 @@ export default function InquiryDetail() {
             </CardHeader>
             <CardContent className="space-y-2">
               <a
-                href={`mailto:${inquiry.email}?subject=Re: DOSTAC OEM/ODM Inquiry from ${encodeURIComponent(
-                  inquiry.company,
-                )}`}
+                href={`mailto:${inquiry.email}?subject=Re: DOSTAC inquiry${
+                  inquiry.company ? ` from ${encodeURIComponent(inquiry.company)}` : ""
+                }`}
                 className="block"
               >
-                <Button variant="outline" className="w-full justify-start gap-2">
+                <Button
+                  variant="outline"
+                  className="w-full justify-start gap-2"
+                  data-testid="button-email-reply"
+                >
                   <Mail className="h-4 w-4" /> 이메일 답장
                 </Button>
               </a>
-              {inquiry.phone && (
-                <a href={`tel:${inquiry.phone}`} className="block">
-                  <Button variant="outline" className="w-full justify-start gap-2">
-                    <Phone className="h-4 w-4" /> 전화 걸기
-                  </Button>
-                </a>
-              )}
             </CardContent>
           </Card>
         </div>

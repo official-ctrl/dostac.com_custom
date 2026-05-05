@@ -6,6 +6,7 @@ import {
   timestamp,
   varchar,
   boolean,
+  jsonb,
   uniqueIndex,
 } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
@@ -17,6 +18,7 @@ export const productsTable = pgTable("products", {
   category: varchar("category", { length: 60 }).notNull().default("general"),
   sortOrder: integer("sort_order").notNull().default(0),
   imageUrl: text("image_url"),
+  certs: jsonb("certs").$type<string[]>().notNull().default([]),
   published: boolean("published").notNull().default(true),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp("updated_at", { withTimezone: true })
@@ -41,7 +43,9 @@ export const productTranslationsTable = pgTable(
     lang: varchar("lang", { length: 4 }).notNull(),
     name: varchar("name", { length: 200 }).notNull(),
     headline: varchar("headline", { length: 300 }).notNull().default(""),
+    valueProp: varchar("value_prop", { length: 300 }).notNull().default(""),
     body: text("body").notNull().default(""),
+    features: text("features").notNull().default(""),
   },
   (t) => ({
     uq: uniqueIndex("product_translations_product_lang_uq").on(t.productId, t.lang),

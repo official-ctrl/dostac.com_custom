@@ -4,15 +4,11 @@ import { z } from "zod/v4";
 
 export const contactInquiriesTable = pgTable("contact_inquiries", {
   id: serial("id").primaryKey(),
-  company: varchar("company", { length: 200 }).notNull(),
   name: varchar("name", { length: 120 }).notNull(),
   email: varchar("email", { length: 200 }).notNull(),
-  phone: varchar("phone", { length: 60 }).notNull().default(""),
-  country: varchar("country", { length: 80 }).notNull().default(""),
-  projectType: varchar("project_type", { length: 30 }).notNull().default(""),
-  productInterest: text("product_interest").array().notNull().default([]),
-  monthlyVolume: varchar("monthly_volume", { length: 60 }).notNull().default(""),
-  message: text("message").notNull().default(""),
+  company: varchar("company", { length: 200 }).notNull().default(""),
+  inquiryType: varchar("inquiry_type", { length: 30 }).notNull().default(""),
+  message: text("message").notNull(),
   status: varchar("status", { length: 20 }).notNull().default("new"),
   adminNote: text("admin_note").notNull().default(""),
   source: varchar("source", { length: 30 }).notNull().default("web"),

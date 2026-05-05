@@ -51,3 +51,16 @@ Storage (`/api/storage/*`): `objects/*` and `public-objects/*` serve uploaded/pu
 - Header is slim: logo + nav + language switcher + "견적 문의" CTA.
 - Footer is slim: copyright + Contact CTA only (no big 4-column block).
 - Home page (`/`) is a full-screen banner slider only — banner image fills the viewport with overlaid Korean (or active language) title/description, dot indicators, prev/next arrows, 6s autoplay, optional `linkUrl` per banner. Banners managed in admin at `/admin/banners` with drag-style up/down reorder, active toggle, image upload, and 5-language title/description (with KO→all auto-translate).
+
+## Optimization phases 2-6 (post-launch)
+
+- **Phase 2-3**: About + Production page polish.
+- **Phase 4**: Products page → 2-column B2B layout (image + features list); features stored as newline-separated text, translated with strict "one per line, no bullets/numbering" prompt.
+- **Phase 5**: Contact form simplified.
+  - Required: `name`, `email`, `message`. Optional: `company`, `inquiryType` (`oem | odm | sample | other`).
+  - Removed legacy DB columns: `phone`, `country`, `project_type`, `product_interest`, `monthly_volume`. Added `inquiry_type varchar(30) NOT NULL DEFAULT ''`.
+  - Status enum migrated `done` → `completed` (DB backfill ran; current DB confirmed clean). Allowed: `new | in_progress | completed`.
+  - OpenAPI `Inquiry.status`, `Inquiry.inquiryType`, list query `status`, and `InquiryUpdate.status` are strict enums; codegen-typed end-to-end.
+  - Email body simplified to Name / Email / Company / Type / Message rows with `INQUIRY_TYPE_LABELS` map.
+  - shadcn Select uses `NONE_VALUE = "__none__"` sentinel since Radix Select can't take an empty string.
+- **Phase 6**: Notice archive → responsive 3-column card grid (1/2/3 cols by breakpoint). Each card: 16:10 thumbnail with hover zoom, category badge, date + region, line-clamped title (2) and excerpt (3), "read more" CTA. New i18n keys `notice.empty` and `notice.readMore` added to all 5 languages.

@@ -5,7 +5,8 @@
  * DOSTAC website + admin API
  * OpenAPI spec version: 0.1.0
  */
+import type { AdminListInquiriesStatus } from "./adminListInquiriesStatus";
 
 export type AdminListInquiriesParams = {
-  status?: string;
+  status?: AdminListInquiriesStatus;
 };

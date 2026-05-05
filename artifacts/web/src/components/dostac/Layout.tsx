@@ -1,10 +1,49 @@
 import React, { useEffect, useState } from "react";
 import { Link, useLocation } from "wouter";
-import { Menu, X, Globe, ChevronDown, ArrowRight } from "lucide-react";
+import {
+  Menu,
+  X,
+  Globe,
+  ChevronDown,
+  ArrowRight,
+  MessageSquareQuote,
+  History,
+  Globe2,
+  MapPin,
+  Settings2,
+  Award,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useT, useLang, type Lang } from "./i18n";
 
-const NAV_ITEMS: Array<{ href: string; key: "about" | "production" | "product" | "notice" | "contact" }> = [
+type AboutSubItem = {
+  hash: string;
+  key: "greeting" | "history" | "worldwide" | "directions";
+  icon: typeof MessageSquareQuote;
+  desc: string;
+};
+
+const ABOUT_SUB: AboutSubItem[] = [
+  { hash: "greeting", key: "greeting", icon: MessageSquareQuote, desc: "" },
+  { hash: "history", key: "history", icon: History, desc: "" },
+  { hash: "worldwide", key: "worldwide", icon: Globe2, desc: "" },
+  { hash: "directions", key: "directions", icon: MapPin, desc: "" },
+];
+
+type ProcessSubItem = {
+  hash: string;
+  key: "oem" | "cert";
+  icon: typeof Settings2;
+};
+
+const PROCESS_SUB: ProcessSubItem[] = [
+  { hash: "oem", key: "oem", icon: Settings2 },
+  { hash: "cert", key: "cert", icon: Award },
+];
+
+type NavKey = "about" | "production" | "product" | "notice" | "contact";
+
+const NAV_ITEMS: Array<{ href: string; key: NavKey }> = [
   { href: "/about", key: "about" },
   { href: "/production", key: "production" },
   { href: "/products", key: "product" },
@@ -69,13 +108,240 @@ function LanguageSwitcher() {
   );
 }
 
+function AboutDropdown({ active }: { active: boolean }) {
+  const { t } = useT();
+  const [, navigate] = useLocation();
+  const [open, setOpen] = useState(false);
+  const wrapRef = React.useRef<HTMLDivElement | null>(null);
+  const triggerRef = React.useRef<HTMLButtonElement | null>(null);
+  const menuId = "about-dropdown-menu";
+
+  // Close on outside click
+  useEffect(() => {
+    if (!open) return;
+    const onDoc = (e: MouseEvent) => {
+      if (!wrapRef.current?.contains(e.target as Node)) setOpen(false);
+    };
+    document.addEventListener("mousedown", onDoc);
+    return () => document.removeEventListener("mousedown", onDoc);
+  }, [open]);
+
+  // Close on Escape; close on focus leaving the wrapper
+  const onKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Escape") {
+      setOpen(false);
+      triggerRef.current?.focus();
+    }
+    if ((e.key === "ArrowDown" || e.key === "Enter" || e.key === " ") && !open) {
+      e.preventDefault();
+      setOpen(true);
+    }
+  };
+
+  const onBlurCapture = (e: React.FocusEvent) => {
+    if (!wrapRef.current?.contains(e.relatedTarget as Node)) {
+      setOpen(false);
+    }
+  };
+
+  return (
+    <div
+      ref={wrapRef}
+      className="relative"
+      onMouseEnter={() => setOpen(true)}
+      onMouseLeave={() => setOpen(false)}
+      onKeyDown={onKeyDown}
+      onBlurCapture={onBlurCapture}
+    >
+      <button
+        ref={triggerRef}
+        type="button"
+        onClick={() => {
+          if (open) navigate("/about");
+          else setOpen(true);
+        }}
+        aria-haspopup="menu"
+        aria-expanded={open}
+        aria-controls={menuId}
+        className={`inline-flex items-center gap-1 text-sm font-semibold transition-colors outline-none focus-visible:ring-2 focus-visible:ring-accent rounded-sm ${
+          active ? "text-accent" : "text-slate-700 hover:text-primary"
+        }`}
+        data-testid="nav-about"
+      >
+        {t("nav.about") as string}
+        <ChevronDown
+          className={`h-3.5 w-3.5 opacity-70 transition-transform ${open ? "rotate-180" : ""}`}
+        />
+      </button>
+      {open && (
+        <div
+          id={menuId}
+          role="menu"
+          aria-label={t("nav.about") as string}
+          className="absolute left-1/2 top-full -translate-x-1/2 pt-3 z-50"
+        >
+          <div className="w-[520px] grid grid-cols-2 gap-2 p-4 rounded-xl border border-slate-200 bg-white shadow-xl">
+            {ABOUT_SUB.map((s) => {
+              const Icon = s.icon;
+              return (
+                <Link
+                  key={s.hash}
+                  href={`/about#${s.hash}`}
+                  role="menuitem"
+                  data-testid={`nav-about-${s.hash}`}
+                  className="flex items-start gap-3 p-3 rounded-lg hover:bg-slate-50 focus:bg-slate-100 focus:outline-none transition group"
+                  onClick={() => setOpen(false)}
+                >
+                  <div className="flex-shrink-0 w-9 h-9 rounded-md bg-accent/10 flex items-center justify-center text-accent group-hover:bg-accent group-hover:text-white transition">
+                    <Icon className="h-4 w-4" />
+                  </div>
+                  <div className="min-w-0">
+                    <div className="text-sm font-semibold text-primary">
+                      {t(`about.sections.${s.key}`) as string}
+                    </div>
+                    <div className="text-xs text-muted-foreground mt-0.5 line-clamp-2">
+                      {t(`about.sectionDesc.${s.key}`) as string}
+                    </div>
+                  </div>
+                </Link>
+              );
+            })}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function ProcessDropdown({ active }: { active: boolean }) {
+  const { t } = useT();
+  const [, navigate] = useLocation();
+  const [open, setOpen] = useState(false);
+  const wrapRef = React.useRef<HTMLDivElement | null>(null);
+  const triggerRef = React.useRef<HTMLButtonElement | null>(null);
+  const menuId = "process-dropdown-menu";
+
+  useEffect(() => {
+    if (!open) return;
+    const onDoc = (e: MouseEvent) => {
+      if (!wrapRef.current?.contains(e.target as Node)) setOpen(false);
+    };
+    document.addEventListener("mousedown", onDoc);
+    return () => document.removeEventListener("mousedown", onDoc);
+  }, [open]);
+
+  const onKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Escape") {
+      setOpen(false);
+      triggerRef.current?.focus();
+    }
+    if ((e.key === "ArrowDown" || e.key === "Enter" || e.key === " ") && !open) {
+      e.preventDefault();
+      setOpen(true);
+    }
+  };
+
+  const onBlurCapture = (e: React.FocusEvent) => {
+    if (!wrapRef.current?.contains(e.relatedTarget as Node)) setOpen(false);
+  };
+
+  return (
+    <div
+      ref={wrapRef}
+      className="relative"
+      onMouseEnter={() => setOpen(true)}
+      onMouseLeave={() => setOpen(false)}
+      onKeyDown={onKeyDown}
+      onBlurCapture={onBlurCapture}
+    >
+      <button
+        ref={triggerRef}
+        type="button"
+        onClick={() => {
+          if (open) navigate("/production");
+          else setOpen(true);
+        }}
+        aria-haspopup="menu"
+        aria-expanded={open}
+        aria-controls={menuId}
+        className={`inline-flex items-center gap-1 text-sm font-semibold transition-colors outline-none focus-visible:ring-2 focus-visible:ring-accent rounded-sm ${
+          active ? "text-accent" : "text-slate-700 hover:text-primary"
+        }`}
+        data-testid="nav-production"
+      >
+        {t("nav.production") as string}
+        <ChevronDown
+          className={`h-3.5 w-3.5 opacity-70 transition-transform ${open ? "rotate-180" : ""}`}
+        />
+      </button>
+      {open && (
+        <div
+          id={menuId}
+          role="menu"
+          aria-label={t("nav.production") as string}
+          className="absolute left-1/2 top-full -translate-x-1/2 pt-3 z-50"
+        >
+          <div className="w-[420px] grid grid-cols-2 gap-2 p-4 rounded-xl border border-slate-200 bg-white shadow-xl">
+            {PROCESS_SUB.map((s) => {
+              const Icon = s.icon;
+              return (
+                <Link
+                  key={s.hash}
+                  href={`/production#${s.hash}`}
+                  role="menuitem"
+                  data-testid={`nav-process-${s.hash}`}
+                  className="flex items-start gap-3 p-3 rounded-lg hover:bg-slate-50 focus:bg-slate-100 focus:outline-none transition group"
+                  onClick={() => setOpen(false)}
+                >
+                  <div className="flex-shrink-0 w-9 h-9 rounded-md bg-accent/10 flex items-center justify-center text-accent group-hover:bg-accent group-hover:text-white transition">
+                    <Icon className="h-4 w-4" />
+                  </div>
+                  <div className="min-w-0">
+                    <div className="text-sm font-semibold text-primary">
+                      {t(`production.sections.${s.key}`) as string}
+                    </div>
+                    <div className="text-xs text-muted-foreground mt-0.5 line-clamp-2">
+                      {t(`production.sectionDesc.${s.key}`) as string}
+                    </div>
+                  </div>
+                </Link>
+              );
+            })}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 function Header() {
   const { t } = useT();
   const [location] = useLocation();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [mobileAboutOpen, setMobileAboutOpen] = useState(false);
+  const [mobileProcessOpen, setMobileProcessOpen] = useState(false);
 
   useEffect(() => {
     setMobileOpen(false);
+  }, [location]);
+
+  // Smooth scroll if URL has a hash matching an about section
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const onHashScroll = () => {
+      const hash = window.location.hash.replace("#", "");
+      if (!hash) return;
+      const el = document.getElementById(hash);
+      if (el) {
+        // small delay to let layout settle (sticky nav)
+        setTimeout(() => {
+          el.scrollIntoView({ behavior: "smooth", block: "start" });
+        }, 60);
+      }
+    };
+    window.addEventListener("hashchange", onHashScroll);
+    onHashScroll();
+    return () => window.removeEventListener("hashchange", onHashScroll);
   }, [location]);
 
   return (
@@ -87,7 +353,13 @@ function Header() {
 
         <nav className="hidden lg:flex items-center gap-8">
           {NAV_ITEMS.map((item) => {
-            const active = location === item.href;
+            const active = location === item.href || location.startsWith(`${item.href}/`);
+            if (item.key === "about") {
+              return <AboutDropdown key={item.href} active={active} />;
+            }
+            if (item.key === "production") {
+              return <ProcessDropdown key={item.href} active={active} />;
+            }
             return (
               <Link
                 key={item.href}
@@ -121,16 +393,116 @@ function Header() {
       </div>
       {mobileOpen && (
         <div className="lg:hidden border-t border-slate-200 bg-white">
-          <div className="container mx-auto px-6 py-4 flex flex-col gap-2">
-            {NAV_ITEMS.map((item) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                className="px-3 py-2 rounded-md text-sm font-medium text-slate-700 hover:bg-slate-100"
-              >
-                {t(`nav.${item.key}`) as string}
-              </Link>
-            ))}
+          <div className="container mx-auto px-6 py-4 flex flex-col gap-1">
+            {NAV_ITEMS.map((item) => {
+              if (item.key === "production") {
+                return (
+                  <div key={item.href}>
+                    <button
+                      type="button"
+                      onClick={() => setMobileProcessOpen((v) => !v)}
+                      aria-expanded={mobileProcessOpen}
+                      aria-controls="mobile-process-submenu"
+                      className="w-full flex items-center justify-between px-3 py-2 rounded-md text-sm font-medium text-slate-700 hover:bg-slate-100"
+                      data-testid="mobile-nav-production"
+                    >
+                      <span>{t("nav.production") as string}</span>
+                      <ChevronDown
+                        className={`h-4 w-4 transition-transform ${mobileProcessOpen ? "rotate-180" : ""}`}
+                      />
+                    </button>
+                    {mobileProcessOpen && (
+                      <div
+                        id="mobile-process-submenu"
+                        className="ml-4 mt-1 mb-2 space-y-1 border-l border-slate-200 pl-3"
+                      >
+                        <Link
+                          href="/production"
+                          className="block px-3 py-1.5 rounded-md text-sm text-slate-600 hover:bg-slate-100"
+                          onClick={() => setMobileOpen(false)}
+                        >
+                          {t("nav.production") as string}
+                        </Link>
+                        {PROCESS_SUB.map((s) => {
+                          const Icon = s.icon;
+                          return (
+                            <Link
+                              key={s.hash}
+                              href={`/production#${s.hash}`}
+                              data-testid={`mobile-nav-process-${s.hash}`}
+                              className="flex items-center gap-2 px-3 py-1.5 rounded-md text-sm text-slate-600 hover:bg-slate-100"
+                              onClick={() => setMobileOpen(false)}
+                            >
+                              <Icon className="h-3.5 w-3.5 text-accent" />
+                              {t(`production.sections.${s.key}`) as string}
+                            </Link>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </div>
+                );
+              }
+              if (item.key === "about") {
+                return (
+                  <div key={item.href}>
+                    <button
+                      type="button"
+                      onClick={() => setMobileAboutOpen((v) => !v)}
+                      aria-expanded={mobileAboutOpen}
+                      aria-controls="mobile-about-submenu"
+                      className="w-full flex items-center justify-between px-3 py-2 rounded-md text-sm font-medium text-slate-700 hover:bg-slate-100"
+                      data-testid="mobile-nav-about"
+                    >
+                      <span>{t("nav.about") as string}</span>
+                      <ChevronDown
+                        className={`h-4 w-4 transition-transform ${
+                          mobileAboutOpen ? "rotate-180" : ""
+                        }`}
+                      />
+                    </button>
+                    {mobileAboutOpen && (
+                      <div
+                        id="mobile-about-submenu"
+                        className="ml-4 mt-1 mb-2 space-y-1 border-l border-slate-200 pl-3"
+                      >
+                        <Link
+                          href="/about"
+                          className="block px-3 py-1.5 rounded-md text-sm text-slate-600 hover:bg-slate-100"
+                          onClick={() => setMobileOpen(false)}
+                        >
+                          {t("nav.about") as string}
+                        </Link>
+                        {ABOUT_SUB.map((s) => {
+                          const Icon = s.icon;
+                          return (
+                            <Link
+                              key={s.hash}
+                              href={`/about#${s.hash}`}
+                              data-testid={`mobile-nav-about-${s.hash}`}
+                              className="flex items-center gap-2 px-3 py-1.5 rounded-md text-sm text-slate-600 hover:bg-slate-100"
+                              onClick={() => setMobileOpen(false)}
+                            >
+                              <Icon className="h-3.5 w-3.5 text-accent" />
+                              {t(`about.sections.${s.key}`) as string}
+                            </Link>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </div>
+                );
+              }
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className="px-3 py-2 rounded-md text-sm font-medium text-slate-700 hover:bg-slate-100"
+                >
+                  {t(`nav.${item.key}`) as string}
+                </Link>
+              );
+            })}
             <Link href="/contact" className="mt-2">
               <Button className="w-full rounded-sm bg-accent hover:bg-accent/90 text-white">
                 {t("nav.cta") as string}

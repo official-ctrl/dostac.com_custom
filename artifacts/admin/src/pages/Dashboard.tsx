@@ -71,7 +71,7 @@ export default function Dashboard() {
           <CardContent>
             <div className="text-3xl font-bold text-foreground">{summary?.total ?? "—"}</div>
             <p className="text-xs text-muted-foreground mt-1">
-              진행 {summary?.byStatus.in_progress ?? 0} · 완료 {summary?.byStatus.done ?? 0}
+              진행 {summary?.byStatus.in_progress ?? 0} · 완료 {summary?.byStatus.completed ?? 0}
             </p>
           </CardContent>
         </Card>

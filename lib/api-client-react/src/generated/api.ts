@@ -17,6 +17,7 @@ import type {
 } from "@tanstack/react-query";
 
 import type {
+  AboutContent,
   AdminBanner,
   AdminBannerInput,
   AdminListInquiriesParams,
@@ -39,6 +40,7 @@ import type {
   ListPublicProductsParams,
   NotFoundResponse,
   Ok,
+  ProcessContent,
   PublicBanner,
   PublicNotice,
   PublicProduct,
@@ -592,6 +594,156 @@ export function useListPublicBanners<
   request?: SecondParameter<typeof customFetch>;
 }): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
   const queryOptions = getListPublicBannersQueryOptions(options);
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey;
+  };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+/**
+ * @summary Get the public About page content
+ */
+export const getGetPublicAboutUrl = () => {
+  return `/api/public/about`;
+};
+
+export const getPublicAbout = async (
+  options?: RequestInit,
+): Promise<AboutContent> => {
+  return customFetch<AboutContent>(getGetPublicAboutUrl(), {
+    ...options,
+    method: "GET",
+  });
+};
+
+export const getGetPublicAboutQueryKey = () => {
+  return [`/api/public/about`] as const;
+};
+
+export const getGetPublicAboutQueryOptions = <
+  TData = Awaited<ReturnType<typeof getPublicAbout>>,
+  TError = ErrorType<unknown>,
+>(options?: {
+  query?: UseQueryOptions<
+    Awaited<ReturnType<typeof getPublicAbout>>,
+    TError,
+    TData
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getGetPublicAboutQueryKey();
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof getPublicAbout>>> = ({
+    signal,
+  }) => getPublicAbout({ signal, ...requestOptions });
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof getPublicAbout>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey };
+};
+
+export type GetPublicAboutQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getPublicAbout>>
+>;
+export type GetPublicAboutQueryError = ErrorType<unknown>;
+
+/**
+ * @summary Get the public About page content
+ */
+
+export function useGetPublicAbout<
+  TData = Awaited<ReturnType<typeof getPublicAbout>>,
+  TError = ErrorType<unknown>,
+>(options?: {
+  query?: UseQueryOptions<
+    Awaited<ReturnType<typeof getPublicAbout>>,
+    TError,
+    TData
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getGetPublicAboutQueryOptions(options);
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey;
+  };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+/**
+ * @summary Get the public Process page content
+ */
+export const getGetPublicProcessUrl = () => {
+  return `/api/public/process`;
+};
+
+export const getPublicProcess = async (
+  options?: RequestInit,
+): Promise<ProcessContent> => {
+  return customFetch<ProcessContent>(getGetPublicProcessUrl(), {
+    ...options,
+    method: "GET",
+  });
+};
+
+export const getGetPublicProcessQueryKey = () => {
+  return [`/api/public/process`] as const;
+};
+
+export const getGetPublicProcessQueryOptions = <
+  TData = Awaited<ReturnType<typeof getPublicProcess>>,
+  TError = ErrorType<unknown>,
+>(options?: {
+  query?: UseQueryOptions<
+    Awaited<ReturnType<typeof getPublicProcess>>,
+    TError,
+    TData
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getGetPublicProcessQueryKey();
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof getPublicProcess>>
+  > = ({ signal }) => getPublicProcess({ signal, ...requestOptions });
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof getPublicProcess>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey };
+};
+
+export type GetPublicProcessQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getPublicProcess>>
+>;
+export type GetPublicProcessQueryError = ErrorType<unknown>;
+
+/**
+ * @summary Get the public Process page content
+ */
+
+export function useGetPublicProcess<
+  TData = Awaited<ReturnType<typeof getPublicProcess>>,
+  TError = ErrorType<unknown>,
+>(options?: {
+  query?: UseQueryOptions<
+    Awaited<ReturnType<typeof getPublicProcess>>,
+    TError,
+    TData
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getGetPublicProcessQueryOptions(options);
 
   const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
     queryKey: QueryKey;
@@ -2457,6 +2609,302 @@ export const useAdminDeleteBanner = <
   TContext
 > => {
   return useMutation(getAdminDeleteBannerMutationOptions(options));
+};
+
+export const getAdminGetAboutUrl = () => {
+  return `/api/admin/about`;
+};
+
+export const adminGetAbout = async (
+  options?: RequestInit,
+): Promise<AboutContent> => {
+  return customFetch<AboutContent>(getAdminGetAboutUrl(), {
+    ...options,
+    method: "GET",
+  });
+};
+
+export const getAdminGetAboutQueryKey = () => {
+  return [`/api/admin/about`] as const;
+};
+
+export const getAdminGetAboutQueryOptions = <
+  TData = Awaited<ReturnType<typeof adminGetAbout>>,
+  TError = ErrorType<unknown>,
+>(options?: {
+  query?: UseQueryOptions<
+    Awaited<ReturnType<typeof adminGetAbout>>,
+    TError,
+    TData
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getAdminGetAboutQueryKey();
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof adminGetAbout>>> = ({
+    signal,
+  }) => adminGetAbout({ signal, ...requestOptions });
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof adminGetAbout>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey };
+};
+
+export type AdminGetAboutQueryResult = NonNullable<
+  Awaited<ReturnType<typeof adminGetAbout>>
+>;
+export type AdminGetAboutQueryError = ErrorType<unknown>;
+
+export function useAdminGetAbout<
+  TData = Awaited<ReturnType<typeof adminGetAbout>>,
+  TError = ErrorType<unknown>,
+>(options?: {
+  query?: UseQueryOptions<
+    Awaited<ReturnType<typeof adminGetAbout>>,
+    TError,
+    TData
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getAdminGetAboutQueryOptions(options);
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey;
+  };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+export const getAdminUpdateAboutUrl = () => {
+  return `/api/admin/about`;
+};
+
+export const adminUpdateAbout = async (
+  aboutContent: AboutContent,
+  options?: RequestInit,
+): Promise<AboutContent> => {
+  return customFetch<AboutContent>(getAdminUpdateAboutUrl(), {
+    ...options,
+    method: "PUT",
+    headers: { "Content-Type": "application/json", ...options?.headers },
+    body: JSON.stringify(aboutContent),
+  });
+};
+
+export const getAdminUpdateAboutMutationOptions = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof adminUpdateAbout>>,
+    TError,
+    { data: BodyType<AboutContent> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof adminUpdateAbout>>,
+  TError,
+  { data: BodyType<AboutContent> },
+  TContext
+> => {
+  const mutationKey = ["adminUpdateAbout"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof adminUpdateAbout>>,
+    { data: BodyType<AboutContent> }
+  > = (props) => {
+    const { data } = props ?? {};
+
+    return adminUpdateAbout(data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type AdminUpdateAboutMutationResult = NonNullable<
+  Awaited<ReturnType<typeof adminUpdateAbout>>
+>;
+export type AdminUpdateAboutMutationBody = BodyType<AboutContent>;
+export type AdminUpdateAboutMutationError = ErrorType<unknown>;
+
+export const useAdminUpdateAbout = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof adminUpdateAbout>>,
+    TError,
+    { data: BodyType<AboutContent> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof adminUpdateAbout>>,
+  TError,
+  { data: BodyType<AboutContent> },
+  TContext
+> => {
+  return useMutation(getAdminUpdateAboutMutationOptions(options));
+};
+
+export const getAdminGetProcessUrl = () => {
+  return `/api/admin/process`;
+};
+
+export const adminGetProcess = async (
+  options?: RequestInit,
+): Promise<ProcessContent> => {
+  return customFetch<ProcessContent>(getAdminGetProcessUrl(), {
+    ...options,
+    method: "GET",
+  });
+};
+
+export const getAdminGetProcessQueryKey = () => {
+  return [`/api/admin/process`] as const;
+};
+
+export const getAdminGetProcessQueryOptions = <
+  TData = Awaited<ReturnType<typeof adminGetProcess>>,
+  TError = ErrorType<unknown>,
+>(options?: {
+  query?: UseQueryOptions<
+    Awaited<ReturnType<typeof adminGetProcess>>,
+    TError,
+    TData
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getAdminGetProcessQueryKey();
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof adminGetProcess>>> = ({
+    signal,
+  }) => adminGetProcess({ signal, ...requestOptions });
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof adminGetProcess>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey };
+};
+
+export type AdminGetProcessQueryResult = NonNullable<
+  Awaited<ReturnType<typeof adminGetProcess>>
+>;
+export type AdminGetProcessQueryError = ErrorType<unknown>;
+
+export function useAdminGetProcess<
+  TData = Awaited<ReturnType<typeof adminGetProcess>>,
+  TError = ErrorType<unknown>,
+>(options?: {
+  query?: UseQueryOptions<
+    Awaited<ReturnType<typeof adminGetProcess>>,
+    TError,
+    TData
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getAdminGetProcessQueryOptions(options);
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey;
+  };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+export const getAdminUpdateProcessUrl = () => {
+  return `/api/admin/process`;
+};
+
+export const adminUpdateProcess = async (
+  processContent: ProcessContent,
+  options?: RequestInit,
+): Promise<ProcessContent> => {
+  return customFetch<ProcessContent>(getAdminUpdateProcessUrl(), {
+    ...options,
+    method: "PUT",
+    headers: { "Content-Type": "application/json", ...options?.headers },
+    body: JSON.stringify(processContent),
+  });
+};
+
+export const getAdminUpdateProcessMutationOptions = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof adminUpdateProcess>>,
+    TError,
+    { data: BodyType<ProcessContent> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof adminUpdateProcess>>,
+  TError,
+  { data: BodyType<ProcessContent> },
+  TContext
+> => {
+  const mutationKey = ["adminUpdateProcess"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof adminUpdateProcess>>,
+    { data: BodyType<ProcessContent> }
+  > = (props) => {
+    const { data } = props ?? {};
+
+    return adminUpdateProcess(data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type AdminUpdateProcessMutationResult = NonNullable<
+  Awaited<ReturnType<typeof adminUpdateProcess>>
+>;
+export type AdminUpdateProcessMutationBody = BodyType<ProcessContent>;
+export type AdminUpdateProcessMutationError = ErrorType<unknown>;
+
+export const useAdminUpdateProcess = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof adminUpdateProcess>>,
+    TError,
+    { data: BodyType<ProcessContent> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof adminUpdateProcess>>,
+  TError,
+  { data: BodyType<ProcessContent> },
+  TContext
+> => {
+  return useMutation(getAdminUpdateProcessMutationOptions(options));
 };
 
 export const getAdminTranslateUrl = () => {

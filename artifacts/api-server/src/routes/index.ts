@@ -11,6 +11,10 @@ import adminInquiriesRouter from "./admin-inquiries";
 import adminTranslateRouter from "./admin-translate";
 import adminUploadsRouter from "./admin-uploads";
 import adminBannersRouter from "./admin-banners";
+import publicAboutRouter from "./public-about";
+import adminAboutRouter from "./admin-about";
+import publicProcessRouter from "./public-process";
+import adminProcessRouter from "./admin-process";
 
 const router: IRouter = Router();
 
@@ -26,5 +30,9 @@ router.use(adminInquiriesRouter);
 router.use(adminTranslateRouter);
 router.use(adminUploadsRouter);
 router.use(adminBannersRouter);
+router.use(publicAboutRouter);
+router.use(adminAboutRouter);
+router.use(publicProcessRouter);
+router.use(adminProcessRouter);
 
 export default router;

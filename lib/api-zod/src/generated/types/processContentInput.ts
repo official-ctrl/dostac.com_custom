@@ -5,9 +5,6 @@
  * DOSTAC website + admin API
  * OpenAPI spec version: 0.1.0
  */
+import type { ProcessContent } from "./processContent";
 
-export type InquirySummaryByStatus = {
-  new: number;
-  in_progress: number;
-  completed: number;
-};
+export type ProcessContentInput = ProcessContent;

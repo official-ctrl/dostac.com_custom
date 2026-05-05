@@ -29,11 +29,14 @@ async function loadProductWithTranslations(id: number) {
     sortOrder: product.sortOrder,
     imageUrl: product.imageUrl,
     published: product.published,
+    certs: product.certs ?? [],
     translations: translations.map((t) => ({
       lang: t.lang,
       name: t.name,
       headline: t.headline,
+      valueProp: t.valueProp,
       body: t.body,
+      features: t.features,
     })),
   };
 }
@@ -61,11 +64,14 @@ router.get("/admin/products", async (_req, res): Promise<void> => {
       sortOrder: p.sortOrder,
       imageUrl: p.imageUrl,
       published: p.published,
+      certs: p.certs ?? [],
       translations: (byProduct.get(p.id) ?? []).map((t) => ({
         lang: t.lang,
         name: t.name,
         headline: t.headline,
+        valueProp: t.valueProp,
         body: t.body,
+        features: t.features,
       })),
     })),
   );

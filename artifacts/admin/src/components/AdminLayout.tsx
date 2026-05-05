@@ -8,6 +8,8 @@ import {
   LogOut,
   ExternalLink,
   Image as ImageIcon,
+  Info,
+  Settings2,
 } from "lucide-react";
 import { useAuth } from "./AuthProvider";
 import { cn } from "@/lib/utils";
@@ -22,6 +24,8 @@ type NavItem = {
 const NAV: NavItem[] = [
   { href: "/", label: "Dashboard", icon: LayoutDashboard, match: (p) => p === "/" },
   { href: "/banners", label: "Banners", icon: ImageIcon, match: (p) => p.startsWith("/banners") },
+  { href: "/about", label: "About", icon: Info, match: (p) => p.startsWith("/about") },
+  { href: "/process", label: "Process", icon: Settings2, match: (p) => p.startsWith("/process") },
   { href: "/products", label: "Products", icon: Package, match: (p) => p.startsWith("/products") },
   { href: "/notices", label: "Notices", icon: Megaphone, match: (p) => p.startsWith("/notices") },
   { href: "/inquiries", label: "Inquiries", icon: Inbox, match: (p) => p.startsWith("/inquiries") },

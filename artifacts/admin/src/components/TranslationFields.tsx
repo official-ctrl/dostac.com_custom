@@ -4,6 +4,7 @@ import { Loader2, Sparkles } from "lucide-react";
 import { LANGS, LANG_LABEL, type Lang } from "@/lib/langs";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import { RichTextEditor } from "./RichTextEditor";
@@ -12,9 +13,10 @@ import { cn } from "@/lib/utils";
 type FieldDef<K extends string> = {
   key: K;
   label: string;
-  kind: "text" | "richtext";
+  kind: "text" | "textarea" | "richtext";
   context?: string;
   placeholder?: string;
+  helpText?: string;
 };
 
 type TranslationRow<K extends string> = { lang: Lang } & Record<K, string>;
@@ -292,6 +294,18 @@ export function TranslationFields<K extends string>({ fields, value, onChange }:
                       placeholder={field.placeholder}
                       data-testid={`input-${field.key}-${lang}`}
                     />
+                  ) : field.kind === "textarea" ? (
+                    <Textarea
+                      value={(row as Record<string, string>)[field.key] ?? ""}
+                      onChange={(e) =>
+                        setRow(lang, {
+                          [field.key]: e.target.value,
+                        } as Partial<TranslationRow<K>>)
+                      }
+                      placeholder={field.placeholder}
+                      rows={5}
+                      data-testid={`textarea-${field.key}-${lang}`}
+                    />
                   ) : (
                     <RichTextEditor
                       value={(row as Record<string, string>)[field.key] ?? ""}
@@ -302,6 +316,9 @@ export function TranslationFields<K extends string>({ fields, value, onChange }:
                       }
                       placeholder={field.placeholder}
                     />
+                  )}
+                  {field.helpText && (
+                    <p className="text-xs text-muted-foreground">{field.helpText}</p>
                   )}
                 </div>
               ))}

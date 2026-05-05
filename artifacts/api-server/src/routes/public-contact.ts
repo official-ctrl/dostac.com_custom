@@ -6,15 +6,13 @@ import { sendInquiryAlert } from "../lib/email";
 
 const router: IRouter = Router();
 
+const ALLOWED_INQUIRY_TYPES = ["", "oem", "odm", "sample", "other"] as const;
+
 const StrictContactBody = CreateContactInquiryBody.extend({
-  company: z.string().trim().min(1).max(200),
   name: z.string().trim().min(1).max(120),
   email: z.string().trim().email().max(200),
-  phone: z.string().trim().max(60).optional(),
-  country: z.string().trim().max(80).optional(),
-  projectType: z.string().trim().max(30).optional(),
-  productInterest: z.array(z.string().trim().max(80)).max(20).optional(),
-  monthlyVolume: z.string().trim().max(60).optional(),
+  company: z.string().trim().max(200).optional(),
+  inquiryType: z.enum(ALLOWED_INQUIRY_TYPES).optional(),
   message: z.string().trim().min(1).max(5000),
 });
 
@@ -28,14 +26,10 @@ router.post("/public/contact-inquiries", async (req, res): Promise<void> => {
   const [inquiry] = await db
     .insert(contactInquiriesTable)
     .values({
-      company: data.company,
       name: data.name,
       email: data.email,
-      phone: data.phone ?? "",
-      country: data.country ?? "",
-      projectType: data.projectType ?? "",
-      productInterest: data.productInterest ?? [],
-      monthlyVolume: data.monthlyVolume ?? "",
+      company: data.company ?? "",
+      inquiryType: data.inquiryType ?? "",
       message: data.message,
       source: "web",
     })

@@ -5,15 +5,12 @@
  * DOSTAC website + admin API
  * OpenAPI spec version: 0.1.0
  */
+import type { ContactInquiryInputInquiryType } from "./contactInquiryInputInquiryType";
 
 export interface ContactInquiryInput {
-  company: string;
   name: string;
   email: string;
-  phone?: string;
-  country?: string;
-  projectType?: string;
-  productInterest?: string[];
-  monthlyVolume?: string;
+  company?: string;
+  inquiryType?: ContactInquiryInputInquiryType;
   message: string;
 }

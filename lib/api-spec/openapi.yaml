@@ -20,6 +20,10 @@ tags:
   - name: admin-uploads
   - name: public-banners
   - name: admin-banners
+  - name: public-about
+  - name: admin-about
+  - name: public-process
+  - name: admin-process
 paths:
   /healthz:
     get:
@@ -109,6 +113,30 @@ paths:
               schema:
                 type: array
                 items: { $ref: "#/components/schemas/PublicBanner" }
+
+  /public/about:
+    get:
+      operationId: getPublicAbout
+      tags: [public-about]
+      summary: Get the public About page content
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/AboutContent" }
+
+  /public/process:
+    get:
+      operationId: getPublicProcess
+      tags: [public-process]
+      summary: Get the public Process page content
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ProcessContent" }
 
   /public/contact-inquiries:
     post:
@@ -308,7 +336,12 @@ paths:
       operationId: adminListInquiries
       tags: [admin-inquiries]
       parameters:
-        - { name: status, in: query, required: false, schema: { type: string } }
+        - name: status
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [new, in_progress, completed]
       responses:
         "200":
           description: OK
@@ -440,6 +473,58 @@ paths:
             application/json:
               schema: { $ref: "#/components/schemas/Ok" }
 
+  # ───────────────────── ADMIN ABOUT ─────────────────────
+  /admin/about:
+    get:
+      operationId: adminGetAbout
+      tags: [admin-about]
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/AboutContent" }
+    put:
+      operationId: adminUpdateAbout
+      tags: [admin-about]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/AboutContentInput" }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/AboutContent" }
+
+  # ───────────────────── ADMIN PROCESS ─────────────────────
+  /admin/process:
+    get:
+      operationId: adminGetProcess
+      tags: [admin-process]
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ProcessContent" }
+    put:
+      operationId: adminUpdateProcess
+      tags: [admin-process]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/ProcessContentInput" }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ProcessContent" }
+
   # ───────────────────── ADMIN TRANSLATE ─────────────────────
   /admin/translate:
     post:
@@ -516,12 +601,14 @@ components:
 
     Translation:
       type: object
-      required: [lang, name, headline, body]
+      required: [lang, name, headline, valueProp, body, features]
       properties:
         lang: { $ref: "#/components/schemas/Lang" }
         name: { type: string }
         headline: { type: string }
+        valueProp: { type: string }
         body: { type: string }
+        features: { type: string }
 
     NoticeTranslation:
       type: object
@@ -534,7 +621,7 @@ components:
 
     PublicProduct:
       type: object
-      required: [id, slug, category, sortOrder, name, headline, body]
+      required: [id, slug, category, sortOrder, name, headline, valueProp, body, features, certs]
       properties:
         id: { type: integer }
         slug: { type: string }
@@ -543,7 +630,14 @@ components:
         imageUrl: { type: ["string", "null"] }
         name: { type: string }
         headline: { type: string }
+        valueProp: { type: string }
         body: { type: string }
+        features:
+          type: array
+          items: { type: string }
+        certs:
+          type: array
+          items: { type: string }
 
     PublicNotice:
       type: object
@@ -577,7 +671,7 @@ components:
 
     AdminProduct:
       type: object
-      required: [id, slug, category, sortOrder, published, translations]
+      required: [id, slug, category, sortOrder, published, certs, translations]
       properties:
         id: { type: integer }
         slug: { type: string }
@@ -585,19 +679,25 @@ components:
         sortOrder: { type: integer }
         imageUrl: { type: ["string", "null"] }
         published: { type: boolean }
+        certs:
+          type: array
+          items: { type: string }
         translations:
           type: array
           items: { $ref: "#/components/schemas/Translation" }
 
     AdminProductInput:
       type: object
-      required: [slug, category, sortOrder, published, translations]
+      required: [slug, category, sortOrder, published, certs, translations]
       properties:
         slug: { type: string }
         category: { type: string }
         sortOrder: { type: integer }
         imageUrl: { type: ["string", "null"] }
         published: { type: boolean }
+        certs:
+          type: array
+          items: { type: string }
         translations:
           type: array
           items: { $ref: "#/components/schemas/Translation" }
@@ -636,14 +736,10 @@ components:
       required:
         [
           id,
-          company,
           name,
           email,
-          phone,
-          country,
-          projectType,
-          productInterest,
-          monthlyVolume,
+          company,
+          inquiryType,
           message,
           status,
           adminNote,
@@ -652,18 +748,16 @@ components:
         ]
       properties:
         id: { type: integer }
-        company: { type: string }
         name: { type: string }
         email: { type: string }
-        phone: { type: string }
-        country: { type: string }
-        projectType: { type: string }
-        productInterest:
-          type: array
-          items: { type: string }
-        monthlyVolume: { type: string }
+        company: { type: string }
+        inquiryType:
+          type: string
+          enum: ["", oem, odm, sample, other]
         message: { type: string }
-        status: { type: string }
+        status:
+          type: string
+          enum: [new, in_progress, completed]
         adminNote: { type: string }
         source: { type: string }
         createdAt: { type: string, format: date-time }
@@ -675,11 +769,11 @@ components:
         total: { type: integer }
         byStatus:
           type: object
-          required: [new, in_progress, done]
+          required: [new, in_progress, completed]
           properties:
             new: { type: integer }
             in_progress: { type: integer }
-            done: { type: integer }
+            completed: { type: integer }
         recent:
           type: array
           items: { $ref: "#/components/schemas/Inquiry" }
@@ -687,23 +781,21 @@ components:
     InquiryUpdate:
       type: object
       properties:
-        status: { type: string }
+        status:
+          type: string
+          enum: [new, in_progress, completed]
         adminNote: { type: string }
 
     ContactInquiryInput:
       type: object
-      required: [company, name, email, message]
+      required: [name, email, message]
       properties:
-        company: { type: string }
         name: { type: string }
         email: { type: string }
-        phone: { type: string }
-        country: { type: string }
-        projectType: { type: string }
-        productInterest:
-          type: array
-          items: { type: string }
-        monthlyVolume: { type: string }
+        company: { type: string }
+        inquiryType:
+          type: string
+          enum: ["", oem, odm, sample, other]
         message: { type: string }
 
     TranslateInput:
@@ -797,6 +889,146 @@ components:
         order:
           type: array
           items: { type: integer }
+
+    HistoryItem:
+      type: object
+      required: [year, textKo, textEn, textJa, textZh, textVi]
+      properties:
+        year: { type: string }
+        textKo: { type: string }
+        textEn: { type: string }
+        textJa: { type: string }
+        textZh: { type: string }
+        textVi: { type: string }
+
+    WorldwideItem:
+      type: object
+      required:
+        [region, titleKo, titleEn, titleJa, titleZh, titleVi, descriptionKo, descriptionEn, descriptionJa, descriptionZh, descriptionVi]
+      properties:
+        imageUrl: { type: ["string", "null"] }
+        region: { type: string }
+        titleKo: { type: string }
+        titleEn: { type: string }
+        titleJa: { type: string }
+        titleZh: { type: string }
+        titleVi: { type: string }
+        descriptionKo: { type: string }
+        descriptionEn: { type: string }
+        descriptionJa: { type: string }
+        descriptionZh: { type: string }
+        descriptionVi: { type: string }
+
+    AboutContent:
+      type: object
+      required:
+        [
+          greetingMessageKo, greetingMessageEn, greetingMessageJa, greetingMessageZh, greetingMessageVi,
+          greetingSignatureKo, greetingSignatureEn, greetingSignatureJa, greetingSignatureZh, greetingSignatureVi,
+          historyItems,
+          worldwideIntroKo, worldwideIntroEn, worldwideIntroJa, worldwideIntroZh, worldwideIntroVi,
+          worldwideItems,
+          directionsAddressKo, directionsAddressEn, directionsAddressJa, directionsAddressZh, directionsAddressVi
+        ]
+      properties:
+        greetingImageUrl: { type: ["string", "null"] }
+        greetingMessageKo: { type: string }
+        greetingMessageEn: { type: string }
+        greetingMessageJa: { type: string }
+        greetingMessageZh: { type: string }
+        greetingMessageVi: { type: string }
+        greetingSignatureKo: { type: string }
+        greetingSignatureEn: { type: string }
+        greetingSignatureJa: { type: string }
+        greetingSignatureZh: { type: string }
+        greetingSignatureVi: { type: string }
+        historyItems:
+          type: array
+          items: { $ref: "#/components/schemas/HistoryItem" }
+        worldwideImageUrl: { type: ["string", "null"] }
+        worldwideIntroKo: { type: string }
+        worldwideIntroEn: { type: string }
+        worldwideIntroJa: { type: string }
+        worldwideIntroZh: { type: string }
+        worldwideIntroVi: { type: string }
+        worldwideItems:
+          type: array
+          items: { $ref: "#/components/schemas/WorldwideItem" }
+        directionsAddressKo: { type: string }
+        directionsAddressEn: { type: string }
+        directionsAddressJa: { type: string }
+        directionsAddressZh: { type: string }
+        directionsAddressVi: { type: string }
+        directionsMapEmbed: { type: ["string", "null"] }
+        directionsImageUrl: { type: ["string", "null"] }
+
+    AboutContentInput:
+      $ref: "#/components/schemas/AboutContent"
+
+    OemStep:
+      type: object
+      required:
+        [titleKo, titleEn, titleJa, titleZh, titleVi, descriptionKo, descriptionEn, descriptionJa, descriptionZh, descriptionVi]
+      properties:
+        titleKo: { type: string }
+        titleEn: { type: string }
+        titleJa: { type: string }
+        titleZh: { type: string }
+        titleVi: { type: string }
+        descriptionKo: { type: string }
+        descriptionEn: { type: string }
+        descriptionJa: { type: string }
+        descriptionZh: { type: string }
+        descriptionVi: { type: string }
+
+    CertItem:
+      type: object
+      required:
+        [code, nameKo, nameEn, nameJa, nameZh, nameVi, descriptionKo, descriptionEn, descriptionJa, descriptionZh, descriptionVi]
+      properties:
+        imageUrl: { type: ["string", "null"] }
+        code: { type: string }
+        nameKo: { type: string }
+        nameEn: { type: string }
+        nameJa: { type: string }
+        nameZh: { type: string }
+        nameVi: { type: string }
+        descriptionKo: { type: string }
+        descriptionEn: { type: string }
+        descriptionJa: { type: string }
+        descriptionZh: { type: string }
+        descriptionVi: { type: string }
+
+    ProcessContent:
+      type: object
+      required:
+        [
+          oemDescriptionKo, oemDescriptionEn, oemDescriptionJa, oemDescriptionZh, oemDescriptionVi,
+          oemSteps,
+          certIntroKo, certIntroEn, certIntroJa, certIntroZh, certIntroVi,
+          certItems
+        ]
+      properties:
+        oemImageUrl: { type: ["string", "null"] }
+        oemDescriptionKo: { type: string }
+        oemDescriptionEn: { type: string }
+        oemDescriptionJa: { type: string }
+        oemDescriptionZh: { type: string }
+        oemDescriptionVi: { type: string }
+        oemSteps:
+          type: array
+          items: { $ref: "#/components/schemas/OemStep" }
+        certIntroKo: { type: string }
+        certIntroEn: { type: string }
+        certIntroJa: { type: string }
+        certIntroZh: { type: string }
+        certIntroVi: { type: string }
+        certItems:
+          type: array
+          items: { $ref: "#/components/schemas/CertItem" }
+
+    ProcessContentInput:
+      $ref: "#/components/schemas/ProcessContent"
 
     UploadSignResult:
       type: object

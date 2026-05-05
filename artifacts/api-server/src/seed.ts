@@ -7,6 +7,8 @@ import {
   noticesTable,
   noticeTranslationsTable,
   bannersTable,
+  aboutContentTable,
+  processContentTable,
 } from "@workspace/db";
 import { hashPassword } from "./lib/auth";
 import { logger } from "./lib/logger";
@@ -110,6 +112,49 @@ interface ProductSeed {
   imageUrl: string;
   translations: Record<Lang, { name: string; headline: string; body: string }>;
 }
+
+const DEFAULT_CERTS = ["ISO 22716", "CGMP", "CE", "FDA"];
+
+const DEFAULT_VALUE_PROP: Record<Lang, string> = {
+  ko: "Korean OEM/ODM · MOQ 협의 가능 · 글로벌 인증 완비",
+  en: "Korean OEM/ODM · Flexible MOQ · Global certifications ready",
+  ja: "韓国OEM/ODM · MOQ相談可能 · グローバル認証取得済み",
+  zh: "韩国 OEM/ODM · MOQ 可洽 · 全球认证齐全",
+  vi: "OEM/ODM Hàn Quốc · MOQ linh hoạt · Chứng nhận toàn cầu sẵn sàng",
+};
+
+const DEFAULT_FEATURES: Record<Lang, string> = {
+  ko: [
+    "Private Label / Full ODM 모두 지원",
+    "샘플 2주 · 양산 6주 표준 리드타임",
+    "K-Beauty 트렌드 처방 + 안정성 시험 완료",
+    "다국어 라벨 · 수출 서류 일괄 지원",
+  ].join("\n"),
+  en: [
+    "Private Label and full ODM both supported",
+    "Standard lead time: 2 weeks sampling · 6 weeks production",
+    "K-Beauty trend formulas with stability testing",
+    "Multilingual labeling and export documentation",
+  ].join("\n"),
+  ja: [
+    "プライベートラベル / フルODMどちらにも対応",
+    "サンプル2週間・量産6週間の標準リードタイム",
+    "K-Beautyトレンド処方＋安定性試験済み",
+    "多言語ラベル・輸出書類を一括サポート",
+  ].join("\n"),
+  zh: [
+    "支持自有品牌（Private Label）与全 ODM",
+    "标准交期：打样 2 周 · 量产 6 周",
+    "K-Beauty 流行配方 + 稳定性测试完成",
+    "多语言标签与出口文件全程支持",
+  ].join("\n"),
+  vi: [
+    "Hỗ trợ cả Private Label và Full ODM",
+    "Lead time tiêu chuẩn: mẫu 2 tuần · sản xuất 6 tuần",
+    "Công thức xu hướng K-Beauty + đã kiểm định độ ổn định",
+    "Hỗ trợ nhãn đa ngôn ngữ và hồ sơ xuất khẩu",
+  ].join("\n"),
+};
 
 interface NoticeSeed {
   slug: string;
@@ -627,6 +672,7 @@ async function seed(): Promise<void> {
         category: p.category,
         sortOrder: p.sortOrder,
         imageUrl: p.imageUrl,
+        certs: DEFAULT_CERTS,
         published: true,
       })
       .returning();
@@ -637,7 +683,9 @@ async function seed(): Promise<void> {
         lang,
         name: p.translations[lang].name,
         headline: p.translations[lang].headline,
+        valueProp: DEFAULT_VALUE_PROP[lang],
         body: p.translations[lang].body,
+        features: DEFAULT_FEATURES[lang],
       })),
     );
   }
@@ -693,6 +741,180 @@ async function seed(): Promise<void> {
       { count: existingBanners.length },
       "Banners already exist, skipping seed",
     );
+  }
+
+  const existingAbout = await db.select({ id: aboutContentTable.id }).from(aboutContentTable);
+  if (existingAbout.length === 0) {
+    await db.insert(aboutContentTable).values({
+      id: 1,
+      greetingImageUrl: "/images/dostac/ceo-portrait.png",
+      greetingMessageKo:
+        "<p>빠르게 진화하는 글로벌 뷰티 & 헬스케어 시장에서 브랜드는 단순한 공급자가 아닌 헌신적인 파트너를 필요로 합니다. dostac은 비전을 현실로, 아이디어를 전 세계 소비자가 사랑하는 고품질 제품으로 만들어 드립니다.</p><p>30년의 제조 노하우와 GMP/ISO 인증 생산 인프라, 그리고 디자인부터 양산·물류까지의 풀스택 역량으로 파트너의 성장을 함께 만들어 갑니다.</p>",
+      greetingMessageEn:
+        "<p>In a rapidly evolving global beauty & healthcare market, brands need a dedicated partner — not just a supplier. At dostac we turn visionary ideas into tangible, high-quality products that resonate with consumers worldwide.</p><p>With 30 years of manufacturing know-how, GMP/ISO certified production, and full-stack capability from design to mass production and logistics, we grow with our partners.</p>",
+      greetingMessageJa:
+        "<p>急速に進化するグローバルなビューティー＆ヘルスケア市場では、ブランドには単なるサプライヤーではなく、献身的なパートナーが必要です。dostacは、ビジョンを世界中の消費者の心に響く高品質な製品へと変えます。</p><p>30年の製造ノウハウとGMP/ISO認証の生産インフラ、デザインから量産・物流までの一気通貫の体制で、パートナーの成長を共に支えます。</p>",
+      greetingMessageZh:
+        "<p>在快速演变的全球美妆与健康市场中，品牌需要的不仅是供应商，更是专注的合作伙伴。dostac致力于将愿景化为打动全球消费者的高品质产品。</p><p>凭借30年制造经验、GMP/ISO认证生产线，以及从设计到量产物流的全栈能力，我们与合作伙伴共同成长。</p>",
+      greetingMessageVi:
+        "<p>Trong thị trường làm đẹp và chăm sóc sức khỏe toàn cầu phát triển nhanh chóng, các thương hiệu cần một đối tác tận tâm chứ không chỉ là nhà cung cấp. dostac biến ý tưởng thành sản phẩm chất lượng cao, được người tiêu dùng trên toàn thế giới yêu thích.</p><p>Với 30 năm kinh nghiệm sản xuất, hệ thống đạt chuẩn GMP/ISO và năng lực toàn diện từ thiết kế đến sản xuất hàng loạt và logistics, chúng tôi cùng đối tác phát triển.</p>",
+      greetingSignatureKo: "dostac Co., Ltd. CEO",
+      greetingSignatureEn: "CEO, dostac Co., Ltd.",
+      greetingSignatureJa: "dostac Co., Ltd. CEO",
+      greetingSignatureZh: "dostac Co., Ltd. 首席执行官",
+      greetingSignatureVi: "Tổng Giám đốc, dostac Co., Ltd.",
+      historyItems: [
+        { year: "1995", textKo: "dostac 창립 — 스킨케어 OEM 사업 시작", textEn: "dostac founded — skincare OEM business begins", textJa: "dostac創業 — スキンケアOEM事業開始", textZh: "dostac成立 — 启动护肤OEM业务", textVi: "Thành lập dostac — bắt đầu kinh doanh OEM chăm sóc da" },
+        { year: "2005", textKo: "GMP / ISO 인증 취득, 자체 R&D 센터 설립", textEn: "Obtained GMP/ISO certifications and established in-house R&D center", textJa: "GMP/ISO認証取得、自社R&Dセンター設立", textZh: "取得GMP/ISO认证，建立自有研发中心", textVi: "Đạt chứng nhận GMP/ISO, thành lập trung tâm R&D nội bộ" },
+        { year: "2012", textKo: "동남아·중화권 수출 본격 확대", textEn: "Major expansion into SEA and Greater China exports", textJa: "東南アジア・中華圏への輸出を本格拡大", textZh: "东南亚与大中华区出口业务全面扩展", textVi: "Mở rộng xuất khẩu sang Đông Nam Á và Trung Quốc" },
+        { year: "2018", textKo: "헤어/바디/위생용품으로 카테고리 확장", textEn: "Expanded into hair, body and hygiene categories", textJa: "ヘア/ボディ/衛生用品へカテゴリー拡大", textZh: "扩展至护发、身体护理与卫生用品", textVi: "Mở rộng sang chăm sóc tóc, cơ thể và sản phẩm vệ sinh" },
+        { year: "2024", textKo: "글로벌 30개국 파트너십 달성", textEn: "Reached partnerships in 30 countries worldwide", textJa: "グローバル30カ国とのパートナーシップを達成", textZh: "实现全球30个国家的合作伙伴关系", textVi: "Đạt mốc hợp tác với 30 quốc gia trên toàn thế giới" },
+      ],
+      worldwideImageUrl: "/images/dostac/hero-production.png",
+      worldwideIntroKo: "dostac은 아시아·미주·유럽 30개국 파트너와 함께 글로벌 K-Beauty를 만들어 갑니다.",
+      worldwideIntroEn: "dostac powers global K-Beauty with partners across 30 countries in Asia, the Americas and Europe.",
+      worldwideIntroJa: "dostacはアジア・米州・欧州30カ国のパートナーとともに、グローバルK-Beautyを創造します。",
+      worldwideIntroZh: "dostac携手亚洲、美洲、欧洲30个国家的合作伙伴，共创全球K-Beauty。",
+      worldwideIntroVi: "dostac cùng các đối tác tại 30 quốc gia ở châu Á, châu Mỹ và châu Âu kiến tạo K-Beauty toàn cầu.",
+      worldwideItems: [
+        { imageUrl: null, region: "Southeast Asia", titleKo: "동남아시아", titleEn: "Southeast Asia", titleJa: "東南アジア", titleZh: "东南亚", titleVi: "Đông Nam Á", descriptionKo: "베트남, 인도네시아, 태국, 필리핀의 핵심 유통 파트너십.", descriptionEn: "Strategic partnerships in Vietnam, Indonesia, Thailand and the Philippines.", descriptionJa: "ベトナム、インドネシア、タイ、フィリピンの主要パートナーシップ。", descriptionZh: "在越南、印尼、泰国、菲律宾建立核心分销合作。", descriptionVi: "Quan hệ phân phối chiến lược tại Việt Nam, Indonesia, Thái Lan và Philippines." },
+        { imageUrl: null, region: "Greater China", titleKo: "중화권", titleEn: "Greater China", titleJa: "中華圏", titleZh: "大中华区", titleVi: "Đại Trung Hoa", descriptionKo: "중국·홍콩·대만 크로스보더 이커머스 및 오프라인 채널 진출.", descriptionEn: "Cross-border e-commerce and offline expansion across Mainland China, Hong Kong and Taiwan.", descriptionJa: "中国・香港・台湾の越境ECとオフライン展開。", descriptionZh: "在中国大陆、香港、台湾拓展跨境电商及线下渠道。", descriptionVi: "Thương mại điện tử xuyên biên giới và mở rộng kênh offline tại Trung Quốc đại lục, Hồng Kông và Đài Loan." },
+        { imageUrl: null, region: "North America", titleKo: "북미", titleEn: "North America", titleJa: "北米", titleZh: "北美", titleVi: "Bắc Mỹ", descriptionKo: "미국 MoCRA 등록 완비, Amazon·세포라 채널 운영.", descriptionEn: "Full U.S. MoCRA compliance with Amazon and Sephora channel operations.", descriptionJa: "米国MoCRA登録完備、Amazon・Sephoraチャネル運営。", descriptionZh: "美国MoCRA注册完备，运营Amazon与Sephora渠道。", descriptionVi: "Tuân thủ đầy đủ MoCRA Hoa Kỳ, vận hành kênh Amazon và Sephora." },
+      ],
+      directionsAddressKo: "경기도 안성시 보개면 신예길 65 dostac 본사 / 공장",
+      directionsAddressEn: "65 Sinye-gil, Bogae-myeon, Anseong-si, Gyeonggi-do, Republic of Korea — dostac HQ / Factory",
+      directionsAddressJa: "韓国 京畿道 安城市 宝盖面 新礼ギル 65 dostac本社/工場",
+      directionsAddressZh: "韩国 京畿道 安城市 宝盖面 新礼街 65 号 dostac 总部 / 工厂",
+      directionsAddressVi: "65 Sinye-gil, Bogae-myeon, Anseong-si, Gyeonggi-do, Hàn Quốc — Trụ sở / Nhà máy dostac",
+      directionsMapEmbed:
+        "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3186.0!2d127.27!3d37.04!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMzfCsDA0JzAwLjAiTiAxMjfCsDE2JzAwLjAiRQ!5e0!3m2!1sen!2skr!4v1700000000000",
+      directionsImageUrl: null,
+    });
+    logger.info("About content seeded");
+  } else {
+    logger.info("About content already exists, skipping seed");
+  }
+
+  const existingProcess = await db.select({ id: processContentTable.id }).from(processContentTable);
+  if (existingProcess.length === 0) {
+    await db.insert(processContentTable).values({
+      id: 1,
+      oemImageUrl: "/images/dostac/hero-production.png",
+      oemDescriptionKo:
+        "디자인부터 샘플링, 양산까지 — 30년 노하우와 GMP/ISO 인증 생산 인프라로 브랜드의 아이디어를 시장 가능한 제품으로 완성합니다.",
+      oemDescriptionEn:
+        "From design to sampling and mass production — 30 years of know-how and GMP/ISO-certified facilities turn brand ideas into market-ready products.",
+      oemDescriptionJa:
+        "デザインからサンプリング、量産まで — 30年のノウハウとGMP/ISO認証の生産インフラで、ブランドのアイデアを市場対応の製品に仕上げます。",
+      oemDescriptionZh:
+        "从设计到打样、量产 — 凭借30年经验与 GMP/ISO 认证的生产体系，将品牌创意打造为可上市的产品。",
+      oemDescriptionVi:
+        "Từ thiết kế đến lấy mẫu và sản xuất hàng loạt — 30 năm kinh nghiệm cùng cơ sở đạt chuẩn GMP/ISO biến ý tưởng của thương hiệu thành sản phẩm sẵn sàng ra thị trường.",
+      oemSteps: [
+        {
+          titleKo: "디자인",
+          titleEn: "Design",
+          titleJa: "デザイン",
+          titleZh: "设计",
+          titleVi: "Thiết kế",
+          descriptionKo: "컨셉, 처방, 패키지 — 자체 R&D 센터와 디자이너가 함께 브랜드의 아이덴티티를 정의합니다.",
+          descriptionEn: "Concept, formulation and packaging — our R&D center and designers shape the brand identity.",
+          descriptionJa: "コンセプト・処方・パッケージ — 自社R&Dセンターとデザイナーがブランドのアイデンティティを定義します。",
+          descriptionZh: "概念、配方与包装 — 自有研发中心与设计师共同定义品牌识别。",
+          descriptionVi: "Ý tưởng, công thức và bao bì — trung tâm R&D nội bộ và đội ngũ thiết kế xác định bản sắc thương hiệu.",
+        },
+        {
+          titleKo: "샘플링",
+          titleEn: "Sampling",
+          titleJa: "サンプリング",
+          titleZh: "打样",
+          titleVi: "Lấy mẫu",
+          descriptionKo: "초도 샘플 제작 후 안정성·안전성·관능 테스트로 양산 전 품질을 확정합니다.",
+          descriptionEn: "Initial samples undergo stability, safety and sensory testing to lock quality before scale-up.",
+          descriptionJa: "初回サンプル製作後、安定性・安全性・官能テストで量産前の品質を確定します。",
+          descriptionZh: "完成首批样品后，通过稳定性、安全性与感官测试在量产前确定品质。",
+          descriptionVi: "Mẫu thử nghiệm ban đầu trải qua kiểm nghiệm độ ổn định, an toàn và cảm quan để chốt chất lượng trước khi sản xuất hàng loạt.",
+        },
+        {
+          titleKo: "양산",
+          titleEn: "Production",
+          titleJa: "量産",
+          titleZh: "量产",
+          titleVi: "Sản xuất",
+          descriptionKo: "GMP/ISO 인증 라인에서 충진·포장·QC를 일원화 — 안정적인 리드타임으로 글로벌 출하.",
+          descriptionEn: "Filling, packaging and QC are integrated on GMP/ISO-certified lines for stable lead times to global markets.",
+          descriptionJa: "GMP/ISO認証ラインで充填・包装・QCを一元化 — 安定したリードタイムでグローバル出荷。",
+          descriptionZh: "在 GMP/ISO 认证产线一体化完成灌装、包装与品控 — 稳定交期，面向全球出货。",
+          descriptionVi: "Chiết rót, đóng gói và kiểm tra chất lượng được tích hợp trên dây chuyền đạt chuẩn GMP/ISO — thời gian giao hàng ổn định cho thị trường toàn cầu.",
+        },
+      ],
+      certIntroKo: "글로벌 시장의 다양한 규제를 충족하는 인증을 보유하고 있습니다.",
+      certIntroEn: "We hold the certifications required to meet global market regulations.",
+      certIntroJa: "グローバル市場の多様な規制に対応する認証を取得しています。",
+      certIntroZh: "持有满足全球各市场法规要求的资质认证。",
+      certIntroVi: "Chúng tôi sở hữu các chứng nhận đáp ứng quy định của các thị trường toàn cầu.",
+      certItems: [
+        {
+          imageUrl: null,
+          code: "ISO 22716",
+          nameKo: "ISO 22716 (화장품 GMP)",
+          nameEn: "ISO 22716 (Cosmetics GMP)",
+          nameJa: "ISO 22716（化粧品GMP）",
+          nameZh: "ISO 22716（化妆品 GMP）",
+          nameVi: "ISO 22716 (GMP mỹ phẩm)",
+          descriptionKo: "국제 표준 화장품 우수 제조 관리 기준 인증.",
+          descriptionEn: "International standard for cosmetics good manufacturing practice.",
+          descriptionJa: "国際標準の化粧品適正製造規範認証。",
+          descriptionZh: "国际化妆品良好生产规范认证标准。",
+          descriptionVi: "Tiêu chuẩn quốc tế về thực hành sản xuất tốt mỹ phẩm.",
+        },
+        {
+          imageUrl: null,
+          code: "CE",
+          nameKo: "CE Marking",
+          nameEn: "CE Marking",
+          nameJa: "CEマーキング",
+          nameZh: "CE 认证",
+          nameVi: "Chứng nhận CE",
+          descriptionKo: "유럽경제지역(EEA) 시장 진입을 위한 적합성 표시.",
+          descriptionEn: "Conformity marking for products entering the European Economic Area.",
+          descriptionJa: "欧州経済領域市場への適合性マーキング。",
+          descriptionZh: "欧洲经济区市场准入的合格标识。",
+          descriptionVi: "Dấu hợp chuẩn để đưa sản phẩm vào Khu vực Kinh tế châu Âu.",
+        },
+        {
+          imageUrl: null,
+          code: "FDA",
+          nameKo: "U.S. FDA / MoCRA",
+          nameEn: "U.S. FDA / MoCRA",
+          nameJa: "米国FDA / MoCRA",
+          nameZh: "美国 FDA / MoCRA",
+          nameVi: "FDA Hoa Kỳ / MoCRA",
+          descriptionKo: "미국 시장 화장품 규제 (MoCRA) 자가 검증 시스템 운영.",
+          descriptionEn: "Self-certification system aligned with U.S. cosmetics regulation (MoCRA).",
+          descriptionJa: "米国化粧品規制(MoCRA)に対応した自己検証システムを運用。",
+          descriptionZh: "运行符合美国化妆品法规（MoCRA）的自我认证体系。",
+          descriptionVi: "Hệ thống tự chứng nhận tuân thủ quy định mỹ phẩm Hoa Kỳ (MoCRA).",
+        },
+        {
+          imageUrl: null,
+          code: "Halal",
+          nameKo: "Halal 인증",
+          nameEn: "Halal Certification",
+          nameJa: "ハラール認証",
+          nameZh: "清真认证",
+          nameVi: "Chứng nhận Halal",
+          descriptionKo: "동남아 무슬림 시장 진출을 위한 인증.",
+          descriptionEn: "Certification for entering Muslim-majority Southeast Asian markets.",
+          descriptionJa: "東南アジアのムスリム市場進出のための認証。",
+          descriptionZh: "进入东南亚穆斯林市场的认证。",
+          descriptionVi: "Chứng nhận để gia nhập các thị trường Hồi giáo Đông Nam Á.",
+        },
+      ],
+    });
+    logger.info("Process content seeded");
+  } else {
+    logger.info("Process content already exists, skipping seed");
   }
 
   logger.info("Seed complete");

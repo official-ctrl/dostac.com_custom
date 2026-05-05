@@ -6,10 +6,21 @@ const ADMIN_EMAIL = "admin@dostac.co.kr";
 
 const connectors = new ReplitConnectors();
 
-function fmt(value: string | string[] | null | undefined): string {
+const INQUIRY_TYPE_LABELS: Record<string, string> = {
+  oem: "OEM",
+  odm: "ODM",
+  sample: "Sample request",
+  other: "Other",
+};
+
+function fmt(value: string | null | undefined): string {
   if (value == null) return "-";
-  if (Array.isArray(value)) return value.length ? value.join(", ") : "-";
   return value.length ? value : "-";
+}
+
+function inquiryTypeLabel(value: string): string {
+  if (!value) return "-";
+  return INQUIRY_TYPE_LABELS[value] ?? value;
 }
 
 function buildPlainBody(inquiry: ContactInquiry): string {
@@ -19,9 +30,7 @@ function buildPlainBody(inquiry: ContactInquiry): string {
     `Name:        ${inquiry.name}`,
     `Email:       ${inquiry.email}`,
     `Company:     ${fmt(inquiry.company)}`,
-    `Country:     ${fmt(inquiry.country)}`,
-    `Product:     ${fmt(inquiry.productInterest)}`,
-    `Volume:      ${fmt(inquiry.monthlyVolume)}`,
+    `Type:        ${inquiryTypeLabel(inquiry.inquiryType)}`,
     `Inquiry ID:  ${inquiry.id}`,
     `Received:    ${inquiry.createdAt instanceof Date ? inquiry.createdAt.toISOString() : String(inquiry.createdAt)}`,
     ``,
@@ -42,7 +51,7 @@ function escapeHtml(s: string): string {
 }
 
 function buildHtmlBody(inquiry: ContactInquiry): string {
-  const row = (label: string, value: string | string[] | null | undefined) =>
+  const row = (label: string, value: string | null | undefined) =>
     `<tr><td style="padding:6px 12px;color:#64748b;font-weight:600;white-space:nowrap;">${label}</td><td style="padding:6px 12px;color:#0f172a;">${escapeHtml(fmt(value))}</td></tr>`;
 
   return `<!doctype html>
@@ -56,9 +65,7 @@ function buildHtmlBody(inquiry: ContactInquiry): string {
       ${row("Name", inquiry.name)}
       ${row("Email", inquiry.email)}
       ${row("Company", inquiry.company)}
-      ${row("Country", inquiry.country)}
-      ${row("Product", inquiry.productInterest)}
-      ${row("Volume", inquiry.monthlyVolume)}
+      ${row("Type", inquiryTypeLabel(inquiry.inquiryType))}
       ${row("Inquiry ID", String(inquiry.id))}
     </table>
     <div style="padding:0 24px 24px;">

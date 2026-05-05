@@ -19,6 +19,13 @@ function pickTranslation<T extends { lang: string }>(
   return ko ?? rows[0];
 }
 
+function featuresToList(raw: string): string[] {
+  return raw
+    .split(/\r\n|\r|\n/)
+    .map((s) => s.trim())
+    .filter((s) => s.length > 0);
+}
+
 router.get("/public/products", async (req, res): Promise<void> => {
   const q = ListPublicProductsQueryParams.safeParse(req.query);
   if (!q.success) {
@@ -60,7 +67,10 @@ router.get("/public/products", async (req, res): Promise<void> => {
       imageUrl: p.imageUrl,
       name: t?.name ?? p.slug,
       headline: t?.headline ?? "",
+      valueProp: t?.valueProp ?? "",
       body: t?.body ?? "",
+      features: featuresToList(t?.features ?? ""),
+      certs: p.certs ?? [],
     };
   });
 
@@ -95,7 +105,10 @@ router.get("/public/products/:slug", async (req, res): Promise<void> => {
     imageUrl: product.imageUrl,
     name: t?.name ?? product.slug,
     headline: t?.headline ?? "",
+    valueProp: t?.valueProp ?? "",
     body: t?.body ?? "",
+    features: featuresToList(t?.features ?? ""),
+    certs: product.certs ?? [],
   });
 });
 

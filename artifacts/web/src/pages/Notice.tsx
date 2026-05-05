@@ -139,10 +139,10 @@ function NoticeContent() {
         </section>
       )}
 
-      {/* ARCHIVE */}
-      <section className="py-20 bg-white">
-        <div className="container mx-auto px-6 max-w-5xl">
-          <div className="mb-10">
+      {/* ARCHIVE — 3-col card grid */}
+      <section className="py-20 bg-slate-50/60">
+        <div className="container mx-auto px-6">
+          <div className="mb-10 max-w-3xl">
             <p className="text-xs uppercase tracking-[0.25em] text-accent font-semibold mb-2">{t("notice.archiveEyebrow") as string}</p>
             <h2 className="font-display text-3xl md:text-4xl font-bold text-primary">{t("notice.archiveHeading") as string}</h2>
           </div>
@@ -150,32 +150,74 @@ function NoticeContent() {
           {noticesQuery.isLoading ? (
             <div className="py-16 text-center text-muted-foreground">Loading…</div>
           ) : visible.length === 0 ? (
-            <div className="py-16 text-center text-muted-foreground">No announcements yet.</div>
+            <div className="py-24 text-center text-muted-foreground">
+              <p className="text-base">{t("notice.empty") as string}</p>
+            </div>
           ) : (
-            <div className="divide-y divide-slate-200 border-t border-b border-slate-200">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
               {visible.map((item) => (
-                <div key={item.id} id={item.slug} className="group flex flex-col md:flex-row md:items-center gap-4 md:gap-8 py-6 px-2 hover:bg-slate-50 transition-colors">
-                  <span className={`inline-flex items-center self-start rounded-full px-3 py-1 text-xs font-semibold whitespace-nowrap ${categoryColor(item.category)}`}>
-                    {item.category}
-                  </span>
-                  <span className="text-sm text-muted-foreground inline-flex items-center gap-2 md:w-44 shrink-0">
-                    <Calendar className="h-4 w-4" /> {formatDate(item.publishedAt, lang)}
-                  </span>
-                  <h3 className="flex-1 font-medium text-primary group-hover:text-accent transition-colors">{item.title}</h3>
-                  <ChevronRight className="hidden md:block h-5 w-5 text-slate-400 group-hover:text-accent group-hover:translate-x-1 transition-all" />
-                </div>
+                <Link
+                  key={item.id}
+                  href={`/notice#${item.slug}`}
+                  className="group block"
+                  data-testid={`notice-card-${item.slug}`}
+                >
+                  <article
+                    id={item.slug}
+                    className="h-full flex flex-col rounded-xl bg-white border border-slate-200/80 shadow-sm hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 overflow-hidden"
+                  >
+                    <div className="relative aspect-[16/10] bg-slate-200 overflow-hidden">
+                      <img
+                        src={item.thumbnailUrl ?? dostacImage("hero-home.png")}
+                        alt={item.title}
+                        loading="lazy"
+                        className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      />
+                      <span
+                        className={`absolute top-3 left-3 inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-semibold backdrop-blur ${categoryColor(item.category)}`}
+                      >
+                        <Tag className="h-3 w-3" />
+                        {item.category}
+                      </span>
+                    </div>
+                    <div className="flex-1 flex flex-col p-6">
+                      <div className="flex items-center gap-3 text-xs text-muted-foreground mb-3">
+                        <span className="inline-flex items-center gap-1.5">
+                          <Calendar className="h-3.5 w-3.5" /> {formatDate(item.publishedAt, lang)}
+                        </span>
+                        {item.region && (
+                          <span className="inline-flex items-center gap-1.5">
+                            <Globe2 className="h-3.5 w-3.5" /> {item.region}
+                          </span>
+                        )}
+                      </div>
+                      <h3 className="font-display text-lg font-semibold text-primary leading-snug mb-2 line-clamp-2 group-hover:text-accent transition-colors">
+                        {item.title}
+                      </h3>
+                      {item.excerpt && (
+                        <p className="text-sm text-muted-foreground leading-relaxed line-clamp-3 mb-5">
+                          {item.excerpt}
+                        </p>
+                      )}
+                      <div className="mt-auto pt-2 inline-flex items-center gap-1.5 text-sm font-medium text-accent">
+                        {t("notice.readMore") as string}
+                        <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                      </div>
+                    </div>
+                  </article>
+                </Link>
               ))}
             </div>
           )}
 
           {totalPages > 1 && (
-            <div className="flex items-center justify-center gap-2 mt-10">
+            <div className="flex items-center justify-center gap-2 mt-12">
               {Array.from({ length: totalPages }, (_, i) => i + 1).map((n) => (
                 <button
                   key={n}
                   onClick={() => setPage(n)}
                   className={`h-10 w-10 rounded-sm text-sm font-medium transition ${
-                    n === page ? "bg-primary text-primary-foreground" : "bg-slate-100 text-slate-700 hover:bg-slate-200"
+                    n === page ? "bg-primary text-primary-foreground" : "bg-white border border-slate-200 text-slate-700 hover:bg-slate-100"
                   }`}
                 >
                   {n}
@@ -184,7 +226,7 @@ function NoticeContent() {
               {page < totalPages && (
                 <button
                   onClick={() => setPage(page + 1)}
-                  className="h-10 px-4 rounded-sm text-sm font-medium bg-slate-100 text-slate-700 hover:bg-slate-200 inline-flex items-center gap-1"
+                  className="h-10 px-4 rounded-sm text-sm font-medium bg-white border border-slate-200 text-slate-700 hover:bg-slate-100 inline-flex items-center gap-1"
                 >
                   {t("common.next") as string} <ChevronRight className="h-4 w-4" />
                 </button>

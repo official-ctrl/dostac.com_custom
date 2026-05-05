@@ -1,5 +1,5 @@
 import { Router, type IRouter } from "express";
-import { and, desc, eq, sql } from "drizzle-orm";
+import { desc, eq, sql } from "drizzle-orm";
 import { db, contactInquiriesTable } from "@workspace/db";
 import {
   AdminListInquiriesQueryParams,
@@ -18,14 +18,10 @@ router.use("/admin/inquiries/summary", requireAdmin);
 function serialize(i: typeof contactInquiriesTable.$inferSelect) {
   return {
     id: i.id,
-    company: i.company,
     name: i.name,
     email: i.email,
-    phone: i.phone,
-    country: i.country,
-    projectType: i.projectType,
-    productInterest: i.productInterest,
-    monthlyVolume: i.monthlyVolume,
+    company: i.company,
+    inquiryType: i.inquiryType,
     message: i.message,
     status: i.status,
     adminNote: i.adminNote,
@@ -42,13 +38,13 @@ router.get("/admin/inquiries/summary", async (_req, res): Promise<void> => {
     })
     .from(contactInquiriesTable)
     .groupBy(contactInquiriesTable.status);
-  const byStatus = { new: 0, in_progress: 0, done: 0 };
+  const byStatus = { new: 0, in_progress: 0, completed: 0 };
   let total = 0;
   for (const r of rows) {
     total += r.count;
     if (r.status === "new") byStatus.new = r.count;
     else if (r.status === "in_progress") byStatus.in_progress = r.count;
-    else if (r.status === "done") byStatus.done = r.count;
+    else if (r.status === "completed") byStatus.completed = r.count;
   }
   const recent = await db
     .select()

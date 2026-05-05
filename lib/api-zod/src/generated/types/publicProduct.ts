@@ -15,5 +15,8 @@ export interface PublicProduct {
   imageUrl?: string | null;
   name: string;
   headline: string;
+  valueProp: string;
   body: string;
+  features: string[];
+  certs: string[];
 }

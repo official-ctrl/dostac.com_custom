@@ -15,7 +15,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import { ArrowLeft, Loader2, Save } from "lucide-react";
+import { ArrowLeft, Loader2, Plus, Save, X } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { TranslationFields } from "@/components/TranslationFields";
 import { ImageUploader } from "@/components/ImageUploader";
@@ -23,14 +23,38 @@ import { LANGS } from "@/lib/langs";
 
 const PRODUCT_FIELDS = [
   { key: "name" as const, label: "제품명", kind: "text" as const, context: "cosmetic product name" },
+  {
+    key: "valueProp" as const,
+    label: "Value Proposition (한 줄 B2B 강점)",
+    kind: "text" as const,
+    context: "B2B value proposition tagline (OEM/ODM, MOQ, certs)",
+    placeholder: "예: Korean OEM/ODM · MOQ 협의 가능 · 글로벌 인증 완비",
+  },
   { key: "headline" as const, label: "한 줄 설명", kind: "text" as const, context: "marketing tagline" },
   { key: "body" as const, label: "상세 설명 (HTML)", kind: "richtext" as const, context: "rich html marketing body" },
+  {
+    key: "features" as const,
+    label: "주요 특징 (한 줄에 하나씩)",
+    kind: "textarea" as const,
+    context:
+      "Newline-separated list of short B2B product feature bullets. Output MUST be plain text with one feature per line (\\n separated). Do NOT add numbering, hyphens, bullets (•/-), or extra blank lines. Preserve the same number of lines as the input.",
+    placeholder: "Private Label / Full ODM 모두 지원\n샘플 2주 · 양산 6주 표준 리드타임\n...",
+    helpText: "줄바꿈으로 구분 — 공개 페이지에서 불릿 리스트로 표시됩니다.",
+  },
 ];
 
 const CATEGORY_SUGGESTIONS = ["skincare", "suncare", "haircare", "bodycare", "makeup", "wellness"];
+const CERT_SUGGESTIONS = ["ISO 22716", "CGMP", "CE", "FDA", "Halal", "Vegan", "EWG Green"];
 
 function emptyTranslations(): Translation[] {
-  return LANGS.map((lang) => ({ lang, name: "", headline: "", body: "" }));
+  return LANGS.map((lang) => ({
+    lang,
+    name: "",
+    headline: "",
+    valueProp: "",
+    body: "",
+    features: "",
+  }));
 }
 
 export default function ProductEdit() {
@@ -60,15 +84,26 @@ export default function ProductEdit() {
     sortOrder: 100,
     imageUrl: null,
     published: true,
+    certs: [],
     translations: emptyTranslations(),
   });
 
+  const [certInput, setCertInput] = useState("");
+
   useEffect(() => {
     if (existing) {
-      // ensure all 5 langs present
       const merged = LANGS.map((lang) => {
         const found = existing.translations.find((t) => t.lang === lang);
-        return found ?? { lang, name: "", headline: "", body: "" };
+        return (
+          found ?? {
+            lang,
+            name: "",
+            headline: "",
+            valueProp: "",
+            body: "",
+            features: "",
+          }
+        );
       });
       setForm({
         slug: existing.slug,
@@ -76,6 +111,7 @@ export default function ProductEdit() {
         sortOrder: existing.sortOrder,
         imageUrl: existing.imageUrl ?? null,
         published: existing.published,
+        certs: existing.certs ?? [],
         translations: merged,
       });
     }
@@ -83,6 +119,21 @@ export default function ProductEdit() {
 
   const update = <K extends keyof AdminProductInput>(key: K, value: AdminProductInput[K]) => {
     setForm((f) => ({ ...f, [key]: value }));
+  };
+
+  const addCert = (raw: string) => {
+    const v = raw.trim();
+    if (!v) return;
+    if (form.certs.includes(v)) return;
+    update("certs", [...form.certs, v]);
+    setCertInput("");
+  };
+
+  const removeCert = (idx: number) => {
+    update(
+      "certs",
+      form.certs.filter((_, i) => i !== idx),
+    );
   };
 
   const onSave = async (e: React.FormEvent) => {
@@ -214,6 +265,70 @@ export default function ProductEdit() {
               testId="upload-product-image"
             />
           </div>
+
+          <div className="space-y-2 md:col-span-2 pt-2 border-t border-border">
+            <Label htmlFor="cert-input">인증 / 마크 (Certifications)</Label>
+            <p className="text-xs text-muted-foreground">
+              모든 언어 공통 — 추가 후 Enter 또는 + 버튼. 공개 페이지 우측 컬럼에 칩으로 표시됩니다.
+            </p>
+            <div className="flex flex-wrap gap-2 min-h-[2rem]">
+              {form.certs.length === 0 ? (
+                <span className="text-xs text-muted-foreground italic">
+                  아직 추가된 인증이 없습니다.
+                </span>
+              ) : (
+                form.certs.map((c, i) => (
+                  <span
+                    key={`${c}-${i}`}
+                    className="inline-flex items-center gap-1.5 rounded-full bg-accent/10 border border-accent/30 px-3 py-1 text-xs font-medium text-accent"
+                    data-testid={`cert-chip-${i}`}
+                  >
+                    {c}
+                    <button
+                      type="button"
+                      onClick={() => removeCert(i)}
+                      className="hover:text-destructive"
+                      aria-label={`${c} 삭제`}
+                      data-testid={`cert-remove-${i}`}
+                    >
+                      <X className="h-3 w-3" />
+                    </button>
+                  </span>
+                ))
+              )}
+            </div>
+            <div className="flex gap-2">
+              <Input
+                id="cert-input"
+                value={certInput}
+                onChange={(e) => setCertInput(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+                    addCert(certInput);
+                  }
+                }}
+                placeholder="예: ISO 22716"
+                list="cert-suggestions"
+                data-testid="input-cert"
+              />
+              <Button
+                type="button"
+                size="icon"
+                variant="outline"
+                onClick={() => addCert(certInput)}
+                data-testid="button-add-cert"
+              >
+                <Plus className="h-4 w-4" />
+              </Button>
+              <datalist id="cert-suggestions">
+                {CERT_SUGGESTIONS.map((c) => (
+                  <option key={c} value={c} />
+                ))}
+              </datalist>
+            </div>
+          </div>
+
           <div className="flex items-center gap-3 md:col-span-2 pt-2 border-t border-border">
             <Switch
               id="published"
