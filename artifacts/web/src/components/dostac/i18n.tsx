@@ -1039,7 +1039,7 @@ const LanguageContext = createContext<LangContextValue | null>(null);
 export function LanguageProvider({ children }: { children: React.ReactNode }) {
   const [lang, setLangState] = useState<Lang>(() => {
     if (typeof window === "undefined") return "en";
-    const saved = window.localStorage.getItem("dostac-lang") as Lang | null;
+    const saved = window.localStorage.getItem("dostac-lang-v2") as Lang | null;
     return saved && (["ko", "en", "ja", "zh", "vi"] as Lang[]).includes(saved) ? saved : "en";
   });
 
@@ -1048,7 +1048,7 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
       document.documentElement.lang = lang;
     }
     if (typeof window !== "undefined") {
-      window.localStorage.setItem("dostac-lang", lang);
+      window.localStorage.setItem("dostac-lang-v2", lang);
     }
   }, [lang]);
 
