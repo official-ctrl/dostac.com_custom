@@ -1038,9 +1038,9 @@ const LanguageContext = createContext<LangContextValue | null>(null);
 
 export function LanguageProvider({ children }: { children: React.ReactNode }) {
   const [lang, setLangState] = useState<Lang>(() => {
-    if (typeof window === "undefined") return "ko";
+    if (typeof window === "undefined") return "en";
     const saved = window.localStorage.getItem("dostac-lang") as Lang | null;
-    return saved && (["ko", "en", "ja", "zh", "vi"] as Lang[]).includes(saved) ? saved : "ko";
+    return saved && (["ko", "en", "ja", "zh", "vi"] as Lang[]).includes(saved) ? saved : "en";
   });
 
   useEffect(() => {
@@ -1066,9 +1066,9 @@ export function useT(): LangContextValue {
   const ctx = useContext(LanguageContext);
   if (!ctx) {
     return {
-      lang: "ko",
+      lang: "en",
       setLang: () => {},
-      t: (key: string) => resolve(translations.ko, key),
+      t: (key: string) => resolve(translations.en, key),
     };
   }
   return ctx;
