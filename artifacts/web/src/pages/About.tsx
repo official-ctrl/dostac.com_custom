@@ -106,8 +106,8 @@ function AboutContent() {
   const worldwideIntro = pickByLang(data, "worldwideIntro", lang);
   const directionsAddress = pickByLang(data, "directionsAddress", lang);
 
-  const greetingImg = data?.greetingImageUrl || dostacImage("ceo-portrait.png");
-  const worldwideImg = data?.worldwideImageUrl || dostacImage("hero-production.png");
+  const greetingImg = data?.greetingImageUrl || dostacImage("ceo-portrait.webp");
+  const worldwideImg = data?.worldwideImageUrl || dostacImage("hero-production.webp");
 
   return (
     <>
@@ -115,7 +115,7 @@ function AboutContent() {
       <section className="relative w-full h-[360px] flex items-center">
         <div className="absolute inset-0 z-0">
           <img
-            src={dostacImage("hero-about.png")}
+            src={dostacImage("hero-about.webp")}
             alt=""
             className="w-full h-full object-cover"
           />

@@ -57,7 +57,7 @@ function NoticeContent() {
     <>
       <section className="relative w-full h-[360px] flex items-center">
         <div className="absolute inset-0 z-0">
-          <img src={dostacImage("hero-home.png")} alt="" className="w-full h-full object-cover object-center" />
+          <img src={dostacImage("hero-home.webp")} alt="" className="w-full h-full object-cover object-center" />
           <div className="absolute inset-0 bg-gradient-to-r from-primary/75 via-primary/45 to-primary/30"></div>
         </div>
         <div className="container relative z-10 mx-auto px-6 text-white">
@@ -114,7 +114,7 @@ function NoticeContent() {
           <div className="container mx-auto px-6">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
               <div className="relative h-[420px] rounded-md overflow-hidden shadow-lg bg-slate-200">
-                <img src={featured.thumbnailUrl ?? dostacImage("hero-home.png")} alt={featured.title} className="absolute inset-0 w-full h-full object-cover" />
+                <img src={featured.thumbnailUrl ?? dostacImage("hero-home.webp")} alt={featured.title} className="absolute inset-0 w-full h-full object-cover" />
                 <span className={`absolute top-4 left-4 inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-semibold ${categoryColor(featured.category)}`}>
                   <Tag className="h-3 w-3" />
                   {featured.category}
@@ -168,7 +168,7 @@ function NoticeContent() {
                   >
                     <div className="relative aspect-[16/10] bg-slate-200 overflow-hidden">
                       <img
-                        src={item.thumbnailUrl ?? dostacImage("hero-home.png")}
+                        src={item.thumbnailUrl ?? dostacImage("hero-home.webp")}
                         alt={item.title}
                         loading="lazy"
                         className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"

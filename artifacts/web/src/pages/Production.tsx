@@ -39,7 +39,7 @@ function ProductionContent() {
       <section className="relative w-full h-[400px] flex items-center">
         <div className="absolute inset-0 z-0">
           <img
-            src={data.oemImageUrl ?? dostacImage("hero-production.png")}
+            src={data.oemImageUrl ?? dostacImage("hero-production.webp")}
             alt=""
             className="w-full h-full object-cover object-center"
           />

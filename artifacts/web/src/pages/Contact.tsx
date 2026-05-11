@@ -102,7 +102,7 @@ function ContactContent() {
       <section className="relative w-full h-[400px] flex items-center">
         <div className="absolute inset-0 z-0">
           <img
-            src={dostacImage("hero-contact.png")}
+            src={dostacImage("hero-contact.webp")}
             alt=""
             className="w-full h-full object-cover object-center"
           />
@@ -296,7 +296,7 @@ function ContactContent() {
 
               <div className="bg-muted rounded-xl overflow-hidden aspect-video border relative">
                 <img
-                  src={dostacImage("hero-about.png")}
+                  src={dostacImage("hero-about.webp")}
                   className="w-full h-full object-cover opacity-60"
                   alt=""
                 />

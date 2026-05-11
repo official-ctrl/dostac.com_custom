@@ -15,7 +15,7 @@ function ProductsContent() {
       <section className="relative w-full h-[400px] flex items-center">
         <div className="absolute inset-0 z-0">
           <img
-            src={dostacImage("hero-products.png")}
+            src={dostacImage("hero-products.webp")}
             alt=""
             className="w-full h-full object-cover object-center"
           />
@@ -59,7 +59,7 @@ function ProductsContent() {
             <div className="space-y-10">
               {products.map((product, index) => {
                 const fallbackImg = dostacImage(
-                  `product-${String((index % 10) + 1).padStart(2, "0")}.png`,
+                  `product-${String((index % 10) + 1).padStart(2, "0")}.webp`,
                 );
                 return (
                   <article

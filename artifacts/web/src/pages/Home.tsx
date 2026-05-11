@@ -56,7 +56,7 @@ function HomeSlider() {
     return (
       <section className="relative w-full h-[calc(100vh-5rem)] min-h-[520px] bg-slate-900 flex items-center justify-center">
         <img
-          src={dostacImage("hero-home.png")}
+          src={dostacImage("hero-home.webp")}
           alt=""
           className="absolute inset-0 w-full h-full object-cover opacity-60"
         />
@@ -116,7 +116,7 @@ function HomeSlider() {
               alt=""
               className="absolute inset-0 w-full h-full object-cover object-center"
               onError={(e) => {
-                (e.target as HTMLImageElement).src = dostacImage("hero-home.png");
+                (e.target as HTMLImageElement).src = dostacImage("hero-home.webp");
               }}
             />
             <div className="absolute inset-0 bg-gradient-to-r from-primary/85 via-primary/55 to-primary/20" />
