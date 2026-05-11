@@ -24,7 +24,7 @@ interface BannerSeed {
 
 const BANNERS: BannerSeed[] = [
   {
-    imageUrl: "/images/dostac/hero-home.png",
+    imageUrl: "/images/dostac/hero-home.webp",
     sortOrder: 0,
     translations: {
       ko: {
@@ -50,7 +50,7 @@ const BANNERS: BannerSeed[] = [
     },
   },
   {
-    imageUrl: "/images/dostac/hero-production.png",
+    imageUrl: "/images/dostac/hero-production.webp",
     sortOrder: 1,
     translations: {
       ko: {
@@ -76,7 +76,7 @@ const BANNERS: BannerSeed[] = [
     },
   },
   {
-    imageUrl: "/images/dostac/hero-products.png",
+    imageUrl: "/images/dostac/hero-products.webp",
     sortOrder: 2,
     translations: {
       ko: {
@@ -170,7 +170,7 @@ const PRODUCTS: ProductSeed[] = [
     slug: "carrot-toner-pad-base",
     category: "skincare",
     sortOrder: 1,
-    imageUrl: "/images/dostac/product-01.png",
+    imageUrl: "/images/dostac/product-01.webp",
     translations: {
       ko: {
         name: "당근 비타 진정 토너 패드",
@@ -203,7 +203,7 @@ const PRODUCTS: ProductSeed[] = [
     slug: "centella-cica-cream",
     category: "skincare",
     sortOrder: 2,
-    imageUrl: "/images/dostac/product-02.png",
+    imageUrl: "/images/dostac/product-02.webp",
     translations: {
       ko: {
         name: "센텔라 시카 리페어 크림",
@@ -236,7 +236,7 @@ const PRODUCTS: ProductSeed[] = [
     slug: "vita-c-brightening-serum",
     category: "skincare",
     sortOrder: 3,
-    imageUrl: "/images/dostac/product-03.png",
+    imageUrl: "/images/dostac/product-03.webp",
     translations: {
       ko: {
         name: "비타 C 브라이트닝 세럼",
@@ -269,7 +269,7 @@ const PRODUCTS: ProductSeed[] = [
     slug: "ph-balance-cleansing-foam",
     category: "cleanser",
     sortOrder: 4,
-    imageUrl: "/images/dostac/product-04.png",
+    imageUrl: "/images/dostac/product-04.webp",
     translations: {
       ko: {
         name: "pH 밸런스 클렌징 폼",
@@ -302,7 +302,7 @@ const PRODUCTS: ProductSeed[] = [
     slug: "collagen-boost-mask",
     category: "mask",
     sortOrder: 5,
-    imageUrl: "/images/dostac/product-05.png",
+    imageUrl: "/images/dostac/product-05.webp",
     translations: {
       ko: {
         name: "콜라겐 부스트 마스크",
@@ -335,7 +335,7 @@ const PRODUCTS: ProductSeed[] = [
     slug: "rose-perfume-mist",
     category: "body",
     sortOrder: 6,
-    imageUrl: "/images/dostac/product-06.png",
+    imageUrl: "/images/dostac/product-06.webp",
     translations: {
       ko: {
         name: "로즈 퍼퓸 바디 미스트",
@@ -368,7 +368,7 @@ const PRODUCTS: ProductSeed[] = [
     slug: "pore-clear-strips",
     category: "specialty",
     sortOrder: 7,
-    imageUrl: "/images/dostac/product-pore-strips.png",
+    imageUrl: "/images/dostac/product-pore-strips.webp",
     translations: {
       ko: {
         name: "포어 클리어 코팩 스트립",
@@ -401,7 +401,7 @@ const PRODUCTS: ProductSeed[] = [
     slug: "spot-care-patches",
     category: "specialty",
     sortOrder: 8,
-    imageUrl: "/images/dostac/product-spot-patches.png",
+    imageUrl: "/images/dostac/product-spot-patches.webp",
     translations: {
       ko: {
         name: "스팟 케어 하이드로 패치",
@@ -434,7 +434,7 @@ const PRODUCTS: ProductSeed[] = [
     slug: "baby-clean-wipes",
     category: "wipes",
     sortOrder: 9,
-    imageUrl: "/images/dostac/product-baby-wipes.png",
+    imageUrl: "/images/dostac/product-baby-wipes.webp",
     translations: {
       ko: {
         name: "베이비 클린 물티슈",
@@ -471,7 +471,7 @@ const NOTICES: NoticeSeed[] = [
     category: "regulatory",
     region: "Indonesia",
     publishedAt: "2026-04-12T00:00:00Z",
-    thumbnailUrl: "/images/dostac/product-01.png",
+    thumbnailUrl: "/images/dostac/product-01.webp",
     translations: {
       ko: {
         title: "인도네시아 BPOM 2차 등록 7건 완료",
@@ -505,7 +505,7 @@ const NOTICES: NoticeSeed[] = [
     category: "event",
     region: "Vietnam",
     publishedAt: "2026-03-25T00:00:00Z",
-    thumbnailUrl: "/images/dostac/product-02.png",
+    thumbnailUrl: "/images/dostac/product-02.webp",
     translations: {
       ko: {
         title: "2026 베트남 호치민 K-Beauty 로드쇼 참가",
@@ -539,7 +539,7 @@ const NOTICES: NoticeSeed[] = [
     category: "regulatory",
     region: "United States",
     publishedAt: "2026-02-20T00:00:00Z",
-    thumbnailUrl: "/images/dostac/product-03.png",
+    thumbnailUrl: "/images/dostac/product-03.webp",
     translations: {
       ko: {
         title: "미국 MoCRA 자가 검증 업데이트",
@@ -573,7 +573,7 @@ const NOTICES: NoticeSeed[] = [
     category: "regulatory",
     region: "Japan",
     publishedAt: "2026-01-30T00:00:00Z",
-    thumbnailUrl: "/images/dostac/product-04.png",
+    thumbnailUrl: "/images/dostac/product-04.webp",
     translations: {
       ko: {
         title: "일본 PMDA 협력 파트너 지정",
@@ -607,7 +607,7 @@ const NOTICES: NoticeSeed[] = [
     category: "company",
     region: "Korea",
     publishedAt: "2026-01-08T00:00:00Z",
-    thumbnailUrl: "/images/dostac/product-05.png",
+    thumbnailUrl: "/images/dostac/product-05.webp",
     translations: {
       ko: {
         title: "ISO 22716 GMP 인증 갱신 완료",
@@ -747,7 +747,7 @@ async function seed(): Promise<void> {
   if (existingAbout.length === 0) {
     await db.insert(aboutContentTable).values({
       id: 1,
-      greetingImageUrl: "/images/dostac/ceo-portrait.png",
+      greetingImageUrl: "/images/dostac/ceo-portrait.webp",
       greetingMessageKo:
         "<p>빠르게 진화하는 글로벌 뷰티 & 헬스케어 시장에서 브랜드는 단순한 공급자가 아닌 헌신적인 파트너를 필요로 합니다. dostac은 비전을 현실로, 아이디어를 전 세계 소비자가 사랑하는 고품질 제품으로 만들어 드립니다.</p><p>30년의 제조 노하우와 GMP/ISO 인증 생산 인프라, 그리고 디자인부터 양산·물류까지의 풀스택 역량으로 파트너의 성장을 함께 만들어 갑니다.</p>",
       greetingMessageEn:
@@ -770,7 +770,7 @@ async function seed(): Promise<void> {
         { year: "2018", textKo: "헤어/바디/위생용품으로 카테고리 확장", textEn: "Expanded into hair, body and hygiene categories", textJa: "ヘア/ボディ/衛生用品へカテゴリー拡大", textZh: "扩展至护发、身体护理与卫生用品", textVi: "Mở rộng sang chăm sóc tóc, cơ thể và sản phẩm vệ sinh" },
         { year: "2024", textKo: "글로벌 30개국 파트너십 달성", textEn: "Reached partnerships in 30 countries worldwide", textJa: "グローバル30カ国とのパートナーシップを達成", textZh: "实现全球30个国家的合作伙伴关系", textVi: "Đạt mốc hợp tác với 30 quốc gia trên toàn thế giới" },
       ],
-      worldwideImageUrl: "/images/dostac/hero-production.png",
+      worldwideImageUrl: "/images/dostac/hero-production.webp",
       worldwideIntroKo: "dostac은 아시아·미주·유럽 30개국 파트너와 함께 글로벌 K-Beauty를 만들어 갑니다.",
       worldwideIntroEn: "dostac powers global K-Beauty with partners across 30 countries in Asia, the Americas and Europe.",
       worldwideIntroJa: "dostacはアジア・米州・欧州30カ国のパートナーとともに、グローバルK-Beautyを創造します。",
@@ -799,7 +799,7 @@ async function seed(): Promise<void> {
   if (existingProcess.length === 0) {
     await db.insert(processContentTable).values({
       id: 1,
-      oemImageUrl: "/images/dostac/hero-production.png",
+      oemImageUrl: "/images/dostac/hero-production.webp",
       oemDescriptionKo:
         "디자인부터 샘플링, 양산까지 — 30년 노하우와 GMP/ISO 인증 생산 인프라로 브랜드의 아이디어를 시장 가능한 제품으로 완성합니다.",
       oemDescriptionEn:
