@@ -265,7 +265,7 @@ function PhilosophySection({
               }`}
             >
               <div className="text-xs font-semibold uppercase tracking-[0.25em] text-accent mb-3">
-                COMPANY PHILOSOPHY
+                {t("about.eyebrowPhilosophy") as string}
               </div>
               <h2 className="font-display text-3xl md:text-4xl font-bold text-primary mb-6 leading-tight">
                 {(dbHeading && dbHeading.trim()) ? dbHeading : (t("about.philosophyHeading") as string)}
@@ -306,7 +306,7 @@ function PhilosophySection({
         <div className="mb-20">
           <div className="text-center mb-10">
             <div className="text-xs font-semibold uppercase tracking-[0.25em] text-accent mb-3">
-              WHY DOSTAC
+              {t("about.eyebrowWhy") as string}
             </div>
             <h3 className="font-display text-2xl md:text-3xl font-bold text-primary">
               {t("about.whyDostacHeading") as string}
@@ -341,7 +341,7 @@ function PhilosophySection({
         <div className="bg-white rounded-2xl border border-slate-200 p-8 md:p-12 shadow-sm">
           <div className="max-w-5xl mx-auto">
             <div className="text-xs font-semibold uppercase tracking-[0.25em] text-accent mb-3">
-              FOUNDER EXPERIENCE
+              {t("about.eyebrowFounder") as string}
             </div>
             <h3 className="font-display text-2xl md:text-3xl font-bold text-primary mb-6">
               {founderHeading}
@@ -452,7 +452,7 @@ function HistorySection({
               }`}
             >
               <div className="text-xs font-semibold uppercase tracking-[0.25em] text-accent mb-3">
-                OUR STORY
+                {t("about.eyebrowStory") as string}
               </div>
               <h2 className="font-display text-3xl md:text-4xl font-bold text-primary mb-6 leading-tight">
                 {t("about.historyHeading") as string}
@@ -711,7 +711,7 @@ function AboutContent() {
               {/* subtle top label overlay */}
               <div className="absolute top-4 left-4 z-10 bg-white/90 backdrop-blur-sm rounded-xl px-3 py-1.5 flex items-center gap-2 shadow-sm">
                 <MapPin className="h-3.5 w-3.5 text-accent" />
-                <span className="text-xs font-semibold text-primary">Dostac HQ</span>
+                <span className="text-xs font-semibold text-primary">{t("about.mapLabel") as string}</span>
               </div>
 
               {data?.directionsMapEmbed ? (

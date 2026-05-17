@@ -184,6 +184,11 @@ const ko: Dict = {
     directionsInquiryValue: "OEM / ODM / 수출 상담 가능",
     directionsCTAContact: "문의하기",
     directionsCTAOEM: "OEM 문의",
+    eyebrowStory: "우리의 이야기",
+    eyebrowPhilosophy: "기업 철학",
+    eyebrowWhy: "WHY DOSTAC",
+    eyebrowFounder: "창립자 경험",
+    mapLabel: "도스택 본사",
   },
   production: {
     heroTitle: "공정 — OEM/ODM부터 글로벌 인증까지",
@@ -246,6 +251,7 @@ const ko: Dict = {
     oemInquiry: "OEM 문의 요청", contactUs: "문의하기",
     bottomCtaHeading: "원하시는 제품이 정확히 보이지 않으시나요?",
     bottomCtaBody: "당사의 R&D 네트워크는 맞춤 제형 및 맞춤형 패키징 솔루션에 특화되어 있습니다. 귀사의 고유한 프로젝트 요구사항을 함께 논의해 보세요.",
+    empty: "아직 등록된 제품이 없습니다.",
     bottomCtaButton: "맞춤 개발 시작하기",
     items: [
       { id: "01", name: "코팩", headline: "고도화된 블랙헤드 및 피지 관리 솔루션",
@@ -512,6 +518,11 @@ const en: Dict = {
     directionsInquiryValue: "OEM / ODM / Export Consultation Available",
     directionsCTAContact: "Contact Us",
     directionsCTAOEM: "OEM Inquiry",
+    eyebrowStory: "OUR STORY",
+    eyebrowPhilosophy: "COMPANY PHILOSOPHY",
+    eyebrowWhy: "WHY DOSTAC",
+    eyebrowFounder: "FOUNDER EXPERIENCE",
+    mapLabel: "Dostac HQ",
   },
   production: {
     heroTitle: "Process — From OEM/ODM to Global Certifications",
@@ -574,6 +585,7 @@ const en: Dict = {
     oemInquiry: "Request OEM Inquiry", contactUs: "Contact Us",
     bottomCtaHeading: "Don't see exactly what you need?",
     bottomCtaBody: "Our R&D network specializes in custom formulations and bespoke packaging solutions. Let's discuss your unique project requirements.",
+    empty: "No products yet.",
     bottomCtaButton: "Start Custom Development",
     items: [
       { id: "01", name: "Pore Strips", headline: "Advanced Blackhead & Sebum Control Solutions",
@@ -840,6 +852,11 @@ const ja: Dict = {
     directionsInquiryValue: "OEM / ODM / 輸出相談対応可能",
     directionsCTAContact: "お問い合わせ",
     directionsCTAOEM: "OEMお問い合わせ",
+    eyebrowStory: "私たちのストーリー",
+    eyebrowPhilosophy: "企業理念",
+    eyebrowWhy: "WHY DOSTAC",
+    eyebrowFounder: "創業者の経験",
+    mapLabel: "Dostac 本社",
   },
   production: {
     heroTitle: "工程 — OEM/ODMからグローバル認証まで",
@@ -902,6 +919,7 @@ const ja: Dict = {
     oemInquiry: "OEM問い合わせ", contactUs: "お問い合わせ",
     bottomCtaHeading: "お探しの製品が見つかりませんか？",
     bottomCtaBody: "当社のR&Dネットワークは、カスタム処方とオーダーメイドのパッケージソリューションを得意としています。お客様独自のプロジェクト要件についてぜひご相談ください。",
+    empty: "まだ製品はありません。",
     bottomCtaButton: "カスタム開発を開始",
     items: [
       { id: "01", name: "毛穴ストリップ", headline: "先進的なブラックヘッド・皮脂コントロールソリューション",
@@ -1168,6 +1186,11 @@ const zh: Dict = {
     directionsInquiryValue: "提供 OEM / ODM / 出口咨询",
     directionsCTAContact: "联系我们",
     directionsCTAOEM: "OEM 咨询",
+    eyebrowStory: "我们的故事",
+    eyebrowPhilosophy: "公司理念",
+    eyebrowWhy: "为何选择DOSTAC",
+    eyebrowFounder: "创始人经验",
+    mapLabel: "Dostac 总部",
   },
   production: {
     heroTitle: "生产流程 — 从 OEM/ODM 到全球认证",
@@ -1230,6 +1253,7 @@ const zh: Dict = {
     oemInquiry: "提交 OEM 询盘", contactUs: "联系我们",
     bottomCtaHeading: "没有找到完全符合您需求的产品？",
     bottomCtaBody: "我们的 R&D 网络专注于定制配方与专属包装解决方案。欢迎与我们讨论您独特的项目需求。",
+    empty: "暂无产品。",
     bottomCtaButton: "开始定制开发",
     items: [
       { id: "01", name: "鼻贴", headline: "先进的黑头与皮脂控制解决方案",
@@ -1496,6 +1520,11 @@ const vi: Dict = {
     directionsInquiryValue: "Có sẵn tư vấn OEM / ODM / xuất khẩu",
     directionsCTAContact: "Liên hệ với chúng tôi",
     directionsCTAOEM: "Yêu cầu OEM",
+    eyebrowStory: "CÂU CHUYỆN CỦA CHÚNG TÔI",
+    eyebrowPhilosophy: "TRIẾT LÝ CÔNG TY",
+    eyebrowWhy: "TẠI SAO CHỌN DOSTAC",
+    eyebrowFounder: "KINH NGHIỆM NHÀ SÁNG LẬP",
+    mapLabel: "Trụ sở Dostac",
   },
   production: {
     heroTitle: "Quy trình — Từ OEM/ODM đến các chứng nhận toàn cầu",
@@ -1558,6 +1587,7 @@ const vi: Dict = {
     oemInquiry: "Yêu cầu tư vấn OEM", contactUs: "Liên hệ với chúng tôi",
     bottomCtaHeading: "Chưa thấy chính xác sản phẩm bạn cần?",
     bottomCtaBody: "Mạng lưới R&D của chúng tôi chuyên về công thức tùy chỉnh và giải pháp bao bì theo yêu cầu. Hãy cùng trao đổi về nhu cầu riêng cho dự án của bạn.",
+    empty: "Chưa có sản phẩm nào.",
     bottomCtaButton: "Bắt đầu phát triển tùy chỉnh",
     items: [
       { id: "01", name: "Miếng lột mụn đầu đen", headline: "Giải pháp kiểm soát mụn đầu đen & bã nhờn tiên tiến",

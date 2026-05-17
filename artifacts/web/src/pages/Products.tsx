@@ -128,7 +128,7 @@ function ProductsContent() {
           </div>
         ) : products.length === 0 ? (
           <div className="py-32 text-center text-muted-foreground container mx-auto px-6 bg-white">
-            No products yet.
+            {t("products.empty") as string}
           </div>
         ) : (
           products.map((product, index) => {

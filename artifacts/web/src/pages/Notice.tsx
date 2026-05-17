@@ -359,7 +359,7 @@ function NoticeContent() {
                   onClick={() => setPage((p) => p + 1)}
                   className="h-10 px-4 rounded-sm text-sm font-medium bg-white border border-slate-200 text-slate-700 hover:bg-slate-100 inline-flex items-center gap-1"
                 >
-                  Next <ChevronRight className="h-4 w-4" />
+                  {t("common.next") as string} <ChevronRight className="h-4 w-4" />
                 </button>
               )}
             </div>
