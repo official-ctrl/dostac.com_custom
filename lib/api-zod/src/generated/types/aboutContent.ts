@@ -6,6 +6,7 @@
  * OpenAPI spec version: 0.1.0
  */
 import type { HistoryItem } from "./historyItem";
+import type { WhyDostacItem } from "./whyDostacItem";
 import type { WorldwideItem } from "./worldwideItem";
 
 export interface AboutContent {
@@ -30,6 +31,12 @@ export interface AboutContent {
   worldwideIntroZh: string;
   worldwideIntroVi: string;
   worldwideItems: WorldwideItem[];
+  companyDescKo: string;
+  companyDescEn: string;
+  companyDescJa: string;
+  companyDescZh: string;
+  companyDescVi: string;
+  whyDostacItems: WhyDostacItem[];
   directionsAddressKo: string;
   directionsAddressEn: string;
   directionsAddressJa: string;

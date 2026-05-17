@@ -8,14 +8,17 @@ import {
   type AboutContent,
   type HistoryItem,
   type WorldwideItem,
+  type WhyDostacItem,
 } from "@workspace/api-client-react";
-import { Loader2, Save, Sparkles, Plus, Trash2 } from "lucide-react";
+import { Loader2, Save, Sparkles, Plus, Trash2, GripVertical, Eye, EyeOff } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { Switch } from "@/components/ui/switch";
+import { Badge } from "@/components/ui/badge";
 import { ImageUploader } from "@/components/ImageUploader";
 import { RichTextEditor } from "@/components/RichTextEditor";
 import { useToast } from "@/hooks/use-toast";
@@ -48,6 +51,12 @@ function emptyAbout(): AboutContent {
     worldwideIntroZh: "",
     worldwideIntroVi: "",
     worldwideItems: [],
+    companyDescKo: "",
+    companyDescEn: "",
+    companyDescJa: "",
+    companyDescZh: "",
+    companyDescVi: "",
+    whyDostacItems: [],
     directionsAddressKo: "",
     directionsAddressEn: "",
     directionsAddressJa: "",
@@ -71,6 +80,47 @@ function newWorldwideItem(): WorldwideItem {
   };
 }
 
+function newWhyDostacItem(sortOrder: number): WhyDostacItem {
+  return {
+    titleKo: "", titleEn: "", titleJa: "", titleZh: "", titleVi: "",
+    descKo: "", descEn: "", descJa: "", descZh: "", descVi: "",
+    active: true,
+    sortOrder,
+  };
+}
+
+/* ─── LangTabs helper ─────────────────────────────────────────── */
+function LangTabs({
+  activeLang,
+  onChange,
+  filledFor,
+  children,
+}: {
+  activeLang: Lang;
+  onChange: (l: Lang) => void;
+  filledFor: (l: Lang) => boolean;
+  children: (lang: Lang) => React.ReactNode;
+}) {
+  return (
+    <Tabs value={activeLang} onValueChange={(v) => onChange(v as Lang)}>
+      <TabsList className="h-8 mb-3">
+        {LANGS.map((l) => (
+          <TabsTrigger key={l} value={l} className="h-7 px-3 text-xs gap-1">
+            {LANG_LABEL[l]}
+            {filledFor(l) && <span className="h-1.5 w-1.5 rounded-full bg-accent" />}
+          </TabsTrigger>
+        ))}
+      </TabsList>
+      {LANGS.map((l) => (
+        <TabsContent key={l} value={l}>
+          {children(l)}
+        </TabsContent>
+      ))}
+    </Tabs>
+  );
+}
+
+/* ─── Main component ──────────────────────────────────────────── */
 export default function AboutEdit() {
   const qc = useQueryClient();
   const { toast } = useToast();
@@ -80,10 +130,9 @@ export default function AboutEdit() {
 
   const [form, setForm] = useState<AboutContent>(emptyAbout());
   const [activeSection, setActiveSection] = useState<
-    "greeting" | "history" | "worldwide" | "directions"
+    "greeting" | "company" | "why" | "history" | "directions"
   >("greeting");
   const [activeLang, setActiveLang] = useState<Lang>("ko");
-  const [bulkBusy, setBulkBusy] = useState(false);
 
   useEffect(() => {
     if (existing) setForm({ ...emptyAbout(), ...existing });
@@ -93,6 +142,7 @@ export default function AboutEdit() {
     setForm((f) => ({ ...f, [key]: value }));
   };
 
+  /* ─── translate helper ──────────────────────────────────────── */
   const translateOne = async (
     sourceText: string,
     context: string,
@@ -100,22 +150,12 @@ export default function AboutEdit() {
     apply: (lang: Lang, text: string) => void,
   ) => {
     if (!sourceText.trim()) {
-      toast({
-        title: "한국어 원문이 없습니다",
-        description: "먼저 한국어 내용을 입력하세요.",
-        variant: "destructive",
-      });
+      toast({ title: "한국어 원문이 없습니다", description: "먼저 한국어 내용을 입력하세요.", variant: "destructive" });
       return;
     }
     try {
       const r = await translateMut.mutateAsync({
-        data: {
-          sourceText,
-          sourceLang: "ko",
-          targetLangs: TARGET_LANGS,
-          context,
-          format,
-        },
+        data: { sourceText, sourceLang: "ko", targetLangs: TARGET_LANGS, context, format },
       });
       for (const t of r.translations) {
         if (t.lang === "ko") continue;
@@ -123,125 +163,93 @@ export default function AboutEdit() {
       }
       toast({ title: "번역 완료", description: context });
     } catch (err) {
-      toast({
-        title: "번역 실패",
-        description: err instanceof Error ? err.message : "Unknown error",
-        variant: "destructive",
-      });
+      toast({ title: "번역 실패", description: err instanceof Error ? err.message : "Unknown error", variant: "destructive" });
     }
   };
 
   const translateGreetingMessage = () =>
-    translateOne(
-      form.greetingMessageKo,
-      "company greeting message (HTML rich text)",
-      "html",
-      (lang, text) => setForm((f) => ({ ...f, [langKey("greetingMessage", lang)]: text })),
-    );
-  const translateGreetingSignature = () =>
-    translateOne(
-      form.greetingSignatureKo,
-      "CEO/management signature line",
-      "text",
-      (lang, text) => setForm((f) => ({ ...f, [langKey("greetingSignature", lang)]: text })),
-    );
-  const translateWorldwideIntro = () =>
-    translateOne(
-      form.worldwideIntroKo,
-      "global network introduction sentence",
-      "text",
-      (lang, text) => setForm((f) => ({ ...f, [langKey("worldwideIntro", lang)]: text })),
-    );
-  const translateDirectionsAddress = () =>
-    translateOne(
-      form.directionsAddressKo,
-      "company headquarters / factory street address",
-      "text",
-      (lang, text) => setForm((f) => ({ ...f, [langKey("directionsAddress", lang)]: text })),
-    );
+    translateOne(form.greetingMessageKo, "company greeting message (HTML rich text)", "html",
+      (lang, text) => setForm((f) => ({ ...f, [langKey("greetingMessage", lang)]: text })));
 
-  // History helpers
+  const translateGreetingSignature = () =>
+    translateOne(form.greetingSignatureKo, "CEO/management signature line", "text",
+      (lang, text) => setForm((f) => ({ ...f, [langKey("greetingSignature", lang)]: text })));
+
+  const translateCompanyDesc = () =>
+    translateOne(form.companyDescKo, "company introduction / about us description", "text",
+      (lang, text) => setForm((f) => ({ ...f, [langKey("companyDesc", lang)]: text })));
+
+  const translateWorldwideIntro = () =>
+    translateOne(form.worldwideIntroKo, "global network introduction sentence", "text",
+      (lang, text) => setForm((f) => ({ ...f, [langKey("worldwideIntro", lang)]: text })));
+
+  const translateDirectionsAddress = () =>
+    translateOne(form.directionsAddressKo, "company headquarters / factory street address", "text",
+      (lang, text) => setForm((f) => ({ ...f, [langKey("directionsAddress", lang)]: text })));
+
+  /* ─── History helpers ───────────────────────────────────────── */
   const addHistoryItem = () =>
     setForm((f) => ({ ...f, historyItems: [...f.historyItems, newHistoryItem()] }));
   const removeHistoryItem = (i: number) =>
-    setForm((f) => ({
-      ...f,
-      historyItems: f.historyItems.filter((_, idx) => idx !== i),
-    }));
+    setForm((f) => ({ ...f, historyItems: f.historyItems.filter((_, idx) => idx !== i) }));
   const updateHistoryItem = (i: number, patch: Partial<HistoryItem>) =>
-    setForm((f) => ({
-      ...f,
-      historyItems: f.historyItems.map((h, idx) => (idx === i ? { ...h, ...patch } : h)),
-    }));
+    setForm((f) => ({ ...f, historyItems: f.historyItems.map((h, idx) => (idx === i ? { ...h, ...patch } : h)) }));
   const translateHistoryItem = async (i: number) => {
     const it = form.historyItems[i];
     if (!it) return;
-    await translateOne(
-      it.textKo,
-      "company history milestone description",
-      "text",
-      (lang, text) => updateHistoryItem(i, { [langKey("text", lang)]: text } as Partial<HistoryItem>),
-    );
+    await translateOne(it.textKo, "company history milestone description", "text",
+      (lang, text) => updateHistoryItem(i, { [langKey("text", lang)]: text } as Partial<HistoryItem>));
   };
 
-  // Worldwide helpers
+  /* ─── Worldwide helpers ─────────────────────────────────────── */
   const addWorldwideItem = () =>
     setForm((f) => ({ ...f, worldwideItems: [...f.worldwideItems, newWorldwideItem()] }));
   const removeWorldwideItem = (i: number) =>
-    setForm((f) => ({
-      ...f,
-      worldwideItems: f.worldwideItems.filter((_, idx) => idx !== i),
-    }));
+    setForm((f) => ({ ...f, worldwideItems: f.worldwideItems.filter((_, idx) => idx !== i) }));
   const updateWorldwideItem = (i: number, patch: Partial<WorldwideItem>) =>
-    setForm((f) => ({
-      ...f,
-      worldwideItems: f.worldwideItems.map((w, idx) => (idx === i ? { ...w, ...patch } : w)),
-    }));
+    setForm((f) => ({ ...f, worldwideItems: f.worldwideItems.map((w, idx) => (idx === i ? { ...w, ...patch } : w)) }));
   const translateWorldwideItemTitle = async (i: number) => {
     const it = form.worldwideItems[i];
     if (!it) return;
-    await translateOne(
-      it.titleKo,
-      "regional market title (e.g. Southeast Asia)",
-      "text",
-      (lang, text) =>
-        updateWorldwideItem(i, { [langKey("title", lang)]: text } as Partial<WorldwideItem>),
-    );
+    await translateOne(it.titleKo, "regional market title (e.g. Southeast Asia)", "text",
+      (lang, text) => updateWorldwideItem(i, { [langKey("title", lang)]: text } as Partial<WorldwideItem>));
   };
   const translateWorldwideItemDesc = async (i: number) => {
     const it = form.worldwideItems[i];
     if (!it) return;
-    await translateOne(
-      it.descriptionKo,
-      "regional market description, partnerships and channels",
-      "text",
-      (lang, text) =>
-        updateWorldwideItem(i, { [langKey("description", lang)]: text } as Partial<WorldwideItem>),
-    );
+    await translateOne(it.descriptionKo, "regional market description, partnerships and channels", "text",
+      (lang, text) => updateWorldwideItem(i, { [langKey("description", lang)]: text } as Partial<WorldwideItem>));
   };
 
+  /* ─── Why Dostac helpers ────────────────────────────────────── */
+  const addWhyItem = () =>
+    setForm((f) => ({ ...f, whyDostacItems: [...f.whyDostacItems, newWhyDostacItem(f.whyDostacItems.length)] }));
+  const removeWhyItem = (i: number) =>
+    setForm((f) => ({ ...f, whyDostacItems: f.whyDostacItems.filter((_, idx) => idx !== i).map((it, idx) => ({ ...it, sortOrder: idx })) }));
+  const updateWhyItem = (i: number, patch: Partial<WhyDostacItem>) =>
+    setForm((f) => ({ ...f, whyDostacItems: f.whyDostacItems.map((it, idx) => (idx === i ? { ...it, ...patch } : it)) }));
+  const toggleWhyActive = (i: number) =>
+    updateWhyItem(i, { active: !form.whyDostacItems[i]?.active });
+  const translateWhyItem = async (i: number) => {
+    const it = form.whyDostacItems[i];
+    if (!it) return;
+    await translateOne(it.titleKo, "Why Dostac card title — short B2B benefit phrase", "text",
+      (lang, text) => updateWhyItem(i, { [langKey("title", lang)]: text } as Partial<WhyDostacItem>));
+    if (it.descKo.trim()) {
+      await translateOne(it.descKo, "Why Dostac card description — 1~2 sentence benefit explanation", "text",
+        (lang, text) => updateWhyItem(i, { [langKey("desc", lang)]: text } as Partial<WhyDostacItem>));
+    }
+  };
+
+  /* ─── Save ──────────────────────────────────────────────────── */
   const onSave = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!form.greetingMessageKo.trim()) {
-      toast({
-        title: "한국어 인사말 필수",
-        description: "한국어 인사말 본문을 입력하세요.",
-        variant: "destructive",
-      });
-      setActiveSection("greeting");
-      setActiveLang("ko");
-      return;
-    }
     try {
       await updateMut.mutateAsync({ data: form });
       await qc.invalidateQueries({ queryKey: getAdminGetAboutQueryKey() });
       toast({ title: "회사소개가 저장되었습니다" });
     } catch (err) {
-      toast({
-        title: "저장 실패",
-        description: err instanceof Error ? err.message : "Unknown error",
-        variant: "destructive",
-      });
+      toast({ title: "저장 실패", description: err instanceof Error ? err.message : "Unknown error", variant: "destructive" });
     }
   };
 
@@ -255,15 +263,13 @@ export default function AboutEdit() {
 
   const saving = updateMut.isPending;
 
-  const sectionLabels: Record<typeof activeSection, string> = useMemo(
-    () => ({
-      greeting: "인사말",
-      history: "회사 연혁",
-      worldwide: "글로벌 네트워크",
-      directions: "오시는 길",
-    }),
-    [],
-  );
+  const sectionLabels = useMemo(() => ({
+    greeting: "인사말",
+    company: "회사소개",
+    why: "Why Dostac",
+    history: "연혁",
+    directions: "오시는 길",
+  }), []);
 
   return (
     <form onSubmit={(e) => void onSave(e)} className="px-8 py-8 space-y-6 max-w-6xl">
@@ -271,37 +277,25 @@ export default function AboutEdit() {
         <div>
           <h1 className="text-2xl font-bold tracking-tight">회사소개 (About)</h1>
           <p className="text-xs text-muted-foreground">
-            인사말 / 연혁 / 글로벌 네트워크 / 오시는 길 4개 섹션을 5개 언어로 관리합니다.
+            인사말 · 회사소개 · Why Dostac · 연혁 · 오시는 길 — 5개 언어로 관리합니다.
           </p>
         </div>
-        <Button
-          type="submit"
-          disabled={saving || bulkBusy}
-          className="gap-2"
-          data-testid="button-save-about"
-        >
+        <Button type="submit" disabled={saving} className="gap-2" data-testid="button-save-about">
           {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
           저장
         </Button>
       </header>
 
-      <Tabs
-        value={activeSection}
-        onValueChange={(v) => setActiveSection(v as typeof activeSection)}
-      >
-        <TabsList className="grid grid-cols-4 w-full">
+      <Tabs value={activeSection} onValueChange={(v) => setActiveSection(v as typeof activeSection)}>
+        <TabsList className="grid grid-cols-5 w-full">
           {(Object.keys(sectionLabels) as Array<keyof typeof sectionLabels>).map((k) => (
-            <TabsTrigger
-              key={k}
-              value={k}
-              data-testid={`section-tab-${k}`}
-            >
+            <TabsTrigger key={k} value={k} data-testid={`section-tab-${k}`}>
               {sectionLabels[k]}
             </TabsTrigger>
           ))}
         </TabsList>
 
-        {/* GREETING */}
+        {/* ─── GREETING ─────────────────────────────────────────── */}
         <TabsContent value="greeting" className="mt-4 space-y-4">
           <Card>
             <CardHeader>
@@ -327,49 +321,37 @@ export default function AboutEdit() {
                   <div className="space-y-4">
                     <div className="space-y-2">
                       <div className="flex items-center justify-between">
-                        <Label>인사말 본문 {lang === "ko" && <span className="text-destructive">*</span>}</Label>
+                        <Label>인사말 본문</Label>
                         {lang === "ko" && (
-                          <Button
-                            type="button"
-                            size="sm"
-                            variant="ghost"
+                          <Button type="button" size="sm" variant="ghost"
                             onClick={() => void translateGreetingMessage()}
                             disabled={translateMut.isPending}
-                            className="h-7 gap-1.5 text-xs text-accent hover:text-accent"
-                            data-testid="translate-greeting-message"
-                          >
-                            <Sparkles className="h-3 w-3" /> 자동 번역
+                            className="h-7 gap-1.5 text-xs text-accent hover:text-accent">
+                            <Sparkles className="h-3 w-3" /> KO → 4개 언어 자동 번역
                           </Button>
                         )}
                       </div>
                       <RichTextEditor
                         value={(form[langKey("greetingMessage", lang)] as string) ?? ""}
-                        onChange={(html) =>
-                          setField(langKey("greetingMessage", lang), html)
-                        }
+                        onChange={(html) => setField(langKey("greetingMessage", lang), html)}
                       />
                     </div>
                     <div className="space-y-2">
                       <div className="flex items-center justify-between">
-                        <Label>서명 (예: dostac CEO)</Label>
+                        <Label>서명 (예: CEO, Dostac)</Label>
                         {lang === "ko" && (
-                          <Button
-                            type="button"
-                            size="sm"
-                            variant="ghost"
+                          <Button type="button" size="sm" variant="ghost"
                             onClick={() => void translateGreetingSignature()}
                             disabled={translateMut.isPending}
-                            className="h-7 gap-1.5 text-xs text-accent hover:text-accent"
-                          >
+                            className="h-7 gap-1.5 text-xs text-accent hover:text-accent">
                             <Sparkles className="h-3 w-3" /> 자동 번역
                           </Button>
                         )}
                       </div>
                       <Input
                         value={(form[langKey("greetingSignature", lang)] as string) ?? ""}
-                        onChange={(e) =>
-                          setField(langKey("greetingSignature", lang), e.target.value)
-                        }
+                        onChange={(e) => setField(langKey("greetingSignature", lang), e.target.value)}
+                        placeholder="CEO, Dostac"
                         data-testid={`input-greeting-signature-${lang}`}
                       />
                     </div>
@@ -380,98 +362,55 @@ export default function AboutEdit() {
           </Card>
         </TabsContent>
 
-        {/* HISTORY */}
-        <TabsContent value="history" className="mt-4 space-y-4">
-          <Card>
-            <CardHeader className="flex-row items-center justify-between space-y-0">
-              <div>
-                <CardTitle className="text-base">회사 연혁</CardTitle>
-                <p className="text-xs text-muted-foreground mt-1">
-                  연도와 마일스톤을 5개 언어로 관리합니다. 항목을 추가/삭제할 수 있습니다.
-                </p>
-              </div>
-              <Button
-                type="button"
-                size="sm"
-                variant="outline"
-                onClick={addHistoryItem}
-                className="gap-2"
-                data-testid="add-history-item"
-              >
-                <Plus className="h-4 w-4" /> 항목 추가
-              </Button>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              {form.historyItems.length === 0 && (
-                <p className="text-sm text-muted-foreground py-8 text-center">
-                  아직 항목이 없습니다.
-                </p>
-              )}
-              {form.historyItems.map((h, i) => (
-                <div
-                  key={i}
-                  className="border rounded-md p-4 space-y-3"
-                  data-testid={`history-item-${i}`}
-                >
-                  <div className="flex items-end justify-between gap-3">
-                    <div className="w-32 space-y-1">
-                      <Label>연도</Label>
-                      <Input
-                        value={h.year}
-                        onChange={(e) => updateHistoryItem(i, { year: e.target.value })}
-                        placeholder="2024"
-                        data-testid={`history-year-${i}`}
-                      />
-                    </div>
-                    <Button
-                      type="button"
-                      size="sm"
-                      variant="ghost"
-                      onClick={() => void translateHistoryItem(i)}
-                      disabled={translateMut.isPending}
-                      className="h-8 gap-1.5 text-xs text-accent hover:text-accent"
-                    >
-                      <Sparkles className="h-3 w-3" /> KO → 4개 언어
-                    </Button>
-                    <Button
-                      type="button"
-                      size="sm"
-                      variant="ghost"
-                      onClick={() => removeHistoryItem(i)}
-                      className="h-8 gap-1.5 text-xs text-destructive hover:text-destructive"
-                    >
-                      <Trash2 className="h-3 w-3" /> 삭제
-                    </Button>
-                  </div>
-                  <div className="grid grid-cols-1 md:grid-cols-5 gap-2">
-                    {LANGS.map((lang) => (
-                      <div key={lang} className="space-y-1">
-                        <Label className="text-xs uppercase tracking-wider">{LANG_LABEL[lang]}</Label>
-                        <Textarea
-                          rows={3}
-                          value={h[langKey("text", lang) as keyof HistoryItem] as string}
-                          onChange={(e) =>
-                            updateHistoryItem(i, {
-                              [langKey("text", lang)]: e.target.value,
-                            } as Partial<HistoryItem>)
-                          }
-                          placeholder={lang === "ko" ? "마일스톤 설명" : ""}
-                          data-testid={`history-text-${i}-${lang}`}
-                        />
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              ))}
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        {/* WORLDWIDE */}
-        <TabsContent value="worldwide" className="mt-4 space-y-4">
+        {/* ─── COMPANY DESC ──────────────────────────────────────── */}
+        <TabsContent value="company" className="mt-4 space-y-4">
           <Card>
             <CardHeader>
-              <CardTitle className="text-base">글로벌 네트워크 — 헤더</CardTitle>
+              <CardTitle className="text-base">회사소개 (About Dostac)</CardTitle>
+              <p className="text-xs text-muted-foreground mt-1">
+                About 페이지의 철학/회사 소개 섹션에 표시되는 설명 문구입니다.
+              </p>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <LangTabs
+                activeLang={activeLang}
+                onChange={setActiveLang}
+                filledFor={(l) => (form[langKey("companyDesc", l)] as string).trim().length > 0}
+              >
+                {(lang) => (
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <Label>회사 소개 문구 ({LANG_LABEL[lang]})</Label>
+                      {lang === "ko" && (
+                        <Button type="button" size="sm" variant="ghost"
+                          onClick={() => void translateCompanyDesc()}
+                          disabled={translateMut.isPending}
+                          className="h-7 gap-1.5 text-xs text-accent hover:text-accent">
+                          <Sparkles className="h-3 w-3" /> KO → 4개 언어 자동 번역
+                        </Button>
+                      )}
+                    </div>
+                    <Textarea
+                      rows={8}
+                      value={(form[langKey("companyDesc", lang)] as string) ?? ""}
+                      onChange={(e) => setField(langKey("companyDesc", lang), e.target.value)}
+                      placeholder={lang === "ko"
+                        ? "Dostac는 한국 기반의 글로벌 소싱 및 무역 회사로, K-뷰티, 화장품 OEM/ODM, 프라이빗 라벨 개발 및 국제 이커머스 유통을 전문으로 합니다."
+                        : ""}
+                      data-testid={`input-company-desc-${lang}`}
+                    />
+                  </div>
+                )}
+              </LangTabs>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-base">글로벌 네트워크 소개</CardTitle>
+              <p className="text-xs text-muted-foreground mt-1">
+                지역별 거점 섹션의 도입 문구를 관리합니다.
+              </p>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
@@ -493,14 +432,10 @@ export default function AboutEdit() {
                     <div className="flex items-center justify-between">
                       <Label>소개 문구</Label>
                       {lang === "ko" && (
-                        <Button
-                          type="button"
-                          size="sm"
-                          variant="ghost"
+                        <Button type="button" size="sm" variant="ghost"
                           onClick={() => void translateWorldwideIntro()}
                           disabled={translateMut.isPending}
-                          className="h-7 gap-1.5 text-xs text-accent hover:text-accent"
-                        >
+                          className="h-7 gap-1.5 text-xs text-accent hover:text-accent">
                           <Sparkles className="h-3 w-3" /> 자동 번역
                         </Button>
                       )}
@@ -515,132 +450,187 @@ export default function AboutEdit() {
                   </div>
                 )}
               </LangTabs>
+
+              {/* Worldwide items */}
+              <div className="pt-2 space-y-3">
+                <div className="flex items-center justify-between">
+                  <Label className="text-sm font-semibold">지역별 거점</Label>
+                  <Button type="button" size="sm" variant="outline" onClick={addWorldwideItem} className="gap-2" data-testid="add-worldwide-item">
+                    <Plus className="h-4 w-4" /> 거점 추가
+                  </Button>
+                </div>
+                {form.worldwideItems.length === 0 && (
+                  <p className="text-sm text-muted-foreground py-4 text-center">거점이 등록되어 있지 않습니다.</p>
+                )}
+                {form.worldwideItems.map((w, i) => (
+                  <div key={i} className="border rounded-md p-4 space-y-4" data-testid={`worldwide-item-${i}`}>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                      <div className="space-y-1 md:col-span-2">
+                        <Label>지역 코드 (영문)</Label>
+                        <Input value={w.region} onChange={(e) => updateWorldwideItem(i, { region: e.target.value })}
+                          placeholder="Southeast Asia" data-testid={`worldwide-region-${i}`} />
+                      </div>
+                      <div className="flex items-end justify-end">
+                        <Button type="button" size="sm" variant="ghost" onClick={() => removeWorldwideItem(i)}
+                          className="h-8 gap-1.5 text-xs text-destructive hover:text-destructive">
+                          <Trash2 className="h-3 w-3" /> 삭제
+                        </Button>
+                      </div>
+                    </div>
+                    <div className="space-y-1">
+                      <Label>이미지 (선택)</Label>
+                      <ImageUploader value={w.imageUrl ?? null}
+                        onChange={(url) => updateWorldwideItem(i, { imageUrl: url ?? null })}
+                        previewClassName="h-32 w-full max-w-md rounded object-cover bg-muted border border-border"
+                        testId={`upload-worldwide-${i}`} />
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <div className="flex items-center justify-between">
+                          <Label>제목 (5개 언어)</Label>
+                          <Button type="button" size="sm" variant="ghost"
+                            onClick={() => void translateWorldwideItemTitle(i)}
+                            disabled={translateMut.isPending}
+                            className="h-7 gap-1.5 text-xs text-accent hover:text-accent">
+                            <Sparkles className="h-3 w-3" /> KO → 4개 언어
+                          </Button>
+                        </div>
+                        <div className="space-y-1.5">
+                          {LANGS.map((lang) => (
+                            <Input key={lang}
+                              value={w[langKey("title", lang) as keyof WorldwideItem] as string}
+                              onChange={(e) => updateWorldwideItem(i, { [langKey("title", lang)]: e.target.value } as Partial<WorldwideItem>)}
+                              placeholder={`${LANG_LABEL[lang]} 제목`} />
+                          ))}
+                        </div>
+                      </div>
+                      <div className="space-y-2">
+                        <div className="flex items-center justify-between">
+                          <Label>설명 (5개 언어)</Label>
+                          <Button type="button" size="sm" variant="ghost"
+                            onClick={() => void translateWorldwideItemDesc(i)}
+                            disabled={translateMut.isPending}
+                            className="h-7 gap-1.5 text-xs text-accent hover:text-accent">
+                            <Sparkles className="h-3 w-3" /> KO → 4개 언어
+                          </Button>
+                        </div>
+                        <div className="space-y-1.5">
+                          {LANGS.map((lang) => (
+                            <Textarea key={lang} rows={2}
+                              value={w[langKey("description", lang) as keyof WorldwideItem] as string}
+                              onChange={(e) => updateWorldwideItem(i, { [langKey("description", lang)]: e.target.value } as Partial<WorldwideItem>)}
+                              placeholder={`${LANG_LABEL[lang]} 설명`}
+                              data-testid={`worldwide-desc-${i}-${lang}`} />
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </CardContent>
           </Card>
+        </TabsContent>
 
+        {/* ─── WHY DOSTAC ───────────────────────────────────────── */}
+        <TabsContent value="why" className="mt-4 space-y-4">
           <Card>
             <CardHeader className="flex-row items-center justify-between space-y-0">
               <div>
-                <CardTitle className="text-base">지역별 거점</CardTitle>
+                <CardTitle className="text-base">Why Dostac 카드</CardTitle>
                 <p className="text-xs text-muted-foreground mt-1">
-                  지역(영문) + 5개 언어 제목/설명 + 선택 이미지.
+                  About 페이지의 "Why Dostac" 섹션에 표시되는 특장점 카드를 관리합니다.
+                  카드를 추가/수정/삭제하고 5개 언어로 자동 번역할 수 있습니다.
                 </p>
               </div>
-              <Button
-                type="button"
-                size="sm"
-                variant="outline"
-                onClick={addWorldwideItem}
-                className="gap-2"
-                data-testid="add-worldwide-item"
-              >
-                <Plus className="h-4 w-4" /> 거점 추가
+              <Button type="button" size="sm" variant="outline" onClick={addWhyItem} className="gap-2" data-testid="add-why-item">
+                <Plus className="h-4 w-4" /> 카드 추가
               </Button>
             </CardHeader>
-            <CardContent className="space-y-5">
-              {form.worldwideItems.length === 0 && (
-                <p className="text-sm text-muted-foreground py-8 text-center">
-                  거점이 등록되어 있지 않습니다.
-                </p>
+            <CardContent className="space-y-4">
+              {form.whyDostacItems.length === 0 && (
+                <div className="py-12 text-center border-2 border-dashed rounded-lg">
+                  <p className="text-sm text-muted-foreground mb-3">등록된 카드가 없습니다.</p>
+                  <Button type="button" size="sm" variant="outline" onClick={addWhyItem} className="gap-2">
+                    <Plus className="h-4 w-4" /> 첫 번째 카드 추가
+                  </Button>
+                </div>
               )}
-              {form.worldwideItems.map((w, i) => (
+              {form.whyDostacItems.map((item, i) => (
                 <div
                   key={i}
-                  className="border rounded-md p-4 space-y-4"
-                  data-testid={`worldwide-item-${i}`}
+                  className={`border rounded-lg p-5 space-y-4 transition-opacity ${item.active ? "" : "opacity-60"}`}
+                  data-testid={`why-item-${i}`}
                 >
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                    <div className="space-y-1 md:col-span-2">
-                      <Label>지역 코드 (영문, 예: Southeast Asia)</Label>
-                      <Input
-                        value={w.region}
-                        onChange={(e) => updateWorldwideItem(i, { region: e.target.value })}
-                        placeholder="Southeast Asia"
-                        data-testid={`worldwide-region-${i}`}
-                      />
+                  {/* Card header row */}
+                  <div className="flex items-center gap-3">
+                    <GripVertical className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+                    <Badge variant="outline" className="text-xs font-mono">#{i + 1}</Badge>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium truncate">
+                        {item.titleKo || <span className="text-muted-foreground italic">제목 없음</span>}
+                      </p>
                     </div>
-                    <div className="flex items-end justify-end">
-                      <Button
+                    <div className="flex items-center gap-2 flex-shrink-0">
+                      <Button type="button" size="sm" variant="ghost"
+                        onClick={() => void translateWhyItem(i)}
+                        disabled={translateMut.isPending}
+                        className="h-8 gap-1.5 text-xs text-accent hover:text-accent">
+                        <Sparkles className="h-3 w-3" /> KO → 4개 언어
+                      </Button>
+                      <button
                         type="button"
-                        size="sm"
-                        variant="ghost"
-                        onClick={() => removeWorldwideItem(i)}
-                        className="h-8 gap-1.5 text-xs text-destructive hover:text-destructive"
+                        onClick={() => toggleWhyActive(i)}
+                        className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors px-2 py-1 rounded hover:bg-muted"
+                        title={item.active ? "비활성화" : "활성화"}
                       >
+                        {item.active
+                          ? <><Eye className="h-3.5 w-3.5" /> 표시</>
+                          : <><EyeOff className="h-3.5 w-3.5" /> 숨김</>
+                        }
+                      </button>
+                      <Button type="button" size="sm" variant="ghost" onClick={() => removeWhyItem(i)}
+                        className="h-8 gap-1.5 text-xs text-destructive hover:text-destructive">
                         <Trash2 className="h-3 w-3" /> 삭제
                       </Button>
                     </div>
                   </div>
-                  <div className="space-y-1">
-                    <Label>이미지 (선택)</Label>
-                    <ImageUploader
-                      value={w.imageUrl ?? null}
-                      onChange={(url) => updateWorldwideItem(i, { imageUrl: url ?? null })}
-                      previewClassName="h-32 w-full max-w-md rounded object-cover bg-muted border border-border"
-                      testId={`upload-worldwide-${i}`}
-                    />
-                  </div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+                  {/* Title + Desc per lang */}
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                    {/* Titles */}
                     <div className="space-y-2">
-                      <div className="flex items-center justify-between">
-                        <Label>제목 (5개 언어)</Label>
-                        <Button
-                          type="button"
-                          size="sm"
-                          variant="ghost"
-                          onClick={() => void translateWorldwideItemTitle(i)}
-                          disabled={translateMut.isPending}
-                          className="h-7 gap-1.5 text-xs text-accent hover:text-accent"
-                        >
-                          <Sparkles className="h-3 w-3" /> KO → 4개 언어
-                        </Button>
-                      </div>
-                      <div className="space-y-1.5">
+                      <Label className="text-xs text-muted-foreground uppercase tracking-wider">제목 (5개 언어)</Label>
+                      <div className="space-y-2">
                         {LANGS.map((lang) => (
-                          <Input
-                            key={lang}
-                            value={w[langKey("title", lang) as keyof WorldwideItem] as string}
-                            onChange={(e) =>
-                              updateWorldwideItem(i, {
-                                [langKey("title", lang)]: e.target.value,
-                              } as Partial<WorldwideItem>)
-                            }
-                            placeholder={`${LANG_LABEL[lang]} 제목`}
-                            data-testid={`worldwide-title-${i}-${lang}`}
-                          />
+                          <div key={lang} className="flex gap-2 items-center">
+                            <span className="text-xs font-mono text-muted-foreground w-6 shrink-0">{lang.toUpperCase()}</span>
+                            <Input
+                              value={item[langKey("title", lang) as keyof WhyDostacItem] as string}
+                              onChange={(e) => updateWhyItem(i, { [langKey("title", lang)]: e.target.value } as Partial<WhyDostacItem>)}
+                              placeholder={lang === "ko" ? "카드 제목 (예: 한국 제조 네트워크)" : ""}
+                              data-testid={`why-title-${i}-${lang}`}
+                            />
+                          </div>
                         ))}
                       </div>
                     </div>
+
+                    {/* Descriptions */}
                     <div className="space-y-2">
-                      <div className="flex items-center justify-between">
-                        <Label>설명 (5개 언어)</Label>
-                        <Button
-                          type="button"
-                          size="sm"
-                          variant="ghost"
-                          onClick={() => void translateWorldwideItemDesc(i)}
-                          disabled={translateMut.isPending}
-                          className="h-7 gap-1.5 text-xs text-accent hover:text-accent"
-                        >
-                          <Sparkles className="h-3 w-3" /> KO → 4개 언어
-                        </Button>
-                      </div>
-                      <div className="space-y-1.5">
+                      <Label className="text-xs text-muted-foreground uppercase tracking-wider">설명 (5개 언어)</Label>
+                      <div className="space-y-2">
                         {LANGS.map((lang) => (
-                          <Textarea
-                            key={lang}
-                            rows={2}
-                            value={
-                              w[langKey("description", lang) as keyof WorldwideItem] as string
-                            }
-                            onChange={(e) =>
-                              updateWorldwideItem(i, {
-                                [langKey("description", lang)]: e.target.value,
-                              } as Partial<WorldwideItem>)
-                            }
-                            placeholder={`${LANG_LABEL[lang]} 설명`}
-                            data-testid={`worldwide-desc-${i}-${lang}`}
-                          />
+                          <div key={lang} className="flex gap-2 items-start">
+                            <span className="text-xs font-mono text-muted-foreground w-6 shrink-0 mt-2">{lang.toUpperCase()}</span>
+                            <Textarea
+                              rows={2}
+                              value={item[langKey("desc", lang) as keyof WhyDostacItem] as string}
+                              onChange={(e) => updateWhyItem(i, { [langKey("desc", lang)]: e.target.value } as Partial<WhyDostacItem>)}
+                              placeholder={lang === "ko" ? "짧은 혜택 설명 (1~2문장)" : ""}
+                              data-testid={`why-desc-${i}-${lang}`}
+                            />
+                          </div>
                         ))}
                       </div>
                     </div>
@@ -651,7 +641,62 @@ export default function AboutEdit() {
           </Card>
         </TabsContent>
 
-        {/* DIRECTIONS */}
+        {/* ─── HISTORY ──────────────────────────────────────────── */}
+        <TabsContent value="history" className="mt-4 space-y-4">
+          <Card>
+            <CardHeader className="flex-row items-center justify-between space-y-0">
+              <div>
+                <CardTitle className="text-base">회사 연혁</CardTitle>
+                <p className="text-xs text-muted-foreground mt-1">
+                  연도와 마일스톤을 5개 언어로 관리합니다.
+                </p>
+              </div>
+              <Button type="button" size="sm" variant="outline" onClick={addHistoryItem} className="gap-2" data-testid="add-history-item">
+                <Plus className="h-4 w-4" /> 항목 추가
+              </Button>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {form.historyItems.length === 0 && (
+                <p className="text-sm text-muted-foreground py-8 text-center">아직 항목이 없습니다.</p>
+              )}
+              {form.historyItems.map((h, i) => (
+                <div key={i} className="border rounded-md p-4 space-y-3" data-testid={`history-item-${i}`}>
+                  <div className="flex items-end justify-between gap-3">
+                    <div className="w-32 space-y-1">
+                      <Label>연도</Label>
+                      <Input value={h.year} onChange={(e) => updateHistoryItem(i, { year: e.target.value })}
+                        placeholder="2024" data-testid={`history-year-${i}`} />
+                    </div>
+                    <Button type="button" size="sm" variant="ghost"
+                      onClick={() => void translateHistoryItem(i)}
+                      disabled={translateMut.isPending}
+                      className="h-8 gap-1.5 text-xs text-accent hover:text-accent">
+                      <Sparkles className="h-3 w-3" /> KO → 4개 언어
+                    </Button>
+                    <Button type="button" size="sm" variant="ghost" onClick={() => removeHistoryItem(i)}
+                      className="h-8 gap-1.5 text-xs text-destructive hover:text-destructive">
+                      <Trash2 className="h-3 w-3" /> 삭제
+                    </Button>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-5 gap-2">
+                    {LANGS.map((lang) => (
+                      <div key={lang} className="space-y-1">
+                        <Label className="text-xs uppercase tracking-wider">{LANG_LABEL[lang]}</Label>
+                        <Textarea rows={3}
+                          value={h[langKey("text", lang) as keyof HistoryItem] as string}
+                          onChange={(e) => updateHistoryItem(i, { [langKey("text", lang)]: e.target.value } as Partial<HistoryItem>)}
+                          placeholder={lang === "ko" ? "마일스톤 설명" : ""}
+                          data-testid={`history-text-${i}-${lang}`} />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* ─── DIRECTIONS ───────────────────────────────────────── */}
         <TabsContent value="directions" className="mt-4 space-y-4">
           <Card>
             <CardHeader>
@@ -663,9 +708,7 @@ export default function AboutEdit() {
                   <Label>Google Maps Embed URL</Label>
                   <Input
                     value={form.directionsMapEmbed ?? ""}
-                    onChange={(e) =>
-                      setField("directionsMapEmbed", e.target.value.trim() || null)
-                    }
+                    onChange={(e) => setField("directionsMapEmbed", e.target.value.trim() || null)}
                     placeholder="https://www.google.com/maps/embed?pb=..."
                     data-testid="input-directions-map"
                   />
@@ -678,7 +721,7 @@ export default function AboutEdit() {
                   <ImageUploader
                     value={form.directionsImageUrl ?? null}
                     onChange={(url) => setField("directionsImageUrl", url ?? null)}
-                    previewClassName="h-32 w-full max-w-md rounded object-cover bg-muted border border-border"
+                    previewClassName="h-32 w-full max-w-sm rounded object-cover bg-muted border border-border"
                     testId="upload-directions-image"
                   />
                 </div>
@@ -687,34 +730,26 @@ export default function AboutEdit() {
               <LangTabs
                 activeLang={activeLang}
                 onChange={setActiveLang}
-                filledFor={(l) =>
-                  (form[langKey("directionsAddress", l)] as string).trim().length > 0
-                }
+                filledFor={(l) => (form[langKey("directionsAddress", l)] as string).trim().length > 0}
               >
                 {(lang) => (
                   <div className="space-y-2">
                     <div className="flex items-center justify-between">
-                      <Label>주소</Label>
+                      <Label>주소 ({LANG_LABEL[lang]})</Label>
                       {lang === "ko" && (
-                        <Button
-                          type="button"
-                          size="sm"
-                          variant="ghost"
+                        <Button type="button" size="sm" variant="ghost"
                           onClick={() => void translateDirectionsAddress()}
                           disabled={translateMut.isPending}
-                          className="h-7 gap-1.5 text-xs text-accent hover:text-accent"
-                        >
+                          className="h-7 gap-1.5 text-xs text-accent hover:text-accent">
                           <Sparkles className="h-3 w-3" /> 자동 번역
                         </Button>
                       )}
                     </div>
                     <Textarea
-                      rows={2}
+                      rows={3}
                       value={(form[langKey("directionsAddress", lang)] as string) ?? ""}
-                      onChange={(e) =>
-                        setField(langKey("directionsAddress", lang), e.target.value)
-                      }
-                      placeholder="경기도 안성시 …"
+                      onChange={(e) => setField(langKey("directionsAddress", lang), e.target.value)}
+                      placeholder={lang === "ko" ? "경기도 화성시 …" : ""}
                       data-testid={`input-directions-address-${lang}`}
                     />
                   </div>
@@ -725,50 +760,5 @@ export default function AboutEdit() {
         </TabsContent>
       </Tabs>
     </form>
-  );
-}
-
-function LangTabs({
-  activeLang,
-  onChange,
-  filledFor,
-  children,
-}: {
-  activeLang: Lang;
-  onChange: (l: Lang) => void;
-  filledFor: (l: Lang) => boolean;
-  children: (lang: Lang) => React.ReactNode;
-}) {
-  return (
-    <Tabs value={activeLang} onValueChange={(v) => onChange(v as Lang)}>
-      <TabsList className="grid grid-cols-5 w-full">
-        {LANGS.map((lang) => (
-          <TabsTrigger
-            key={lang}
-            value={lang}
-            className="gap-1.5"
-            data-testid={`tab-lang-${lang}`}
-          >
-            <span>{LANG_LABEL[lang]}</span>
-            {lang === "ko" ? (
-              <span className="text-[10px] uppercase tracking-wider text-accent font-bold">
-                원문
-              </span>
-            ) : (
-              <span
-                className={`h-1.5 w-1.5 rounded-full ${
-                  filledFor(lang) ? "bg-accent" : "bg-muted-foreground/30"
-                }`}
-              />
-            )}
-          </TabsTrigger>
-        ))}
-      </TabsList>
-      {LANGS.map((lang) => (
-        <TabsContent key={lang} value={lang} className="mt-4">
-          {children(lang)}
-        </TabsContent>
-      ))}
-    </Tabs>
   );
 }

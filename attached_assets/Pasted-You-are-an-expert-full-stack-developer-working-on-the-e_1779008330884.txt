@@ -1,0 +1,309 @@
+You are an expert full-stack developer working on the existing admin CMS of dostac.com.
+
+The current admin structure already exists:
+
+* Dashboard
+* Banners
+* About
+* Process
+* Products
+* Notices
+* Inquiries
+
+All sections work properly except the “About” section.
+
+Your task is to completely rebuild ONLY the About admin system while preserving:
+
+* existing layout
+* existing admin sidebar
+* authentication/session logic
+* design system
+* API structure
+* database connection method
+* responsive structure
+* coding conventions
+
+Do NOT redesign the entire admin panel.
+
+The About admin must manage the actual frontend About page content dynamically.
+
+---
+
+## ABOUT PAGE STRUCTURE
+
+The frontend About page currently contains:
+
+1. HERO SECTION
+2. ABOUT DOSTAC SECTION
+3. WHY DOSTAC SECTION
+
+Build the admin CMS structure specifically around these sections.
+
+---
+
+## ADMIN ROUTE
+
+Create:
+
+/admin/about
+
+Use a modern tab-based admin UI.
+
+Tabs:
+
+* Hero Section
+* About Dostac
+* Why Dostac
+* SEO Settings
+
+---
+
+1. HERO SECTION ADMIN
+
+---
+
+This section manages the top hero area.
+
+Frontend Content:
+
+* Headline
+* Subheadline
+* CTA Buttons
+* Background Image
+* Motion Effects
+* Luxury K-beauty atmosphere
+
+Create editable admin fields:
+
+Fields:
+
+* Headline
+* Subheadline
+* CTA Button 1 Text
+* CTA Button 1 Link
+* CTA Button 2 Text
+* CTA Button 2 Link
+* Background Image Upload
+* Overlay Opacity
+* Animation Toggle
+* Hero Height Selector
+* Mobile Hero Image
+* Publish Toggle
+
+Default Headline:
+“K-Beauty OEM & Global Sourcing Partner”
+
+Default Subheadline:
+“Connecting Korean manufacturers with global buyers through OEM, ODM, private label, and international distribution solutions.”
+
+Features:
+
+* live image preview
+* drag & drop upload
+* responsive preview
+* mobile preview
+* save draft
+* publish/unpublish
+* loading state
+* toast notifications
+
+---
+
+2. ABOUT DOSTAC ADMIN
+
+---
+
+This section manages the company introduction area.
+
+Frontend Content Includes:
+
+* company introduction
+* founder story
+* business philosophy
+* Korean manufacturing network
+* global business experience
+
+Main Text:
+“Dostac is a Korea-based global sourcing and trading company specializing in K-beauty, cosmetics OEM/ODM, private label development, and international e-commerce distribution.”
+
+Admin Fields:
+
+* Section Title
+* Section Subtitle
+* Main Description (rich text editor)
+* Founder Story
+* Business Philosophy
+* Manufacturing Network Description
+* Global Experience Description
+* Main Featured Image
+* Secondary Image
+* Trust Block Title
+* Trust Block Description
+* Connection Block Title
+* Connection Block Description
+* Sustainable Growth Title
+* Sustainable Growth Description
+
+Features:
+
+* icon selector
+* image uploader
+* rich text editor
+* card layout editor
+* responsive preview
+* reorder visual blocks
+
+Visual Blocks:
+
+* Trust
+* Connection
+* Sustainable Growth
+
+Each visual block must support:
+
+* icon
+* title
+* description
+* sort order
+
+---
+
+3. WHY DOSTAC ADMIN
+
+---
+
+This section manages the buyer trust-building cards.
+
+Frontend Cards:
+
+* Korean Manufacturing Network
+* OEM / ODM Expertise
+* Global E-Commerce Experience
+* Flexible Private Label Solutions
+* Export Support
+* Digital Commerce Strategy
+
+Admin Features:
+
+* add/edit/delete cards
+* icon selection
+* drag sorting
+* hover effect preview
+* animation toggle
+
+Each Card Structure:
+
+* Title
+* Description
+* Icon
+* Background Style
+* Sort Order
+* Active Toggle
+
+UI Style:
+
+* infographic style
+* modern minimal B2B layout
+* premium industrial design
+* soft animations
+
+---
+
+4. SEO SETTINGS ADMIN
+
+---
+
+Create a dedicated SEO management tab.
+
+Fields:
+
+* Meta Title
+* Meta Description
+* Open Graph Title
+* Open Graph Description
+* Open Graph Image
+* Keywords
+* Canonical URL
+
+Auto Features:
+
+* slug generation
+* sitemap integration
+* social sharing optimization
+
+---
+
+## DATABASE STRUCTURE
+
+Create or extend database tables using the existing project DB architecture.
+
+Suggested tables:
+
+about_hero
+about_company
+about_company_blocks
+about_why_dostac
+about_seo
+
+Each table should support:
+
+* id
+* created_at
+* updated_at
+* publish_status
+
+---
+
+## API STRUCTURE
+
+Create:
+
+* GET APIs
+* UPDATE APIs
+* CREATE APIs
+* DELETE APIs
+
+Use the same structure already used in:
+
+* banners
+* products
+* notices
+
+---
+
+## DESIGN REQUIREMENTS
+
+Design style must match existing admin.
+
+Use:
+
+* white background
+* orange accent color
+* clean modern spacing
+* minimal enterprise UI
+* card-based admin layout
+* responsive design
+
+Use:
+
+* TailwindCSS
+* React
+* Next.js
+* TypeScript
+
+---
+
+## IMPORTANT
+
+Do NOT modify:
+
+* Dashboard
+* Banners
+* Process
+* Products
+* Notices
+* Inquiries
+
+ONLY build and repair the About admin system.
+
+The final About admin must feel like an original part of the current CMS system and fully control the existing About frontend page dynamically.

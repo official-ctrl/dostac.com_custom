@@ -24,6 +24,21 @@ export interface WorldwideItem {
   descriptionVi: string;
 }
 
+export interface WhyDostacItem {
+  titleKo: string;
+  titleEn: string;
+  titleJa: string;
+  titleZh: string;
+  titleVi: string;
+  descKo: string;
+  descEn: string;
+  descJa: string;
+  descZh: string;
+  descVi: string;
+  active: boolean;
+  sortOrder: number;
+}
+
 export const aboutContentTable = pgTable("about_content", {
   id: serial("id").primaryKey(),
   greetingImageUrl: text("greeting_image_url"),
@@ -49,6 +64,15 @@ export const aboutContentTable = pgTable("about_content", {
   worldwideIntroVi: text("worldwide_intro_vi").notNull().default(""),
   worldwideItems: jsonb("worldwide_items")
     .$type<WorldwideItem[]>()
+    .notNull()
+    .default([]),
+  companyDescKo: text("company_desc_ko").notNull().default(""),
+  companyDescEn: text("company_desc_en").notNull().default(""),
+  companyDescJa: text("company_desc_ja").notNull().default(""),
+  companyDescZh: text("company_desc_zh").notNull().default(""),
+  companyDescVi: text("company_desc_vi").notNull().default(""),
+  whyDostacItems: jsonb("why_dostac_items")
+    .$type<WhyDostacItem[]>()
     .notNull()
     .default([]),
   directionsAddressKo: text("directions_address_ko").notNull().default(""),

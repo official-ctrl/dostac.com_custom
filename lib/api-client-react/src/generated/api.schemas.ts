@@ -307,6 +307,21 @@ export interface WorldwideItem {
   descriptionVi: string;
 }
 
+export interface WhyDostacItem {
+  titleKo: string;
+  titleEn: string;
+  titleJa: string;
+  titleZh: string;
+  titleVi: string;
+  descKo: string;
+  descEn: string;
+  descJa: string;
+  descZh: string;
+  descVi: string;
+  active: boolean;
+  sortOrder: number;
+}
+
 export interface AboutContent {
   /** @nullable */
   greetingImageUrl?: string | null;
@@ -329,6 +344,12 @@ export interface AboutContent {
   worldwideIntroZh: string;
   worldwideIntroVi: string;
   worldwideItems: WorldwideItem[];
+  companyDescKo: string;
+  companyDescEn: string;
+  companyDescJa: string;
+  companyDescZh: string;
+  companyDescVi: string;
+  whyDostacItems: WhyDostacItem[];
   directionsAddressKo: string;
   directionsAddressEn: string;
   directionsAddressJa: string;

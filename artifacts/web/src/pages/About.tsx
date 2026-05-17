@@ -153,8 +153,9 @@ function SectionNav({ active }: { active: SectionId }) {
   );
 }
 
-function PhilosophySection() {
+function PhilosophySection({ dbWhyItems }: { dbWhyItems?: { titleKo: string; titleEn: string; titleJa: string; titleZh: string; titleVi: string; descKo: string; descEn: string; descJa: string; descZh: string; descVi: string; active: boolean; sortOrder: number }[] | null }) {
   const { t } = useT();
+  const { lang } = useLang();
   const headerFade = useFadeUp();
   const imgFade = useFadeUp();
   const phiCards = useStaggerReveal();
@@ -163,7 +164,17 @@ function PhilosophySection() {
   const outroFade = useFadeUp();
 
   const philosophyCards = t("about.philosophyCards") as { title: string; text: string }[];
-  const whyDostacItems = t("about.whyDostacItems") as { title: string; text: string }[];
+
+  const activeDbItems = dbWhyItems?.filter((it) => it.active).sort((a, b) => a.sortOrder - b.sortOrder) ?? [];
+  const whyDostacItems: { title: string; text: string }[] = activeDbItems.length > 0
+    ? activeDbItems.map((it) => {
+        const titleKey = `title${lang.charAt(0).toUpperCase()}${lang.slice(1)}` as keyof typeof it;
+        const descKey = `desc${lang.charAt(0).toUpperCase()}${lang.slice(1)}` as keyof typeof it;
+        const title = (it[titleKey] as string) || it.titleKo || "";
+        const text = (it[descKey] as string) || it.descKo || "";
+        return { title, text };
+      })
+    : (t("about.whyDostacItems") as { title: string; text: string }[]);
   const founderAreas = t("about.founderAreas") as string[];
 
   return (
@@ -502,7 +513,7 @@ function AboutContent() {
       <HistorySection />
 
       {/* 3. COMPANY PHILOSOPHY */}
-      <PhilosophySection />
+      <PhilosophySection dbWhyItems={data?.whyDostacItems ?? null} />
 
       {/* 4. DIRECTIONS */}
       <section id="directions" className="scroll-mt-32 py-24 bg-[#f9f9f7]">

@@ -919,6 +919,24 @@ components:
         descriptionZh: { type: string }
         descriptionVi: { type: string }
 
+    WhyDostacItem:
+      type: object
+      required:
+        [titleKo, titleEn, titleJa, titleZh, titleVi, descKo, descEn, descJa, descZh, descVi, active, sortOrder]
+      properties:
+        titleKo: { type: string }
+        titleEn: { type: string }
+        titleJa: { type: string }
+        titleZh: { type: string }
+        titleVi: { type: string }
+        descKo: { type: string }
+        descEn: { type: string }
+        descJa: { type: string }
+        descZh: { type: string }
+        descVi: { type: string }
+        active: { type: boolean }
+        sortOrder: { type: integer }
+
     AboutContent:
       type: object
       required:
@@ -928,6 +946,8 @@ components:
           historyItems,
           worldwideIntroKo, worldwideIntroEn, worldwideIntroJa, worldwideIntroZh, worldwideIntroVi,
           worldwideItems,
+          companyDescKo, companyDescEn, companyDescJa, companyDescZh, companyDescVi,
+          whyDostacItems,
           directionsAddressKo, directionsAddressEn, directionsAddressJa, directionsAddressZh, directionsAddressVi
         ]
       properties:
@@ -954,6 +974,14 @@ components:
         worldwideItems:
           type: array
           items: { $ref: "#/components/schemas/WorldwideItem" }
+        companyDescKo: { type: string }
+        companyDescEn: { type: string }
+        companyDescJa: { type: string }
+        companyDescZh: { type: string }
+        companyDescVi: { type: string }
+        whyDostacItems:
+          type: array
+          items: { $ref: "#/components/schemas/WhyDostacItem" }
         directionsAddressKo: { type: string }
         directionsAddressEn: { type: string }
         directionsAddressJa: { type: string }
