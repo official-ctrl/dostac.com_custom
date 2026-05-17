@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { Link } from "wouter";
 import { Layout, dostacImage } from "@/components/dostac/Layout";
 import { useT, useLang, type Lang } from "@/components/dostac/i18n";
+import { SectionNav } from "@/components/dostac/SectionNav";
 import { useGetPublicAbout } from "@workspace/api-client-react";
 import {
   MapPin,
@@ -109,35 +110,6 @@ function useScrollSpy(): SectionId {
   return active;
 }
 
-function SectionNav({ active }: { active: SectionId }) {
-  const { t } = useT();
-  return (
-    <nav
-      className="sticky top-20 z-40 bg-white/95 backdrop-blur border-y border-slate-200/70"
-      aria-label="About sections"
-    >
-      <div className="container mx-auto px-6">
-        <ul className="flex items-center gap-1 overflow-x-auto py-2 no-scrollbar" style={{ WebkitOverflowScrolling: "touch" } as React.CSSProperties}>
-          {SECTIONS.map((s) => (
-            <li key={s.id} className="flex-shrink-0">
-              <a
-                href={`#${s.id}`}
-                data-testid={`about-tab-${s.id}`}
-                className={`inline-flex items-center px-4 py-2 rounded-full text-sm font-medium transition ${
-                  active === s.id
-                    ? "bg-accent text-white"
-                    : "text-slate-600 hover:bg-slate-100 hover:text-accent"
-                }`}
-              >
-                {t(`about.sections.${s.id}`) as string}
-              </a>
-            </li>
-          ))}
-        </ul>
-      </div>
-    </nav>
-  );
-}
 
 function PhilosophySection({
   dbWhyItems,
@@ -573,7 +545,12 @@ function AboutContent() {
         </div>
       </section>
 
-      <SectionNav active={active} />
+      <SectionNav
+        items={SECTIONS.map((s) => ({ id: s.id, label: t(`about.sections.${s.id}`) as string }))}
+        activeId={active}
+        ariaLabel="About sections"
+        testIdPrefix="about-tab-"
+      />
 
       {/* 1. GREETING */}
       <section id="greeting" className="scroll-mt-32 py-20 bg-white">

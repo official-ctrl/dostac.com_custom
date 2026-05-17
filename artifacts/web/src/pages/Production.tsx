@@ -8,6 +8,7 @@ import {
 } from "lucide-react";
 import { Layout, dostacImage } from "@/components/dostac/Layout";
 import { useT, useLang } from "@/components/dostac/i18n";
+import { SectionNav } from "@/components/dostac/SectionNav";
 import { useGetPublicProcess } from "@workspace/api-client-react";
 import type { Lang } from "@/components/dostac/i18n";
 
@@ -132,32 +133,12 @@ function ProductionContent() {
         </div>
       </section>
 
-      {/* STICKY SUBMENU */}
-      <div className="sticky top-20 z-40 bg-white border-b border-slate-200 shadow-sm">
-        <div className="container mx-auto px-6">
-          <nav className="flex overflow-x-auto no-scrollbar" style={{ scrollbarWidth: "none", WebkitOverflowScrolling: "touch" } as React.CSSProperties}>
-            {SUBMENU.map((item) => (
-              <button
-                key={item.id}
-                type="button"
-                onClick={() => scrollTo(item.id)}
-                className={`relative flex-shrink-0 px-6 py-4 text-sm font-semibold transition-colors whitespace-nowrap focus:outline-none ${
-                  activeSection === item.id
-                    ? "text-accent"
-                    : "text-slate-500 hover:text-[#0F172A]"
-                }`}
-              >
-                {item.label}
-                <span
-                  className={`absolute bottom-0 left-0 right-0 h-0.5 rounded-full transition-all duration-300 ${
-                    activeSection === item.id ? "bg-accent" : "bg-transparent"
-                  }`}
-                />
-              </button>
-            ))}
-          </nav>
-        </div>
-      </div>
+      <SectionNav
+        items={SUBMENU}
+        activeId={activeSection}
+        onSelect={scrollTo}
+        ariaLabel="Production sections"
+      />
 
       {/* SECTION 1 — OEM / ODM */}
       <section
