@@ -1,5 +1,4 @@
 uploads = []
-outputs = []
 
 [[generated]]
 id = "74hg_YNlYd6lyW_1vdD-k"
@@ -114,3 +113,15 @@ id = "d_qrHkKAAQwyfSQgd6t1c"
 uri = "file://artifacts/mockup-sandbox/public/images/dostac/product-baby-wipes.png"
 type = "image"
 title = "generated_image"
+
+[[generated]]
+id = "Hd1Kg3b71b0uoO8-ppa32"
+uri = "file://artifacts/web/public/opengraph.png"
+type = "image"
+title = "generated_image"
+
+[[outputs]]
+id = "Klryobi3lZYXJ9zO6MMo6"
+uri = "file://artifacts/web/public/opengraph.png"
+type = "image"
+title = "OG 이미지 (1200×675)"
