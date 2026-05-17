@@ -12,13 +12,13 @@ import { useT, useLang, type Lang } from "./i18n";
 
 type AboutSubItem = {
   hash: string;
-  key: "greeting" | "history" | "worldwide" | "directions";
+  key: "greeting" | "history" | "philosophy" | "directions";
 };
 
 const ABOUT_SUB: AboutSubItem[] = [
   { hash: "greeting", key: "greeting" },
   { hash: "history", key: "history" },
-  { hash: "worldwide", key: "worldwide" },
+  { hash: "philosophy", key: "philosophy" },
   { hash: "directions", key: "directions" },
 ];
 

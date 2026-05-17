@@ -167,7 +167,7 @@ const ko: Dict = {
     sectionDesc: {
       greeting: "dostac이 누구이며, 우리가 나아가는 방향.",
       history: "30년의 발자취와 주요 마일스톤.",
-      worldwide: "30개국 글로벌 파트너십 현황.",
+      philosophy: "신뢰, 연결, 지속 가능한 성장을 향한 dostac의 철학.",
       directions: "본사·공장 위치 안내 및 연락처.",
     },
     worldwideHeading: "전 세계 파트너와 함께",
@@ -460,7 +460,7 @@ const en: Dict = {
     sectionDesc: {
       greeting: "Who we are and our vision.",
       history: "Three decades of milestones and growth.",
-      worldwide: "Partnerships across 30 countries.",
+      philosophy: "Dostac's philosophy of trust, connection, and sustainable growth.",
       directions: "Headquarters & factory location and contact.",
     },
     worldwideHeading: "Trusted by partners around the world",
@@ -751,7 +751,7 @@ const ja: Dict = {
     sectionDesc: {
       greeting: "dostacとはどんな会社か、そしてそのビジョン。",
       history: "30年にわたる成長の軌跡。",
-      worldwide: "30カ国のグローバルパートナーシップ。",
+      philosophy: "信頼・つながり・持続可能な成長に向けたdostacの哲学。",
       directions: "本社・工場のご案内と連絡先。",
     },
     worldwideHeading: "世界中のパートナーと共に",
@@ -1042,7 +1042,7 @@ const zh: Dict = {
     sectionDesc: {
       greeting: "了解dostac：我们是谁与我们的愿景。",
       history: "30年里程碑与成长历程。",
-      worldwide: "覆盖30个国家的合作伙伴网络。",
+      philosophy: "dostac以信任、连接与可持续增长为核心的企业理念。",
       directions: "总部与工厂位置及联系方式。",
     },
     worldwideHeading: "携手全球合作伙伴",
@@ -1333,7 +1333,7 @@ const vi: Dict = {
     sectionDesc: {
       greeting: "Chúng tôi là ai và tầm nhìn của dostac.",
       history: "Ba thập kỷ phát triển và những cột mốc quan trọng.",
-      worldwide: "Quan hệ đối tác tại 30 quốc gia.",
+      philosophy: "Triết lý tin tưởng, kết nối và tăng trưởng bền vững của Dostac.",
       directions: "Vị trí trụ sở/nhà máy và thông tin liên hệ.",
     },
     worldwideHeading: "Đồng hành cùng đối tác toàn cầu",
