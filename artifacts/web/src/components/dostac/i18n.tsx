@@ -430,6 +430,16 @@ const ko: Dict = {
     rfqPhCountry: "예: 미국, 유럽",
     rfqPhCategory: "예: 물티슈, 티슈",
     rfqPhMessage: "프로젝트, 요구사항 또는 인증 필요사항(ISO, GMP, Halal, FDA 등)을 설명해 주세요...",
+    rfqOptOem: "OEM", rfqOptOdm: "ODM", rfqOptSample: "샘플", rfqOptOther: "기타",
+    rfqErrorFallback: "제출에 실패했습니다. 다시 시도해 주세요.",
+    fallbackCategories: [
+      { name: "물티슈", badge: "아기 / 여성 / 일반" },
+      { name: "데오드란트 티슈", badge: "활동용 / 일상용" },
+      { name: "가정용 물티슈", badge: "청소 / 위생" },
+      { name: "위생 제품", badge: "OEM / ODM" },
+      { name: "일회용 제품", badge: "일회용" },
+      { name: "특수 물티슈", badge: "맞춤 제형" },
+    ],
   },
 };
 
@@ -851,6 +861,16 @@ const en: Dict = {
     rfqPhCountry: "e.g. USA, Europe",
     rfqPhCategory: "e.g. Wet Wipes",
     rfqPhMessage: "Describe your project, requirements, or certification needs (e.g. ISO, GMP, Halal, FDA)...",
+    rfqOptOem: "OEM", rfqOptOdm: "ODM", rfqOptSample: "Sample", rfqOptOther: "Other",
+    rfqErrorFallback: "Submission failed. Please try again.",
+    fallbackCategories: [
+      { name: "Wet Wipes", badge: "Baby / Feminine / General" },
+      { name: "Deodorant Tissues", badge: "Active / Daily" },
+      { name: "Household Wipes", badge: "Cleaning / Hygiene" },
+      { name: "Sanitary Products", badge: "OEM / ODM" },
+      { name: "Disposable Items", badge: "Single-Use" },
+      { name: "Specialty Wipes", badge: "Custom Formula" },
+    ],
   },
 };
 
@@ -1272,6 +1292,16 @@ const ja: Dict = {
     rfqPhCountry: "例: 日本、アジア",
     rfqPhCategory: "例: ウェットティッシュ",
     rfqPhMessage: "プロジェクト、要件、認証ニーズ（ISO、GMP、Halal、FDAなど）についてご説明ください...",
+    rfqOptOem: "OEM", rfqOptOdm: "ODM", rfqOptSample: "サンプル", rfqOptOther: "その他",
+    rfqErrorFallback: "送信に失敗しました。もう一度お試しください。",
+    fallbackCategories: [
+      { name: "ウェットティッシュ", badge: "ベビー / フェミニン / 一般" },
+      { name: "デオドラントティッシュ", badge: "アクティブ / デイリー" },
+      { name: "家庭用ウェットシート", badge: "クリーニング / 衛生" },
+      { name: "衛生製品", badge: "OEM / ODM" },
+      { name: "使い捨て製品", badge: "使い捨て" },
+      { name: "特殊ウェットシート", badge: "カスタム処方" },
+    ],
   },
 };
 
@@ -1693,6 +1723,16 @@ const zh: Dict = {
     rfqPhCountry: "例：美国、欧洲",
     rfqPhCategory: "例：湿巾",
     rfqPhMessage: "请描述您的项目、要求或认证需求（如ISO、GMP、Halal、FDA等）...",
+    rfqOptOem: "OEM", rfqOptOdm: "ODM", rfqOptSample: "样品", rfqOptOther: "其他",
+    rfqErrorFallback: "提交失败，请重试。",
+    fallbackCategories: [
+      { name: "湿巾", badge: "婴儿 / 女性 / 通用" },
+      { name: "止汗湿巾", badge: "运动 / 日常" },
+      { name: "家用湿巾", badge: "清洁 / 卫生" },
+      { name: "卫生产品", badge: "OEM / ODM" },
+      { name: "一次性产品", badge: "一次性" },
+      { name: "特种湿巾", badge: "定制配方" },
+    ],
   },
 };
 
@@ -2114,6 +2154,16 @@ const vi: Dict = {
     rfqPhCountry: "VD: Hoa Kỳ, Châu Âu",
     rfqPhCategory: "VD: Khăn ướt",
     rfqPhMessage: "Mô tả dự án, yêu cầu hoặc nhu cầu chứng nhận (VD: ISO, GMP, Halal, FDA)...",
+    rfqOptOem: "OEM", rfqOptOdm: "ODM", rfqOptSample: "Mẫu", rfqOptOther: "Khác",
+    rfqErrorFallback: "Gửi thất bại. Vui lòng thử lại.",
+    fallbackCategories: [
+      { name: "Khăn ướt", badge: "Em bé / Phụ nữ / Thông dụng" },
+      { name: "Khăn khử mùi", badge: "Năng động / Hàng ngày" },
+      { name: "Khăn ướt gia dụng", badge: "Làm sạch / Vệ sinh" },
+      { name: "Sản phẩm vệ sinh", badge: "OEM / ODM" },
+      { name: "Sản phẩm dùng một lần", badge: "Dùng một lần" },
+      { name: "Khăn ướt đặc biệt", badge: "Công thức tùy chỉnh" },
+    ],
   },
 };
 

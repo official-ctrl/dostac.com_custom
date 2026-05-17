@@ -415,20 +415,12 @@ const PRODUCT_IMAGES = [
   "product-05.webp",
 ];
 
-const FALLBACK_CATEGORIES = [
-  { name: "Wet Wipes", badge: "Baby / Feminine / General" },
-  { name: "Deodorant Tissues", badge: "Active / Daily" },
-  { name: "Household Wipes", badge: "Cleaning / Hygiene" },
-  { name: "Sanitary Products", badge: "OEM / ODM" },
-  { name: "Disposable Items", badge: "Single-Use" },
-  { name: "Specialty Wipes", badge: "Custom Formula" },
-];
-
 function ProductShowcaseSection() {
   const { t } = useT();
   const { lang } = useLang();
   const { data } = useListPublicProducts({ lang });
   const products = data ?? [];
+  const fallbackCategories = t("homeNew.fallbackCategories") as Array<{ name: string; badge: string }>;
 
   const displayItems = products.length > 0
     ? products.slice(0, 6).map((p: { name: string; category: string }, i: number) => ({
@@ -436,7 +428,7 @@ function ProductShowcaseSection() {
         badge: p.category || "OEM / ODM",
         imageKey: PRODUCT_IMAGES[i] ?? "product-01.webp",
       }))
-    : FALLBACK_CATEGORIES.map((cat, i) => ({
+    : fallbackCategories.map((cat, i) => ({
         name: cat.name,
         badge: cat.badge,
         imageKey: PRODUCT_IMAGES[i] ?? "product-01.webp",
@@ -878,7 +870,7 @@ function ContactRFQSection() {
         });
       },
       onError: (err: unknown) => {
-        const msg = err instanceof Error ? err.message : "Submission failed. Please try again.";
+        const msg = err instanceof Error ? err.message : (t("homeNew.rfqErrorFallback") as string);
         setError(msg);
       },
     },
@@ -1031,10 +1023,10 @@ function ContactRFQSection() {
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value={NONE_VALUE}>{t("homeNew.rfqInquiryType") as string}</SelectItem>
-                          <SelectItem value="oem">OEM</SelectItem>
-                          <SelectItem value="odm">ODM</SelectItem>
-                          <SelectItem value="sample">Sample</SelectItem>
-                          <SelectItem value="other">Other</SelectItem>
+                          <SelectItem value="oem">{t("homeNew.rfqOptOem") as string}</SelectItem>
+                          <SelectItem value="odm">{t("homeNew.rfqOptOdm") as string}</SelectItem>
+                          <SelectItem value="sample">{t("homeNew.rfqOptSample") as string}</SelectItem>
+                          <SelectItem value="other">{t("homeNew.rfqOptOther") as string}</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
