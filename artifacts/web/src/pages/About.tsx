@@ -153,7 +153,19 @@ function SectionNav({ active }: { active: SectionId }) {
   );
 }
 
-function PhilosophySection({ dbWhyItems }: { dbWhyItems?: { titleKo: string; titleEn: string; titleJa: string; titleZh: string; titleVi: string; descKo: string; descEn: string; descJa: string; descZh: string; descVi: string; active: boolean; sortOrder: number }[] | null }) {
+function PhilosophySection({
+  dbWhyItems,
+  dbHeading,
+  dbIntro,
+  dbImageUrl,
+  dbPhilosophyCards,
+}: {
+  dbWhyItems?: { titleKo: string; titleEn: string; titleJa: string; titleZh: string; titleVi: string; descKo: string; descEn: string; descJa: string; descZh: string; descVi: string; active: boolean; sortOrder: number }[] | null;
+  dbHeading?: string;
+  dbIntro?: string;
+  dbImageUrl?: string | null;
+  dbPhilosophyCards?: { titleKo: string; titleEn: string; titleJa: string; titleZh: string; titleVi: string; textKo: string; textEn: string; textJa: string; textZh: string; textVi: string }[];
+}) {
   const { t } = useT();
   const { lang } = useLang();
   const headerFade = useFadeUp();
@@ -163,7 +175,21 @@ function PhilosophySection({ dbWhyItems }: { dbWhyItems?: { titleKo: string; tit
   const founderCards = useStaggerReveal();
   const outroFade = useFadeUp();
 
-  const philosophyCards = t("about.philosophyCards") as { title: string; text: string }[];
+  const i18nPhiloCards = t("about.philosophyCards") as { title: string; text: string }[];
+  const philosophyCards: { title: string; text: string }[] = useMemo(() => {
+    if (dbPhilosophyCards && dbPhilosophyCards.length > 0) {
+      return dbPhilosophyCards.map((c) => {
+        const titleKey = `title${lang.charAt(0).toUpperCase()}${lang.slice(1)}` as keyof typeof c;
+        const textKey = `text${lang.charAt(0).toUpperCase()}${lang.slice(1)}` as keyof typeof c;
+        return {
+          title: (c[titleKey] as string) || c.titleEn || c.titleKo || "",
+          text: (c[textKey] as string) || c.textEn || c.textKo || "",
+        };
+      });
+    }
+    return i18nPhiloCards;
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dbPhilosophyCards, lang]);
 
   const activeDbItems = dbWhyItems?.filter((it) => it.active).sort((a, b) => a.sortOrder - b.sortOrder) ?? [];
   const whyDostacItems: { title: string; text: string }[] = activeDbItems.length > 0
@@ -191,8 +217,8 @@ function PhilosophySection({ dbWhyItems }: { dbWhyItems?: { titleKo: string; tit
           >
             <div className="rounded-2xl overflow-hidden shadow-md aspect-[4/5] lg:aspect-auto lg:h-[580px]">
               <img
-                src={dostacImage("hero-production.webp")}
-                alt={t("about.philosophyHeading") as string}
+                src={dbImageUrl || dostacImage("hero-production.webp")}
+                alt={dbHeading || (t("about.philosophyHeading") as string)}
                 className="w-full h-full object-cover"
               />
             </div>
@@ -210,10 +236,10 @@ function PhilosophySection({ dbWhyItems }: { dbWhyItems?: { titleKo: string; tit
                 COMPANY PHILOSOPHY
               </div>
               <h2 className="font-display text-3xl md:text-4xl font-bold text-primary mb-6 leading-tight">
-                {t("about.philosophyHeading") as string}
+                {(dbHeading && dbHeading.trim()) ? dbHeading : (t("about.philosophyHeading") as string)}
               </h2>
               <p className="text-muted-foreground leading-relaxed mb-8 whitespace-pre-line">
-                {t("about.philosophyIntro") as string}
+                {(dbIntro && dbIntro.trim()) ? dbIntro : (t("about.philosophyIntro") as string)}
               </p>
             </div>
 
@@ -467,6 +493,8 @@ function AboutContent() {
   );
   const greetingSig = pickByLang(data, "greetingSignature", lang);
   const worldwideIntro = pickByLang(data, "worldwideIntro", lang);
+  const philosophyHeading = pickByLang(data, "philosophyHeading", lang);
+  const philosophyIntro = pickByLang(data, "philosophyIntro", lang);
   const directionsAddress = pickByLang(data, "directionsAddress", lang) || (t("about.directionsAddress") as string);
 
   const greetingImg = data?.greetingImageUrl || dostacImage("ceo-portrait.webp");
@@ -549,7 +577,13 @@ function AboutContent() {
       />
 
       {/* 3. COMPANY PHILOSOPHY */}
-      <PhilosophySection dbWhyItems={data?.whyDostacItems ?? null} />
+      <PhilosophySection
+        dbWhyItems={data?.whyDostacItems ?? null}
+        dbHeading={philosophyHeading ?? undefined}
+        dbIntro={philosophyIntro ?? undefined}
+        dbImageUrl={data?.philosophyImageUrl ?? null}
+        dbPhilosophyCards={data?.philosophyCards ?? undefined}
+      />
 
       {/* 4. DIRECTIONS */}
       <section id="directions" className="scroll-mt-32 py-24 bg-[#f9f9f7]">

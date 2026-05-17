@@ -307,6 +307,19 @@ export interface WorldwideItem {
   descriptionVi: string;
 }
 
+export interface PhilosophyCard {
+  titleKo: string;
+  titleEn: string;
+  titleJa: string;
+  titleZh: string;
+  titleVi: string;
+  textKo: string;
+  textEn: string;
+  textJa: string;
+  textZh: string;
+  textVi: string;
+}
+
 export interface WhyDostacItem {
   titleKo: string;
   titleEn: string;
@@ -349,6 +362,19 @@ export interface AboutContent {
   companyDescJa: string;
   companyDescZh: string;
   companyDescVi: string;
+  /** @nullable */
+  philosophyImageUrl?: string | null;
+  philosophyHeadingKo: string;
+  philosophyHeadingEn: string;
+  philosophyHeadingJa: string;
+  philosophyHeadingZh: string;
+  philosophyHeadingVi: string;
+  philosophyIntroKo: string;
+  philosophyIntroEn: string;
+  philosophyIntroJa: string;
+  philosophyIntroZh: string;
+  philosophyIntroVi: string;
+  philosophyCards: PhilosophyCard[];
   whyDostacItems: WhyDostacItem[];
   directionsAddressKo: string;
   directionsAddressEn: string;

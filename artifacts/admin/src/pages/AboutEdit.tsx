@@ -8,6 +8,7 @@ import {
   type AboutContent,
   type HistoryItem,
   type WorldwideItem,
+  type PhilosophyCard,
   type WhyDostacItem,
 } from "@workspace/api-client-react";
 import { Loader2, Save, Sparkles, Plus, Trash2, GripVertical, Eye, EyeOff } from "lucide-react";
@@ -56,6 +57,18 @@ function emptyAbout(): AboutContent {
     companyDescJa: "",
     companyDescZh: "",
     companyDescVi: "",
+    philosophyImageUrl: null,
+    philosophyHeadingKo: "",
+    philosophyHeadingEn: "",
+    philosophyHeadingJa: "",
+    philosophyHeadingZh: "",
+    philosophyHeadingVi: "",
+    philosophyIntroKo: "",
+    philosophyIntroEn: "",
+    philosophyIntroJa: "",
+    philosophyIntroZh: "",
+    philosophyIntroVi: "",
+    philosophyCards: [],
     whyDostacItems: [],
     directionsAddressKo: "",
     directionsAddressEn: "",
@@ -77,6 +90,13 @@ function newWorldwideItem(): WorldwideItem {
     region: "",
     titleKo: "", titleEn: "", titleJa: "", titleZh: "", titleVi: "",
     descriptionKo: "", descriptionEn: "", descriptionJa: "", descriptionZh: "", descriptionVi: "",
+  };
+}
+
+function newPhilosophyCard(): PhilosophyCard {
+  return {
+    titleKo: "", titleEn: "", titleJa: "", titleZh: "", titleVi: "",
+    textKo: "", textEn: "", textJa: "", textZh: "", textVi: "",
   };
 }
 
@@ -219,6 +239,30 @@ export default function AboutEdit() {
     if (!it) return;
     await translateOne(it.descriptionKo, "regional market description, partnerships and channels", "text",
       (lang, text) => updateWorldwideItem(i, { [langKey("description", lang)]: text } as Partial<WorldwideItem>));
+  };
+
+  /* ─── Philosophy helpers ────────────────────────────────────── */
+  const translatePhilosophyHeading = () =>
+    translateOne(form.philosophyHeadingKo, "company philosophy section heading", "text",
+      (lang, text) => setForm((f) => ({ ...f, [langKey("philosophyHeading", lang)]: text })));
+
+  const translatePhilosophyIntro = () =>
+    translateOne(form.philosophyIntroKo, "company philosophy intro paragraph (2 sentences)", "text",
+      (lang, text) => setForm((f) => ({ ...f, [langKey("philosophyIntro", lang)]: text })));
+
+  const addPhilosophyCard = () =>
+    setForm((f) => ({ ...f, philosophyCards: [...f.philosophyCards, newPhilosophyCard()] }));
+  const removePhilosophyCard = (i: number) =>
+    setForm((f) => ({ ...f, philosophyCards: f.philosophyCards.filter((_, idx) => idx !== i) }));
+  const updatePhilosophyCard = (i: number, patch: Partial<PhilosophyCard>) =>
+    setForm((f) => ({ ...f, philosophyCards: f.philosophyCards.map((c, idx) => (idx === i ? { ...c, ...patch } : c)) }));
+  const translatePhilosophyCard = async (i: number) => {
+    const c = form.philosophyCards[i];
+    if (!c) return;
+    await translateOne(c.titleKo, "philosophy value card title (e.g. Trust, Connection)", "text",
+      (lang, text) => updatePhilosophyCard(i, { [langKey("title", lang)]: text } as Partial<PhilosophyCard>));
+    await translateOne(c.textKo, "philosophy value card description (1–2 sentences)", "text",
+      (lang, text) => updatePhilosophyCard(i, { [langKey("text", lang)]: text } as Partial<PhilosophyCard>));
   };
 
   /* ─── Why Dostac helpers ────────────────────────────────────── */
@@ -525,6 +569,175 @@ export default function AboutEdit() {
 
         {/* ─── WHY DOSTAC ───────────────────────────────────────── */}
         <TabsContent value="why" className="mt-4 space-y-4">
+
+          {/* ── COMPANY PHILOSOPHY ── */}
+          <Card>
+            <CardHeader className="flex-row items-center justify-between space-y-0">
+              <div>
+                <CardTitle className="text-base">Company Philosophy — 헤딩 &amp; 소개</CardTitle>
+                <p className="text-xs text-muted-foreground mt-1">
+                  "Building Global Business Through Trust &amp; Connection" 섹션의 이미지·헤딩·소개글을 관리합니다.
+                </p>
+              </div>
+            </CardHeader>
+            <CardContent className="space-y-5">
+              {/* Philosophy image */}
+              <div className="space-y-2">
+                <Label>섹션 우측 이미지</Label>
+                <ImageUploader
+                  value={form.philosophyImageUrl ?? null}
+                  onChange={(url) => setField("philosophyImageUrl", url ?? null)}
+                  previewClassName="h-52 w-full max-w-2xl rounded-xl object-cover bg-muted border border-border"
+                  testId="upload-philosophy-image"
+                />
+                <p className="text-xs text-muted-foreground">비워두면 기본 생산공장 이미지가 사용됩니다.</p>
+              </div>
+
+              {/* Heading */}
+              <LangTabs
+                activeLang={activeLang}
+                onChange={setActiveLang}
+                filledFor={(l) => (form[langKey("philosophyHeading", l)] as string).trim().length > 0}
+              >
+                {(lang) => (
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <Label>섹션 헤딩 ({LANG_LABEL[lang]})</Label>
+                      {lang === "ko" && (
+                        <Button type="button" size="sm" variant="ghost"
+                          onClick={() => void translatePhilosophyHeading()}
+                          disabled={translateMut.isPending}
+                          className="h-7 gap-1.5 text-xs text-accent hover:text-accent">
+                          <Sparkles className="h-3 w-3" /> KO → 4개 언어 자동 번역
+                        </Button>
+                      )}
+                    </div>
+                    <Input
+                      value={(form[langKey("philosophyHeading", lang)] as string) ?? ""}
+                      onChange={(e) => setField(langKey("philosophyHeading", lang), e.target.value)}
+                      placeholder={lang === "ko" ? "신뢰와 연결을 통한 글로벌 비즈니스 구축" : ""}
+                      data-testid={`input-philosophy-heading-${lang}`}
+                    />
+                  </div>
+                )}
+              </LangTabs>
+
+              {/* Intro */}
+              <LangTabs
+                activeLang={activeLang}
+                onChange={setActiveLang}
+                filledFor={(l) => (form[langKey("philosophyIntro", l)] as string).trim().length > 0}
+              >
+                {(lang) => (
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <Label>소개 설명 ({LANG_LABEL[lang]})</Label>
+                      {lang === "ko" && (
+                        <Button type="button" size="sm" variant="ghost"
+                          onClick={() => void translatePhilosophyIntro()}
+                          disabled={translateMut.isPending}
+                          className="h-7 gap-1.5 text-xs text-accent hover:text-accent">
+                          <Sparkles className="h-3 w-3" /> KO → 4개 언어 자동 번역
+                        </Button>
+                      )}
+                    </div>
+                    <Textarea
+                      rows={3}
+                      value={(form[langKey("philosophyIntro", lang)] as string) ?? ""}
+                      onChange={(e) => setField(langKey("philosophyIntro", lang), e.target.value)}
+                      placeholder={lang === "ko"
+                        ? "Dostac는 성공적인 글로벌 비즈니스가 신뢰, 소통, 그리고 장기적인 파트너십에서 시작된다고 믿습니다.\n\n당사는 실질적인 소싱 솔루션과 지속 가능한 비즈니스 전략을 통해 한국 제조사, 글로벌 바이어, 브랜드, 시장을 연결합니다."
+                        : ""}
+                      data-testid={`input-philosophy-intro-${lang}`}
+                    />
+                  </div>
+                )}
+              </LangTabs>
+            </CardContent>
+          </Card>
+
+          {/* ── PHILOSOPHY VALUE CARDS ── */}
+          <Card>
+            <CardHeader className="flex-row items-center justify-between space-y-0">
+              <div>
+                <CardTitle className="text-base">철학 카드 (Trust / Connection / Sustainable Growth)</CardTitle>
+                <p className="text-xs text-muted-foreground mt-1">
+                  Philosophy 섹션 하단의 3가지 가치 카드입니다. 최대 3개 권장.
+                </p>
+              </div>
+              <Button type="button" size="sm" variant="outline" onClick={addPhilosophyCard} className="gap-2" data-testid="add-philosophy-card">
+                <Plus className="h-4 w-4" /> 카드 추가
+              </Button>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {form.philosophyCards.length === 0 && (
+                <div className="py-8 text-center border-2 border-dashed rounded-lg">
+                  <p className="text-sm text-muted-foreground mb-3">철학 카드가 없습니다.</p>
+                  <Button type="button" size="sm" variant="outline" onClick={addPhilosophyCard} className="gap-2">
+                    <Plus className="h-4 w-4" /> 첫 번째 카드 추가
+                  </Button>
+                </div>
+              )}
+              {form.philosophyCards.map((card, i) => (
+                <div key={i} className="border rounded-lg p-4 space-y-3" data-testid={`philosophy-card-${i}`}>
+                  <div className="flex items-center gap-2">
+                    <Badge variant="outline" className="text-xs font-mono shrink-0">#{i + 1}</Badge>
+                    <p className="text-sm font-medium flex-1 truncate">
+                      {card.titleKo || <span className="text-muted-foreground italic">제목 없음</span>}
+                    </p>
+                    <Button type="button" size="sm" variant="ghost"
+                      onClick={() => void translatePhilosophyCard(i)}
+                      disabled={translateMut.isPending}
+                      className="h-7 gap-1.5 text-xs text-accent hover:text-accent shrink-0">
+                      <Sparkles className="h-3 w-3" /> KO → 4개 언어
+                    </Button>
+                    <Button type="button" size="sm" variant="ghost" onClick={() => removePhilosophyCard(i)}
+                      className="h-7 gap-1.5 text-xs text-destructive hover:text-destructive shrink-0">
+                      <Trash2 className="h-3 w-3" /> 삭제
+                    </Button>
+                  </div>
+
+                  {/* Title — 5 langs inline */}
+                  <div className="space-y-1">
+                    <Label className="text-xs text-muted-foreground">제목 (5개 언어)</Label>
+                    <div className="grid grid-cols-1 sm:grid-cols-5 gap-2">
+                      {LANGS.map((lang) => (
+                        <div key={lang} className="space-y-1">
+                          <Label className="text-xs font-mono text-muted-foreground">{lang.toUpperCase()}</Label>
+                          <Input
+                            value={card[langKey("title", lang) as keyof PhilosophyCard] as string}
+                            onChange={(e) => updatePhilosophyCard(i, { [langKey("title", lang)]: e.target.value } as Partial<PhilosophyCard>)}
+                            placeholder={lang === "ko" ? "신뢰" : ""}
+                            data-testid={`philosophy-title-${i}-${lang}`}
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Description — 5 langs inline */}
+                  <div className="space-y-1">
+                    <Label className="text-xs text-muted-foreground">설명 (5개 언어)</Label>
+                    <div className="grid grid-cols-1 sm:grid-cols-5 gap-2">
+                      {LANGS.map((lang) => (
+                        <div key={lang} className="space-y-1">
+                          <Label className="text-xs font-mono text-muted-foreground">{lang.toUpperCase()}</Label>
+                          <Textarea key={lang} rows={3}
+                            value={card[langKey("text", lang) as keyof PhilosophyCard] as string}
+                            onChange={(e) => updatePhilosophyCard(i, { [langKey("text", lang)]: e.target.value } as Partial<PhilosophyCard>)}
+                            placeholder={lang === "ko" ? "설명을 입력하세요" : ""}
+                            data-testid={`philosophy-text-${i}-${lang}`}
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </CardContent>
+          </Card>
+
+          {/* ── WHY DOSTAC CARDS ── */}
           <Card>
             <CardHeader className="flex-row items-center justify-between space-y-0">
               <div>

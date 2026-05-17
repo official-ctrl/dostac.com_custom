@@ -24,6 +24,19 @@ export interface WorldwideItem {
   descriptionVi: string;
 }
 
+export interface PhilosophyCard {
+  titleKo: string;
+  titleEn: string;
+  titleJa: string;
+  titleZh: string;
+  titleVi: string;
+  textKo: string;
+  textEn: string;
+  textJa: string;
+  textZh: string;
+  textVi: string;
+}
+
 export interface WhyDostacItem {
   titleKo: string;
   titleEn: string;
@@ -71,6 +84,21 @@ export const aboutContentTable = pgTable("about_content", {
   companyDescJa: text("company_desc_ja").notNull().default(""),
   companyDescZh: text("company_desc_zh").notNull().default(""),
   companyDescVi: text("company_desc_vi").notNull().default(""),
+  philosophyImageUrl: text("philosophy_image_url"),
+  philosophyHeadingKo: text("philosophy_heading_ko").notNull().default(""),
+  philosophyHeadingEn: text("philosophy_heading_en").notNull().default(""),
+  philosophyHeadingJa: text("philosophy_heading_ja").notNull().default(""),
+  philosophyHeadingZh: text("philosophy_heading_zh").notNull().default(""),
+  philosophyHeadingVi: text("philosophy_heading_vi").notNull().default(""),
+  philosophyIntroKo: text("philosophy_intro_ko").notNull().default(""),
+  philosophyIntroEn: text("philosophy_intro_en").notNull().default(""),
+  philosophyIntroJa: text("philosophy_intro_ja").notNull().default(""),
+  philosophyIntroZh: text("philosophy_intro_zh").notNull().default(""),
+  philosophyIntroVi: text("philosophy_intro_vi").notNull().default(""),
+  philosophyCards: jsonb("philosophy_cards")
+    .$type<PhilosophyCard[]>()
+    .notNull()
+    .default([]),
   whyDostacItems: jsonb("why_dostac_items")
     .$type<WhyDostacItem[]>()
     .notNull()

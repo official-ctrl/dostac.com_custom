@@ -43,6 +43,7 @@ export * from "./notFoundResponse";
 export * from "./noticeTranslation";
 export * from "./oemStep";
 export * from "./ok";
+export * from "./philosophyCard";
 export * from "./processContent";
 export * from "./processContentInput";
 export * from "./publicBanner";

@@ -6,6 +6,7 @@
  * OpenAPI spec version: 0.1.0
  */
 import type { HistoryItem } from "./historyItem";
+import type { PhilosophyCard } from "./philosophyCard";
 import type { WhyDostacItem } from "./whyDostacItem";
 import type { WorldwideItem } from "./worldwideItem";
 
@@ -36,6 +37,19 @@ export interface AboutContent {
   companyDescJa: string;
   companyDescZh: string;
   companyDescVi: string;
+  /** @nullable */
+  philosophyImageUrl?: string | null;
+  philosophyHeadingKo: string;
+  philosophyHeadingEn: string;
+  philosophyHeadingJa: string;
+  philosophyHeadingZh: string;
+  philosophyHeadingVi: string;
+  philosophyIntroKo: string;
+  philosophyIntroEn: string;
+  philosophyIntroJa: string;
+  philosophyIntroZh: string;
+  philosophyIntroVi: string;
+  philosophyCards: PhilosophyCard[];
   whyDostacItems: WhyDostacItem[];
   directionsAddressKo: string;
   directionsAddressEn: string;

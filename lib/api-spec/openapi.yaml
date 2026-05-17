@@ -919,6 +919,21 @@ components:
         descriptionZh: { type: string }
         descriptionVi: { type: string }
 
+    PhilosophyCard:
+      type: object
+      required: [titleKo, titleEn, titleJa, titleZh, titleVi, textKo, textEn, textJa, textZh, textVi]
+      properties:
+        titleKo: { type: string }
+        titleEn: { type: string }
+        titleJa: { type: string }
+        titleZh: { type: string }
+        titleVi: { type: string }
+        textKo: { type: string }
+        textEn: { type: string }
+        textJa: { type: string }
+        textZh: { type: string }
+        textVi: { type: string }
+
     WhyDostacItem:
       type: object
       required:
@@ -947,6 +962,9 @@ components:
           worldwideIntroKo, worldwideIntroEn, worldwideIntroJa, worldwideIntroZh, worldwideIntroVi,
           worldwideItems,
           companyDescKo, companyDescEn, companyDescJa, companyDescZh, companyDescVi,
+          philosophyHeadingKo, philosophyHeadingEn, philosophyHeadingJa, philosophyHeadingZh, philosophyHeadingVi,
+          philosophyIntroKo, philosophyIntroEn, philosophyIntroJa, philosophyIntroZh, philosophyIntroVi,
+          philosophyCards,
           whyDostacItems,
           directionsAddressKo, directionsAddressEn, directionsAddressJa, directionsAddressZh, directionsAddressVi
         ]
@@ -979,6 +997,20 @@ components:
         companyDescJa: { type: string }
         companyDescZh: { type: string }
         companyDescVi: { type: string }
+        philosophyImageUrl: { type: ["string", "null"] }
+        philosophyHeadingKo: { type: string }
+        philosophyHeadingEn: { type: string }
+        philosophyHeadingJa: { type: string }
+        philosophyHeadingZh: { type: string }
+        philosophyHeadingVi: { type: string }
+        philosophyIntroKo: { type: string }
+        philosophyIntroEn: { type: string }
+        philosophyIntroJa: { type: string }
+        philosophyIntroZh: { type: string }
+        philosophyIntroVi: { type: string }
+        philosophyCards:
+          type: array
+          items: { $ref: "#/components/schemas/PhilosophyCard" }
         whyDostacItems:
           type: array
           items: { $ref: "#/components/schemas/WhyDostacItem" }
