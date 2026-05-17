@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Link } from "wouter";
+import { Link, useSearch, useLocation } from "wouter";
 import { motion } from "framer-motion";
 import {
   CheckCircle2,
@@ -26,20 +26,31 @@ function ProductsContent() {
   const productsQuery = useListPublicProducts({ lang });
   const products = productsQuery.data ?? [];
 
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const search = useSearch();
+  const [, navigate] = useLocation();
+
+  const categoryFromUrl = new URLSearchParams(search).get("category");
+
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(categoryFromUrl);
   const [activeSlug, setActiveSlug] = useState<string | null>(null);
 
   const sectionRefs = useRef<Map<string, HTMLElement>>(new Map());
+
+  useEffect(() => {
+    setSelectedCategory(categoryFromUrl);
+    setActiveSlug(null);
+  }, [categoryFromUrl]);
 
   const categories = Array.from(
     new Set(products.map((p) => p.category).filter((c): c is string => !!c))
   );
 
   useEffect(() => {
-    if (selectedCategory !== null && !categories.includes(selectedCategory)) {
+    if (selectedCategory !== null && categories.length > 0 && !categories.includes(selectedCategory)) {
       setSelectedCategory(null);
+      navigate("/products", { replace: true });
     }
-  }, [categories, selectedCategory]);
+  }, [categories, selectedCategory, navigate]);
 
   const filteredProducts =
     selectedCategory === null
@@ -72,6 +83,11 @@ function ProductsContent() {
   const handleCategorySelect = (cat: string | null) => {
     setSelectedCategory(cat);
     setActiveSlug(null);
+    if (cat === null) {
+      navigate("/products", { replace: false });
+    } else {
+      navigate(`/products?category=${encodeURIComponent(cat)}`, { replace: false });
+    }
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
