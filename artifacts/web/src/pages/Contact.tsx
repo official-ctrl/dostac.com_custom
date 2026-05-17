@@ -117,7 +117,6 @@ function ContactContent() {
           </p>
         </div>
       </section>
-
       <section className="py-24 bg-muted/20">
         <div className="container mx-auto px-6">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 lg:gap-16">
@@ -272,7 +271,7 @@ function ContactContent() {
                     <Mail className="w-6 h-6 text-accent shrink-0" />
                     <div>
                       <h4 className="font-semibold mb-1">{t("contact.sales") as string}</h4>
-                      <p className="text-white/80 text-sm">info@dostac.com</p>
+                      <p className="text-white/80 text-sm">official@dostac.com</p>
                     </div>
                   </div>
                   <div className="flex items-start gap-4">
