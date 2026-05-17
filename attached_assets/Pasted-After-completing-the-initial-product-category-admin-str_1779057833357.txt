@@ -1,0 +1,159 @@
+After completing the initial product/category admin structure, prepare the system for phase 2 product importing workflow.
+
+The admin should be able to input products ONE ITEM AT A TIME.
+
+Workflow structure:
+
+1. Admin selects:
+
+* Main Category
+* Sub Category
+
+2. Admin inputs:
+
+* Product name
+* Product detail page URL
+
+3. The AI system analyzes the provided link and automatically generates:
+
+* Product images
+* Product features
+* Product description
+* Material information
+* SEO-friendly summary
+
+4. The system should automatically:
+
+* Download all product images
+* Store images internally
+* Convert images to WEBP
+* Create thumbnails
+* Generate a draft product entry
+
+5. The generated draft should appear inside the admin editor before publishing.
+
+---
+
+## IMPORTANT WORKFLOW RULE
+
+The system should NOT bulk import products automatically.
+
+The workflow is designed for:
+
+* Manual one-by-one product registration
+* Careful admin review
+* OEM/B2B product optimization
+
+---
+
+## PRODUCT INPUT FLOW
+
+Admin Input:
+
+* Main category
+* Sub category
+* Product name
+* Source URL
+
+AI Output:
+
+* Product images
+* Features
+* Product description
+* Material
+
+---
+
+## CATEGORY STRUCTURE
+
+1. Cotton Pads
+
+   * Round Cotton Pad
+   * Square Cotton Pad
+
+2. Wet Wipes
+
+   * Multi-purpose Wipes
+   * Baby Wipes
+   * Bidet Wipes
+   * Biodegradable Wipes
+
+3. Feminine Wipes
+
+   * 10 Sheets
+   * 15 Sheets
+
+4. Cooling Towel
+
+5. Cleansing Tissue
+
+6. Deodorant Tissue
+
+7. Dry Wipes
+
+   * Cotton Dry Pad
+   * Cleansing Dry Pad
+
+8. Nose Strip
+
+9. Acne Patch
+
+   * Trouble Clear Patch
+   * Hydrocolloid Band
+
+---
+
+## IMPORTANT IMAGE STORAGE RULE
+
+Never use external manufacturer image URLs directly.
+
+The system must:
+
+* Download images immediately
+* Save images internally
+* Optimize images for web
+* Prevent broken images if source URLs change
+
+---
+
+## PRODUCT PAGE GOAL
+
+The product page should focus on:
+
+* Professional OEM presentation
+* Strong visual product showcase
+* Request a Quote conversion
+
+The page should NOT behave like a retail shopping mall.
+
+---
+
+## ADMIN UI REQUIREMENTS
+
+Inside the product editor:
+
+* Source URL field
+* AI Generate button
+* Draft preview
+* Image preview
+* Edit before publish
+* Product status toggle
+
+---
+
+## DESIGN STYLE
+
+The admin UI should feel like:
+
+* Shopify Admin
+* Alibaba Supplier Center
+* Modern SaaS dashboard
+* Clean Korean OEM manufacturer platform
+
+Use:
+
+* Minimal layout
+* White background
+* Orange accent color
+* Responsive structure
+* Fast workflow optimized for repetitive product uploads
