@@ -11,6 +11,7 @@ export interface AdminProduct {
   id: number;
   slug: string;
   category: string;
+  subCategory: string;
   sortOrder: number;
   /** @nullable */
   imageUrl?: string | null;

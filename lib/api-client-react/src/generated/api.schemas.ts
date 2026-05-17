@@ -34,6 +34,7 @@ export interface Translation {
   valueProp: string;
   body: string;
   features: string;
+  material: string;
 }
 
 export interface NoticeTranslation {
@@ -47,6 +48,7 @@ export interface PublicProduct {
   id: number;
   slug: string;
   category: string;
+  subCategory: string;
   sortOrder: number;
   /** @nullable */
   imageUrl?: string | null;
@@ -55,6 +57,7 @@ export interface PublicProduct {
   valueProp: string;
   body: string;
   features: string[];
+  material: string;
   certs: string[];
 }
 
@@ -87,6 +90,7 @@ export interface AdminProduct {
   id: number;
   slug: string;
   category: string;
+  subCategory: string;
   sortOrder: number;
   /** @nullable */
   imageUrl?: string | null;
@@ -98,6 +102,7 @@ export interface AdminProduct {
 export interface AdminProductInput {
   slug: string;
   category: string;
+  subCategory: string;
   sortOrder: number;
   /** @nullable */
   imageUrl?: string | null;
@@ -155,6 +160,11 @@ export interface Inquiry {
   company: string;
   inquiryType: InquiryInquiryType;
   message: string;
+  whatsapp: string;
+  country: string;
+  quantity: string;
+  productInterest: string;
+  customization: string;
   status: InquiryStatus;
   adminNote: string;
   source: string;
@@ -204,6 +214,11 @@ export interface ContactInquiryInput {
   company?: string;
   inquiryType?: ContactInquiryInputInquiryType;
   message: string;
+  whatsapp?: string;
+  country?: string;
+  quantity?: string;
+  productInterest?: string;
+  customization?: string;
 }
 
 export type TranslateInputFormat =

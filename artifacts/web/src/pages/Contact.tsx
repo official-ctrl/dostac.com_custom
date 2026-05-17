@@ -66,6 +66,11 @@ function ContactContent() {
     email: "",
     company: "",
     inquiryType: "" as "" | "oem" | "odm" | "sample" | "other",
+    whatsapp: "",
+    country: "",
+    productInterest: "",
+    quantity: "",
+    customization: "",
     message: "",
   });
   const [success, setSuccess] = useState(false);
@@ -76,7 +81,7 @@ function ContactContent() {
       onSuccess: () => {
         setSuccess(true);
         setError(null);
-        setForm({ name: "", email: "", company: "", inquiryType: "", message: "" });
+        setForm({ name: "", email: "", company: "", inquiryType: "", whatsapp: "", country: "", productInterest: "", quantity: "", customization: "", message: "" });
         setTimeout(() => {
           successRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
         }, 50);
@@ -103,6 +108,11 @@ function ContactContent() {
         email: form.email,
         company: form.company || undefined,
         inquiryType: form.inquiryType || undefined,
+        whatsapp: form.whatsapp || undefined,
+        country: form.country || undefined,
+        productInterest: form.productInterest || undefined,
+        quantity: form.quantity || undefined,
+        customization: form.customization || undefined,
         message: form.message,
       },
     });
@@ -223,6 +233,35 @@ function ContactContent() {
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div className="flex flex-col gap-1.5">
+                        <Label htmlFor="whatsapp" className="text-sm font-semibold text-slate-700">
+                          {t("contact.whatsapp") as string}
+                        </Label>
+                        <Input
+                          id="whatsapp"
+                          placeholder={t("contact.whatsappPh") as string}
+                          value={form.whatsapp}
+                          onChange={(e) => setForm({ ...form, whatsapp: e.target.value })}
+                          className="h-10 text-sm"
+                          data-testid="input-whatsapp"
+                        />
+                      </div>
+                      <div className="flex flex-col gap-1.5">
+                        <Label htmlFor="country" className="text-sm font-semibold text-slate-700">
+                          {t("contact.country") as string}
+                        </Label>
+                        <Input
+                          id="country"
+                          placeholder={t("contact.countryPh") as string}
+                          value={form.country}
+                          onChange={(e) => setForm({ ...form, country: e.target.value })}
+                          className="h-10 text-sm"
+                          data-testid="input-country"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div className="flex flex-col gap-1.5">
                         <Label htmlFor="company" className="text-sm font-semibold text-slate-700">
                           {t("contact.company") as string}
                         </Label>
@@ -265,6 +304,49 @@ function ContactContent() {
                           </SelectContent>
                         </Select>
                       </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div className="flex flex-col gap-1.5">
+                        <Label htmlFor="productInterest" className="text-sm font-semibold text-slate-700">
+                          {t("contact.productInterest") as string}
+                        </Label>
+                        <Input
+                          id="productInterest"
+                          placeholder={t("contact.productInterestPh") as string}
+                          value={form.productInterest}
+                          onChange={(e) => setForm({ ...form, productInterest: e.target.value })}
+                          className="h-10 text-sm"
+                          data-testid="input-product-interest"
+                        />
+                      </div>
+                      <div className="flex flex-col gap-1.5">
+                        <Label htmlFor="quantity" className="text-sm font-semibold text-slate-700">
+                          {t("contact.quantity") as string}
+                        </Label>
+                        <Input
+                          id="quantity"
+                          placeholder={t("contact.quantityPh") as string}
+                          value={form.quantity}
+                          onChange={(e) => setForm({ ...form, quantity: e.target.value })}
+                          className="h-10 text-sm"
+                          data-testid="input-quantity"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="flex flex-col gap-1.5">
+                      <Label htmlFor="customization" className="text-sm font-semibold text-slate-700">
+                        {t("contact.customization") as string}
+                      </Label>
+                      <Textarea
+                        id="customization"
+                        placeholder={t("contact.customizationPh") as string}
+                        className="min-h-[80px] text-sm resize-none"
+                        value={form.customization}
+                        onChange={(e) => setForm({ ...form, customization: e.target.value })}
+                        data-testid="textarea-customization"
+                      />
                     </div>
 
                     <div className="flex flex-col gap-1.5">

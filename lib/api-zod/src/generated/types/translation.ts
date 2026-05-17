@@ -14,4 +14,5 @@ export interface Translation {
   valueProp: string;
   body: string;
   features: string;
+  material: string;
 }

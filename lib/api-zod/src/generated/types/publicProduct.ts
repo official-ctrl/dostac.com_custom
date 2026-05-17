@@ -10,6 +10,7 @@ export interface PublicProduct {
   id: number;
   slug: string;
   category: string;
+  subCategory: string;
   sortOrder: number;
   /** @nullable */
   imageUrl?: string | null;
@@ -18,5 +19,6 @@ export interface PublicProduct {
   valueProp: string;
   body: string;
   features: string[];
+  material: string;
   certs: string[];
 }

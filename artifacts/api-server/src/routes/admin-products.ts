@@ -26,6 +26,7 @@ async function loadProductWithTranslations(id: number) {
     id: product.id,
     slug: product.slug,
     category: product.category,
+    subCategory: product.subCategory,
     sortOrder: product.sortOrder,
     imageUrl: product.imageUrl,
     published: product.published,
@@ -37,6 +38,7 @@ async function loadProductWithTranslations(id: number) {
       valueProp: t.valueProp,
       body: t.body,
       features: t.features,
+      material: t.material,
     })),
   };
 }
@@ -61,6 +63,7 @@ router.get("/admin/products", async (_req, res): Promise<void> => {
       id: p.id,
       slug: p.slug,
       category: p.category,
+      subCategory: p.subCategory,
       sortOrder: p.sortOrder,
       imageUrl: p.imageUrl,
       published: p.published,
@@ -72,6 +75,7 @@ router.get("/admin/products", async (_req, res): Promise<void> => {
         valueProp: t.valueProp,
         body: t.body,
         features: t.features,
+        material: t.material,
       })),
     })),
   );

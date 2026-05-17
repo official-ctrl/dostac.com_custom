@@ -20,7 +20,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
-import { ArrowLeft, Loader2, Save, Mail, Building2, Tag } from "lucide-react";
+import { ArrowLeft, Loader2, Save, Mail, Building2, Tag, MessageSquare, Globe, Package, Layers, Wrench } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 const STATUS_OPTIONS = [
@@ -134,6 +134,21 @@ export default function InquiryDetail() {
                     <span className="text-muted-foreground">—</span>
                   )}
                 </InfoRow>
+                {inquiry.whatsapp && (
+                  <InfoRow icon={MessageSquare} label="WhatsApp" value={inquiry.whatsapp} />
+                )}
+                {inquiry.country && (
+                  <InfoRow icon={Globe} label="국가" value={inquiry.country} />
+                )}
+                {inquiry.productInterest && (
+                  <InfoRow icon={Package} label="관심 제품" value={inquiry.productInterest} />
+                )}
+                {inquiry.quantity && (
+                  <InfoRow icon={Layers} label="예상 수량" value={inquiry.quantity} />
+                )}
+                {inquiry.customization && (
+                  <InfoRow icon={Wrench} label="맞춤 요청" value={inquiry.customization} />
+                )}
               </div>
 
               <div className="pt-2 border-t border-border">

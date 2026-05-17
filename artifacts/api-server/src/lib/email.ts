@@ -24,13 +24,20 @@ function inquiryTypeLabel(value: string): string {
 }
 
 function buildPlainBody(inquiry: ContactInquiry): string {
-  return [
+  const lines = [
     `New inquiry received from the DOSTAC website.`,
     ``,
     `Name:        ${inquiry.name}`,
     `Email:       ${inquiry.email}`,
     `Company:     ${fmt(inquiry.company)}`,
     `Type:        ${inquiryTypeLabel(inquiry.inquiryType)}`,
+  ];
+  if (inquiry.whatsapp) lines.push(`WhatsApp:    ${inquiry.whatsapp}`);
+  if (inquiry.country) lines.push(`Country:     ${inquiry.country}`);
+  if (inquiry.productInterest) lines.push(`Product:     ${inquiry.productInterest}`);
+  if (inquiry.quantity) lines.push(`Quantity:    ${inquiry.quantity}`);
+  if (inquiry.customization) lines.push(`Custom:      ${inquiry.customization}`);
+  lines.push(
     `Inquiry ID:  ${inquiry.id}`,
     `Received:    ${inquiry.createdAt instanceof Date ? inquiry.createdAt.toISOString() : String(inquiry.createdAt)}`,
     ``,
@@ -39,7 +46,8 @@ function buildPlainBody(inquiry: ContactInquiry): string {
     ``,
     `--`,
     `Open the admin to reply: /admin/inquiries/${inquiry.id}`,
-  ].join("\n");
+  );
+  return lines.join("\n");
 }
 
 function escapeHtml(s: string): string {
@@ -66,6 +74,11 @@ function buildHtmlBody(inquiry: ContactInquiry): string {
       ${row("Email", inquiry.email)}
       ${row("Company", inquiry.company)}
       ${row("Type", inquiryTypeLabel(inquiry.inquiryType))}
+      ${inquiry.whatsapp ? row("WhatsApp", inquiry.whatsapp) : ""}
+      ${inquiry.country ? row("Country", inquiry.country) : ""}
+      ${inquiry.productInterest ? row("Product Interest", inquiry.productInterest) : ""}
+      ${inquiry.quantity ? row("Desired Quantity", inquiry.quantity) : ""}
+      ${inquiry.customization ? row("Customization", inquiry.customization) : ""}
       ${row("Inquiry ID", String(inquiry.id))}
     </table>
     <div style="padding:0 24px 24px;">

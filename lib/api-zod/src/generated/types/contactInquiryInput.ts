@@ -13,4 +13,9 @@ export interface ContactInquiryInput {
   company?: string;
   inquiryType?: ContactInquiryInputInquiryType;
   message: string;
+  whatsapp?: string;
+  country?: string;
+  quantity?: string;
+  productInterest?: string;
+  customization?: string;
 }

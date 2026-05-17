@@ -14,6 +14,11 @@ const StrictContactBody = CreateContactInquiryBody.extend({
   company: z.string().trim().max(200).optional(),
   inquiryType: z.enum(ALLOWED_INQUIRY_TYPES).optional(),
   message: z.string().trim().min(1).max(5000),
+  whatsapp: z.string().trim().max(60).optional(),
+  country: z.string().trim().max(80).optional(),
+  quantity: z.string().trim().max(80).optional(),
+  productInterest: z.string().trim().max(2000).optional(),
+  customization: z.string().trim().max(2000).optional(),
 });
 
 router.post("/public/contact-inquiries", async (req, res): Promise<void> => {
@@ -31,6 +36,11 @@ router.post("/public/contact-inquiries", async (req, res): Promise<void> => {
       company: data.company ?? "",
       inquiryType: data.inquiryType ?? "",
       message: data.message,
+      whatsapp: data.whatsapp ?? "",
+      country: data.country ?? "",
+      quantity: data.quantity ?? "",
+      productInterest: data.productInterest ?? "",
+      customization: data.customization ?? "",
       source: "web",
     })
     .returning();

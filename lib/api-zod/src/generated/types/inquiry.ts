@@ -15,6 +15,11 @@ export interface Inquiry {
   company: string;
   inquiryType: InquiryInquiryType;
   message: string;
+  whatsapp: string;
+  country: string;
+  quantity: string;
+  productInterest: string;
+  customization: string;
   status: InquiryStatus;
   adminNote: string;
   source: string;

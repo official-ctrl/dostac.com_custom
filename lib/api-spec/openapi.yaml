@@ -601,7 +601,7 @@ components:
 
     Translation:
       type: object
-      required: [lang, name, headline, valueProp, body, features]
+      required: [lang, name, headline, valueProp, body, features, material]
       properties:
         lang: { $ref: "#/components/schemas/Lang" }
         name: { type: string }
@@ -609,6 +609,7 @@ components:
         valueProp: { type: string }
         body: { type: string }
         features: { type: string }
+        material: { type: string }
 
     NoticeTranslation:
       type: object
@@ -621,11 +622,12 @@ components:
 
     PublicProduct:
       type: object
-      required: [id, slug, category, sortOrder, name, headline, valueProp, body, features, certs]
+      required: [id, slug, category, subCategory, sortOrder, name, headline, valueProp, body, features, material, certs]
       properties:
         id: { type: integer }
         slug: { type: string }
         category: { type: string }
+        subCategory: { type: string }
         sortOrder: { type: integer }
         imageUrl: { type: ["string", "null"] }
         name: { type: string }
@@ -635,6 +637,7 @@ components:
         features:
           type: array
           items: { type: string }
+        material: { type: string }
         certs:
           type: array
           items: { type: string }
@@ -671,11 +674,12 @@ components:
 
     AdminProduct:
       type: object
-      required: [id, slug, category, sortOrder, published, certs, translations]
+      required: [id, slug, category, subCategory, sortOrder, published, certs, translations]
       properties:
         id: { type: integer }
         slug: { type: string }
         category: { type: string }
+        subCategory: { type: string }
         sortOrder: { type: integer }
         imageUrl: { type: ["string", "null"] }
         published: { type: boolean }
@@ -688,10 +692,11 @@ components:
 
     AdminProductInput:
       type: object
-      required: [slug, category, sortOrder, published, certs, translations]
+      required: [slug, category, subCategory, sortOrder, published, certs, translations]
       properties:
         slug: { type: string }
         category: { type: string }
+        subCategory: { type: string }
         sortOrder: { type: integer }
         imageUrl: { type: ["string", "null"] }
         published: { type: boolean }
@@ -741,6 +746,11 @@ components:
           company,
           inquiryType,
           message,
+          whatsapp,
+          country,
+          quantity,
+          productInterest,
+          customization,
           status,
           adminNote,
           source,
@@ -755,6 +765,11 @@ components:
           type: string
           enum: ["", oem, odm, sample, other]
         message: { type: string }
+        whatsapp: { type: string }
+        country: { type: string }
+        quantity: { type: string }
+        productInterest: { type: string }
+        customization: { type: string }
         status:
           type: string
           enum: [new, in_progress, completed]
@@ -797,6 +812,11 @@ components:
           type: string
           enum: ["", oem, odm, sample, other]
         message: { type: string }
+        whatsapp: { type: string }
+        country: { type: string }
+        quantity: { type: string }
+        productInterest: { type: string }
+        customization: { type: string }
 
     TranslateInput:
       type: object

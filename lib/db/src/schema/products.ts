@@ -16,6 +16,7 @@ export const productsTable = pgTable("products", {
   id: serial("id").primaryKey(),
   slug: varchar("slug", { length: 80 }).notNull().unique(),
   category: varchar("category", { length: 60 }).notNull().default("general"),
+  subCategory: varchar("sub_category", { length: 80 }).notNull().default(""),
   sortOrder: integer("sort_order").notNull().default(0),
   imageUrl: text("image_url"),
   certs: jsonb("certs").$type<string[]>().notNull().default([]),
@@ -46,6 +47,7 @@ export const productTranslationsTable = pgTable(
     valueProp: varchar("value_prop", { length: 300 }).notNull().default(""),
     body: text("body").notNull().default(""),
     features: text("features").notNull().default(""),
+    material: text("material").notNull().default(""),
   },
   (t) => ({
     uq: uniqueIndex("product_translations_product_lang_uq").on(t.productId, t.lang),

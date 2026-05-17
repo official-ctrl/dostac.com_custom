@@ -10,6 +10,7 @@ import type { Translation } from "./translation";
 export interface AdminProductInput {
   slug: string;
   category: string;
+  subCategory: string;
   sortOrder: number;
   /** @nullable */
   imageUrl?: string | null;

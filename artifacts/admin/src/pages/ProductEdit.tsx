@@ -41,6 +41,14 @@ const PRODUCT_FIELDS = [
     placeholder: "Private Label / Full ODM 모두 지원\n샘플 2주 · 양산 6주 표준 리드타임\n...",
     helpText: "줄바꿈으로 구분 — 공개 페이지에서 불릿 리스트로 표시됩니다.",
   },
+  {
+    key: "material" as const,
+    label: "소재 / 재료",
+    kind: "textarea" as const,
+    context: "product material description for cosmetic/personal care OEM product",
+    placeholder: "예: 100% Organic Cotton, Spunlace Nonwoven",
+    helpText: "소재 정보 — 제품 상세 페이지에 표시됩니다.",
+  },
 ];
 
 const CATEGORY_SUGGESTIONS = ["skincare", "suncare", "haircare", "bodycare", "makeup", "wellness"];
@@ -54,6 +62,7 @@ function emptyTranslations(): Translation[] {
     valueProp: "",
     body: "",
     features: "",
+    material: "",
   }));
 }
 
@@ -81,6 +90,7 @@ export default function ProductEdit() {
   const [form, setForm] = useState<AdminProductInput>({
     slug: "",
     category: "skincare",
+    subCategory: "",
     sortOrder: 100,
     imageUrl: null,
     published: true,
@@ -102,12 +112,14 @@ export default function ProductEdit() {
             valueProp: "",
             body: "",
             features: "",
+            material: "",
           }
         );
       });
       setForm({
         slug: existing.slug,
         category: existing.category,
+        subCategory: existing.subCategory ?? "",
         sortOrder: existing.sortOrder,
         imageUrl: existing.imageUrl ?? null,
         published: existing.published,
@@ -236,6 +248,17 @@ export default function ProductEdit() {
                 <option key={c} value={c} />
               ))}
             </datalist>
+          </div>
+          <div className="space-y-1.5">
+            <Label htmlFor="subCategory">서브카테고리 (선택)</Label>
+            <Input
+              id="subCategory"
+              value={form.subCategory}
+              onChange={(e) => update("subCategory", e.target.value)}
+              placeholder="예: Baby Wipes, Round Cotton Pad"
+              data-testid="input-sub-category"
+            />
+            <p className="text-xs text-muted-foreground">카테고리 내 세분류 — 제품 필터링에 사용됩니다.</p>
           </div>
           <div className="space-y-1.5">
             <Label htmlFor="sortOrder">정렬 순서</Label>
