@@ -1,0 +1,130 @@
+{
+  "colorScheme": "light",
+  "fonts": [
+    {
+      "family": "Nanum Gothic",
+      "role": "body"
+    },
+    {
+      "family": "돋음",
+      "role": "unknown"
+    },
+    {
+      "family": "Arial",
+      "role": "body"
+    },
+    {
+      "family": "맑은 고딕",
+      "role": "unknown"
+    }
+  ],
+  "colors": {
+    "primary": "#FF6600",
+    "secondary": "#2C4379",
+    "accent": "#009AD0",
+    "background": "#FFFFFF",
+    "textPrimary": "#393939",
+    "link": "#009AD0"
+  },
+  "typography": {
+    "fontFamilies": {
+      "primary": "Nanum Gothic",
+      "heading": "Nanum Gothic"
+    },
+    "fontStacks": {
+      "heading": [
+        "맑은 고딕"
+      ],
+      "body": [
+        "Nanum Gothic",
+        "돋음",
+        "Arial"
+      ],
+      "paragraph": [
+        "Nanum Gothic",
+        "돋음",
+        "Arial"
+      ]
+    },
+    "fontSizes": {
+      "h1": "23px",
+      "h2": "23px",
+      "body": "12px"
+    }
+  },
+  "spacing": {
+    "baseUnit": 4,
+    "borderRadius": "0px"
+  },
+  "components": {
+    "input": {
+      "background": "#FFFFFF",
+      "textColor": "#333333",
+      "borderColor": "#B7B7B7",
+      "borderRadius": "0px",
+      "borderRadiusCorners": {
+        "topLeft": "0px",
+        "topRight": "0px",
+        "bottomRight": "0px",
+        "bottomLeft": "0px"
+      },
+      "shadow": "none"
+    }
+  },
+  "images": {
+    "logo": "http://www.dssanitary.com/images/logo.png",
+    "favicon": null,
+    "ogImage": null,
+    "logoHref": "index.html?PHPSESSID=e0dc971bde82384672f22e80d2c17685",
+    "logoAlt": "(주)동서위생"
+  },
+  "__llm_logo_reasoning": {
+    "selectedIndex": 0,
+    "reasoning": "Selected #0 because it is visible, has a medium size, and matches the brand name '동서위생(주)' from the page title.",
+    "confidence": 0.8,
+    "source": "llm"
+  },
+  "__llm_button_reasoning": {
+    "primary": {
+      "index": -1,
+      "text": "N/A",
+      "reasoning": "All buttons have the same background color (#FFFFFF) and lack vibrant or action-oriented text, making it difficult to identify a primary CTA."
+    },
+    "secondary": {
+      "index": -1,
+      "text": "N/A",
+      "reasoning": "Since no primary button was identified, a secondary button cannot be selected."
+    },
+    "confidence": 0.3
+  },
+  "personality": {
+    "tone": "professional",
+    "energy": "low",
+    "targetAudience": "unknown"
+  },
+  "designSystem": {
+    "framework": "custom",
+    "componentLibrary": ""
+  },
+  "confidence": {
+    "buttons": 0.3,
+    "colors": 0.9,
+    "overall": 0.6
+  },
+  "__llm_metadata": {
+    "logoSelection": {
+      "llmCalled": true,
+      "llmSucceeded": true,
+      "finalSource": "llm",
+      "rawLogoSelection": {
+        "selectedLogoIndex": 0,
+        "selectedLogoReasoning": "Selected #0 because it is visible, has a medium size, and matches the brand name '동서위생(주)' from the page title.",
+        "confidence": 0.8
+      }
+    },
+    "buttonClassification": {
+      "llmCalled": true,
+      "llmSucceeded": true
+    }
+  }
+}
