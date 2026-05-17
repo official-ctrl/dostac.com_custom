@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "wouter";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   ChevronLeft,
   ChevronRight,
@@ -37,12 +37,32 @@ import {
   type PublicBanner,
 } from "@workspace/api-client-react";
 
+/* ── Premium easing curve (Apple/Linear-style deceleration) ── */
+const EASE_OUT_EXPO = [0.16, 1, 0.3, 1] as const;
+
 const fadeUp = {
-  hidden: { opacity: 0, y: 28 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.55, ease: "easeOut" as const } },
+  hidden: { opacity: 0, y: 16 },
+  show: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.65, ease: EASE_OUT_EXPO },
+  },
 };
 
+/* Hero: fires after a short delay so the page renders first */
+const heroStagger = {
+  hidden: {},
+  show: { transition: { staggerChildren: 0.12, delayChildren: 0.15 } },
+};
+
+/* Sections: subtle initial delay so cards don't all pop at once */
 const stagger = {
+  hidden: {},
+  show: { transition: { staggerChildren: 0.09, delayChildren: 0.05 } },
+};
+
+/* Section heading group: eyebrow → h2 → sub sequential reveal */
+const sectionHeaderStagger = {
   hidden: {},
   show: { transition: { staggerChildren: 0.1 } },
 };
@@ -161,6 +181,7 @@ function HeroSection() {
             <HeroTextOverlay
               title={text.title || (t("homeNew.heroFallbackTitle") as string)}
               description={text.description || (t("homeNew.heroFallbackDesc") as string)}
+              isActive={isActive}
             />
           </div>
         );
@@ -206,55 +227,76 @@ function HeroSection() {
   );
 }
 
-function HeroTextOverlay({ title, description }: { title: string; description: string }) {
+function HeroTextOverlay({
+  title,
+  description,
+  isActive = true,
+}: {
+  title: string;
+  description: string;
+  isActive?: boolean;
+}) {
   const { t } = useT();
   return (
     <div className="relative z-10 flex items-center min-h-[92vh] w-full pointer-events-none">
       <div className="container mx-auto px-6 py-24 max-w-5xl">
-        <motion.div
-          initial="hidden"
-          animate="show"
-          variants={stagger}
-          className="max-w-3xl pointer-events-auto"
-        >
-          <motion.p
-            variants={fadeUp}
-            className="uppercase tracking-[0.3em] text-xs text-accent font-bold mb-5"
-          >
-            {t("homeNew.heroEyebrow") as string}
-          </motion.p>
-          <motion.h1
-            variants={fadeUp}
-            className="font-display text-4xl md:text-6xl lg:text-7xl font-bold text-white leading-[1.08] mb-6"
-          >
-            {title}
-          </motion.h1>
-          <motion.p
-            variants={fadeUp}
-            className="text-lg md:text-xl text-white/80 leading-relaxed mb-10 max-w-2xl"
-          >
-            {description}
-          </motion.p>
-          <motion.div variants={fadeUp} className="flex flex-wrap gap-4">
-            <Link href="/contact">
-              <Button
-                size="lg"
-                className="rounded-full bg-accent hover:bg-accent/90 text-white h-13 px-8 text-base font-semibold shadow-lg shadow-accent/25"
+        <AnimatePresence mode="wait">
+          {isActive && (
+            <motion.div
+              key={title}
+              initial="hidden"
+              animate="show"
+              exit="hidden"
+              variants={heroStagger}
+              className="max-w-3xl pointer-events-auto"
+            >
+              {/* 1. Badge / Eyebrow */}
+              <motion.p
+                variants={fadeUp}
+                className="uppercase tracking-[0.3em] text-xs text-accent font-bold mb-5"
               >
-                {t("homeNew.heroCtaOem") as string} <ArrowRight className="ml-2 h-4 w-4" />
-              </Button>
-            </Link>
-            <Link href="/contact">
-              <Button
-                size="lg"
-                variant="outline"
-                className="rounded-full border-white/30 text-white bg-transparent hover:bg-white/10 hover:text-white h-13 px-8 text-base font-semibold"
+                {t("homeNew.heroEyebrow") as string}
+              </motion.p>
+
+              {/* 2. Headline */}
+              <motion.h1
+                variants={fadeUp}
+                className="font-display text-4xl md:text-6xl lg:text-7xl font-bold text-white leading-[1.08] mb-6"
               >
-                {t("homeNew.heroCtaContact") as string}
-              </Button>
-            </Link>
-          </motion.div>
-        </motion.div>
+                {title}
+              </motion.h1>
+
+              {/* 3. Subheadline */}
+              <motion.p
+                variants={fadeUp}
+                className="text-lg md:text-xl text-white/75 leading-relaxed mb-10 max-w-2xl"
+              >
+                {description}
+              </motion.p>
+
+              {/* 4. CTA Buttons */}
+              <motion.div variants={fadeUp} className="flex flex-wrap gap-4">
+                <Link href="/contact">
+                  <Button
+                    size="lg"
+                    className="rounded-full bg-accent hover:bg-accent/90 text-white h-13 px-8 text-base font-semibold shadow-lg shadow-accent/30 hover:shadow-accent/50 transition-shadow"
+                  >
+                    {t("homeNew.heroCtaOem") as string} <ArrowRight className="ml-2 h-4 w-4" />
+                  </Button>
+                </Link>
+                <Link href="/contact">
+                  <Button
+                    size="lg"
+                    variant="outline"
+                    className="rounded-full border-white/30 text-white bg-white/5 hover:bg-white/15 hover:text-white h-13 px-8 text-base font-semibold backdrop-blur-sm"
+                  >
+                    {t("homeNew.heroCtaContact") as string}
+                  </Button>
+                </Link>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </div>
   );
@@ -315,15 +357,15 @@ function ProductionFlowSection() {
           initial="hidden"
           whileInView="show"
           viewport={{ once: true, amount: 0.2 }}
-          variants={fadeUp}
+          variants={sectionHeaderStagger}
           className="max-w-2xl mx-auto text-center mb-14"
         >
-          <p className="uppercase tracking-[0.25em] text-xs font-bold text-accent mb-3">
+          <motion.p variants={fadeUp} className="uppercase tracking-[0.25em] text-xs font-bold text-accent mb-3">
             {t("homeNew.flowEyebrow") as string}
-          </p>
-          <h2 className="font-display text-3xl md:text-4xl font-bold text-[#0F172A] leading-tight">
+          </motion.p>
+          <motion.h2 variants={fadeUp} className="font-display text-3xl md:text-4xl font-bold text-[#0F172A] leading-tight">
             {t("homeNew.flowHeading") as string}
-          </h2>
+          </motion.h2>
         </motion.div>
 
         <div className="relative">
@@ -401,16 +443,16 @@ function ProductShowcaseSection() {
           initial="hidden"
           whileInView="show"
           viewport={{ once: true, amount: 0.2 }}
-          variants={fadeUp}
+          variants={sectionHeaderStagger}
           className="max-w-2xl mx-auto text-center mb-14"
         >
-          <p className="uppercase tracking-[0.25em] text-xs font-bold text-accent mb-3">
+          <motion.p variants={fadeUp} className="uppercase tracking-[0.25em] text-xs font-bold text-accent mb-3">
             {t("homeNew.showcaseEyebrow") as string}
-          </p>
-          <h2 className="font-display text-3xl md:text-4xl font-bold text-[#0F172A] leading-tight mb-4">
+          </motion.p>
+          <motion.h2 variants={fadeUp} className="font-display text-3xl md:text-4xl font-bold text-[#0F172A] leading-tight mb-4">
             {t("homeNew.showcaseHeading") as string}
-          </h2>
-          <p className="text-slate-500 text-base">{t("homeNew.showcaseSub") as string}</p>
+          </motion.h2>
+          <motion.p variants={fadeUp} className="text-slate-500 text-base">{t("homeNew.showcaseSub") as string}</motion.p>
         </motion.div>
 
         <motion.div
@@ -475,24 +517,24 @@ function FactoryQualitySection() {
             initial="hidden"
             whileInView="show"
             viewport={{ once: true, amount: 0.2 }}
-            variants={fadeUp}
+            variants={sectionHeaderStagger}
           >
-            <p className="uppercase tracking-[0.25em] text-xs font-bold text-accent mb-3">
+            <motion.p variants={fadeUp} className="uppercase tracking-[0.25em] text-xs font-bold text-accent mb-3">
               {t("homeNew.factoryEyebrow") as string}
-            </p>
-            <h2 className="font-display text-3xl md:text-4xl font-bold text-[#0F172A] leading-tight mb-5">
+            </motion.p>
+            <motion.h2 variants={fadeUp} className="font-display text-3xl md:text-4xl font-bold text-[#0F172A] leading-tight mb-5">
               {t("homeNew.factoryHeading") as string}
-            </h2>
-            <p className="text-slate-600 leading-relaxed mb-8">
+            </motion.h2>
+            <motion.p variants={fadeUp} className="text-slate-600 leading-relaxed mb-8">
               {t("homeNew.factoryBody") as string}
-            </p>
-            <div className="aspect-[16/10] rounded-2xl overflow-hidden bg-slate-200">
+            </motion.p>
+            <motion.div variants={fadeUp} className="aspect-[16/10] rounded-2xl overflow-hidden bg-slate-200">
               <img
                 src={dostacImage("hero-production.webp")}
                 alt="Factory"
                 className="w-full h-full object-cover"
               />
-            </div>
+            </motion.div>
           </motion.div>
 
           <motion.div
@@ -639,16 +681,16 @@ function GlobalDistributionSection() {
           initial="hidden"
           whileInView="show"
           viewport={{ once: true, amount: 0.2 }}
-          variants={fadeUp}
+          variants={sectionHeaderStagger}
           className="max-w-2xl mx-auto text-center mb-14"
         >
-          <p className="uppercase tracking-[0.25em] text-xs font-bold text-accent mb-3">
+          <motion.p variants={fadeUp} className="uppercase tracking-[0.25em] text-xs font-bold text-accent mb-3">
             {t("homeNew.globalEyebrow") as string}
-          </p>
-          <h2 className="font-display text-3xl md:text-4xl font-bold leading-tight mb-4">
+          </motion.p>
+          <motion.h2 variants={fadeUp} className="font-display text-3xl md:text-4xl font-bold leading-tight mb-4">
             {t("homeNew.globalHeading") as string}
-          </h2>
-          <p className="text-white/65 text-base">{t("homeNew.globalSub") as string}</p>
+          </motion.h2>
+          <motion.p variants={fadeUp} className="text-white/65 text-base">{t("homeNew.globalSub") as string}</motion.p>
         </motion.div>
 
         {/* Stats */}
@@ -734,16 +776,16 @@ function OEMServicesSection() {
           initial="hidden"
           whileInView="show"
           viewport={{ once: true, amount: 0.2 }}
-          variants={fadeUp}
+          variants={sectionHeaderStagger}
           className="max-w-2xl mx-auto text-center mb-14"
         >
-          <p className="uppercase tracking-[0.25em] text-xs font-bold text-accent mb-3">
+          <motion.p variants={fadeUp} className="uppercase tracking-[0.25em] text-xs font-bold text-accent mb-3">
             {t("homeNew.servicesEyebrow") as string}
-          </p>
-          <h2 className="font-display text-3xl md:text-4xl font-bold text-[#0F172A] leading-tight mb-4">
+          </motion.p>
+          <motion.h2 variants={fadeUp} className="font-display text-3xl md:text-4xl font-bold text-[#0F172A] leading-tight mb-4">
             {t("homeNew.servicesHeading") as string}
-          </h2>
-          <p className="text-slate-500 text-base">{t("homeNew.servicesSub") as string}</p>
+          </motion.h2>
+          <motion.p variants={fadeUp} className="text-slate-500 text-base">{t("homeNew.servicesSub") as string}</motion.p>
         </motion.div>
 
         <motion.div
@@ -872,25 +914,25 @@ function ContactRFQSection() {
             initial="hidden"
             whileInView="show"
             viewport={{ once: true, amount: 0.2 }}
-            variants={fadeUp}
+            variants={sectionHeaderStagger}
           >
-            <p className="uppercase tracking-[0.25em] text-xs font-bold text-accent mb-3">
+            <motion.p variants={fadeUp} className="uppercase tracking-[0.25em] text-xs font-bold text-accent mb-3">
               {t("homeNew.rfqEyebrow") as string}
-            </p>
-            <h2 className="font-display text-3xl md:text-4xl font-bold text-[#0F172A] leading-tight mb-5">
+            </motion.p>
+            <motion.h2 variants={fadeUp} className="font-display text-3xl md:text-4xl font-bold text-[#0F172A] leading-tight mb-5">
               {t("homeNew.rfqHeading") as string}
-            </h2>
-            <p className="text-slate-600 leading-relaxed mb-8">
+            </motion.h2>
+            <motion.p variants={fadeUp} className="text-slate-600 leading-relaxed mb-8">
               {t("homeNew.rfqBody") as string}
-            </p>
-            <div className="flex flex-col gap-4">
+            </motion.p>
+            <motion.div variants={stagger} className="flex flex-col gap-4">
               {rfqBullets.map((bullet, i) => (
-                <div key={i} className="flex items-center gap-3">
+                <motion.div key={i} variants={fadeUp} className="flex items-center gap-3">
                   <CheckCircle2 className="h-5 w-5 text-accent flex-shrink-0" />
                   <span className="text-slate-700 text-sm">{bullet}</span>
-                </div>
+                </motion.div>
               ))}
-            </div>
+            </motion.div>
           </motion.div>
 
           <motion.div

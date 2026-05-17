@@ -1,0 +1,171 @@
+Create a premium HERO text animation system inspired by Linear, Apple, and modern high-end SaaS websites for a global OEM/ODM manufacturing website named “dostac”.
+
+The animation style must feel:
+- refined
+- minimal
+- clean
+- lightweight
+- premium
+- smooth
+- modern
+- trustworthy
+
+Avoid:
+- flashy motion
+- gaming effects
+- exaggerated movement
+- bounce animation
+- elastic motion
+- dramatic zoom
+- heavy blur
+- cyberpunk effects
+
+The animation must communicate:
+clean OEM manufacturing trust
++
+premium Korean industrial quality
++
+modern global SaaS refinement
+
+ANIMATION SYSTEM:
+Use Framer Motion stagger animation for HERO content reveal.
+
+The animation should feel:
+- subtle
+- elegant
+- extremely smooth
+- naturally timed
+- almost invisible but refined
+
+MOTION STYLE:
+- fade-up motion
+- smooth opacity transition
+- small upward movement only
+- micro timing precision
+- minimal stagger delay
+- soft easing
+- cinematic but lightweight
+
+TIMING:
+- duration: 0.5s ~ 0.8s
+- stagger delay: 0.08s ~ 0.15s
+- easing: easeOut
+- vertical movement: 10px ~ 20px maximum
+- smooth GPU-friendly transform animations only
+
+HERO ANIMATION ORDER:
+
+1. Top badge reveal
+Fade in softly.
+
+2. Main headline reveal
+Large typography appears with elegant stagger motion.
+
+3. Subheadline reveal
+Smooth opacity transition with slight upward movement.
+
+4. CTA buttons reveal
+Buttons appear with soft stagger delay.
+
+5. Floating product package animation
+Very subtle continuous floating motion.
+
+6. Background glow and particles
+Extremely subtle ambient movement only.
+
+TYPOGRAPHY STYLE:
+- oversized premium sans-serif
+- modern Korean OEM branding mood
+- clean hierarchy
+- strong readability
+- elegant spacing
+
+HEADLINE:
+“K-Beauty OEM & Global Sourcing Partner”
+
+SUBHEADLINE:
+“Trusted OEM manufacturing solutions for sanitary wipes, deodorant tissues, and global private label distribution.”
+
+VISUAL DIRECTION:
+- white dominant layout
+- subtle dark cinematic gradient
+- clean industrial premium aesthetic
+- soft ambient shadows
+- hygienic manufacturing mood
+- premium spacing
+- realistic product visuals
+
+BACKGROUND:
+- white base
+- subtle gray texture
+- minimal cinematic gradient
+- clean modern atmosphere
+- no visual clutter
+
+FLOATING OBJECT:
+Use:
+- wet wipes package
+- sanitary tissue pouch
+- deodorant wipes packaging
+
+Avoid:
+- luxury cosmetic bottle focus
+- aggressive 3D motion
+
+FLOATING MOTION:
+- extremely slow movement
+- subtle rotation
+- smooth floating effect
+- low amplitude motion
+- calm and premium
+
+BUTTON STYLE:
+Primary button:
+orange accent (#FF6A1A)
+
+Secondary button:
+minimal white outline
+
+Button interaction:
+- soft hover glow
+- subtle transition
+- modern rounded corners
+- premium SaaS feel
+
+TECH REQUIREMENTS:
+- Next.js
+- Tailwind CSS
+- Framer Motion
+- lightweight optimized animation
+- GPU-friendly transforms only
+- fast loading priority
+- responsive mobile optimization
+
+PERFORMANCE PRIORITY:
+The animation must feel premium while remaining:
+- lightweight
+- smooth
+- optimized
+- professional
+- production-ready
+
+FINAL EXPERIENCE:
+The HERO section should feel like:
+“A premium global hygienic OEM manufacturing platform with refined modern motion.”
+
+The motion should support:
+trust
+cleanliness
+professionalism
+premium industrial branding
+global OEM confidence
+
+Do not create an entertainment-style website.
+
+The final motion must feel:
+calm
+expensive
+modern
+precise
+minimal
+globally trusted
