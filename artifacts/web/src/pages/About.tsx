@@ -100,7 +100,7 @@ function AboutContent() {
   );
   const greetingSig = pickByLang(data, "greetingSignature", lang);
   const worldwideIntro = pickByLang(data, "worldwideIntro", lang);
-  const directionsAddress = pickByLang(data, "directionsAddress", lang);
+  const directionsAddress = pickByLang(data, "directionsAddress", lang) || (t("about.directionsAddress") as string);
 
   const greetingImg = data?.greetingImageUrl || dostacImage("ceo-portrait.webp");
   const worldwideImg = data?.worldwideImageUrl || dostacImage("hero-production.webp");
@@ -284,7 +284,7 @@ function AboutContent() {
                     {t("about.directionsAddressLabel") as string}
                   </div>
                   <p
-                    className="text-lg text-primary font-medium leading-relaxed"
+                    className="text-lg text-primary font-medium leading-relaxed whitespace-pre-line"
                     data-testid="about-address"
                   >
                     {directionsAddress}

@@ -138,6 +138,7 @@ const ko: Dict = {
     worldwideHeading: "전 세계 파트너와 함께",
     directionsHeading: "오시는 길",
     directionsAddressLabel: "주소",
+    directionsAddress: "경기도 광주시 능평로 46-32\n(우) 12772 대한민국",
   },
   production: {
     heroTitle: "Process — OEM/ODM에서 글로벌 인증까지",
@@ -395,6 +396,7 @@ const en: Dict = {
     worldwideHeading: "Trusted by partners around the world",
     directionsHeading: "Visit Us",
     directionsAddressLabel: "Address",
+    directionsAddress: "46-32, Neungpyeong-ro, Gwangju-si,\nGyeonggi-do, Republic of Korea\n12772",
   },
   production: {
     heroTitle: "Process — From OEM/ODM to Global Certifications",
@@ -650,6 +652,7 @@ const ja: Dict = {
     worldwideHeading: "世界中のパートナーと共に",
     directionsHeading: "アクセス",
     directionsAddressLabel: "住所",
+    directionsAddress: "京畿道 広州市 陵坪路 46-32\n〒12772 大韓民国",
   },
   production: {
     heroTitle: "Process — OEM/ODMからグローバル認証まで",
@@ -905,6 +908,7 @@ const zh: Dict = {
     worldwideHeading: "携手全球合作伙伴",
     directionsHeading: "联系方式",
     directionsAddressLabel: "地址",
+    directionsAddress: "京畿道 广州市 陵坪路 46-32\n大韩民国 12772",
   },
   production: {
     heroTitle: "Process — 从 OEM/ODM 到全球认证",
@@ -1160,6 +1164,7 @@ const vi: Dict = {
     worldwideHeading: "Đồng hành cùng đối tác toàn cầu",
     directionsHeading: "Đường đến dostac",
     directionsAddressLabel: "Địa chỉ",
+    directionsAddress: "46-32, Neungpyeong-ro, Gwangju-si,\nGyeonggi-do, Hàn Quốc\n12772",
   },
   production: {
     heroTitle: "Process — Từ OEM/ODM đến Chứng nhận Toàn cầu",
