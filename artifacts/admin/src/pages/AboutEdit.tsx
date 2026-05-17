@@ -253,14 +253,6 @@ export default function AboutEdit() {
     }
   };
 
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center h-full">
-        <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
-      </div>
-    );
-  }
-
   const saving = updateMut.isPending;
 
   const sectionLabels = useMemo(() => ({
@@ -270,6 +262,14 @@ export default function AboutEdit() {
     history: "연혁",
     directions: "오시는 길",
   }), []);
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-full">
+        <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+      </div>
+    );
+  }
 
   return (
     <form onSubmit={(e) => void onSave(e)} className="px-8 py-8 space-y-6 max-w-6xl">
