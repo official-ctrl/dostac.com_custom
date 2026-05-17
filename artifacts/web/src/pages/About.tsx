@@ -10,9 +10,18 @@ import {
   Factory,
   BarChart2,
   Zap,
+  Shield,
+  Network,
+  TrendingUp,
+  Package,
+  Monitor,
+  Truck,
 } from "lucide-react";
 
 const HISTORY_AREA_ICONS = [ShoppingBag, Store, Globe, Factory, BarChart2, Zap];
+const PHILOSOPHY_CARD_ICONS = [Shield, Network, TrendingUp];
+const WHY_DOSTAC_ICONS = [Factory, Globe, Package, Monitor, Truck];
+const FOUNDER_AREA_ICONS = [ShoppingBag, Store, Globe, Factory, BarChart2, Zap];
 
 function useStaggerReveal() {
   const ref = useRef<HTMLDivElement>(null);
@@ -59,7 +68,7 @@ function useFadeUp() {
 const SECTIONS = [
   { id: "greeting" },
   { id: "history" },
-  { id: "worldwide" },
+  { id: "philosophy" },
   { id: "directions" },
 ] as const;
 
@@ -137,6 +146,177 @@ function SectionNav({ active }: { active: SectionId }) {
         </ul>
       </div>
     </nav>
+  );
+}
+
+function PhilosophySection() {
+  const { t } = useT();
+  const headerFade = useFadeUp();
+  const imgFade = useFadeUp();
+  const phiCards = useStaggerReveal();
+  const whyCards = useStaggerReveal();
+  const founderCards = useStaggerReveal();
+  const outroFade = useFadeUp();
+
+  const philosophyCards = t("about.philosophyCards") as { title: string; text: string }[];
+  const whyDostacItems = t("about.whyDostacItems") as { title: string; text: string }[];
+  const founderAreas = t("about.founderAreas") as string[];
+
+  return (
+    <section id="philosophy" className="scroll-mt-32 py-20 bg-slate-50">
+      <div className="container mx-auto px-6 max-w-7xl">
+        {/* Top two-column layout */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-start mb-20">
+          {/* Right image — first in DOM for mobile */}
+          <div
+            ref={imgFade.ref}
+            className={`order-1 lg:order-2 transition-all duration-700 ease-out ${
+              imgFade.visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+            }`}
+          >
+            <div className="rounded-2xl overflow-hidden shadow-md aspect-[4/5] lg:aspect-auto lg:h-[580px]">
+              <img
+                src={dostacImage("hero-production.webp")}
+                alt={t("about.philosophyHeading") as string}
+                className="w-full h-full object-cover"
+              />
+            </div>
+          </div>
+
+          {/* Left text column */}
+          <div className="order-2 lg:order-1">
+            <div
+              ref={headerFade.ref}
+              className={`transition-all duration-700 ease-out ${
+                headerFade.visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+              }`}
+            >
+              <div className="text-xs font-semibold uppercase tracking-[0.25em] text-accent mb-3">
+                COMPANY PHILOSOPHY
+              </div>
+              <h2 className="font-display text-3xl md:text-4xl font-bold text-primary mb-6 leading-tight">
+                {t("about.philosophyHeading") as string}
+              </h2>
+              <p className="text-muted-foreground leading-relaxed mb-8 whitespace-pre-line">
+                {t("about.philosophyIntro") as string}
+              </p>
+            </div>
+
+            {/* 3 philosophy cards */}
+            <div ref={phiCards.ref} className="space-y-4">
+              {philosophyCards.map((card, i) => {
+                const Icon = PHILOSOPHY_CARD_ICONS[i % PHILOSOPHY_CARD_ICONS.length];
+                return (
+                  <div
+                    key={i}
+                    className={`bg-white rounded-xl border border-slate-200 p-5 flex gap-4 items-start
+                      hover:shadow-md hover:border-accent/40 hover:-translate-y-0.5
+                      transition-all duration-300 ease-out
+                      ${phiCards.visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-5"}`}
+                    style={{ transitionDelay: phiCards.visible ? `${i * 80}ms` : "0ms" }}
+                  >
+                    <div className="text-accent mt-0.5 flex-shrink-0 bg-accent/10 rounded-lg p-2">
+                      <Icon className="h-5 w-5" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-semibold text-primary mb-1">{card.title}</p>
+                      <p className="text-sm text-muted-foreground leading-relaxed">{card.text}</p>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+
+        {/* Why Dostac subsection */}
+        <div className="mb-20">
+          <div className="text-center mb-10">
+            <div className="text-xs font-semibold uppercase tracking-[0.25em] text-accent mb-3">
+              WHY DOSTAC
+            </div>
+            <h3 className="font-display text-2xl md:text-3xl font-bold text-primary">
+              {t("about.whyDostacHeading") as string}
+            </h3>
+          </div>
+          <div ref={whyCards.ref} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {whyDostacItems.map((item, i) => {
+              const Icon = WHY_DOSTAC_ICONS[i % WHY_DOSTAC_ICONS.length];
+              return (
+                <div
+                  key={i}
+                  className={`bg-white rounded-xl border border-slate-200 p-5 flex gap-4 items-start
+                    hover:shadow-md hover:border-accent/40 hover:-translate-y-0.5
+                    transition-all duration-300 ease-out
+                    ${whyCards.visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-5"}`}
+                  style={{ transitionDelay: whyCards.visible ? `${i * 80}ms` : "0ms" }}
+                >
+                  <div className="text-accent mt-0.5 flex-shrink-0 bg-accent/10 rounded-lg p-2">
+                    <Icon className="h-4 w-4" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-semibold text-primary mb-1">{item.title}</p>
+                    <p className="text-sm text-muted-foreground leading-relaxed">{item.text}</p>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Founder Experience subsection */}
+        <div className="bg-white rounded-2xl border border-slate-200 p-8 md:p-12 shadow-sm">
+          <div className="max-w-5xl mx-auto">
+            <div className="text-xs font-semibold uppercase tracking-[0.25em] text-accent mb-3">
+              FOUNDER EXPERIENCE
+            </div>
+            <h3 className="font-display text-2xl md:text-3xl font-bold text-primary mb-6">
+              {t("about.founderHeading") as string}
+            </h3>
+            <p className="text-muted-foreground leading-relaxed mb-8 whitespace-pre-line max-w-3xl">
+              {t("about.founderIntro") as string}
+            </p>
+            <div
+              ref={founderCards.ref}
+              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 mb-8"
+            >
+              {founderAreas.map((area, i) => {
+                const Icon = FOUNDER_AREA_ICONS[i % FOUNDER_AREA_ICONS.length];
+                return (
+                  <div
+                    key={i}
+                    className={`bg-slate-50 rounded-xl border border-slate-200 p-4 flex gap-3 items-start
+                      hover:shadow-md hover:border-accent/40 hover:-translate-y-0.5
+                      transition-all duration-300 ease-out
+                      ${founderCards.visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-5"}`}
+                    style={{ transitionDelay: founderCards.visible ? `${i * 80}ms` : "0ms" }}
+                  >
+                    <div className="text-accent mt-0.5 flex-shrink-0 bg-accent/10 rounded-lg p-2">
+                      <Icon className="h-4 w-4" />
+                    </div>
+                    <p className="text-sm font-medium text-slate-700 leading-snug self-center">
+                      {area}
+                    </p>
+                  </div>
+                );
+              })}
+            </div>
+            <div
+              ref={outroFade.ref}
+              className={`transition-all duration-700 ease-out ${
+                outroFade.visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
+              }`}
+            >
+              <div className="bg-slate-50 border-l-4 border-accent rounded-r-xl px-5 py-4">
+                <p className="text-sm text-slate-600 leading-relaxed">
+                  {t("about.founderOutro") as string}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
   );
 }
 
@@ -317,55 +497,8 @@ function AboutContent() {
       {/* 2. HISTORY */}
       <HistorySection />
 
-      {/* 3. WORLDWIDE */}
-      <section id="worldwide" className="scroll-mt-32 py-20 bg-slate-50">
-        <div className="container mx-auto px-6">
-          <div className="text-xs font-semibold uppercase tracking-[0.25em] text-accent mb-2 text-center">
-            03 — {t("about.sections.worldwide") as string}
-          </div>
-          <h2 className="font-display text-3xl md:text-4xl font-bold text-primary text-center mb-6">
-            {t("about.worldwideHeading") as string}
-          </h2>
-          <p className="text-muted-foreground text-lg leading-relaxed text-center max-w-3xl mx-auto mb-12">
-            {worldwideIntro}
-          </p>
-          {worldwideImg && (
-            <div className="mb-12 max-w-5xl mx-auto rounded-2xl overflow-hidden border bg-white shadow-sm">
-              <img
-                src={worldwideImg}
-                alt=""
-                className="w-full h-72 md:h-96 object-cover"
-              />
-            </div>
-          )}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
-            {(data?.worldwideItems ?? []).map((w, i) => (
-              <article
-                key={i}
-                data-testid={`about-worldwide-${i}`}
-                className="bg-white rounded-xl border border-slate-200 p-6 shadow-sm hover:shadow-md transition"
-              >
-                {w.imageUrl && (
-                  <img
-                    src={w.imageUrl}
-                    alt=""
-                    className="h-40 w-full object-cover rounded-md mb-4"
-                  />
-                )}
-                <div className="text-xs font-semibold uppercase tracking-wider text-accent">
-                  {w.region}
-                </div>
-                <h3 className="font-display text-xl font-bold text-primary mt-1 mb-2">
-                  {pickItem(w, "title", lang)}
-                </h3>
-                <p className="text-sm text-muted-foreground leading-relaxed">
-                  {pickItem(w, "description", lang)}
-                </p>
-              </article>
-            ))}
-          </div>
-        </div>
-      </section>
+      {/* 3. COMPANY PHILOSOPHY */}
+      <PhilosophySection />
 
       {/* 4. DIRECTIONS */}
       <section id="directions" className="scroll-mt-32 py-20 bg-white">
