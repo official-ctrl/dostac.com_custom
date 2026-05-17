@@ -138,8 +138,8 @@ function NoticeContent() {
         <div className="container mx-auto px-6 py-3 flex flex-col sm:flex-row gap-3 sm:items-center sm:justify-between">
           {/* Category tabs */}
           <nav
-            className="flex overflow-x-auto gap-1"
-            style={{ scrollbarWidth: "none" }}
+            className="flex overflow-x-auto gap-1 no-scrollbar"
+            style={{ scrollbarWidth: "none", WebkitOverflowScrolling: "touch" } as React.CSSProperties}
           >
             <button
               type="button"

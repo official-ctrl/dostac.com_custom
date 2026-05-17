@@ -97,8 +97,8 @@ function ProductsContent() {
         <div className="sticky top-20 z-40 bg-white border-b border-slate-200 shadow-sm">
           <div className="container mx-auto px-6">
             <nav
-              className="flex overflow-x-auto"
-              style={{ scrollbarWidth: "none" }}
+              className="flex overflow-x-auto no-scrollbar"
+              style={{ scrollbarWidth: "none", WebkitOverflowScrolling: "touch" } as React.CSSProperties}
             >
               {products.map((p) => (
                 <button

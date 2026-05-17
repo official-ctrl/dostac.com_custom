@@ -141,7 +141,7 @@ function SectionNav({ active }: { active: SectionId }) {
       aria-label="About sections"
     >
       <div className="container mx-auto px-6">
-        <ul className="flex items-center gap-1 overflow-x-auto py-2 scrollbar-hide">
+        <ul className="flex items-center gap-1 overflow-x-auto py-2 no-scrollbar" style={{ WebkitOverflowScrolling: "touch" } as React.CSSProperties}>
           {SECTIONS.map((s) => (
             <li key={s.id} className="flex-shrink-0">
               <a
