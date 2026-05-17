@@ -478,56 +478,36 @@ function Header() {
 }
 
 function Footer() {
-  const { t } = useT();
   return (
-    <footer className="bg-slate-900 text-white">
-      <div className="container mx-auto px-6 pt-14 pb-8">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-12 pb-12 border-b border-slate-800">
-          <div>
-            <span
-              className="inline-block text-2xl font-black tracking-[-0.04em] text-white mb-6 leading-none"
-              style={{ fontFamily: "'Outfit', sans-serif" }}
+    <footer className="bg-[#0a0a0a] text-white">
+      <div className="container mx-auto px-6 py-6">
+        <p className="text-center text-xs text-slate-500 mb-5 tracking-wide">
+          Connecting Korean Innovation to the Global Market
+        </p>
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-white/10 pt-5">
+          <p className="text-xs text-slate-500 order-2 sm:order-1">
+            dostac &copy; 2026
+          </p>
+          <nav className="flex flex-wrap justify-center gap-x-6 gap-y-2 order-1 sm:order-2">
+            <Link
+              href="/contact"
+              className="text-xs text-slate-400 hover:text-white transition-colors"
             >
-              dostac
-            </span>
-            <p className="font-semibold text-white/90 mb-3 text-base leading-snug">
-              Connecting Korean Innovation to the Global Market
-            </p>
-            <p className="text-slate-400 text-sm leading-relaxed max-w-sm">
-              Dostac is committed to building reliable global partnerships through Korean manufacturing, K-beauty expertise, and international commerce solutions.
-            </p>
-          </div>
-          <div className="flex flex-col md:items-end justify-between gap-8">
-            <div className="space-y-2.5 text-sm md:text-right">
-              <p className="text-slate-400">
-                <span className="text-white/80 font-medium mr-2">Email</span>
-                info@dostac.com
-              </p>
-              <p className="text-slate-400">
-                <span className="text-white/80 font-medium mr-2">Tel</span>
-                070-4334-7333
-              </p>
-              <p className="text-slate-400">
-                <span className="text-white/80 font-medium mr-2">Fax</span>
-                0504-488-4345
-              </p>
-              <p className="text-slate-400">
-                <span className="text-white/80 font-medium mr-2">Hours</span>
-                Mon–Fri&nbsp;09:00–18:00 KST
-              </p>
-            </div>
-            <Link href="/contact">
-              <Button
-                className="rounded-full bg-accent hover:bg-accent/90 text-white h-10 px-6 text-sm font-medium"
-                data-testid="footer-contact-cta"
-              >
-                {t("footer.contact") as string} <ArrowRight className="ml-1.5 h-4 w-4" />
-              </Button>
+              Contact Us
             </Link>
-          </div>
-        </div>
-        <div className="pt-6 text-center">
-          <p className="text-slate-500 text-xs">{t("footer.copyright") as string}</p>
+            <Link
+              href="/notice"
+              className="text-xs text-slate-400 hover:text-white transition-colors"
+            >
+              Notice
+            </Link>
+            <Link
+              href="/about#directions"
+              className="text-xs text-slate-400 hover:text-white transition-colors"
+            >
+              Locations
+            </Link>
+          </nav>
         </div>
       </div>
     </footer>
