@@ -137,7 +137,7 @@ const ko: Dict = {
       { year: "2023", title: "글로벌 파트너십 체결", desc: "유럽 및 북미의 정상급 뷰티 브랜드와 전략적 제휴를 체결했습니다." },
       { year: "2026", title: "첨단 제조 네트워크 확립", desc: "글로벌 R&D 및 제조 시설의 통합 운영 체계를 완성했습니다." },
     ],
-    sections: { greeting: "인사말", history: "우리의 이야기", worldwide: "글로벌 네트워크", directions: "오시는 길" },
+    sections: { greeting: "회사 소개", history: "우리의 이야기", worldwide: "글로벌 네트워크", directions: "오시는 길" },
     sectionDesc: {
       greeting: "dostac이 누구이며, 우리가 나아가는 방향.",
       history: "30년의 발자취와 주요 마일스톤.",
@@ -669,7 +669,7 @@ const ja: Dict = {
       { year: "2023", title: "グローバルパートナーシップ締結", desc: "欧州・北米のトップビューティーブランドと戦略的提携を締結。" },
       { year: "2026", title: "Advanced Manufacturing Network 確立", desc: "グローバルR&D・製造拠点の統合運用体制を完成。" },
     ],
-    sections: { greeting: "ご挨拶", history: "私たちのストーリー", worldwide: "グローバルネットワーク", directions: "アクセス" },
+    sections: { greeting: "会社紹介", history: "私たちのストーリー", worldwide: "グローバルネットワーク", directions: "アクセス" },
     sectionDesc: {
       greeting: "dostacとはどんな会社か、そしてそのビジョン。",
       history: "30年にわたる成長の軌跡。",
@@ -934,7 +934,7 @@ const zh: Dict = {
       { year: "2023", title: "建立全球合作", desc: "与欧洲与北美顶级美容品牌建立战略联盟。" },
       { year: "2026", title: "Advanced Manufacturing Network 确立", desc: "完成全球研发与制造设施的整合运营体系。" },
     ],
-    sections: { greeting: "致辞", history: "我们的故事", worldwide: "全球网络", directions: "联系我们" },
+    sections: { greeting: "关于我们", history: "我们的故事", worldwide: "全球网络", directions: "联系我们" },
     sectionDesc: {
       greeting: "了解dostac：我们是谁与我们的愿景。",
       history: "30年里程碑与成长历程。",
@@ -1199,7 +1199,7 @@ const vi: Dict = {
       { year: "2023", title: "Hình thành Đối tác Toàn cầu", desc: "Liên minh chiến lược với các thương hiệu mỹ phẩm hàng đầu tại Châu Âu và Bắc Mỹ." },
       { year: "2026", title: "Mạng lưới Sản xuất Tiên tiến", desc: "Điều phối toàn bộ R&D toàn cầu và các cơ sở sản xuất." },
     ],
-    sections: { greeting: "Lời chào", history: "Câu chuyện của chúng tôi", worldwide: "Toàn cầu", directions: "Đường đi" },
+    sections: { greeting: "Giới thiệu", history: "Câu chuyện của chúng tôi", worldwide: "Toàn cầu", directions: "Đường đi" },
     sectionDesc: {
       greeting: "Chúng tôi là ai và tầm nhìn của dostac.",
       history: "Ba thập kỷ phát triển và những cột mốc quan trọng.",
