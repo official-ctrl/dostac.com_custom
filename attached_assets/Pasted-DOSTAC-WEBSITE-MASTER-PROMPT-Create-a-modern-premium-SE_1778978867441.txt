@@ -1,0 +1,215 @@
+DOSTAC WEBSITE MASTER PROMPT
+Create a modern, premium, SEO-optimized global B2B website for a Korean cosmetics sourcing and OEM/ODM company called “Dostac”.
+The website should feel trustworthy, professional, export-oriented, and globally scalable.
+Target audience:
+Global beauty buyers
+K-beauty distributors
+OEM / ODM clients
+Amazon / Shopee / TikTok Shop sellers
+Private label beauty brands
+International wholesalers
+The website must communicate:
+Trust
+Korean manufacturing quality
+Global export capability
+OEM / ODM expertise
+Long-term partnership potential
+The design should combine:
+Korean premium beauty branding
+Modern B2B corporate design
+Minimal luxury aesthetic
+Export business professionalism
+High conversion structure
+Style references:
+Modern Korean beauty brands
+Global sourcing companies
+Premium minimalist UI
+Apple-style clean spacing
+Soft luxury cosmetics mood
+Use:
+White background
+Soft gray sections
+Neutral premium colors
+Clean typography
+Elegant product imagery
+Smooth scrolling
+Responsive mobile-first layout
+Avoid:
+Cheap ecommerce style
+Overly colorful design
+Crowded layout
+Generic stock-heavy appearance
+WEBSITE STRUCTURE
+HOME PAGE
+HERO SECTION
+Headline: “K-Beauty OEM & Global Sourcing Partner”
+Subheadline: “Connecting Korean manufacturers with global buyers through OEM, ODM, private label, and international distribution solutions.”
+CTA Buttons:
+OEM Inquiry
+View Products
+Contact Us
+Background: Premium Korean beauty product visual with soft lighting and clean modern composition.
+Include:
+subtle motion animation
+luxury skincare mood
+global trade atmosphere
+ABOUT DOSTAC SECTION
+Create a premium corporate introduction section.
+Include:
+Company introduction
+Founder story
+Business philosophy
+Korean manufacturing network
+Global business experience
+Main text:
+“Dostac is a Korea-based global sourcing and trading company specializing in K-beauty, cosmetics OEM/ODM, private label development, and international e-commerce distribution.
+We connect Korean manufacturers with global buyers through reliable sourcing, product development, branding, and export solutions.”
+Include visual blocks for:
+Trust
+Connection
+Sustainable Growth
+Use icons and modern corporate layout.
+WHY DOSTAC SECTION
+Create a trust-building section highlighting advantages.
+Include cards for:
+Korean Manufacturing Network
+OEM / ODM Expertise
+Global E-Commerce Experience
+Flexible Private Label Solutions
+Export Support
+Digital Commerce Strategy
+This section should visually increase buyer confidence.
+Use:
+clean infographic style
+modern icons
+minimal animations
+PRODUCTS SECTION
+Create premium product category cards.
+Categories:
+Cleansing Tissue
+Cotton Pads
+Nose Packs
+Acne Patches
+Deodorant Tissue
+Facial Masks & Packs
+Each product category should include:
+premium product image
+short OEM description
+private label support badge
+export-ready badge
+Style: Luxury K-beauty catalog aesthetic.
+Layout: Modern responsive grid.
+OEM / ODM SECTION
+This is the most important conversion section.
+Headline: “Start Your K-Beauty Brand With Dostac”
+Include:
+OEM manufacturing
+ODM solutions
+private label development
+packaging customization
+MOQ consultation
+export documentation support
+Create a process flow:
+Inquiry
+Consultation
+Sampling
+Production
+Export & Delivery
+Use:
+horizontal process timeline
+premium B2B visuals
+factory and packaging imagery
+Add CTA: “Request OEM Consultation”
+PROCESSING SECTION
+Create a professional workflow section.
+Show:
+inquiry process
+sample development
+production workflow
+quality control
+international shipping
+Visual style: Clean process diagrams with modern corporate UI.
+INSIGHTS & NOTICE SECTION
+Create a blog/news style section.
+Categories:
+K-Beauty Trends
+OEM & Private Label Guide
+Export Information
+Global E-Commerce
+Company Notice
+Purpose: SEO optimization and authority building.
+Use:
+modern article cards
+clean typography
+professional business magazine style
+FAQ SECTION
+Include expandable FAQ accordion.
+Questions:
+What is your MOQ?
+Do you support private label?
+Can you export worldwide?
+Do you provide samples?
+How long is production?
+Design: Minimal modern accordion style.
+CONTACT US SECTION
+Create a premium B2B inquiry section.
+Include:
+inquiry form
+email
+WhatsApp
+office information
+response time notice
+Inquiry form fields:
+Name
+Company
+Country
+Product Interest
+OEM / ODM Inquiry
+MOQ Request
+Message
+CTA: “Send Inquiry”
+FOOTER
+Include:
+company logo
+short brand statement
+quick links
+social media icons
+copyright
+global business message
+Footer statement: “Connecting Korean Innovation to the Global Market.”
+SEO REQUIREMENTS
+Optimize all sections for:
+K-Beauty OEM
+Korean cosmetics manufacturer
+Private label skincare
+Korean beauty supplier
+OEM cosmetics Korea
+ODM beauty products
+global cosmetics sourcing
+Use:
+semantic HTML
+H1 / H2 structure
+optimized metadata
+fast loading
+mobile SEO
+clean URL structure
+DESIGN DIRECTION
+The website should feel like:
+a premium Korean beauty export company
+a trustworthy OEM/ODM partner
+a scalable global B2B brand
+The final result should look:
+expensive
+clean
+international
+modern
+trustworthy
+investor-ready
+export-focused
+Avoid:
+template feeling
+generic ecommerce appearance
+cluttered text
+excessive colors
+cheap marketplace aesthetics
+The website should visually communicate: “Reliable Korean manufacturing partner for global beauty brands.”
