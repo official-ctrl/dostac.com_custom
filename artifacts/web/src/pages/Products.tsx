@@ -25,12 +25,29 @@ function ProductsContent() {
   const { lang } = useLang();
   const productsQuery = useListPublicProducts({ lang });
   const products = productsQuery.data ?? [];
+
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [activeSlug, setActiveSlug] = useState<string | null>(null);
 
   const sectionRefs = useRef<Map<string, HTMLElement>>(new Map());
 
+  const categories = Array.from(
+    new Set(products.map((p) => p.category).filter((c): c is string => !!c))
+  );
+
   useEffect(() => {
-    if (products.length === 0) return;
+    if (selectedCategory !== null && !categories.includes(selectedCategory)) {
+      setSelectedCategory(null);
+    }
+  }, [categories, selectedCategory]);
+
+  const filteredProducts =
+    selectedCategory === null
+      ? products
+      : products.filter((p) => p.category === selectedCategory);
+
+  useEffect(() => {
+    if (filteredProducts.length === 0) return;
     const currentRefs = sectionRefs.current;
     const observer = new IntersectionObserver(
       (entries) => {
@@ -45,12 +62,20 @@ function ProductsContent() {
     );
     currentRefs.forEach((el) => observer.observe(el));
     return () => observer.disconnect();
-  }, [products]);
+  }, [filteredProducts]);
 
   const scrollTo = (slug: string) => {
     const el = document.getElementById(`product-${slug}`);
     if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
   };
+
+  const handleCategorySelect = (cat: string | null) => {
+    setSelectedCategory(cat);
+    setActiveSlug(null);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const showFilterBar = categories.length > 1;
 
   return (
     <>
@@ -92,15 +117,53 @@ function ProductsContent() {
         </div>
       </section>
 
+      {/* CATEGORY FILTER BAR */}
+      {showFilterBar && (
+        <div className="bg-white border-b border-slate-100">
+          <div className="container mx-auto px-6">
+            <div
+              className="flex overflow-x-auto no-scrollbar gap-2 py-3"
+              style={{ scrollbarWidth: "none", WebkitOverflowScrolling: "touch" } as React.CSSProperties}
+            >
+              <button
+                type="button"
+                onClick={() => handleCategorySelect(null)}
+                className={`flex-shrink-0 rounded-full px-4 py-1.5 text-xs font-semibold transition-colors focus:outline-none ${
+                  selectedCategory === null
+                    ? "bg-accent text-white shadow-sm"
+                    : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                }`}
+              >
+                {t("products.filterAll") as string}
+              </button>
+              {categories.map((cat) => (
+                <button
+                  key={cat}
+                  type="button"
+                  onClick={() => handleCategorySelect(cat)}
+                  className={`flex-shrink-0 rounded-full px-4 py-1.5 text-xs font-semibold transition-colors focus:outline-none ${
+                    selectedCategory === cat
+                      ? "bg-accent text-white shadow-sm"
+                      : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                  }`}
+                >
+                  {cat}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* STICKY SUBMENU */}
-      {products.length > 0 && (
+      {filteredProducts.length > 0 && (
         <div className="sticky top-20 z-40 bg-white border-b border-slate-200 shadow-sm">
           <div className="container mx-auto px-6">
             <nav
               className="flex overflow-x-auto no-scrollbar"
               style={{ scrollbarWidth: "none", WebkitOverflowScrolling: "touch" } as React.CSSProperties}
             >
-              {products.map((p) => (
+              {filteredProducts.map((p) => (
                 <button
                   key={p.id}
                   type="button"
@@ -130,12 +193,12 @@ function ProductsContent() {
           <div className="py-32 flex justify-center">
             <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
           </div>
-        ) : products.length === 0 ? (
+        ) : filteredProducts.length === 0 ? (
           <div className="py-32 text-center text-muted-foreground container mx-auto px-6">
             {t("products.empty") as string}
           </div>
         ) : (
-          products.map((product, index) => {
+          filteredProducts.map((product, index) => {
             const fallbackImg = dostacImage(
               `product-${String((index % 10) + 1).padStart(2, "0")}.webp`,
             );
