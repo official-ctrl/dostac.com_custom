@@ -45,6 +45,11 @@ function ProductsContent() {
     new Set(products.map((p) => p.category).filter((c): c is string => !!c))
   );
 
+  const categoryCounts = products.reduce<Record<string, number>>((acc, p) => {
+    if (p.category) acc[p.category] = (acc[p.category] ?? 0) + 1;
+    return acc;
+  }, {});
+
   useEffect(() => {
     if (selectedCategory !== null && categories.length > 0 && !categories.includes(selectedCategory)) {
       setSelectedCategory(null);
@@ -153,6 +158,15 @@ function ProductsContent() {
                 }`}
               >
                 {t("products.filterAll") as string}
+                <span
+                  className={`ml-1.5 rounded-full px-1.5 py-0.5 text-[10px] font-bold leading-none ${
+                    selectedCategory === null
+                      ? "bg-white/25 text-white"
+                      : "bg-slate-200 text-slate-500"
+                  }`}
+                >
+                  {products.length}
+                </span>
               </button>
               {categories.map((cat) => (
                 <button
@@ -166,6 +180,15 @@ function ProductsContent() {
                   }`}
                 >
                   {cat}
+                  <span
+                    className={`ml-1.5 rounded-full px-1.5 py-0.5 text-[10px] font-bold leading-none ${
+                      selectedCategory === cat
+                        ? "bg-white/25 text-white"
+                        : "bg-slate-200 text-slate-500"
+                    }`}
+                  >
+                    {categoryCounts[cat] ?? 0}
+                  </span>
                 </button>
               ))}
             </div>
