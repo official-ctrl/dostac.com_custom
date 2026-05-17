@@ -1,35 +1,24 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Link } from "wouter";
+import { motion } from "framer-motion";
 import {
   CheckCircle2,
-  Leaf,
-  Package,
-  Star,
-  Globe,
-  Shield,
-  Droplets,
   ArrowRight,
   Loader2,
-  FlaskConical,
-  Sparkles,
-  Tag,
 } from "lucide-react";
 import { Layout, dostacImage } from "@/components/dostac/Layout";
 import { useT, useLang } from "@/components/dostac/i18n";
 import { useListPublicProducts } from "@workspace/api-client-react";
 
-const FEATURE_ICONS = [
-  CheckCircle2,
-  Leaf,
-  Shield,
-  Globe,
-  Package,
-  Star,
-  Droplets,
-  FlaskConical,
-  Sparkles,
-  Tag,
-];
+const fadeUp = {
+  hidden: { opacity: 0, y: 32 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" as const } },
+};
+
+const stagger = {
+  hidden: {},
+  show: { transition: { staggerChildren: 0.08 } },
+};
 
 function ProductsContent() {
   const { t } = useT();
@@ -76,15 +65,30 @@ function ProductsContent() {
           <div className="absolute inset-0 bg-gradient-to-b from-primary/65 via-primary/55 to-primary/72" />
         </div>
         <div className="container relative z-10 mx-auto px-6 py-28 text-center text-white">
-          <p className="text-xs uppercase tracking-[0.4em] text-white/60 font-semibold mb-5">
+          <motion.p
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="text-xs uppercase tracking-[0.4em] text-white/60 font-semibold mb-5"
+          >
             {t("products.heroLabel") as string}
-          </p>
-          <h1 className="font-display text-4xl md:text-5xl lg:text-6xl font-bold leading-tight mb-6 max-w-4xl mx-auto">
+          </motion.p>
+          <motion.h1
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.1 }}
+            className="font-display text-4xl md:text-5xl lg:text-6xl font-bold leading-tight mb-6 max-w-4xl mx-auto"
+          >
             {t("products.heroTitle") as string}
-          </h1>
-          <p className="text-lg md:text-xl text-white/80 max-w-3xl mx-auto leading-relaxed">
+          </motion.h1>
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            className="text-lg md:text-xl text-white/80 max-w-3xl mx-auto leading-relaxed"
+          >
             {t("products.heroSub") as string}
-          </p>
+          </motion.p>
         </div>
       </section>
 
@@ -121,13 +125,13 @@ function ProductsContent() {
       )}
 
       {/* PRODUCT SECTIONS */}
-      <div>
+      <div className="bg-[#F5F7FA]">
         {productsQuery.isLoading ? (
-          <div className="py-32 flex justify-center bg-white">
+          <div className="py-32 flex justify-center">
             <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
           </div>
         ) : products.length === 0 ? (
-          <div className="py-32 text-center text-muted-foreground container mx-auto px-6 bg-white">
+          <div className="py-32 text-center text-muted-foreground container mx-auto px-6">
             {t("products.empty") as string}
           </div>
         ) : (
@@ -136,7 +140,7 @@ function ProductsContent() {
               `product-${String((index % 10) + 1).padStart(2, "0")}.webp`,
             );
             const isOdd = index % 2 !== 0;
-            const features = product.features.slice(0, 4);
+            const features = product.features;
 
             return (
               <article
@@ -147,64 +151,80 @@ function ProductsContent() {
                   if (el) sectionRefs.current.set(product.slug, el);
                   else sectionRefs.current.delete(product.slug);
                 }}
-                className={`scroll-mt-36 py-24 ${isOdd ? "bg-slate-50" : "bg-white"}`}
+                className={`scroll-mt-36 py-20 ${isOdd ? "bg-white" : "bg-[#F5F7FA]"}`}
               >
                 <div className="container mx-auto px-6">
-                  <div
-                    className={`grid grid-cols-1 lg:grid-cols-2 gap-16 items-center`}
+                  <motion.div
+                    initial="hidden"
+                    whileInView="show"
+                    viewport={{ once: true, amount: 0.15 }}
+                    variants={stagger}
+                    className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center"
                   >
-                    {/* CONTENT — always first on mobile, order flips on desktop for odd items */}
-                    <div className={isOdd ? "lg:order-2" : ""}>
+                    {/* IMAGE — always left on desktop */}
+                    <motion.div
+                      variants={fadeUp}
+                      className="relative rounded-2xl overflow-hidden shadow-md"
+                    >
+                      <img
+                        src={product.imageUrl ?? fallbackImg}
+                        alt={product.name}
+                        className="w-full aspect-[4/3] object-cover object-center"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-primary/10 to-transparent" />
+                      {product.category && (
+                        <span className="absolute top-4 left-4 inline-flex items-center rounded-full bg-white/90 backdrop-blur px-3 py-1 text-xs font-bold text-accent shadow-sm">
+                          {product.category}
+                        </span>
+                      )}
+                    </motion.div>
+
+                    {/* CONTENT */}
+                    <motion.div variants={fadeUp}>
                       {product.valueProp && (
                         <p className="text-xs uppercase tracking-[0.3em] text-accent font-semibold mb-4">
                           {product.valueProp}
                         </p>
                       )}
-                      <h2 className="font-display text-3xl md:text-4xl font-bold text-primary mb-4 leading-tight">
+                      <h2 className="font-display text-3xl md:text-4xl font-bold text-[#0F172A] mb-3 leading-tight">
                         {product.name}
                       </h2>
                       {product.headline && (
-                        <p className="text-lg text-accent font-medium mb-5">
+                        <p className="text-base text-accent font-semibold mb-5 leading-snug">
                           {product.headline}
                         </p>
                       )}
                       {product.body && (
                         <div
-                          className="rich-html text-muted-foreground text-base leading-relaxed mb-8"
+                          className="rich-html text-slate-600 text-sm leading-relaxed mb-7"
                           dangerouslySetInnerHTML={{ __html: product.body }}
                         />
                       )}
 
-                      {/* FEATURE CARDS — 2×2 grid */}
+                      {/* FEATURES — clean vertical bullet list */}
                       {features.length > 0 && (
-                        <div className="grid grid-cols-2 gap-3 mb-8">
-                          {features.map((feat, i) => {
-                            const Icon =
-                              FEATURE_ICONS[i % FEATURE_ICONS.length];
-                            return (
-                              <div
-                                key={i}
-                                className={`flex items-start gap-3 p-4 rounded-xl border hover:border-accent/40 hover:shadow-sm transition-all duration-200 ${
-                                  isOdd
-                                    ? "bg-white border-slate-200"
-                                    : "bg-slate-50 border-slate-200"
-                                }`}
-                              >
-                                <div className="w-8 h-8 rounded-lg bg-accent/10 flex items-center justify-center shrink-0 mt-0.5">
-                                  <Icon className="w-4 h-4 text-accent" />
-                                </div>
-                                <span className="text-sm font-medium text-primary leading-snug">
-                                  {feat}
-                                </span>
-                              </div>
-                            );
-                          })}
-                        </div>
+                        <motion.ul
+                          variants={stagger}
+                          className="flex flex-col gap-2.5 mb-7"
+                        >
+                          {features.map((feat, i) => (
+                            <motion.li
+                              key={i}
+                              variants={fadeUp}
+                              className="flex items-start gap-3"
+                            >
+                              <CheckCircle2 className="w-4 h-4 text-accent shrink-0 mt-0.5" />
+                              <span className="text-sm text-slate-700 leading-snug">
+                                {feat}
+                              </span>
+                            </motion.li>
+                          ))}
+                        </motion.ul>
                       )}
 
                       {/* CERT BADGES */}
                       {product.certs.length > 0 && (
-                        <div className="flex flex-wrap gap-2 mb-8">
+                        <div className="flex flex-wrap gap-2 mb-7">
                           {product.certs.map((c, i) => (
                             <span
                               key={i}
@@ -217,10 +237,10 @@ function ProductsContent() {
                       )}
 
                       {/* CTAs */}
-                      <div className="flex flex-wrap gap-3">
+                      <div className="flex flex-wrap gap-3 pt-1">
                         <Link
                           href="/contact"
-                          className="inline-flex h-11 items-center justify-center rounded-full bg-accent px-6 text-sm font-medium text-white shadow-sm hover:bg-accent/90 transition-colors"
+                          className="inline-flex h-11 items-center justify-center rounded-full bg-accent px-6 text-sm font-semibold text-white shadow-sm hover:bg-accent/90 transition-colors"
                           data-testid={`product-cta-oem-${product.slug}`}
                         >
                           {t("products.oemInquiry") as string}
@@ -228,26 +248,14 @@ function ProductsContent() {
                         </Link>
                         <Link
                           href="/contact"
-                          className="inline-flex h-11 items-center justify-center rounded-full border border-slate-300 bg-white px-6 text-sm font-medium text-primary hover:bg-slate-50 transition-colors"
+                          className="inline-flex h-11 items-center justify-center rounded-full border border-slate-300 bg-white px-6 text-sm font-semibold text-[#0F172A] hover:bg-slate-50 transition-colors"
                           data-testid={`product-cta-contact-${product.slug}`}
                         >
                           {t("products.contactUs") as string}
                         </Link>
                       </div>
-                    </div>
-
-                    {/* IMAGE */}
-                    <div
-                      className={`relative rounded-2xl overflow-hidden shadow-lg ${isOdd ? "lg:order-1" : ""}`}
-                    >
-                      <img
-                        src={product.imageUrl ?? fallbackImg}
-                        alt={product.name}
-                        className="w-full aspect-[4/3] object-cover object-center"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-primary/10 to-transparent" />
-                    </div>
-                  </div>
+                    </motion.div>
+                  </motion.div>
                 </div>
               </article>
             );
@@ -256,24 +264,42 @@ function ProductsContent() {
       </div>
 
       {/* BOTTOM CTA */}
-      <section className="py-24 bg-primary text-white text-center">
+      <section className="py-24 bg-[#0F172A] text-white text-center">
         <div className="container mx-auto px-6">
-          <p className="text-xs uppercase tracking-[0.3em] text-white/50 font-semibold mb-4">
-            {t("products.heroLabel") as string}
-          </p>
-          <h2 className="font-display text-3xl md:text-4xl font-bold mb-4 max-w-2xl mx-auto leading-tight">
-            {t("products.bottomCtaHeading") as string}
-          </h2>
-          <p className="text-white/70 text-lg mb-8 max-w-xl mx-auto leading-relaxed">
-            {t("products.bottomCtaBody") as string}
-          </p>
-          <Link
-            href="/contact"
-            className="inline-flex h-12 items-center justify-center rounded-full bg-accent px-8 text-base font-medium text-white shadow-sm hover:bg-accent/90 hover:shadow-accent/20 hover:shadow-md transition-all"
+          <motion.div
+            initial="hidden"
+            whileInView="show"
+            viewport={{ once: true, amount: 0.3 }}
+            variants={stagger}
           >
-            {t("products.bottomCtaButton") as string}
-            <ArrowRight className="ml-2 h-4 w-4" />
-          </Link>
+            <motion.p
+              variants={fadeUp}
+              className="text-xs uppercase tracking-[0.3em] text-white/50 font-semibold mb-4"
+            >
+              {t("products.heroLabel") as string}
+            </motion.p>
+            <motion.h2
+              variants={fadeUp}
+              className="font-display text-3xl md:text-4xl font-bold mb-4 max-w-2xl mx-auto leading-tight"
+            >
+              {t("products.bottomCtaHeading") as string}
+            </motion.h2>
+            <motion.p
+              variants={fadeUp}
+              className="text-white/70 text-lg mb-8 max-w-xl mx-auto leading-relaxed"
+            >
+              {t("products.bottomCtaBody") as string}
+            </motion.p>
+            <motion.div variants={fadeUp}>
+              <Link
+                href="/contact"
+                className="inline-flex h-12 items-center justify-center rounded-full bg-accent px-8 text-base font-semibold text-white shadow-sm hover:bg-accent/90 hover:shadow-accent/20 hover:shadow-md transition-all"
+              >
+                {t("products.bottomCtaButton") as string}
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Link>
+            </motion.div>
+          </motion.div>
         </div>
       </section>
     </>

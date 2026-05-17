@@ -1,4 +1,5 @@
 import React, { useRef, useState } from "react";
+import { motion } from "framer-motion";
 import { MapPin, Phone, Mail, Clock, Send, ShieldCheck, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -14,6 +15,16 @@ import {
 import { Layout, dostacImage } from "@/components/dostac/Layout";
 import { useT } from "@/components/dostac/i18n";
 import { useCreateContactInquiry } from "@workspace/api-client-react";
+
+const fadeUp = {
+  hidden: { opacity: 0, y: 28 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.55, ease: "easeOut" as const } },
+};
+
+const stagger = {
+  hidden: {},
+  show: { transition: { staggerChildren: 0.1 } },
+};
 
 const SUCCESS_MSG: Record<string, { title: string; body: string }> = {
   ko: {
@@ -99,6 +110,7 @@ function ContactContent() {
 
   return (
     <>
+      {/* HERO */}
       <section className="relative w-full h-[400px] flex items-center">
         <div className="absolute inset-0 z-0">
           <img
@@ -106,187 +118,247 @@ function ContactContent() {
             alt=""
             className="w-full h-full object-cover object-center"
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-primary/55 via-primary/45 to-primary/65"></div>
+          <div className="absolute inset-0 bg-gradient-to-b from-primary/55 via-primary/45 to-primary/65" />
         </div>
         <div className="container relative z-10 mx-auto px-6 text-center text-white">
-          <h1 className="font-display text-4xl md:text-5xl font-bold leading-tight mb-6">
+          <motion.h1
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            className="font-display text-4xl md:text-5xl font-bold leading-tight mb-6"
+          >
             {t("contact.heroTitle") as string}
-          </h1>
-          <p className="text-lg text-white/80 max-w-3xl mx-auto leading-relaxed">
+          </motion.h1>
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.1 }}
+            className="text-lg text-white/80 max-w-3xl mx-auto leading-relaxed"
+          >
             {t("contact.heroBody") as string}
-          </p>
+          </motion.p>
         </div>
       </section>
-      <section className="py-24 bg-muted/20">
+
+      {/* MAIN FORM SECTION */}
+      <section className="py-24 bg-[#F5F7FA]">
         <div className="container mx-auto px-6">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 lg:gap-16">
-            <div className="lg:col-span-2 bg-white rounded-xl shadow-lg border p-8 md:p-12">
-              <h2 className="font-display text-3xl font-bold text-primary mb-8">
-                {t("contact.formHeading") as string}
-              </h2>
+          <motion.div
+            initial="hidden"
+            whileInView="show"
+            viewport={{ once: true, amount: 0.1 }}
+            variants={stagger}
+            className="grid grid-cols-1 lg:grid-cols-3 gap-10 lg:gap-14"
+          >
+            {/* FORM CARD */}
+            <motion.div variants={fadeUp} className="lg:col-span-2">
+              <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-7 md:p-10">
+                <h2 className="font-display text-2xl font-bold text-[#0F172A] mb-7">
+                  {t("contact.formHeading") as string}
+                </h2>
 
-              {success && (
-                <div
-                  ref={successRef}
-                  role="status"
-                  data-testid="contact-success"
-                  className="mb-6 flex items-start gap-3 rounded-md border border-green-300 bg-green-50 p-5 text-green-800"
-                >
-                  <CheckCircle2 className="h-6 w-6 mt-0.5 shrink-0 text-green-600" />
-                  <div>
-                    <div className="font-semibold text-base">
-                      {(SUCCESS_MSG[lang] ?? SUCCESS_MSG.en).title}
-                    </div>
-                    <div className="text-sm mt-1 text-green-700">
-                      {(SUCCESS_MSG[lang] ?? SUCCESS_MSG.en).body}
-                    </div>
-                  </div>
-                </div>
-              )}
-              {error && (
-                <div
-                  className="mb-6 rounded-md border border-red-200 bg-red-50 p-4 text-sm text-red-700"
-                  role="alert"
-                >
-                  {error}
-                </div>
-              )}
-
-              <form className="space-y-6" onSubmit={onSubmit} noValidate>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="space-y-2">
-                    <Label htmlFor="name">{t("contact.name") as string}</Label>
-                    <Input
-                      id="name"
-                      required
-                      placeholder={t("contact.namePh") as string}
-                      value={form.name}
-                      onChange={(e) => setForm({ ...form, name: e.target.value })}
-                      data-testid="input-name"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="email">{t("contact.email") as string}</Label>
-                    <Input
-                      id="email"
-                      type="email"
-                      required
-                      placeholder={t("contact.emailPh") as string}
-                      value={form.email}
-                      onChange={(e) => setForm({ ...form, email: e.target.value })}
-                      data-testid="input-email"
-                    />
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="space-y-2">
-                    <Label htmlFor="company">{t("contact.company") as string}</Label>
-                    <Input
-                      id="company"
-                      placeholder={t("contact.companyPh") as string}
-                      value={form.company}
-                      onChange={(e) => setForm({ ...form, company: e.target.value })}
-                      data-testid="input-company"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="inquiry-type">{t("contact.inquiryType") as string}</Label>
-                    <Select
-                      value={form.inquiryType === "" ? NONE_VALUE : form.inquiryType}
-                      onValueChange={(v) =>
-                        setForm({
-                          ...form,
-                          inquiryType:
-                            v === NONE_VALUE
-                              ? ""
-                              : (v as "oem" | "odm" | "sample" | "other"),
-                        })
-                      }
-                    >
-                      <SelectTrigger id="inquiry-type" data-testid="select-inquiry-type">
-                        <SelectValue placeholder={t("contact.inquiryTypePh") as string} />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value={NONE_VALUE}>
-                          {t("contact.inquiryTypePh") as string}
-                        </SelectItem>
-                        <SelectItem value="oem">{inquiryTypeOptions.oem}</SelectItem>
-                        <SelectItem value="odm">{inquiryTypeOptions.odm}</SelectItem>
-                        <SelectItem value="sample">{inquiryTypeOptions.sample}</SelectItem>
-                        <SelectItem value="other">{inquiryTypeOptions.other}</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="desc">{t("contact.desc") as string}</Label>
-                  <Textarea
-                    id="desc"
-                    required
-                    placeholder={t("contact.descPh") as string}
-                    className="min-h-[150px]"
-                    value={form.message}
-                    onChange={(e) => setForm({ ...form, message: e.target.value })}
-                    data-testid="textarea-message"
-                  />
-                </div>
-
-                <div className="pt-4 flex flex-col sm:flex-row items-center justify-between gap-6">
-                  <Button
-                    type="submit"
-                    size="lg"
-                    disabled={createInquiry.isPending}
-                    className="w-full sm:w-auto px-10 h-14 bg-accent hover:bg-accent/90 text-white font-medium"
-                    data-testid="button-submit-contact"
+                {success && (
+                  <div
+                    ref={successRef}
+                    role="status"
+                    data-testid="contact-success"
                   >
-                    <Send className="mr-2 h-5 w-5" />
-                    {createInquiry.isPending ? "..." : (t("contact.submit") as string)}
-                  </Button>
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <ShieldCheck className="h-4 w-4 text-green-600" />
-                    <span>{t("contact.secure") as string}</span>
+                    <div className="mb-6 flex flex-col items-center text-center py-10 gap-4">
+                      <div className="w-14 h-14 rounded-full bg-accent/10 flex items-center justify-center">
+                        <CheckCircle2 className="h-7 w-7 text-accent" />
+                      </div>
+                      <h3 className="font-bold text-[#0F172A] text-lg">
+                        {(SUCCESS_MSG[lang] ?? SUCCESS_MSG.en).title}
+                      </h3>
+                      <p className="text-slate-500 text-sm max-w-xs leading-relaxed">
+                        {(SUCCESS_MSG[lang] ?? SUCCESS_MSG.en).body}
+                      </p>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="rounded-full mt-1"
+                        onClick={() => setSuccess(false)}
+                      >
+                        {t("contact.anotherInquiry") as string}
+                      </Button>
+                    </div>
                   </div>
-                </div>
-              </form>
-            </div>
+                )}
 
-            <div className="space-y-8">
-              <div className="bg-primary text-white rounded-xl shadow-lg p-8">
-                <h3 className="font-display text-2xl font-bold mb-8">
+                {!success && (
+                  <form className="flex flex-col gap-4" onSubmit={onSubmit} noValidate>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div className="flex flex-col gap-1.5">
+                        <Label htmlFor="name" className="text-sm font-semibold text-slate-700">
+                          {t("contact.name") as string} <span className="text-accent">*</span>
+                        </Label>
+                        <Input
+                          id="name"
+                          required
+                          placeholder={t("contact.namePh") as string}
+                          value={form.name}
+                          onChange={(e) => setForm({ ...form, name: e.target.value })}
+                          className="h-10 text-sm"
+                          data-testid="input-name"
+                        />
+                      </div>
+                      <div className="flex flex-col gap-1.5">
+                        <Label htmlFor="email" className="text-sm font-semibold text-slate-700">
+                          {t("contact.email") as string} <span className="text-accent">*</span>
+                        </Label>
+                        <Input
+                          id="email"
+                          type="email"
+                          required
+                          placeholder={t("contact.emailPh") as string}
+                          value={form.email}
+                          onChange={(e) => setForm({ ...form, email: e.target.value })}
+                          className="h-10 text-sm"
+                          data-testid="input-email"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div className="flex flex-col gap-1.5">
+                        <Label htmlFor="company" className="text-sm font-semibold text-slate-700">
+                          {t("contact.company") as string}
+                        </Label>
+                        <Input
+                          id="company"
+                          placeholder={t("contact.companyPh") as string}
+                          value={form.company}
+                          onChange={(e) => setForm({ ...form, company: e.target.value })}
+                          className="h-10 text-sm"
+                          data-testid="input-company"
+                        />
+                      </div>
+                      <div className="flex flex-col gap-1.5">
+                        <Label htmlFor="inquiry-type" className="text-sm font-semibold text-slate-700">
+                          {t("contact.inquiryType") as string}
+                        </Label>
+                        <Select
+                          value={form.inquiryType === "" ? NONE_VALUE : form.inquiryType}
+                          onValueChange={(v) =>
+                            setForm({
+                              ...form,
+                              inquiryType:
+                                v === NONE_VALUE
+                                  ? ""
+                                  : (v as "oem" | "odm" | "sample" | "other"),
+                            })
+                          }
+                        >
+                          <SelectTrigger id="inquiry-type" className="h-10 text-sm" data-testid="select-inquiry-type">
+                            <SelectValue placeholder={t("contact.inquiryTypePh") as string} />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value={NONE_VALUE}>
+                              {t("contact.inquiryTypePh") as string}
+                            </SelectItem>
+                            <SelectItem value="oem">{inquiryTypeOptions.oem}</SelectItem>
+                            <SelectItem value="odm">{inquiryTypeOptions.odm}</SelectItem>
+                            <SelectItem value="sample">{inquiryTypeOptions.sample}</SelectItem>
+                            <SelectItem value="other">{inquiryTypeOptions.other}</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+
+                    <div className="flex flex-col gap-1.5">
+                      <Label htmlFor="desc" className="text-sm font-semibold text-slate-700">
+                        {t("contact.desc") as string} <span className="text-accent">*</span>
+                      </Label>
+                      <Textarea
+                        id="desc"
+                        required
+                        placeholder={t("contact.descPh") as string}
+                        className="min-h-[140px] text-sm resize-none"
+                        value={form.message}
+                        onChange={(e) => setForm({ ...form, message: e.target.value })}
+                        data-testid="textarea-message"
+                      />
+                    </div>
+
+                    {error && (
+                      <p className="text-sm text-red-600 bg-red-50 rounded-lg px-4 py-2">
+                        {error}
+                      </p>
+                    )}
+
+                    <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-1">
+                      <Button
+                        type="submit"
+                        disabled={createInquiry.isPending}
+                        className="w-full sm:w-auto rounded-full bg-accent hover:bg-accent/90 text-white h-11 px-8 font-semibold"
+                        data-testid="button-submit-contact"
+                      >
+                        {createInquiry.isPending ? (
+                          "..."
+                        ) : (
+                          <>
+                            {t("contact.submit") as string}
+                            <Send className="ml-2 h-4 w-4" />
+                          </>
+                        )}
+                      </Button>
+                      <div className="flex items-center gap-2 text-sm text-slate-500">
+                        <ShieldCheck className="h-4 w-4 text-green-600 shrink-0" />
+                        <span>{t("contact.secure") as string}</span>
+                      </div>
+                    </div>
+                  </form>
+                )}
+              </div>
+            </motion.div>
+
+            {/* SIDEBAR */}
+            <motion.div variants={fadeUp} className="flex flex-col gap-6">
+              {/* INFO CARD */}
+              <div className="bg-[#0F172A] text-white rounded-2xl p-7">
+                <h3 className="font-display text-xl font-bold mb-6">
                   {t("contact.infoHeading") as string}
                 </h3>
-                <div className="space-y-8">
-                  <div className="flex items-start gap-4">
-                    <MapPin className="w-6 h-6 text-accent shrink-0" />
+                <div className="flex flex-col gap-5">
+                  <div className="flex items-start gap-3">
+                    <div className="w-9 h-9 rounded-xl bg-accent/15 flex items-center justify-center shrink-0">
+                      <MapPin className="w-4 h-4 text-accent" />
+                    </div>
                     <div>
-                      <h4 className="font-semibold mb-1">{t("contact.hq") as string}</h4>
-                      <p className="text-white/80 text-sm leading-relaxed whitespace-pre-line">
+                      <p className="text-sm font-semibold mb-0.5">{t("contact.hq") as string}</p>
+                      <p className="text-white/65 text-xs leading-relaxed whitespace-pre-line">
                         {t("contact.hqAddr") as string}
                       </p>
                     </div>
                   </div>
-                  <div className="flex items-start gap-4">
-                    <Mail className="w-6 h-6 text-accent shrink-0" />
+                  <div className="flex items-start gap-3">
+                    <div className="w-9 h-9 rounded-xl bg-accent/15 flex items-center justify-center shrink-0">
+                      <Mail className="w-4 h-4 text-accent" />
+                    </div>
                     <div>
-                      <h4 className="font-semibold mb-1">{t("contact.sales") as string}</h4>
-                      <p className="text-white/80 text-sm">official@dostac.com</p>
+                      <p className="text-sm font-semibold mb-0.5">{t("contact.sales") as string}</p>
+                      <p className="text-white/65 text-xs">official@dostac.com</p>
                     </div>
                   </div>
-                  <div className="flex items-start gap-4">
-                    <Phone className="w-6 h-6 text-accent shrink-0" />
+                  <div className="flex items-start gap-3">
+                    <div className="w-9 h-9 rounded-xl bg-accent/15 flex items-center justify-center shrink-0">
+                      <Phone className="w-4 h-4 text-accent" />
+                    </div>
                     <div>
-                      <h4 className="font-semibold mb-1">{t("contact.phone") as string}</h4>
-                      <p className="text-white/80 text-sm">070-4334-7333</p>
-                      <p className="text-white/60 text-xs mt-0.5">{t("contact.faxLabel") as string}: 0504-488-4345</p>
+                      <p className="text-sm font-semibold mb-0.5">{t("contact.phone") as string}</p>
+                      <p className="text-white/65 text-xs">070-4334-7333</p>
+                      <p className="text-white/45 text-xs mt-0.5">
+                        {t("contact.faxLabel") as string}: 0504-488-4345
+                      </p>
                     </div>
                   </div>
-                  <div className="flex items-start gap-4">
-                    <Clock className="w-6 h-6 text-accent shrink-0" />
+                  <div className="flex items-start gap-3">
+                    <div className="w-9 h-9 rounded-xl bg-accent/15 flex items-center justify-center shrink-0">
+                      <Clock className="w-4 h-4 text-accent" />
+                    </div>
                     <div>
-                      <h4 className="font-semibold mb-1">{t("contact.hours") as string}</h4>
-                      <p className="text-white/80 text-sm whitespace-pre-line">
+                      <p className="text-sm font-semibold mb-0.5">{t("contact.hours") as string}</p>
+                      <p className="text-white/65 text-xs whitespace-pre-line">
                         {t("contact.hoursValue") as string}
                       </p>
                     </div>
@@ -294,21 +366,37 @@ function ContactContent() {
                 </div>
               </div>
 
-              <div className="bg-muted rounded-xl overflow-hidden aspect-video border relative">
+              {/* MAP PLACEHOLDER */}
+              <div className="bg-white rounded-2xl overflow-hidden border border-slate-200 aspect-video relative shadow-sm">
                 <img
                   src={dostacImage("hero-about.webp")}
-                  className="w-full h-full object-cover opacity-60"
+                  className="w-full h-full object-cover opacity-50"
                   alt=""
                 />
-                <div className="absolute inset-0 flex items-center justify-center flex-col text-primary">
-                  <MapPin className="w-8 h-8 mb-2" />
-                  <span className="font-semibold text-sm">
+                <div className="absolute inset-0 flex items-center justify-center flex-col text-[#0F172A]">
+                  <div className="w-11 h-11 rounded-full bg-white/90 backdrop-blur flex items-center justify-center shadow-md mb-2">
+                    <MapPin className="w-5 h-5 text-accent" />
+                  </div>
+                  <span className="font-semibold text-sm bg-white/80 backdrop-blur px-3 py-1 rounded-full">
                     {t("contact.seoulLabel") as string}
                   </span>
                 </div>
               </div>
-            </div>
-          </div>
+
+              {/* TRUST NOTE */}
+              <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm">
+                <div className="flex items-center gap-2 mb-3">
+                  <ShieldCheck className="w-4 h-4 text-green-600 shrink-0" />
+                  <span className="text-sm font-semibold text-[#0F172A]">
+                    {t("contact.secure") as string}
+                  </span>
+                </div>
+                <p className="text-xs text-slate-500 leading-relaxed">
+                  {t("contact.secureNote") as string}
+                </p>
+              </div>
+            </motion.div>
+          </motion.div>
         </div>
       </section>
     </>
