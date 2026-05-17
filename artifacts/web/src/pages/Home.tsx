@@ -122,6 +122,8 @@ function HeroSection() {
         <img
           src={dostacImage("hero-home.webp")}
           alt=""
+          fetchPriority="high"
+          loading="eager"
           className="absolute inset-0 w-full h-full object-cover opacity-30"
         />
         <div className="absolute inset-0 bg-gradient-to-b from-[#0F172A]/90 via-[#0F172A]/60 to-white/80" />
@@ -155,6 +157,8 @@ function HeroSection() {
                 <img
                   src={b.imageUrl ?? ""}
                   alt=""
+                  fetchPriority={isActive ? "high" : "auto"}
+                  loading={isActive ? "eager" : "lazy"}
                   className="absolute inset-0 w-full h-full object-cover object-center opacity-35"
                   onError={(e) => {
                     (e.target as HTMLImageElement).src = dostacImage("hero-home.webp");
@@ -168,6 +172,8 @@ function HeroSection() {
                   <img
                     src={b.imageUrl}
                     alt=""
+                    fetchPriority={isActive ? "high" : "auto"}
+                    loading={isActive ? "eager" : "lazy"}
                     className="absolute inset-0 w-full h-full object-cover object-center opacity-35"
                     onError={(e) => {
                       (e.target as HTMLImageElement).src = dostacImage("hero-home.webp");
@@ -238,9 +244,9 @@ function HeroTextOverlay({
 }) {
   const { t } = useT();
   return (
-    <div className="relative z-10 flex items-center min-h-[92vh] w-full pointer-events-none">
+    <div className="relative z-10 flex items-center min-h-[92vh] [min-height:92svh] w-full pointer-events-none">
       <div className="container mx-auto px-6 py-24 max-w-5xl">
-        <AnimatePresence mode="wait">
+        <AnimatePresence mode="sync">
           {isActive && (
             <motion.div
               key={title}
