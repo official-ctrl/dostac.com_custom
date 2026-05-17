@@ -305,11 +305,11 @@ function ProductsContent() {
                       {/* CTAs */}
                       <div className="flex flex-wrap gap-3 pt-1">
                         <Link
-                          href="/contact"
+                          href={`/products/${product.slug}`}
                           className="inline-flex h-11 items-center justify-center rounded-full bg-accent px-6 text-sm font-semibold text-white shadow-sm hover:bg-accent/90 transition-colors"
-                          data-testid={`product-cta-oem-${product.slug}`}
+                          data-testid={`product-cta-detail-${product.slug}`}
                         >
-                          {t("products.oemInquiry") as string}
+                          {t("products.viewDetails") as string}
                           <ArrowRight className="ml-2 h-4 w-4" />
                         </Link>
                         <Link
