@@ -1,0 +1,142 @@
+REPLIT PROMPT — DOSTAC COMPANY PHILOSOPHY SECTION
+Replace the existing “Worldwide” section with a new premium section called “Company Philosophy” for the Dostac website.
+This new section must visually and structurally match the existing “Our Story” section style.
+The design should feel:
+premium
+trustworthy
+modern
+minimal
+export-focused
+globally scalable
+Korean beauty corporate aesthetic
+Target audience:
+global OEM buyers
+beauty distributors
+private label clients
+international e-commerce sellers
+K-beauty business partners
+The section must communicate:
+trust
+business credibility
+Korean manufacturing expertise
+global business understanding
+long-term partnership mindset
+Use:
+elegant typography
+modern whitespace
+subtle fade-in animations
+premium corporate layout
+mobile-first responsive design
+Avoid:
+generic startup visuals
+colorful gradients
+cheap ecommerce appearance
+cluttered information blocks
+SECTION LAYOUT
+Create a premium two-column layout matching the “Our Story” section.
+LEFT SIDE:
+section label
+large heading
+philosophy paragraph
+philosophy cards
+RIGHT SIDE:
+elegant business visual OR
+premium Korean manufacturing image OR
+modern global business atmosphere image OR
+abstract trust/connection visual
+Visual mood:
+sophisticated
+clean
+modern
+luxury B2B aesthetic
+SECTION CONTENT
+Small Label: COMPANY PHILOSOPHY
+Main Heading: Building Global Business Through Trust & Connection
+Main Intro Text:
+“Dostac believes successful global business starts with trust, communication, and long-term partnership.
+We connect Korean manufacturers, global buyers, brands, and markets through practical sourcing solutions and sustainable business strategies.”
+PHILOSOPHY CARDS
+Create 3 premium philosophy cards with icons and subtle hover effects.
+CARD 1
+Title: Trust
+Text: “We believe long-term business starts with trust, communication, and reliability.”
+Suggested icon: shield / handshake / verified symbol
+CARD 2
+Title: Connection
+Text: “We connect Korean manufacturers, global buyers, brands, and markets through practical business solutions.”
+Suggested icon: global connection / network / link
+CARD 3
+Title: Sustainable Growth
+Text: “We focus on building scalable and long-term business partnerships for global success.”
+Suggested icon: growth chart / globe / upward arrow
+WHY DOSTAC SUBSECTION
+Below the philosophy cards, create a premium subsection titled:
+“Why Dostac”
+Create elegant expertise cards or feature blocks for:
+Korean Manufacturing Network Reliable partnerships with Korean OEM and ODM manufacturers.
+Global Market Understanding Experience with international online marketplaces and global consumer trends.
+Flexible OEM Solutions Private label and custom product development support.
+Digital Commerce Experience Understanding of e-commerce systems, digital marketing, and online sales structures.
+Export Support Support for global shipping, export documentation, and overseas distribution.
+Use:
+modern grid layout
+premium icon cards
+soft borders
+luxury whitespace
+subtle animation
+FOUNDER EXPERIENCE BLOCK
+Create a premium founder experience section below “Why Dostac”.
+Style should visually match the “Our Story” narrative section.
+Heading: Founder Experience
+Text:
+“The foundation of Dostac comes from real business experience in cosmetics and online commerce.
+With over 10 years of experience operating online shopping malls and cosmetics distribution businesses, the founder has developed practical expertise in:”
+Create premium expertise bullet cards for:
+K-beauty product sourcing
+Online marketplace operation
+Global e-commerce
+OEM / ODM coordination
+Digital marketing strategy
+Business automation systems
+Add final closing paragraph:
+“Dostac continues to grow with a focus on connecting Korean products to the global market through practical and sustainable business solutions.”
+DESIGN STYLE
+Typography:
+premium modern sans-serif
+elegant hierarchy
+large bold headings
+highly readable spacing
+Animations:
+smooth fade-up motion
+staggered card animation
+soft hover interaction
+Cards:
+rounded corners
+minimal luxury borders
+subtle shadows
+premium icon styling
+Spacing:
+large whitespace
+calm composition
+premium visual balance
+MOBILE RESPONSIVE DESIGN
+On mobile:
+stack layout vertically
+maintain premium spacing
+responsive cards
+smooth scrolling experience
+Ensure:
+clean mobile typography
+optimized loading speed
+responsive B2B presentation
+BRAND FEELING
+The final section should visually communicate:
+“Trusted Korean beauty sourcing and OEM partner with real industry experience and global business understanding.”
+The section should feel:
+premium
+experienced
+trustworthy
+export-focused
+investor-ready
+internationally scalable
+modern Korean B2B brand aesthetic
