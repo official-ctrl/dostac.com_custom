@@ -6,7 +6,7 @@ import {
   useAdminTranslate,
   getAdminGetAboutQueryKey,
   type AboutContent,
-  type HistoryItem,
+  type FounderAreaItem,
   type WorldwideItem,
   type PhilosophyCard,
   type WhyDostacItem,
@@ -45,6 +45,22 @@ function emptyAbout(): AboutContent {
     greetingSignatureZh: "",
     greetingSignatureVi: "",
     historyItems: [],
+    founderHeadingKo: "",
+    founderHeadingEn: "",
+    founderHeadingJa: "",
+    founderHeadingZh: "",
+    founderHeadingVi: "",
+    founderIntroKo: "",
+    founderIntroEn: "",
+    founderIntroJa: "",
+    founderIntroZh: "",
+    founderIntroVi: "",
+    founderOutroKo: "",
+    founderOutroEn: "",
+    founderOutroJa: "",
+    founderOutroZh: "",
+    founderOutroVi: "",
+    founderAreas: [],
     worldwideImageUrl: null,
     worldwideIntroKo: "",
     worldwideIntroEn: "",
@@ -80,8 +96,8 @@ function emptyAbout(): AboutContent {
   };
 }
 
-function newHistoryItem(): HistoryItem {
-  return { year: "", textKo: "", textEn: "", textJa: "", textZh: "", textVi: "" };
+function newFounderAreaItem(): FounderAreaItem {
+  return { titleKo: "", titleEn: "", titleJa: "", titleZh: "", titleVi: "" };
 }
 
 function newWorldwideItem(): WorldwideItem {
@@ -207,18 +223,27 @@ export default function AboutEdit() {
     translateOne(form.directionsAddressKo, "company headquarters / factory street address", "text",
       (lang, text) => setForm((f) => ({ ...f, [langKey("directionsAddress", lang)]: text })));
 
-  /* ─── History helpers ───────────────────────────────────────── */
-  const addHistoryItem = () =>
-    setForm((f) => ({ ...f, historyItems: [...f.historyItems, newHistoryItem()] }));
-  const removeHistoryItem = (i: number) =>
-    setForm((f) => ({ ...f, historyItems: f.historyItems.filter((_, idx) => idx !== i) }));
-  const updateHistoryItem = (i: number, patch: Partial<HistoryItem>) =>
-    setForm((f) => ({ ...f, historyItems: f.historyItems.map((h, idx) => (idx === i ? { ...h, ...patch } : h)) }));
-  const translateHistoryItem = async (i: number) => {
-    const it = form.historyItems[i];
+  /* ─── Founder helpers ───────────────────────────────────────── */
+  const translateFounderHeading = () =>
+    translateOne(form.founderHeadingKo, "founder experience section heading", "text",
+      (lang, text) => setForm((f) => ({ ...f, [langKey("founderHeading", lang)]: text })));
+  const translateFounderIntro = () =>
+    translateOne(form.founderIntroKo, "founder experience introduction paragraph", "text",
+      (lang, text) => setForm((f) => ({ ...f, [langKey("founderIntro", lang)]: text })));
+  const translateFounderOutro = () =>
+    translateOne(form.founderOutroKo, "founder experience closing/outro paragraph", "text",
+      (lang, text) => setForm((f) => ({ ...f, [langKey("founderOutro", lang)]: text })));
+  const addFounderArea = () =>
+    setForm((f) => ({ ...f, founderAreas: [...f.founderAreas, newFounderAreaItem()] }));
+  const removeFounderArea = (i: number) =>
+    setForm((f) => ({ ...f, founderAreas: f.founderAreas.filter((_, idx) => idx !== i) }));
+  const updateFounderArea = (i: number, patch: Partial<FounderAreaItem>) =>
+    setForm((f) => ({ ...f, founderAreas: f.founderAreas.map((a, idx) => (idx === i ? { ...a, ...patch } : a)) }));
+  const translateFounderAreaItem = async (i: number) => {
+    const it = form.founderAreas[i];
     if (!it) return;
-    await translateOne(it.textKo, "company history milestone description", "text",
-      (lang, text) => updateHistoryItem(i, { [langKey("text", lang)]: text } as Partial<HistoryItem>));
+    await translateOne(it.titleKo, "founder expertise area (short label)", "text",
+      (lang, text) => updateFounderArea(i, { [langKey("title", lang)]: text } as Partial<FounderAreaItem>));
   };
 
   /* ─── Worldwide helpers ─────────────────────────────────────── */
@@ -303,7 +328,7 @@ export default function AboutEdit() {
     greeting: "인사말",
     company: "회사소개",
     why: "Why Dostac",
-    history: "연혁",
+    history: "창업자 경험",
     directions: "오시는 길",
   }), []);
 
@@ -321,7 +346,7 @@ export default function AboutEdit() {
         <div>
           <h1 className="text-2xl font-bold tracking-tight">회사소개 (About)</h1>
           <p className="text-xs text-muted-foreground">
-            인사말 · 회사소개 · Why Dostac · 연혁 · 오시는 길 — 5개 언어로 관리합니다.
+            인사말 · 회사소개 · Why Dostac · 창업자 경험 · 오시는 길 — 5개 언어로 관리합니다.
           </p>
         </div>
         <Button type="submit" disabled={saving} className="gap-2" data-testid="button-save-about">
@@ -845,57 +870,177 @@ export default function AboutEdit() {
           </Card>
         </TabsContent>
 
-        {/* ─── HISTORY ──────────────────────────────────────────── */}
+        {/* ─── FOUNDER EXPERIENCE ───────────────────────────────── */}
         <TabsContent value="history" className="mt-4 space-y-4">
+          {/* Heading */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-base">창업자 경험 — 제목</CardTitle>
+              <p className="text-xs text-muted-foreground mt-1">
+                FOUNDER EXPERIENCE 섹션 헤딩 (비어 있으면 i18n 기본값 사용)
+              </p>
+            </CardHeader>
+            <CardContent>
+              <LangTabs
+                activeLang={activeLang}
+                onChange={setActiveLang}
+                filledFor={(l) => (form[langKey("founderHeading", l)] as string).trim().length > 0}
+              >
+                {(lang) => (
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <Label>제목 ({LANG_LABEL[lang]})</Label>
+                      {lang === "ko" && (
+                        <Button type="button" size="sm" variant="ghost"
+                          onClick={() => void translateFounderHeading()}
+                          disabled={translateMut.isPending}
+                          className="h-7 gap-1.5 text-xs text-accent hover:text-accent">
+                          <Sparkles className="h-3 w-3" /> 자동 번역
+                        </Button>
+                      )}
+                    </div>
+                    <Input
+                      value={(form[langKey("founderHeading", lang)] as string) ?? ""}
+                      onChange={(e) => setField(langKey("founderHeading", lang), e.target.value)}
+                      placeholder={lang === "ko" ? "창립자 경험" : ""}
+                      data-testid={`input-founder-heading-${lang}`}
+                    />
+                  </div>
+                )}
+              </LangTabs>
+            </CardContent>
+          </Card>
+
+          {/* Intro */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-base">창업자 경험 — 소개 문구</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <LangTabs
+                activeLang={activeLang}
+                onChange={setActiveLang}
+                filledFor={(l) => (form[langKey("founderIntro", l)] as string).trim().length > 0}
+              >
+                {(lang) => (
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <Label>소개 ({LANG_LABEL[lang]})</Label>
+                      {lang === "ko" && (
+                        <Button type="button" size="sm" variant="ghost"
+                          onClick={() => void translateFounderIntro()}
+                          disabled={translateMut.isPending}
+                          className="h-7 gap-1.5 text-xs text-accent hover:text-accent">
+                          <Sparkles className="h-3 w-3" /> 자동 번역
+                        </Button>
+                      )}
+                    </div>
+                    <Textarea
+                      rows={4}
+                      value={(form[langKey("founderIntro", lang)] as string) ?? ""}
+                      onChange={(e) => setField(langKey("founderIntro", lang), e.target.value)}
+                      placeholder={lang === "ko" ? "Dostac의 기반은 화장품과 온라인 커머스 분야의 실제 비즈니스 경험에서 비롯되었습니다..." : ""}
+                      data-testid={`input-founder-intro-${lang}`}
+                    />
+                  </div>
+                )}
+              </LangTabs>
+            </CardContent>
+          </Card>
+
+          {/* Expertise areas */}
           <Card>
             <CardHeader className="flex-row items-center justify-between space-y-0">
               <div>
-                <CardTitle className="text-base">회사 연혁</CardTitle>
+                <CardTitle className="text-base">전문 분야 카드 (최대 6개)</CardTitle>
                 <p className="text-xs text-muted-foreground mt-1">
-                  연도와 마일스톤을 5개 언어로 관리합니다.
+                  비어 있으면 i18n 기본 6개 강점 카드가 표시됩니다.
                 </p>
               </div>
-              <Button type="button" size="sm" variant="outline" onClick={addHistoryItem} className="gap-2" data-testid="add-history-item">
+              <Button type="button" size="sm" variant="outline"
+                onClick={addFounderArea}
+                disabled={form.founderAreas.length >= 6}
+                className="gap-2"
+                data-testid="add-founder-area">
                 <Plus className="h-4 w-4" /> 항목 추가
               </Button>
             </CardHeader>
             <CardContent className="space-y-4">
-              {form.historyItems.length === 0 && (
-                <p className="text-sm text-muted-foreground py-8 text-center">아직 항목이 없습니다.</p>
+              {form.founderAreas.length === 0 && (
+                <p className="text-sm text-muted-foreground py-8 text-center">
+                  항목이 없으면 i18n 기본 강점 카드 6개가 표시됩니다.
+                </p>
               )}
-              {form.historyItems.map((h, i) => (
-                <div key={i} className="border rounded-md p-4 space-y-3" data-testid={`history-item-${i}`}>
-                  <div className="flex items-end justify-between gap-3">
-                    <div className="w-32 space-y-1">
-                      <Label>연도</Label>
-                      <Input value={h.year} onChange={(e) => updateHistoryItem(i, { year: e.target.value })}
-                        placeholder="2024" data-testid={`history-year-${i}`} />
+              {form.founderAreas.map((area, i) => (
+                <div key={i} className="border rounded-md p-4 space-y-3" data-testid={`founder-area-${i}`}>
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-semibold text-muted-foreground">#{i + 1}</span>
+                    <div className="flex gap-2">
+                      <Button type="button" size="sm" variant="ghost"
+                        onClick={() => void translateFounderAreaItem(i)}
+                        disabled={translateMut.isPending}
+                        className="h-8 gap-1.5 text-xs text-accent hover:text-accent">
+                        <Sparkles className="h-3 w-3" /> KO → 4개 언어
+                      </Button>
+                      <Button type="button" size="sm" variant="ghost"
+                        onClick={() => removeFounderArea(i)}
+                        className="h-8 gap-1.5 text-xs text-destructive hover:text-destructive">
+                        <Trash2 className="h-3 w-3" /> 삭제
+                      </Button>
                     </div>
-                    <Button type="button" size="sm" variant="ghost"
-                      onClick={() => void translateHistoryItem(i)}
-                      disabled={translateMut.isPending}
-                      className="h-8 gap-1.5 text-xs text-accent hover:text-accent">
-                      <Sparkles className="h-3 w-3" /> KO → 4개 언어
-                    </Button>
-                    <Button type="button" size="sm" variant="ghost" onClick={() => removeHistoryItem(i)}
-                      className="h-8 gap-1.5 text-xs text-destructive hover:text-destructive">
-                      <Trash2 className="h-3 w-3" /> 삭제
-                    </Button>
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-5 gap-2">
                     {LANGS.map((lang) => (
                       <div key={lang} className="space-y-1">
                         <Label className="text-xs uppercase tracking-wider">{LANG_LABEL[lang]}</Label>
-                        <Textarea rows={3}
-                          value={h[langKey("text", lang) as keyof HistoryItem] as string}
-                          onChange={(e) => updateHistoryItem(i, { [langKey("text", lang)]: e.target.value } as Partial<HistoryItem>)}
-                          placeholder={lang === "ko" ? "마일스톤 설명" : ""}
-                          data-testid={`history-text-${i}-${lang}`} />
+                        <Input
+                          value={(area[langKey("title", lang) as keyof FounderAreaItem] as string) ?? ""}
+                          onChange={(e) => updateFounderArea(i, { [langKey("title", lang)]: e.target.value } as Partial<FounderAreaItem>)}
+                          placeholder={lang === "ko" ? "전문 분야명" : ""}
+                          data-testid={`founder-area-title-${i}-${lang}`}
+                        />
                       </div>
                     ))}
                   </div>
                 </div>
               ))}
+            </CardContent>
+          </Card>
+
+          {/* Outro */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-base">창업자 경험 — 마무리 문구</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <LangTabs
+                activeLang={activeLang}
+                onChange={setActiveLang}
+                filledFor={(l) => (form[langKey("founderOutro", l)] as string).trim().length > 0}
+              >
+                {(lang) => (
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <Label>마무리 문구 ({LANG_LABEL[lang]})</Label>
+                      {lang === "ko" && (
+                        <Button type="button" size="sm" variant="ghost"
+                          onClick={() => void translateFounderOutro()}
+                          disabled={translateMut.isPending}
+                          className="h-7 gap-1.5 text-xs text-accent hover:text-accent">
+                          <Sparkles className="h-3 w-3" /> 자동 번역
+                        </Button>
+                      )}
+                    </div>
+                    <Textarea
+                      rows={3}
+                      value={(form[langKey("founderOutro", lang)] as string) ?? ""}
+                      onChange={(e) => setField(langKey("founderOutro", lang), e.target.value)}
+                      placeholder={lang === "ko" ? "Dostac는 실질적이고 지속 가능한 비즈니스 솔루션을 통해..." : ""}
+                      data-testid={`input-founder-outro-${lang}`}
+                    />
+                  </div>
+                )}
+              </LangTabs>
             </CardContent>
           </Card>
         </TabsContent>

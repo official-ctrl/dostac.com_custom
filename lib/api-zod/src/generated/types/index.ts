@@ -25,6 +25,7 @@ export * from "./bannerTranslations";
 export * from "./certItem";
 export * from "./contactInquiryInput";
 export * from "./contactInquiryInputInquiryType";
+export * from "./founderAreaItem";
 export * from "./getPublicNoticeParams";
 export * from "./getPublicProductParams";
 export * from "./healthStatus";

@@ -159,12 +159,20 @@ function PhilosophySection({
   dbIntro,
   dbImageUrl,
   dbPhilosophyCards,
+  dbFounderHeading,
+  dbFounderIntro,
+  dbFounderOutro,
+  dbFounderAreas,
 }: {
   dbWhyItems?: { titleKo: string; titleEn: string; titleJa: string; titleZh: string; titleVi: string; descKo: string; descEn: string; descJa: string; descZh: string; descVi: string; active: boolean; sortOrder: number }[] | null;
   dbHeading?: string;
   dbIntro?: string;
   dbImageUrl?: string | null;
   dbPhilosophyCards?: { titleKo: string; titleEn: string; titleJa: string; titleZh: string; titleVi: string; textKo: string; textEn: string; textJa: string; textZh: string; textVi: string }[];
+  dbFounderHeading?: string;
+  dbFounderIntro?: string;
+  dbFounderOutro?: string;
+  dbFounderAreas?: { titleKo: string; titleEn: string; titleJa: string; titleZh: string; titleVi: string }[];
 }) {
   const { t } = useT();
   const { lang } = useLang();
@@ -201,7 +209,21 @@ function PhilosophySection({
         return { title, text };
       })
     : (t("about.whyDostacItems") as { title: string; text: string }[]);
-  const founderAreas = t("about.founderAreas") as string[];
+
+  const i18nFounderAreas = t("about.founderAreas") as string[];
+  const founderAreas: string[] = useMemo(() => {
+    if (dbFounderAreas && dbFounderAreas.length > 0) {
+      const capLang = lang.charAt(0).toUpperCase() + lang.slice(1);
+      const titleKey = `title${capLang}` as keyof (typeof dbFounderAreas)[0];
+      return dbFounderAreas.map((a) => (a[titleKey] as string) || a.titleEn || a.titleKo || "");
+    }
+    return i18nFounderAreas;
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dbFounderAreas, lang]);
+
+  const founderHeading = dbFounderHeading || (t("about.founderHeading") as string);
+  const founderIntro = dbFounderIntro || (t("about.founderIntro") as string);
+  const founderOutro = dbFounderOutro || (t("about.founderOutro") as string);
 
   return (
     <section id="philosophy" className="scroll-mt-32 py-20 bg-slate-50">
@@ -312,10 +334,10 @@ function PhilosophySection({
               FOUNDER EXPERIENCE
             </div>
             <h3 className="font-display text-2xl md:text-3xl font-bold text-primary mb-6">
-              {t("about.founderHeading") as string}
+              {founderHeading}
             </h3>
             <p className="text-muted-foreground leading-relaxed mb-8 whitespace-pre-line max-w-3xl">
-              {t("about.founderIntro") as string}
+              {founderIntro}
             </p>
             <div
               ref={founderCards.ref}
@@ -350,7 +372,7 @@ function PhilosophySection({
             >
               <div className="bg-slate-50 border-l-4 border-accent rounded-r-xl px-5 py-4">
                 <p className="text-sm text-slate-600 leading-relaxed">
-                  {t("about.founderOutro") as string}
+                  {founderOutro}
                 </p>
               </div>
             </div>
@@ -495,6 +517,9 @@ function AboutContent() {
   const worldwideIntro = pickByLang(data, "worldwideIntro", lang);
   const philosophyHeading = pickByLang(data, "philosophyHeading", lang);
   const philosophyIntro = pickByLang(data, "philosophyIntro", lang);
+  const founderHeading = pickByLang(data, "founderHeading", lang);
+  const founderIntro = pickByLang(data, "founderIntro", lang);
+  const founderOutro = pickByLang(data, "founderOutro", lang);
   const directionsAddress = pickByLang(data, "directionsAddress", lang) || (t("about.directionsAddress") as string);
 
   const greetingImg = data?.greetingImageUrl || dostacImage("ceo-portrait.webp");
@@ -583,6 +608,10 @@ function AboutContent() {
         dbIntro={philosophyIntro ?? undefined}
         dbImageUrl={data?.philosophyImageUrl ?? null}
         dbPhilosophyCards={data?.philosophyCards ?? undefined}
+        dbFounderHeading={founderHeading ?? undefined}
+        dbFounderIntro={founderIntro ?? undefined}
+        dbFounderOutro={founderOutro ?? undefined}
+        dbFounderAreas={data?.founderAreas ?? undefined}
       />
 
       {/* 4. DIRECTIONS */}

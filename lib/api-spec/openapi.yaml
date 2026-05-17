@@ -919,6 +919,16 @@ components:
         descriptionZh: { type: string }
         descriptionVi: { type: string }
 
+    FounderAreaItem:
+      type: object
+      required: [titleKo, titleEn, titleJa, titleZh, titleVi]
+      properties:
+        titleKo: { type: string }
+        titleEn: { type: string }
+        titleJa: { type: string }
+        titleZh: { type: string }
+        titleVi: { type: string }
+
     PhilosophyCard:
       type: object
       required: [titleKo, titleEn, titleJa, titleZh, titleVi, textKo, textEn, textJa, textZh, textVi]
@@ -965,6 +975,10 @@ components:
           philosophyHeadingKo, philosophyHeadingEn, philosophyHeadingJa, philosophyHeadingZh, philosophyHeadingVi,
           philosophyIntroKo, philosophyIntroEn, philosophyIntroJa, philosophyIntroZh, philosophyIntroVi,
           philosophyCards,
+          founderHeadingKo, founderHeadingEn, founderHeadingJa, founderHeadingZh, founderHeadingVi,
+          founderIntroKo, founderIntroEn, founderIntroJa, founderIntroZh, founderIntroVi,
+          founderOutroKo, founderOutroEn, founderOutroJa, founderOutroZh, founderOutroVi,
+          founderAreas,
           whyDostacItems,
           directionsAddressKo, directionsAddressEn, directionsAddressJa, directionsAddressZh, directionsAddressVi
         ]
@@ -1011,6 +1025,24 @@ components:
         philosophyCards:
           type: array
           items: { $ref: "#/components/schemas/PhilosophyCard" }
+        founderHeadingKo: { type: string }
+        founderHeadingEn: { type: string }
+        founderHeadingJa: { type: string }
+        founderHeadingZh: { type: string }
+        founderHeadingVi: { type: string }
+        founderIntroKo: { type: string }
+        founderIntroEn: { type: string }
+        founderIntroJa: { type: string }
+        founderIntroZh: { type: string }
+        founderIntroVi: { type: string }
+        founderOutroKo: { type: string }
+        founderOutroEn: { type: string }
+        founderOutroJa: { type: string }
+        founderOutroZh: { type: string }
+        founderOutroVi: { type: string }
+        founderAreas:
+          type: array
+          items: { $ref: "#/components/schemas/FounderAreaItem" }
         whyDostacItems:
           type: array
           items: { $ref: "#/components/schemas/WhyDostacItem" }

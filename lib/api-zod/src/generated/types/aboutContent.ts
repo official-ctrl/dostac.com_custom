@@ -5,6 +5,7 @@
  * DOSTAC website + admin API
  * OpenAPI spec version: 0.1.0
  */
+import type { FounderAreaItem } from "./founderAreaItem";
 import type { HistoryItem } from "./historyItem";
 import type { PhilosophyCard } from "./philosophyCard";
 import type { WhyDostacItem } from "./whyDostacItem";
@@ -50,6 +51,22 @@ export interface AboutContent {
   philosophyIntroZh: string;
   philosophyIntroVi: string;
   philosophyCards: PhilosophyCard[];
+  founderHeadingKo: string;
+  founderHeadingEn: string;
+  founderHeadingJa: string;
+  founderHeadingZh: string;
+  founderHeadingVi: string;
+  founderIntroKo: string;
+  founderIntroEn: string;
+  founderIntroJa: string;
+  founderIntroZh: string;
+  founderIntroVi: string;
+  founderOutroKo: string;
+  founderOutroEn: string;
+  founderOutroJa: string;
+  founderOutroZh: string;
+  founderOutroVi: string;
+  founderAreas: FounderAreaItem[];
   whyDostacItems: WhyDostacItem[];
   directionsAddressKo: string;
   directionsAddressEn: string;

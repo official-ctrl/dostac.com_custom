@@ -24,6 +24,14 @@ export interface WorldwideItem {
   descriptionVi: string;
 }
 
+export interface FounderAreaItem {
+  titleKo: string;
+  titleEn: string;
+  titleJa: string;
+  titleZh: string;
+  titleVi: string;
+}
+
 export interface PhilosophyCard {
   titleKo: string;
   titleEn: string;
@@ -97,6 +105,25 @@ export const aboutContentTable = pgTable("about_content", {
   philosophyIntroVi: text("philosophy_intro_vi").notNull().default(""),
   philosophyCards: jsonb("philosophy_cards")
     .$type<PhilosophyCard[]>()
+    .notNull()
+    .default([]),
+  founderHeadingKo: text("founder_heading_ko").notNull().default(""),
+  founderHeadingEn: text("founder_heading_en").notNull().default(""),
+  founderHeadingJa: text("founder_heading_ja").notNull().default(""),
+  founderHeadingZh: text("founder_heading_zh").notNull().default(""),
+  founderHeadingVi: text("founder_heading_vi").notNull().default(""),
+  founderIntroKo: text("founder_intro_ko").notNull().default(""),
+  founderIntroEn: text("founder_intro_en").notNull().default(""),
+  founderIntroJa: text("founder_intro_ja").notNull().default(""),
+  founderIntroZh: text("founder_intro_zh").notNull().default(""),
+  founderIntroVi: text("founder_intro_vi").notNull().default(""),
+  founderOutroKo: text("founder_outro_ko").notNull().default(""),
+  founderOutroEn: text("founder_outro_en").notNull().default(""),
+  founderOutroJa: text("founder_outro_ja").notNull().default(""),
+  founderOutroZh: text("founder_outro_zh").notNull().default(""),
+  founderOutroVi: text("founder_outro_vi").notNull().default(""),
+  founderAreas: jsonb("founder_areas")
+    .$type<FounderAreaItem[]>()
     .notNull()
     .default([]),
   whyDostacItems: jsonb("why_dostac_items")
