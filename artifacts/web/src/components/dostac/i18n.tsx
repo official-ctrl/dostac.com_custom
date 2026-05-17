@@ -97,7 +97,7 @@ const ko: Dict = {
     finalCtaButton: "문의 보내기",
   },
   about: {
-    heroTitle: "DOSTAC 소개", heroSub: "지속 가능한 성장과 글로벌 파트너십의 유산.",
+    heroTitle: "DOSTAC 소개", heroSub: "지속 가능한 성장과 글로벌 파트너십의 유산.", eyebrowHero: "ABOUT DOSTAC",
     greetingsHeading: "dostac Co., Ltd.에 오신 것을 환영합니다.",
     greetings: [
       "빠르게 변화하는 글로벌 뷰티 및 헬스케어 시장에서 브랜드에는 단순한 공급업체가 아닌, 전담 파트너가 필요합니다. dostac는 비전 있는 아이디어를 전 세계 소비자에게 공감을 얻는 실질적이고 고품질의 제품으로 구현하는 데 자부심을 가지고 있습니다.",
@@ -518,7 +518,7 @@ const en: Dict = {
     finalCtaButton: "Send Inquiry",
   },
   about: {
-    heroTitle: "About DOSTAC", heroSub: "A Legacy of Sustainable Growth and Global Partnership.",
+    heroTitle: "About DOSTAC", heroSub: "A Legacy of Sustainable Growth and Global Partnership.", eyebrowHero: "ABOUT DOSTAC",
     greetingsHeading: "Welcome to dostac Co., Ltd.",
     greetings: [
       "In a rapidly evolving global beauty and healthcare market, brands require more than just a supplier — they need a dedicated partner. At dostac, we pride ourselves on turning visionary ideas into tangible, high-quality products that resonate with consumers worldwide.",
@@ -939,7 +939,7 @@ const ja: Dict = {
     finalCtaButton: "お問い合わせを送信",
   },
   about: {
-    heroTitle: "DOSTACについて", heroSub: "持続可能な成長とグローバルパートナーシップの伝統。",
+    heroTitle: "DOSTACについて", heroSub: "持続可能な成長とグローバルパートナーシップの伝統。", eyebrowHero: "ABOUT DOSTAC",
     greetingsHeading: "dostac Co., Ltd.へようこそ",
     greetings: [
       "急速に進化する世界の美容・ヘルスケア市場において、ブランドが必要としているのは単なるサプライヤーではなく、専任のパートナーです。dostacでは、先見性のあるアイデアを、世界中の消費者の心に響く具体的で高品質な製品へと形にすることを誇りとしています。",
@@ -1360,7 +1360,7 @@ const zh: Dict = {
     finalCtaButton: "发送咨询",
   },
   about: {
-    heroTitle: "关于 DOSTAC", heroSub: "可持续增长与全球合作的传承。",
+    heroTitle: "关于 DOSTAC", heroSub: "可持续增长与全球合作的传承。", eyebrowHero: "ABOUT DOSTAC",
     greetingsHeading: "欢迎来到 dostac Co., Ltd.",
     greetings: [
       "在快速变化的全球美妆与健康护理市场中，品牌需要的不仅仅是供应商——更需要一位专注的合作伙伴。在 dostac，我们以将富有远见的想法转化为切实可见的高品质产品而自豪，并使其受到全球消费者的认可。",
@@ -1781,7 +1781,7 @@ const vi: Dict = {
     finalCtaButton: "Gửi yêu cầu",
   },
   about: {
-    heroTitle: "Về DOSTAC", heroSub: "Di sản tăng trưởng bền vững và hợp tác toàn cầu.",
+    heroTitle: "Về DOSTAC", heroSub: "Di sản tăng trưởng bền vững và hợp tác toàn cầu.", eyebrowHero: "ABOUT DOSTAC",
     greetingsHeading: "Chào mừng đến với dostac Co., Ltd.",
     greetings: [
       "Trong thị trường làm đẹp và chăm sóc sức khỏe toàn cầu đang thay đổi nhanh chóng, các thương hiệu cần nhiều hơn một nhà cung cấp — họ cần một đối tác tận tâm. Tại dostac, chúng tôi tự hào biến những ý tưởng đầy tầm nhìn thành các sản phẩm hữu hình, chất lượng cao, tạo được sự đồng cảm với người tiêu dùng trên toàn thế giới.",
