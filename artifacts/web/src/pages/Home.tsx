@@ -1,6 +1,21 @@
 import { useEffect, useState } from "react";
 import { Link } from "wouter";
-import { ChevronLeft, ChevronRight, ArrowRight } from "lucide-react";
+import {
+  ChevronLeft,
+  ChevronRight,
+  ArrowRight,
+  Shield,
+  Globe2,
+  Sprout,
+  Factory,
+  Wrench,
+  ShoppingCart,
+  Tag,
+  Ship,
+  Smartphone,
+  ChevronDown,
+  ChevronUp,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Layout, dostacImage } from "@/components/dostac/Layout";
 import { useT, useLang, type Lang } from "@/components/dostac/i18n";
@@ -72,12 +87,21 @@ function HomeSlider() {
             {t("home.heroBody") as string}
           </p>
           <div className="flex flex-wrap gap-4">
-            <Link href="/products">
+            <Link href="/contact">
               <Button
                 size="lg"
                 className="rounded-sm bg-accent hover:bg-accent/90 text-white h-12 px-8 text-base font-medium"
               >
-                {t("home.heroCta1") as string} <ArrowRight className="ml-2 h-4 w-4" />
+                {t("home.heroCta3") as string} <ArrowRight className="ml-2 h-4 w-4" />
+              </Button>
+            </Link>
+            <Link href="/products">
+              <Button
+                size="lg"
+                variant="outline"
+                className="rounded-sm border-white/40 text-white bg-transparent hover:bg-white/10 hover:text-white h-12 px-8 text-base font-medium"
+              >
+                {t("home.heroCta1") as string}
               </Button>
             </Link>
             <Link href="/contact">
@@ -196,10 +220,303 @@ function HomeSlider() {
   );
 }
 
+const VALUE_ICONS = [Shield, Globe2, Sprout];
+
+function AboutSection() {
+  const { t } = useT();
+  const aboutValues = t("home.aboutValues") as Array<{ title: string; desc: string }>;
+
+  return (
+    <section className="py-20 md:py-28 bg-white">
+      <div className="container mx-auto px-6">
+        <div className="max-w-3xl mx-auto text-center mb-14">
+          <p className="uppercase tracking-[0.25em] text-xs font-semibold text-accent mb-4">
+            {t("home.aboutEyebrow") as string}
+          </p>
+          <h2 className="font-display text-3xl md:text-4xl font-bold text-primary mb-6 leading-tight">
+            {t("home.aboutHeading") as string}
+          </h2>
+          <p className="text-slate-600 leading-relaxed text-base md:text-lg whitespace-pre-line">
+            {t("home.aboutBody") as string}
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-10">
+          {aboutValues.map((val, idx) => {
+            const Icon = VALUE_ICONS[idx] ?? Shield;
+            return (
+              <div
+                key={idx}
+                className="flex flex-col items-center text-center p-8 rounded-2xl bg-slate-50 border border-slate-100 hover:border-accent/30 hover:shadow-lg transition-all"
+              >
+                <div className="w-14 h-14 rounded-full bg-accent/10 flex items-center justify-center mb-5">
+                  <Icon className="h-6 w-6 text-accent" />
+                </div>
+                <h3 className="font-semibold text-primary text-lg mb-2">{val.title}</h3>
+                <p className="text-slate-500 text-sm leading-relaxed">{val.desc}</p>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+const WHY_ICONS = [Factory, Wrench, ShoppingCart, Tag, Ship, Smartphone];
+
+function WhyDostacSection() {
+  const { t } = useT();
+  const whyCards = t("home.whyCards") as Array<{ title: string; desc: string }>;
+
+  return (
+    <section className="py-20 md:py-28 bg-slate-50">
+      <div className="container mx-auto px-6">
+        <div className="max-w-2xl mx-auto text-center mb-14">
+          <p className="uppercase tracking-[0.25em] text-xs font-semibold text-accent mb-4">
+            {t("home.whyEyebrow") as string}
+          </p>
+          <h2 className="font-display text-3xl md:text-4xl font-bold text-primary mb-4 leading-tight">
+            {t("home.whyHeading") as string}
+          </h2>
+          <p className="text-slate-500 text-base">{t("home.whySub") as string}</p>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {whyCards.map((card, idx) => {
+            const Icon = WHY_ICONS[idx] ?? Factory;
+            return (
+              <div
+                key={idx}
+                className="bg-white rounded-2xl p-7 border border-slate-100 hover:border-accent/40 hover:shadow-xl transition-all group"
+              >
+                <div className="w-12 h-12 rounded-xl bg-accent/10 flex items-center justify-center mb-5 group-hover:bg-accent group-hover:text-white transition-colors">
+                  <Icon className="h-5 w-5 text-accent group-hover:text-white transition-colors" />
+                </div>
+                <h3 className="font-bold text-primary text-base mb-2">{card.title}</h3>
+                <p className="text-slate-500 text-sm leading-relaxed">{card.desc}</p>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+const PRODUCT_IMAGES = [
+  "product-03.webp",
+  "product-02.webp",
+  "product-pore-strips.webp",
+  "product-spot-patches.webp",
+  "product-06.webp",
+  "product-05.webp",
+];
+
+function ProductsCategorySection() {
+  const { t } = useT();
+  const productCategories = t("home.productCategories") as Array<{
+    name: string;
+    desc: string;
+  }>;
+
+  return (
+    <section className="py-20 md:py-28 bg-white">
+      <div className="container mx-auto px-6">
+        <div className="max-w-2xl mx-auto text-center mb-14">
+          <p className="uppercase tracking-[0.25em] text-xs font-semibold text-accent mb-4">
+            {t("home.productsCatEyebrow") as string}
+          </p>
+          <h2 className="font-display text-3xl md:text-4xl font-bold text-primary mb-4 leading-tight">
+            {t("home.productsCatHeading") as string}
+          </h2>
+          <p className="text-slate-500 text-base">{t("home.productsCatSub") as string}</p>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+          {productCategories.map((cat, idx) => (
+            <div
+              key={idx}
+              className="group relative rounded-2xl overflow-hidden border border-slate-100 hover:border-accent/30 hover:shadow-xl transition-all"
+            >
+              <div className="aspect-[4/3] overflow-hidden bg-slate-100">
+                <img
+                  src={dostacImage(PRODUCT_IMAGES[idx] ?? "product-01.webp")}
+                  alt={cat.name}
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                />
+              </div>
+              <div className="p-6">
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="text-xs font-semibold text-accent bg-accent/10 px-2 py-0.5 rounded-full">
+                    OEM / Private Label
+                  </span>
+                </div>
+                <h3 className="font-bold text-primary text-base mb-2">{cat.name}</h3>
+                <p className="text-slate-500 text-sm leading-relaxed">{cat.desc}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div className="text-center">
+          <Link href="/products">
+            <Button
+              size="lg"
+              className="rounded-sm bg-accent hover:bg-accent/90 text-white h-12 px-10 text-base font-medium"
+            >
+              {t("home.productsCatCta") as string} <ArrowRight className="ml-2 h-4 w-4" />
+            </Button>
+          </Link>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function OEMProcessSection() {
+  const { t } = useT();
+  const oemSteps = t("home.oemSteps") as Array<{
+    step: string;
+    title: string;
+    desc: string;
+  }>;
+
+  return (
+    <section className="py-20 md:py-28 bg-primary text-white">
+      <div className="container mx-auto px-6">
+        <div className="max-w-2xl mx-auto text-center mb-14">
+          <p className="uppercase tracking-[0.25em] text-xs font-semibold text-accent mb-4">
+            {t("home.oemEyebrow") as string}
+          </p>
+          <h2 className="font-display text-3xl md:text-4xl font-bold mb-4 leading-tight">
+            {t("home.oemHeading") as string}
+          </h2>
+          <p className="text-white/70 text-base">{t("home.oemSub") as string}</p>
+        </div>
+
+        <div className="relative">
+          <div className="hidden lg:block absolute top-8 left-[10%] right-[10%] h-px bg-white/20" />
+          <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-5 gap-6">
+            {oemSteps.map((step, idx) => (
+              <div key={idx} className="relative flex flex-col items-center text-center">
+                <div className="relative z-10 w-16 h-16 rounded-full bg-accent flex items-center justify-center mb-5 shadow-lg">
+                  <span className="font-display font-bold text-white text-sm">{step.step}</span>
+                </div>
+                <h3 className="font-bold text-white text-sm mb-2">{step.title}</h3>
+                <p className="text-white/60 text-xs leading-relaxed">{step.desc}</p>
+                {idx < oemSteps.length - 1 && (
+                  <div className="lg:hidden absolute top-8 left-full w-full h-px bg-white/20 hidden sm:block" />
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="mt-14 text-center">
+          <Link href="/contact">
+            <Button
+              size="lg"
+              className="rounded-sm bg-accent hover:bg-accent/90 text-white h-12 px-10 text-base font-medium"
+            >
+              {t("home.oemCta") as string} <ArrowRight className="ml-2 h-4 w-4" />
+            </Button>
+          </Link>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function FAQSection() {
+  const { t } = useT();
+  const faqItems = t("home.faqItems") as Array<{ q: string; a: string }>;
+  const [openIdx, setOpenIdx] = useState<number | null>(null);
+
+  return (
+    <section className="py-20 md:py-28 bg-slate-50">
+      <div className="container mx-auto px-6">
+        <div className="max-w-2xl mx-auto text-center mb-14">
+          <p className="uppercase tracking-[0.25em] text-xs font-semibold text-accent mb-4">
+            {t("home.faqEyebrow") as string}
+          </p>
+          <h2 className="font-display text-3xl md:text-4xl font-bold text-primary leading-tight">
+            {t("home.faqHeading") as string}
+          </h2>
+        </div>
+
+        <div className="max-w-3xl mx-auto divide-y divide-slate-200">
+          {faqItems.map((item, idx) => {
+            const isOpen = openIdx === idx;
+            return (
+              <div key={idx}>
+                <button
+                  type="button"
+                  onClick={() => setOpenIdx(isOpen ? null : idx)}
+                  className="w-full flex items-center justify-between py-5 text-left group"
+                >
+                  <span className="font-semibold text-primary text-sm md:text-base pr-4 group-hover:text-accent transition-colors">
+                    {item.q}
+                  </span>
+                  {isOpen ? (
+                    <ChevronUp className="h-5 w-5 text-accent flex-shrink-0" />
+                  ) : (
+                    <ChevronDown className="h-5 w-5 text-slate-400 flex-shrink-0 group-hover:text-accent transition-colors" />
+                  )}
+                </button>
+                {isOpen && (
+                  <div className="pb-5">
+                    <p className="text-slate-600 text-sm md:text-base leading-relaxed">
+                      {item.a}
+                    </p>
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function FinalCTASection() {
+  const { t } = useT();
+
+  return (
+    <section className="py-20 md:py-28 bg-white">
+      <div className="container mx-auto px-6">
+        <div className="max-w-3xl mx-auto text-center">
+          <h2 className="font-display text-3xl md:text-4xl font-bold text-primary mb-6 leading-tight">
+            {t("home.finalCtaHeading") as string}
+          </h2>
+          <p className="text-slate-500 text-base md:text-lg leading-relaxed mb-10">
+            {t("home.finalCtaBody") as string}
+          </p>
+          <Link href="/contact">
+            <Button
+              size="lg"
+              className="rounded-sm bg-accent hover:bg-accent/90 text-white h-14 px-12 text-base font-medium"
+            >
+              {t("home.finalCtaButton") as string} <ArrowRight className="ml-2 h-5 w-5" />
+            </Button>
+          </Link>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 export default function Home() {
   return (
     <Layout>
       <HomeSlider />
+      <AboutSection />
+      <WhyDostacSection />
+      <ProductsCategorySection />
+      <OEMProcessSection />
+      <FAQSection />
+      <FinalCTASection />
     </Layout>
   );
 }
