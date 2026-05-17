@@ -118,7 +118,7 @@ function HeroSection() {
 
   if (isLoading || banners.length === 0) {
     return (
-      <section className="relative w-full min-h-[92vh] overflow-hidden bg-[#0F172A]">
+      <section className="relative w-full min-h-[92vh] [min-height:92svh] overflow-hidden bg-[#0F172A]">
         <img
           src={dostacImage("hero-home.webp")}
           alt=""
@@ -135,7 +135,7 @@ function HeroSection() {
 
   return (
     <section
-      className="relative w-full min-h-[92vh] overflow-hidden bg-[#0F172A]"
+      className="relative w-full min-h-[92vh] [min-height:92svh] overflow-hidden bg-[#0F172A]"
       data-testid="home-slider"
     >
       {banners.map((b, i) => {
@@ -192,7 +192,7 @@ function HeroSection() {
           <button
             type="button"
             onClick={() => go(active - 1)}
-            className="absolute left-4 md:left-8 top-1/2 -translate-y-1/2 z-20 inline-flex h-11 w-11 items-center justify-center rounded-full bg-white/15 hover:bg-white/30 text-white backdrop-blur transition"
+            className="hidden md:inline-flex absolute left-8 top-1/2 -translate-y-1/2 z-20 h-11 w-11 items-center justify-center rounded-full bg-white/15 hover:bg-white/30 text-white backdrop-blur transition"
             aria-label="Previous slide"
             data-testid="banner-prev"
           >
@@ -201,7 +201,7 @@ function HeroSection() {
           <button
             type="button"
             onClick={() => go(active + 1)}
-            className="absolute right-4 md:right-8 top-1/2 -translate-y-1/2 z-20 inline-flex h-11 w-11 items-center justify-center rounded-full bg-white/15 hover:bg-white/30 text-white backdrop-blur transition"
+            className="hidden md:inline-flex absolute right-8 top-1/2 -translate-y-1/2 z-20 h-11 w-11 items-center justify-center rounded-full bg-white/15 hover:bg-white/30 text-white backdrop-blur transition"
             aria-label="Next slide"
             data-testid="banner-next"
           >
@@ -253,7 +253,7 @@ function HeroTextOverlay({
               {/* 1. Badge / Eyebrow */}
               <motion.p
                 variants={fadeUp}
-                className="uppercase tracking-[0.3em] text-xs text-accent font-bold mb-5"
+                className="uppercase tracking-[0.2em] md:tracking-[0.3em] text-[10px] md:text-xs text-accent font-bold mb-4 md:mb-5 line-clamp-1"
               >
                 {t("homeNew.heroEyebrow") as string}
               </motion.p>
