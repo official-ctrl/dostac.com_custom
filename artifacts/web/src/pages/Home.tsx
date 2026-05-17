@@ -119,9 +119,6 @@ function HomeSlider() {
     );
   }
 
-  const current = banners[active]!;
-  const { title, description } = pickBannerText(current, lang);
-
   const go = (next: number) =>
     setActive(((next % banners.length) + banners.length) % banners.length);
 
@@ -133,7 +130,7 @@ function HomeSlider() {
       {banners.map((b, i) => {
         const text = pickBannerText(b, lang);
         const isActive = i === active;
-        const inner = (
+        const bgContent = (
           <>
             <img
               src={b.imageUrl}
@@ -144,21 +141,6 @@ function HomeSlider() {
               }}
             />
             <div className="absolute inset-0 bg-gradient-to-r from-primary/85 via-primary/55 to-primary/20" />
-            <div className="relative z-10 h-full flex items-center">
-              <div className="container mx-auto px-6 text-white max-w-4xl">
-                <p className="uppercase tracking-[0.3em] text-xs text-accent font-semibold mb-5">
-                  dostac Co., Ltd.
-                </p>
-                <h1 className="font-display text-4xl md:text-6xl font-bold leading-[1.1] mb-6">
-                  {text.title}
-                </h1>
-                {text.description && (
-                  <p className="text-lg md:text-xl text-white/85 leading-relaxed max-w-2xl">
-                    {text.description}
-                  </p>
-                )}
-              </div>
-            </div>
           </>
         );
         return (
@@ -170,12 +152,56 @@ function HomeSlider() {
             aria-hidden={!isActive}
           >
             {b.linkUrl ? (
-              <a href={b.linkUrl} className="block h-full w-full">
-                {inner}
+              <a href={b.linkUrl} className="absolute inset-0 block">
+                {bgContent}
               </a>
             ) : (
-              inner
+              bgContent
             )}
+            {/* Text overlay — always on top, not inside the link anchor */}
+            <div className="relative z-10 h-full flex items-end pb-24 md:pb-20 md:items-center">
+              <div className="container mx-auto px-6 text-white max-w-4xl">
+                <p className="uppercase tracking-[0.3em] text-xs text-accent font-semibold mb-4">
+                  dostac Co., Ltd.
+                </p>
+                <h1 className="font-display text-3xl md:text-5xl lg:text-6xl font-bold leading-[1.1] mb-4">
+                  {text.title || t("home.heroTitle") as string}
+                </h1>
+                {(text.description || t("home.heroBody") as string) && (
+                  <p className="text-base md:text-xl text-white/85 leading-relaxed max-w-2xl mb-8">
+                    {text.description || t("home.heroBody") as string}
+                  </p>
+                )}
+                <div className="flex flex-wrap gap-3">
+                  <Link href="/contact">
+                    <Button
+                      size="lg"
+                      className="rounded-sm bg-accent hover:bg-accent/90 text-white h-11 px-7 text-sm font-medium"
+                    >
+                      {t("home.heroCta3") as string} <ArrowRight className="ml-2 h-4 w-4" />
+                    </Button>
+                  </Link>
+                  <Link href="/products">
+                    <Button
+                      size="lg"
+                      variant="outline"
+                      className="rounded-sm border-white/40 text-white bg-transparent hover:bg-white/10 hover:text-white h-11 px-7 text-sm font-medium"
+                    >
+                      {t("home.heroCta1") as string}
+                    </Button>
+                  </Link>
+                  <Link href="/contact">
+                    <Button
+                      size="lg"
+                      variant="outline"
+                      className="rounded-sm border-white/40 text-white bg-transparent hover:bg-white/10 hover:text-white h-11 px-7 text-sm font-medium"
+                    >
+                      {t("home.heroCta2") as string}
+                    </Button>
+                  </Link>
+                </div>
+              </div>
+            </div>
           </div>
         );
       })}
@@ -200,7 +226,7 @@ function HomeSlider() {
           >
             <ChevronRight className="h-6 w-6" />
           </button>
-          <div className="absolute bottom-8 left-0 right-0 z-20 flex items-center justify-center gap-2">
+          <div className="absolute bottom-6 left-0 right-0 z-20 flex items-center justify-center gap-2">
             {banners.map((b, i) => (
               <button
                 key={b.id}
@@ -349,7 +375,7 @@ function ProductsCategorySection() {
               <div className="p-6">
                 <div className="flex items-center gap-2 mb-2">
                   <span className="text-xs font-semibold text-accent bg-accent/10 px-2 py-0.5 rounded-full">
-                    OEM / Private Label
+                    OEM / ODM
                   </span>
                 </div>
                 <h3 className="font-bold text-primary text-base mb-2">{cat.name}</h3>
@@ -396,8 +422,9 @@ function OEMProcessSection() {
         </div>
 
         <div className="relative">
-          <div className="hidden lg:block absolute top-8 left-[10%] right-[10%] h-px bg-white/20" />
-          <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-5 gap-6">
+          {/* Connector line visible on lg (all 5 in a row) */}
+          <div className="hidden lg:block absolute top-8 left-[5%] right-[5%] h-px bg-white/20 z-0" />
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-y-10 gap-x-6">
             {oemSteps.map((step, idx) => (
               <div key={idx} className="relative flex flex-col items-center text-center">
                 <div className="relative z-10 w-16 h-16 rounded-full bg-accent flex items-center justify-center mb-5 shadow-lg">
@@ -405,9 +432,6 @@ function OEMProcessSection() {
                 </div>
                 <h3 className="font-bold text-white text-sm mb-2">{step.title}</h3>
                 <p className="text-white/60 text-xs leading-relaxed">{step.desc}</p>
-                {idx < oemSteps.length - 1 && (
-                  <div className="lg:hidden absolute top-8 left-full w-full h-px bg-white/20 hidden sm:block" />
-                )}
               </div>
             ))}
           </div>
