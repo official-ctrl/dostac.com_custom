@@ -130,7 +130,7 @@ const ko: Dict = {
     ],
     sections: { greeting: "인사말", history: "우리의 이야기", worldwide: "글로벌 네트워크", directions: "오시는 길" },
     sectionDesc: {
-      greeting: "CEO 인사말과 dostac의 비전.",
+      greeting: "dostac이 누구이며, 우리가 나아가는 방향.",
       history: "30년의 발자취와 주요 마일스톤.",
       worldwide: "30개국 글로벌 파트너십 현황.",
       directions: "본사·공장 위치 안내 및 연락처.",
@@ -644,7 +644,7 @@ const ja: Dict = {
     ],
     sections: { greeting: "ご挨拶", history: "私たちのストーリー", worldwide: "グローバルネットワーク", directions: "アクセス" },
     sectionDesc: {
-      greeting: "経営陣からのご挨拶とdostacのビジョン。",
+      greeting: "dostacとはどんな会社か、そしてそのビジョン。",
       history: "30年にわたる成長の軌跡。",
       worldwide: "30カ国のグローバルパートナーシップ。",
       directions: "本社・工場のご案内と連絡先。",
@@ -900,7 +900,7 @@ const zh: Dict = {
     ],
     sections: { greeting: "致辞", history: "我们的故事", worldwide: "全球网络", directions: "联系我们" },
     sectionDesc: {
-      greeting: "管理层致辞与dostac愿景。",
+      greeting: "了解dostac：我们是谁与我们的愿景。",
       history: "30年里程碑与成长历程。",
       worldwide: "覆盖30个国家的合作伙伴网络。",
       directions: "总部与工厂位置及联系方式。",
@@ -1156,7 +1156,7 @@ const vi: Dict = {
     ],
     sections: { greeting: "Lời chào", history: "Câu chuyện của chúng tôi", worldwide: "Toàn cầu", directions: "Đường đi" },
     sectionDesc: {
-      greeting: "Thông điệp từ ban lãnh đạo và tầm nhìn của dostac.",
+      greeting: "Chúng tôi là ai và tầm nhìn của dostac.",
       history: "Ba thập kỷ phát triển và những cột mốc quan trọng.",
       worldwide: "Quan hệ đối tác tại 30 quốc gia.",
       directions: "Vị trí trụ sở/nhà máy và thông tin liên hệ.",
