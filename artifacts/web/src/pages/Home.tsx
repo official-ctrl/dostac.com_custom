@@ -276,14 +276,14 @@ function HeroTextOverlay({
 
               {/* 4. CTA Buttons */}
               <motion.div variants={fadeUp} className="flex flex-wrap gap-4">
-                <Link href="/contact">
+                <a href="#rfq">
                   <Button
                     size="lg"
                     className="rounded-full bg-accent hover:bg-accent/90 text-white h-13 px-8 text-base font-semibold shadow-lg shadow-accent/30 hover:shadow-accent/50 transition-shadow"
                   >
                     {t("homeNew.heroCtaOem") as string} <ArrowRight className="ml-2 h-4 w-4" />
                   </Button>
-                </Link>
+                </a>
                 <Link href="/contact">
                   <Button
                     size="lg"
@@ -907,7 +907,7 @@ function ContactRFQSection() {
   };
 
   return (
-    <section className="py-20 md:py-28 bg-[#F5F7FA]" id="rfq">
+    <section className="py-20 md:py-28 bg-[#F5F7FA] scroll-mt-[5.5rem]" id="rfq">
       <div className="container mx-auto px-6">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
           <motion.div
