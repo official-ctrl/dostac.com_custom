@@ -1,14 +1,17 @@
-/* DOSTAC brand fonts + tokens */
-@import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap");
+/* DOSTAC brand tokens */
 
 .dostac-root {
-  font-family: "Plus Jakarta Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  font-family: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  letter-spacing: -0.011em;
   color: #111827;
   background: #fff;
 }
 
 .dostac-root .font-display {
-  font-family: "Space Grotesk", "Plus Jakarta Sans", system-ui, sans-serif;
+  font-family: "Space Grotesk", "Inter", system-ui, sans-serif;
   letter-spacing: -0.02em;
 }
 
@@ -48,11 +51,12 @@
 .dostac-root .rich-html h1,
 .dostac-root .rich-html h2,
 .dostac-root .rich-html h3 {
-  font-family: "Space Grotesk", sans-serif;
+  font-family: "Space Grotesk", "Inter", sans-serif;
   font-weight: 700;
   color: hsl(var(--primary));
   margin-top: 1.5em;
   margin-bottom: 0.5em;
+  letter-spacing: -0.02em;
 }
 .dostac-root .rich-html h1 { font-size: 1.75rem; }
 .dostac-root .rich-html h2 { font-size: 1.5rem; }
