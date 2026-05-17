@@ -63,6 +63,7 @@ router.get("/public/products", async (req, res): Promise<void> => {
       id: p.id,
       slug: p.slug,
       category: p.category,
+      subCategory: p.subCategory,
       sortOrder: p.sortOrder,
       imageUrl: p.imageUrl,
       name: t?.name ?? p.slug,
@@ -70,6 +71,7 @@ router.get("/public/products", async (req, res): Promise<void> => {
       valueProp: t?.valueProp ?? "",
       body: t?.body ?? "",
       features: featuresToList(t?.features ?? ""),
+      material: t?.material ?? "",
       certs: p.certs ?? [],
     };
   });
@@ -101,6 +103,7 @@ router.get("/public/products/:slug", async (req, res): Promise<void> => {
     id: product.id,
     slug: product.slug,
     category: product.category,
+    subCategory: product.subCategory,
     sortOrder: product.sortOrder,
     imageUrl: product.imageUrl,
     name: t?.name ?? product.slug,
@@ -108,6 +111,7 @@ router.get("/public/products/:slug", async (req, res): Promise<void> => {
     valueProp: t?.valueProp ?? "",
     body: t?.body ?? "",
     features: featuresToList(t?.features ?? ""),
+    material: t?.material ?? "",
     certs: product.certs ?? [],
   });
 });
