@@ -22,6 +22,16 @@ import {
   ArrowRight,
 } from "lucide-react";
 
+function forceEnglishMapUrl(url: string): string {
+  try {
+    const u = new URL(url);
+    u.searchParams.set("hl", "en");
+    return u.toString();
+  } catch {
+    return url.includes("?") ? `${url}&hl=en` : `${url}?hl=en`;
+  }
+}
+
 const HISTORY_AREA_ICONS = [ShoppingBag, Store, Globe, Factory, BarChart2, Zap];
 const PHILOSOPHY_CARD_ICONS = [Shield, Network, TrendingUp];
 const WHY_DOSTAC_ICONS = [Factory, Globe, Package, Monitor, Truck];
@@ -706,7 +716,7 @@ function AboutContent() {
 
               {data?.directionsMapEmbed ? (
                 <iframe
-                  src={data.directionsMapEmbed}
+                  src={forceEnglishMapUrl(data.directionsMapEmbed)}
                   width="100%"
                   height="100%"
                   style={{ border: 0 }}

@@ -13,23 +13,25 @@ import { useT, useLang, type Lang } from "./i18n";
 type AboutSubItem = {
   hash: string;
   key: "greeting" | "history" | "philosophy" | "directions";
+  label: string;
 };
 
 const ABOUT_SUB: AboutSubItem[] = [
-  { hash: "greeting", key: "greeting" },
-  { hash: "history", key: "history" },
-  { hash: "philosophy", key: "philosophy" },
-  { hash: "directions", key: "directions" },
+  { hash: "greeting", key: "greeting", label: "Greeting" },
+  { hash: "history", key: "history", label: "Our Story" },
+  { hash: "philosophy", key: "philosophy", label: "Company Philosophy" },
+  { hash: "directions", key: "directions", label: "Directions" },
 ];
 
 type ProcessSubItem = {
   hash: string;
   key: "oem" | "cert";
+  label: string;
 };
 
 const PROCESS_SUB: ProcessSubItem[] = [
-  { hash: "oem-odm", key: "oem" },
-  { hash: "global-certifications", key: "cert" },
+  { hash: "oem-odm", key: "oem", label: "OEM/ODM" },
+  { hash: "global-certifications", key: "cert", label: "Global Certifications" },
 ];
 
 type NavKey = "about" | "production" | "product" | "notice" | "contact";
@@ -181,7 +183,7 @@ function AboutDropdown({ active }: { active: boolean }) {
                 className="px-3 py-2 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-50 hover:text-primary transition focus:bg-slate-100 focus:outline-none"
                 onClick={() => setOpen(false)}
               >
-                {t(`about.sections.${s.key}`) as string}
+                {s.label}
               </Link>
             ))}
           </div>
@@ -269,7 +271,7 @@ function ProcessDropdown({ active }: { active: boolean }) {
                 className="px-3 py-2 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-50 hover:text-primary transition focus:bg-slate-100 focus:outline-none"
                 onClick={() => setOpen(false)}
               >
-                {t(`production.sections.${s.key}`) as string}
+                {s.label}
               </Link>
             ))}
           </div>
@@ -401,7 +403,7 @@ function Header() {
                             className="block px-3 py-1.5 rounded-md text-sm text-slate-600 hover:bg-slate-100"
                             onClick={() => setMobileOpen(false)}
                           >
-                            {t(`production.sections.${s.key}`) as string}
+                            {s.label}
                           </Link>
                         ))}
                       </div>
@@ -447,7 +449,7 @@ function Header() {
                             className="block px-3 py-1.5 rounded-md text-sm text-slate-600 hover:bg-slate-100"
                             onClick={() => setMobileOpen(false)}
                           >
-                            {t(`about.sections.${s.key}`) as string}
+                            {s.label}
                           </Link>
                         ))}
                       </div>
