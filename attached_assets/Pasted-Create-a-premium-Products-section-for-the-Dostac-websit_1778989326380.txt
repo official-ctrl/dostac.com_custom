@@ -1,0 +1,234 @@
+Create a premium “Products” section for the Dostac website.
+This section must visually match the existing:
+About Dostac
+Our Story
+Company Philosophy
+Production
+sections.
+The overall design language must remain:
+premium
+minimal
+trustworthy
+export-focused
+Korean beauty corporate aesthetic
+globally scalable
+The section should feel like:
+a luxury K-beauty catalog
+a global OEM/ODM sourcing platform
+a modern B2B cosmetics company
+Avoid:
+cheap ecommerce appearance
+crowded marketplace layouts
+colorful retail style
+generic product cards
+low-quality stock presentation
+Use:
+clean white background
+soft gray sections
+modern typography
+premium product visuals
+subtle fade-in animations
+responsive mobile-first layout
+luxury whitespace
+IMPORTANT ADMIN REQUIREMENT
+All product categories and product contents MUST be editable from the admin dashboard.
+Create the Products section using dynamic CMS/admin structure.
+Admin should be able to:
+add new product categories
+edit product title
+edit product description
+edit features
+change product images
+add/remove feature items
+reorder categories
+enable/disable categories
+edit SEO metadata
+update CTA buttons
+Use:
+dynamic product rendering
+reusable product card components
+database-driven structure
+scalable admin-friendly architecture
+Recommended structure:
+products collection/table
+category image
+category title
+category description
+feature list array
+CTA button
+SEO fields
+Ensure:
+products automatically update on frontend after admin edits
+no hardcoded product content
+future categories can be added easily
+MAIN PRODUCTS SECTION
+Small Label: PRODUCTS
+Main Heading: K-Beauty Products for Global Brands & Distribution
+Sub Text:
+“Dostac provides Korean beauty and personal care products designed for OEM, ODM, private label, and global distribution opportunities.”
+Add subtle premium animation on load.
+PRODUCTS SUBMENU
+Create premium product category navigation tabs.
+Categories:
+Cleansing Tissue
+Cotton Pads
+Nose Packs
+Patches
+Deodorant Tissue
+Facial Packs & Masks
+Requirements:
+smooth scroll navigation
+active tab highlighting
+responsive mobile tabs
+sticky submenu on scroll
+proper anchor links
+no broken links
+Use anchor IDs:
+#cleansing-tissue
+#cotton-pads
+#nose-packs
+#patches
+#deodorant-tissue
+#facial-packs
+Desktop: horizontal tab menu
+Mobile: horizontal scrollable tabs
+PRODUCT SECTION STRUCTURE
+Each category section should visually match the “Our Story” layout style.
+Use:
+premium two-column layout
+left = product content
+right = premium product image
+alternating layout for visual rhythm
+Style:
+elegant corporate beauty catalog
+minimal luxury composition
+export-oriented presentation
+PRODUCT CATEGORY 1
+Anchor ID: #cleansing-tissue
+Small Label: CLEANSING TISSUE
+Heading: Premium Cleansing Tissue Solutions
+Text:
+“Premium cleansing tissues designed for makeup removal, skincare cleansing, and daily facial care.”
+Feature Cards:
+Soft Texture
+Gentle Cleansing
+Sensitive Skin Support
+OEM / Private Label Available
+CTA: “Request OEM Inquiry”
+Suggested Image Prompt:
+“Luxury Korean cleansing tissue packaging, premium skincare wipes, minimal white cosmetic styling, soft natural lighting, elegant beauty photography, clean Korean skincare aesthetic, modern export beauty catalog atmosphere”
+PRODUCT CATEGORY 2
+Anchor ID: #cotton-pads
+Heading: Premium Cotton Pads
+Text:
+“High-quality cotton pads suitable for skincare, toner application, and cosmetic use.”
+Features:
+Multi-layer Structure
+Soft Premium Cotton
+Custom Packaging Support
+OEM Manufacturing Available
+Image Prompt:
+“Premium Korean cotton pads with elegant cosmetic packaging, minimal skincare flat lay, soft beauty lighting, luxury white aesthetic, modern K-beauty brand photography”
+PRODUCT CATEGORY 3
+Anchor ID: #nose-packs
+Heading: Deep Cleansing Nose Packs
+Text:
+“Deep cleansing nose strips designed for blackhead and pore care.”
+Features:
+Charcoal Formula
+Pore Cleansing
+Blackhead Removal
+Private Label Support
+Image Prompt:
+“Korean nose pore strips, charcoal skincare products, premium blackhead care packaging, luxury cosmetic photography, clean beauty brand atmosphere”
+PRODUCT CATEGORY 4
+Anchor ID: #patches
+Heading: Hydrocolloid & Skincare Patches
+Text:
+“Hydrocolloid and skincare patches for spot care and acne treatment.”
+Features:
+Skin Protection
+Spot Treatment
+Fast Adhesion
+OEM / ODM Available
+Image Prompt:
+“Premium acne patches and hydrocolloid skincare patches, luxury Korean beauty packaging, modern dermatology-inspired beauty photography, minimal white aesthetic”
+PRODUCT CATEGORY 5
+Anchor ID: #deodorant-tissue
+Heading: Portable Deodorant Tissue
+Text:
+“Portable body cleansing wipes designed for freshness and convenience.”
+Features:
+Cooling Effect
+Daily Hygiene Care
+Travel-Friendly Packaging
+Custom Branding Support
+Image Prompt:
+“Luxury deodorant body wipes packaging, fresh clean lifestyle atmosphere, modern Korean hygiene product photography, cooling skincare aesthetic, minimal premium composition”
+PRODUCT CATEGORY 6
+Anchor ID: #facial-packs
+Heading: Facial Packs & Sheet Masks
+Text:
+“K-beauty facial masks and skincare packs designed for hydration and skin care.”
+Features:
+Moisturizing Care
+Collagen & Soothing Formulas
+Sheet Mask Solutions
+Private Label Available
+Image Prompt:
+“Luxury Korean sheet masks and facial packs, premium hydration skincare products, elegant cosmetic photography, soft white lighting, modern K-beauty aesthetic”
+PRODUCT CARD DESIGN
+Use:
+premium rounded cards
+subtle hover animations
+clean icon features
+elegant typography
+luxury whitespace
+Cards should feel:
+modern
+export-focused
+premium Korean beauty brand
+CTA DESIGN
+Each product section should include:
+OEM Inquiry button
+Contact Us button
+Style:
+premium minimal buttons
+soft hover effects
+modern corporate design
+SEO REQUIREMENTS
+Optimize dynamically for:
+K-beauty OEM
+Korean skincare products
+private label cosmetics
+Korean beauty supplier
+OEM cleansing tissue
+Korean sheet mask manufacturer
+hydrocolloid patches OEM
+Use:
+semantic HTML
+structured metadata
+optimized headings
+image alt optimization
+mobile SEO
+MOBILE RESPONSIVE DESIGN
+On mobile:
+stack content vertically
+image first
+text below
+responsive cards
+smooth scroll tabs
+Ensure:
+fast loading
+clean spacing
+premium mobile UX
+FINAL BRAND FEELING
+The Products section should visually communicate:
+“Premium Korean beauty products designed for OEM, private label, and global distribution.”
+The final result should feel:
+premium
+clean
+internationally scalable
+export-ready
+trustworthy
+luxury Korean beauty B2B brand
