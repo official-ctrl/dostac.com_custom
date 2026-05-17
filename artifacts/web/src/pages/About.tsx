@@ -169,7 +169,7 @@ function AboutContent() {
           <h2 className="font-display text-3xl md:text-4xl font-bold mb-4 text-center">
             {t("about.historyHeading") as string}
           </h2>
-          <p className="text-white/80 text-center leading-relaxed mb-14 max-w-2xl mx-auto">
+          <p className="text-white/80 text-center leading-relaxed mb-14 max-w-2xl mx-auto whitespace-pre-line">
             {t("about.historyBody") as string}
           </p>
           <div className="space-y-6 relative">

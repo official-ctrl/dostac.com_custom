@@ -118,8 +118,8 @@ const ko: Dict = {
       { title: "품질", desc: "안전성, 효능, 글로벌 컴플라이언스에서 어떠한 타협도 없이 최종 소비자의 절대 만족을 보장합니다." },
       { title: "혁신", desc: "새로운 처방, 형태, 네트워크 시너지를 끊임없이 탐구하여 파트너가 시장 트렌드를 앞서가도록 지원합니다." },
     ],
-    historyHeading: "지속 가능한 성장의 발자취",
-    historyBody: "타깃 스킨케어 솔루션에서 시작해 종합 데일리 위생용품까지 아우르는 광범위한 포트폴리오로, dostac은 글로벌 시장 수요에 부응하며 끊임없이 성장해 왔습니다.",
+    historyHeading: "우리의 이야기",
+    historyBody: "Dostac은 화장품 유통, 온라인 커머스, 글로벌 소싱 분야에서의 실제 경험을 바탕으로 만들어진 회사입니다.\n\n20여 년간 뷰티 및 이커머스 산업의 다양한 영역에서 활동해 왔습니다:\n\n• 화장품 소매 유통\n• 온라인 쇼핑몰 운영\n• 글로벌 제품 소싱\n• OEM / ODM 제조 협력\n• 국제 온라인 마켓플레이스\n• 디지털 마케팅 및 이커머스 자동화\n\n빠르게 변화하는 K-뷰티 시장에서의 직접적인 경험을 통해, 성공적인 글로벌 브랜드를 위해서는 좋은 제품 이상이 필요하다는 것을 배웠습니다.\n\n브랜드 아이덴티티, 가격 전략, 패키징, 수출 역량, 디지털 콘텐츠 모두 글로벌 비즈니스 성장에 핵심적인 역할을 합니다.\n\nDostac은 한국의 제조 품질과 글로벌 시장 기회를 연결하기 위해 만들어졌습니다.",
     history: [
       { year: "2015", title: "회사 설립", desc: "프리미엄 OEM/ODM 솔루션을 목표로 대한민국 서울에서 설립되었습니다." },
       { year: "2017", title: "첫 스킨케어 라인 출시", desc: "첨단 코팩과 스팟 패치를 해외 바이어에게 성공적으로 납품했습니다." },
@@ -128,7 +128,7 @@ const ko: Dict = {
       { year: "2023", title: "글로벌 파트너십 체결", desc: "유럽 및 북미의 정상급 뷰티 브랜드와 전략적 제휴를 체결했습니다." },
       { year: "2026", title: "첨단 제조 네트워크 확립", desc: "글로벌 R&D 및 제조 시설의 통합 운영 체계를 완성했습니다." },
     ],
-    sections: { greeting: "인사말", history: "회사 연혁", worldwide: "글로벌 네트워크", directions: "오시는 길" },
+    sections: { greeting: "인사말", history: "우리의 이야기", worldwide: "글로벌 네트워크", directions: "오시는 길" },
     sectionDesc: {
       greeting: "CEO 인사말과 dostac의 비전.",
       history: "30년의 발자취와 주요 마일스톤.",
@@ -376,8 +376,8 @@ const en: Dict = {
       { title: "QUALITY", desc: "Maintaining zero compromises on safety, efficacy, and global compliance, ensuring absolute satisfaction for the end consumer." },
       { title: "INNOVATION", desc: "Continuously exploring new formulations, formats, and network synergies to keep our partners ahead of market trends." },
     ],
-    historyHeading: "A Legacy of Sustainable Growth",
-    historyBody: "From our early specialization in targeted skincare solutions to our current expansive portfolio covering comprehensive daily hygiene products, dostac has consistently evolved to meet global market demand.",
+    historyHeading: "Our Story",
+    historyBody: "Dostac was built from years of real-world experience in cosmetics distribution, online commerce, and global sourcing.\n\nFor nearly two decades, we have worked across multiple areas of the beauty and e-commerce industry including:\n\n• Cosmetics retail distribution\n• Online shopping mall operation\n• Global product sourcing\n• OEM / ODM manufacturing cooperation\n• International online marketplaces\n• Digital marketing and e-commerce automation\n\nThrough hands-on experience in the rapidly changing K-beauty market, we learned that successful global brands require more than good products.\n\nBrand identity, pricing strategy, packaging, export capability, and digital content all play essential roles in global business growth.\n\nDostac was created to connect Korean manufacturing quality with global market opportunities.",
     history: [
       { year: "2015", title: "Company Founded", desc: "Established in Seoul, Korea with a focus on premium OEM/ODM solutions." },
       { year: "2017", title: "First Skincare Line Launched", desc: "Successfully delivered advanced Pore Strips and Spot Patches to international buyers." },
@@ -386,7 +386,7 @@ const en: Dict = {
       { year: "2023", title: "Global Partnerships Formed", desc: "Strategic alliances with top-tier beauty brands across Europe and North America." },
       { year: "2026", title: "Advanced Manufacturing Network", desc: "Full orchestration of global R&D and manufacturing facilities." },
     ],
-    sections: { greeting: "About Us", history: "Our History", worldwide: "Worldwide", directions: "Directions" },
+    sections: { greeting: "About Us", history: "Our Story", worldwide: "Worldwide", directions: "Directions" },
     sectionDesc: {
       greeting: "Who we are and our vision.",
       history: "Three decades of milestones and growth.",
@@ -632,8 +632,8 @@ const ja: Dict = {
       { title: "品質", desc: "安全性、有効性、グローバルコンプライアンスにおいて妥協せず、最終消費者の絶対的な満足を保証します。" },
       { title: "革新", desc: "新たな処方、形態、ネットワークシナジーを継続的に探求し、パートナーが市場トレンドを先取りできるよう支援します。" },
     ],
-    historyHeading: "持続可能な成長の歩み",
-    historyBody: "ターゲットスキンケアソリューションから、現在の総合デイリーハイジーン製品にまで及ぶ広範なポートフォリオまで、dostacはグローバル市場の需要に応え進化を続けてきました。",
+    historyHeading: "私たちのストーリー",
+    historyBody: "Dostacは、化粧品流通・オンラインコマース・グローバルソーシングの豊富な実務経験から生まれた会社です。\n\n約20年間、ビューティーとeコマース業界の多様な領域で活動してきました：\n\n• 化粧品小売流通\n• オンラインショッピングモール運営\n• グローバル商品ソーシング\n• OEM / ODM製造協力\n• 国際オンラインマーケットプレイス\n• デジタルマーケティングとeコマース自動化\n\n急速に変化するK-ビューティー市場での実践的な経験を通じ、グローバルで成功するブランドには良い製品以上のものが必要だと学びました。\n\nブランドアイデンティティ、価格戦略、パッケージ、輸出力、デジタルコンテンツのすべてがグローバルビジネス成長に不可欠な役割を担っています。\n\nDostacは、韓国の製造品質とグローバル市場の機会をつなぐために生まれました。",
     history: [
       { year: "2015", title: "会社設立", desc: "プレミアムOEM/ODMソリューションを目指し韓国・ソウルで設立。" },
       { year: "2017", title: "初のスキンケアライン発売", desc: "高度なPore Strips・Spot Patchesを海外バイヤーへ納品。" },
@@ -642,7 +642,7 @@ const ja: Dict = {
       { year: "2023", title: "グローバルパートナーシップ締結", desc: "欧州・北米のトップビューティーブランドと戦略的提携を締結。" },
       { year: "2026", title: "Advanced Manufacturing Network 確立", desc: "グローバルR&D・製造拠点の統合運用体制を完成。" },
     ],
-    sections: { greeting: "ご挨拶", history: "沿革", worldwide: "グローバルネットワーク", directions: "アクセス" },
+    sections: { greeting: "ご挨拶", history: "私たちのストーリー", worldwide: "グローバルネットワーク", directions: "アクセス" },
     sectionDesc: {
       greeting: "経営陣からのご挨拶とdostacのビジョン。",
       history: "30年にわたる成長の軌跡。",
@@ -888,8 +888,8 @@ const zh: Dict = {
       { title: "品质", desc: "在安全性、有效性与全球合规上不做妥协,确保终端消费者的绝对满意。" },
       { title: "创新", desc: "持续探索新配方、新形态与网络协同,助力合作伙伴引领市场趋势。" },
     ],
-    historyHeading: "可持续增长的传承",
-    historyBody: "从最早专注的针对性护肤解决方案,到如今涵盖全面日常卫生用品的广泛产品组合,dostac始终顺应全球市场需求持续进化。",
+    historyHeading: "我们的故事",
+    historyBody: "Dostac是从化妆品分销、在线电商和全球采购的多年实战经验中诞生的公司。\n\n近二十年来，我们在美妆和电商行业的多个领域深耕：\n\n• 化妆品零售分销\n• 在线购物商城运营\n• 全球产品采购\n• OEM / ODM制造合作\n• 国际在线市场平台\n• 数字营销与电商自动化\n\n通过在快速变化的K-beauty市场中的亲身实践，我们了解到成功的全球品牌需要的不仅仅是好产品。\n\n品牌形象、定价策略、包装设计、出口能力和数字内容，都在全球业务增长中发挥着至关重要的作用。\n\nDostac的创立，正是为了将韩国制造的品质与全球市场机会紧密相连。",
     history: [
       { year: "2015", title: "公司成立", desc: "在韩国首尔成立,专注于高端OEM/ODM解决方案。" },
       { year: "2017", title: "首条护肤产品线推出", desc: "向国际买家成功交付先进的Pore Strips与Spot Patches。" },
@@ -898,7 +898,7 @@ const zh: Dict = {
       { year: "2023", title: "建立全球合作", desc: "与欧洲与北美顶级美容品牌建立战略联盟。" },
       { year: "2026", title: "Advanced Manufacturing Network 确立", desc: "完成全球研发与制造设施的整合运营体系。" },
     ],
-    sections: { greeting: "致辞", history: "公司历史", worldwide: "全球网络", directions: "联系我们" },
+    sections: { greeting: "致辞", history: "我们的故事", worldwide: "全球网络", directions: "联系我们" },
     sectionDesc: {
       greeting: "管理层致辞与dostac愿景。",
       history: "30年里程碑与成长历程。",
@@ -1144,8 +1144,8 @@ const vi: Dict = {
       { title: "CHẤT LƯỢNG", desc: "Không khoan nhượng về an toàn, hiệu quả và tuân thủ toàn cầu, đảm bảo sự hài lòng tuyệt đối cho người tiêu dùng cuối." },
       { title: "ĐỔI MỚI", desc: "Liên tục khám phá các công thức, định dạng mới và sự cộng hưởng mạng lưới để giúp đối tác đi trước xu hướng thị trường." },
     ],
-    historyHeading: "Di sản Tăng trưởng Bền vững",
-    historyBody: "Từ chuyên môn ban đầu về các giải pháp chăm sóc da theo mục tiêu đến danh mục đa dạng hiện tại bao gồm các sản phẩm vệ sinh hàng ngày toàn diện, dostac đã liên tục phát triển để đáp ứng nhu cầu thị trường toàn cầu.",
+    historyHeading: "Câu chuyện của chúng tôi",
+    historyBody: "Dostac được xây dựng từ nhiều năm kinh nghiệm thực tiễn trong phân phối mỹ phẩm, thương mại điện tử và tìm nguồn cung ứng toàn cầu.\n\nTrong gần hai thập kỷ, chúng tôi đã hoạt động trong nhiều lĩnh vực của ngành làm đẹp và thương mại điện tử, bao gồm:\n\n• Phân phối bán lẻ mỹ phẩm\n• Vận hành trung tâm mua sắm trực tuyến\n• Tìm nguồn cung ứng sản phẩm toàn cầu\n• Hợp tác sản xuất OEM / ODM\n• Sàn thương mại điện tử quốc tế\n• Marketing kỹ thuật số và tự động hóa thương mại điện tử\n\nQua kinh nghiệm thực tế trong thị trường K-beauty biến đổi nhanh chóng, chúng tôi nhận ra rằng các thương hiệu toàn cầu thành công cần nhiều hơn chỉ sản phẩm tốt.\n\nBản sắc thương hiệu, chiến lược giá, bao bì, năng lực xuất khẩu và nội dung kỹ thuật số đều đóng vai trò thiết yếu trong tăng trưởng kinh doanh toàn cầu.\n\nDostac được tạo ra để kết nối chất lượng sản xuất Hàn Quốc với cơ hội thị trường toàn cầu.",
     history: [
       { year: "2015", title: "Thành lập Công ty", desc: "Thành lập tại Seoul, Hàn Quốc tập trung vào giải pháp OEM/ODM cao cấp." },
       { year: "2017", title: "Ra mắt Dòng Skincare đầu tiên", desc: "Giao thành công các sản phẩm Pore Strips và Spot Patches tiên tiến cho người mua quốc tế." },
@@ -1154,7 +1154,7 @@ const vi: Dict = {
       { year: "2023", title: "Hình thành Đối tác Toàn cầu", desc: "Liên minh chiến lược với các thương hiệu mỹ phẩm hàng đầu tại Châu Âu và Bắc Mỹ." },
       { year: "2026", title: "Mạng lưới Sản xuất Tiên tiến", desc: "Điều phối toàn bộ R&D toàn cầu và các cơ sở sản xuất." },
     ],
-    sections: { greeting: "Lời chào", history: "Lịch sử", worldwide: "Toàn cầu", directions: "Đường đi" },
+    sections: { greeting: "Lời chào", history: "Câu chuyện của chúng tôi", worldwide: "Toàn cầu", directions: "Đường đi" },
     sectionDesc: {
       greeting: "Thông điệp từ ban lãnh đạo và tầm nhìn của dostac.",
       history: "Ba thập kỷ phát triển và những cột mốc quan trọng.",
