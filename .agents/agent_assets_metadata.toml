@@ -125,3 +125,27 @@ id = "Klryobi3lZYXJ9zO6MMo6"
 uri = "file://artifacts/web/public/opengraph.png"
 type = "image"
 title = "OG 이미지 (1200×675)"
+
+[[outputs]]
+id = "Cye6b9FKAvttL9IhZrFH4"
+uri = "file://artifacts/web/public/favicon-32.png"
+type = "image"
+title = "32×32 favicon"
+
+[[outputs]]
+id = "R2eLofKRJ4rtiw23bmqSL"
+uri = "file://artifacts/web/public/favicon-48.png"
+type = "image"
+title = "48×48 favicon"
+
+[[outputs]]
+id = "k7pAC6Gkf_gYAV1p690sp"
+uri = "file://artifacts/web/public/apple-touch-icon.png"
+type = "image"
+title = "180×180 Apple Touch Icon"
+
+[[outputs]]
+id = "Vz6m3Gl2dJtgiTurxAjW4"
+uri = "file://artifacts/web/public/icon-192.png"
+type = "image"
+title = "192×192 Android/PWA icon"

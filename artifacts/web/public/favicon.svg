@@ -1,5 +1,10 @@
-<svg width="32" height="32" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
-  <rect width="32" height="32" rx="7" fill="#0F172A"/>
-  <text x="15" y="24" text-anchor="middle" font-family="'Arial Black', Arial, Helvetica, sans-serif" font-weight="900" font-size="21" fill="white">d</text>
-  <circle cx="25" cy="8" r="4" fill="#FF6A1A"/>
+<svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="512" height="512" rx="110" fill="#0F172A"/>
+  <!-- Bold "D" lettermark — path-based, no font dependency, thick walls for small-size legibility -->
+  <path fill-rule="evenodd" fill="white"
+    d="M 108 94 H 258 C 438 94 438 418 258 418 H 108 Z
+       M 193 170 H 248 C 362 170 362 342 248 342 H 193 Z"/>
+  <!-- Orange brand accent dot — upper-right, visible even at 16px -->
+  <circle cx="396" cy="106" r="74" fill="#FF6A1A"/>
 </svg>
