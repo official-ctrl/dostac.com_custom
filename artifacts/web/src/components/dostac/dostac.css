@@ -3,33 +3,40 @@
 
 .dostac-root {
   font-family: "Plus Jakarta Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-  color: hsl(220 25% 15%);
+  color: #111827;
   background: #fff;
 }
 
 .dostac-root .font-display {
   font-family: "Space Grotesk", "Plus Jakarta Sans", system-ui, sans-serif;
-  letter-spacing: -0.01em;
+  letter-spacing: -0.02em;
 }
 
 .dostac-root {
-  --primary: 210 60% 25%;
+  /* Primary: dark navy #0F172A */
+  --primary: 222 47% 11%;
   --primary-foreground: 0 0% 100%;
-  --accent: 21 100% 55%;
+  /* Accent / Brand orange: #FF6A1A */
+  --accent: 22 100% 55%;
   --accent-foreground: 0 0% 100%;
-  --muted: 210 30% 96%;
-  --muted-foreground: 220 15% 45%;
+  /* Backgrounds */
   --background: 0 0% 100%;
-  --foreground: 220 25% 15%;
-  --border: 220 15% 88%;
-  --input: 220 15% 88%;
-  --ring: 210 60% 25%;
+  --foreground: 221 39% 11%;
+  /* Muted / secondary bg: #F5F7FA */
+  --muted: 210 20% 97%;
+  --muted-foreground: 220 9% 46%;
+  /* Border: #E5E7EB */
+  --border: 220 13% 91%;
+  --input: 220 13% 91%;
+  --ring: 22 100% 55%;
+  /* Card */
   --card: 0 0% 100%;
-  --card-foreground: 220 25% 15%;
+  --card-foreground: 221 39% 11%;
   --popover: 0 0% 100%;
-  --popover-foreground: 220 25% 15%;
-  --secondary: 210 30% 94%;
-  --secondary-foreground: 210 60% 25%;
+  --popover-foreground: 221 39% 11%;
+  /* Secondary */
+  --secondary: 210 20% 97%;
+  --secondary-foreground: 222 47% 11%;
   --destructive: 0 70% 45%;
   --destructive-foreground: 0 0% 100%;
   --radius: 0.5rem;

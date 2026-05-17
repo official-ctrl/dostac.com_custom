@@ -52,7 +52,7 @@ const LANG_OPTIONS: Array<{ code: Lang; label: string }> = [
   { code: "vi", label: "Tiếng Việt" },
 ];
 
-function LanguageSwitcher() {
+function LanguageSwitcher({ onDark }: { onDark?: boolean }) {
   const { lang, setLang } = useLang();
   const { t } = useT();
   const [open, setOpen] = useState(false);
@@ -70,12 +70,16 @@ function LanguageSwitcher() {
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-white px-3 py-1.5 text-sm font-medium text-slate-700 hover:border-slate-300 hover:bg-slate-50 transition"
+        className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-medium transition border ${
+          onDark
+            ? "border-white/20 bg-white/10 text-white hover:bg-white/20"
+            : "border-slate-200 bg-white text-slate-700 hover:border-slate-300 hover:bg-slate-50"
+        }`}
         aria-label={t("common.language") as string}
       >
-        <Globe className="h-4 w-4 text-slate-500" />
+        <Globe className={`h-3.5 w-3.5 ${onDark ? "text-white/70" : "text-slate-500"}`} />
         {current.label}
-        <ChevronDown className="h-3.5 w-3.5 text-slate-400" />
+        <ChevronDown className={`h-3.5 w-3.5 ${onDark ? "text-white/50" : "text-slate-400"}`} />
       </button>
       {open && (
         <div className="absolute right-0 top-full mt-2 w-40 rounded-md border border-slate-200 bg-white shadow-lg z-50 overflow-hidden">
@@ -101,7 +105,7 @@ function LanguageSwitcher() {
   );
 }
 
-function AboutDropdown({ active }: { active: boolean }) {
+function AboutDropdown({ active, scrolled }: { active: boolean; scrolled: boolean }) {
   const { t } = useT();
   const [, navigate] = useLocation();
   const [open, setOpen] = useState(false);
@@ -109,7 +113,6 @@ function AboutDropdown({ active }: { active: boolean }) {
   const triggerRef = React.useRef<HTMLButtonElement | null>(null);
   const menuId = "about-dropdown-menu";
 
-  // Close on outside click
   useEffect(() => {
     if (!open) return;
     const onDoc = (e: MouseEvent) => {
@@ -119,7 +122,6 @@ function AboutDropdown({ active }: { active: boolean }) {
     return () => document.removeEventListener("mousedown", onDoc);
   }, [open]);
 
-  // Close on Escape; close on focus leaving the wrapper
   const onKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Escape") {
       setOpen(false);
@@ -157,7 +159,7 @@ function AboutDropdown({ active }: { active: boolean }) {
         aria-expanded={open}
         aria-controls={menuId}
         className={`inline-flex items-center gap-1 text-sm font-medium transition-colors outline-none focus-visible:ring-2 focus-visible:ring-accent rounded-sm ${
-          active ? "text-accent" : "text-slate-600 hover:text-primary"
+          active ? "text-accent" : "text-slate-700 hover:text-primary"
         }`}
         data-testid="nav-about"
       >
@@ -193,7 +195,7 @@ function AboutDropdown({ active }: { active: boolean }) {
   );
 }
 
-function ProcessDropdown({ active }: { active: boolean }) {
+function ProcessDropdown({ active, scrolled }: { active: boolean; scrolled: boolean }) {
   const { t } = useT();
   const [, navigate] = useLocation();
   const [open, setOpen] = useState(false);
@@ -245,7 +247,7 @@ function ProcessDropdown({ active }: { active: boolean }) {
         aria-expanded={open}
         aria-controls={menuId}
         className={`inline-flex items-center gap-1 text-sm font-medium transition-colors outline-none focus-visible:ring-2 focus-visible:ring-accent rounded-sm ${
-          active ? "text-accent" : "text-slate-600 hover:text-primary"
+          active ? "text-accent" : "text-slate-700 hover:text-primary"
         }`}
         data-testid="nav-production"
       >
@@ -287,12 +289,19 @@ function Header() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [mobileAboutOpen, setMobileAboutOpen] = useState(false);
   const [mobileProcessOpen, setMobileProcessOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
     setMobileOpen(false);
   }, [location]);
 
-  // Smooth scroll if URL has a hash matching an about section
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 10);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    onScroll();
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
   useEffect(() => {
     if (typeof window === "undefined") return;
     const onHashScroll = () => {
@@ -300,7 +309,6 @@ function Header() {
       if (!hash) return;
       const el = document.getElementById(hash);
       if (el) {
-        // small delay to let layout settle (sticky nav)
         setTimeout(() => {
           el.scrollIntoView({ behavior: "smooth", block: "start" });
         }, 60);
@@ -312,32 +320,38 @@ function Header() {
   }, [location]);
 
   return (
-    <header className="sticky top-0 z-50 bg-white/95 backdrop-blur border-b border-slate-200/70">
-      <div className="container mx-auto px-6 h-20 flex items-center justify-between">
+    <header
+      className={`sticky top-0 z-50 transition-all duration-200 ${
+        scrolled
+          ? "bg-white/95 backdrop-blur-md border-b border-slate-200/70 shadow-sm"
+          : "bg-white border-b border-slate-200/70"
+      }`}
+    >
+      <div className="container mx-auto px-6 h-[4.5rem] flex items-center justify-between">
         <Link href="/" className="flex items-center" aria-label="Dostac home">
           <span
-            className="text-[36px] font-black tracking-[-0.05em] text-[#0F172A] leading-none select-none"
-            style={{ fontFamily: "'Outfit', sans-serif" }}
+            className="font-black tracking-[-0.05em] text-[#0F172A] leading-none select-none"
+            style={{ fontFamily: "'Space Grotesk', 'Outfit', sans-serif", fontSize: "42px" }}
           >
             dostac
           </span>
         </Link>
 
-        <nav className="hidden lg:flex items-center gap-8">
+        <nav className="hidden lg:flex items-center gap-7">
           {NAV_ITEMS.map((item) => {
             const active = location === item.href || location.startsWith(`${item.href}/`);
             if (item.key === "about") {
-              return <AboutDropdown key={item.href} active={active} />;
+              return <AboutDropdown key={item.href} active={active} scrolled={scrolled} />;
             }
             if (item.key === "production") {
-              return <ProcessDropdown key={item.href} active={active} />;
+              return <ProcessDropdown key={item.href} active={active} scrolled={scrolled} />;
             }
             return (
               <Link
                 key={item.href}
                 href={item.href}
                 className={`text-sm font-medium transition-colors ${
-                  active ? "text-accent" : "text-slate-600 hover:text-primary"
+                  active ? "text-accent" : "text-slate-700 hover:text-primary"
                 }`}
               >
                 {t(`nav.${item.key}`) as string}
@@ -349,7 +363,7 @@ function Header() {
         <div className="flex items-center gap-3">
           <LanguageSwitcher />
           <Link href="/contact" className="hidden md:inline-flex">
-            <Button className="rounded-full bg-accent hover:bg-accent/90 text-white h-10 px-6 text-sm font-medium shadow-sm">
+            <Button className="rounded-full bg-accent hover:bg-accent/90 text-white h-10 px-6 text-sm font-semibold shadow-sm">
               {t("nav.cta") as string} <ArrowRight className="ml-1.5 h-4 w-4" />
             </Button>
           </Link>
@@ -468,7 +482,7 @@ function Header() {
               );
             })}
             <Link href="/contact" className="mt-2">
-              <Button className="w-full rounded-full bg-accent hover:bg-accent/90 text-white">
+              <Button className="w-full rounded-full bg-accent hover:bg-accent/90 text-white font-semibold">
                 {t("nav.cta") as string}
               </Button>
             </Link>
@@ -480,36 +494,52 @@ function Header() {
 }
 
 function Footer() {
+  const { t } = useT();
   return (
-    <footer className="bg-[#0a0a0a] text-white">
-      <div className="container mx-auto px-6 py-6">
-        <p className="text-center text-xs text-slate-500 mb-5 tracking-wide">
-          Connecting Korean Innovation to the Global Market
-        </p>
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-white/10 pt-5">
-          <p className="text-xs text-slate-500 order-2 sm:order-1">
-            dostac &copy; 2026
-          </p>
-          <nav className="flex flex-wrap justify-center gap-x-6 gap-y-2 order-1 sm:order-2">
-            <Link
-              href="/contact"
-              className="text-xs text-slate-400 hover:text-white transition-colors"
+    <footer className="bg-[#0F172A] text-white">
+      <div className="container mx-auto px-6 py-8">
+        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 mb-6">
+          <div>
+            <span
+              className="font-black tracking-[-0.05em] text-white leading-none select-none block mb-1"
+              style={{ fontFamily: "'Space Grotesk', sans-serif", fontSize: "28px" }}
             >
-              Contact Us
+              dostac
+            </span>
+            <p className="text-xs text-slate-400 max-w-xs leading-relaxed">
+              K-Beauty OEM &amp; Global Sourcing Partner
+            </p>
+          </div>
+          <nav className="flex flex-wrap gap-x-6 gap-y-2">
+            <Link href="/about" className="text-sm text-slate-400 hover:text-accent transition-colors">
+              {t("nav.about") as string}
             </Link>
-            <Link
-              href="/notice"
-              className="text-xs text-slate-400 hover:text-white transition-colors"
-            >
-              Notice
+            <Link href="/production" className="text-sm text-slate-400 hover:text-accent transition-colors">
+              {t("nav.production") as string}
             </Link>
-            <Link
-              href="/about#directions"
-              className="text-xs text-slate-400 hover:text-white transition-colors"
-            >
-              Locations
+            <Link href="/products" className="text-sm text-slate-400 hover:text-accent transition-colors">
+              {t("nav.product") as string}
+            </Link>
+            <Link href="/notice" className="text-sm text-slate-400 hover:text-accent transition-colors">
+              {t("nav.notice") as string}
+            </Link>
+            <Link href="/contact" className="text-sm text-slate-400 hover:text-accent transition-colors">
+              {t("nav.contact") as string}
             </Link>
           </nav>
+        </div>
+        <div className="border-t border-white/10 pt-5 flex flex-col sm:flex-row items-center justify-between gap-3">
+          <p className="text-xs text-slate-500">
+            dostac Co., Ltd. &copy; 2026 — All Rights Reserved.
+          </p>
+          <Link href="/contact">
+            <Button
+              size="sm"
+              className="rounded-full bg-accent hover:bg-accent/90 text-white text-xs h-8 px-4 font-semibold"
+            >
+              {t("nav.cta") as string} <ArrowRight className="ml-1 h-3.5 w-3.5" />
+            </Button>
+          </Link>
         </div>
       </div>
     </footer>
