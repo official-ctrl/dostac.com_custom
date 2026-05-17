@@ -6,12 +6,6 @@ import {
   Globe,
   ChevronDown,
   ArrowRight,
-  MessageSquareQuote,
-  History,
-  Globe2,
-  MapPin,
-  Settings2,
-  Award,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useT, useLang, type Lang } from "./i18n";
@@ -19,26 +13,23 @@ import { useT, useLang, type Lang } from "./i18n";
 type AboutSubItem = {
   hash: string;
   key: "greeting" | "history" | "worldwide" | "directions";
-  icon: typeof MessageSquareQuote;
-  desc: string;
 };
 
 const ABOUT_SUB: AboutSubItem[] = [
-  { hash: "greeting", key: "greeting", icon: MessageSquareQuote, desc: "" },
-  { hash: "history", key: "history", icon: History, desc: "" },
-  { hash: "worldwide", key: "worldwide", icon: Globe2, desc: "" },
-  { hash: "directions", key: "directions", icon: MapPin, desc: "" },
+  { hash: "greeting", key: "greeting" },
+  { hash: "history", key: "history" },
+  { hash: "worldwide", key: "worldwide" },
+  { hash: "directions", key: "directions" },
 ];
 
 type ProcessSubItem = {
   hash: string;
   key: "oem" | "cert";
-  icon: typeof Settings2;
 };
 
 const PROCESS_SUB: ProcessSubItem[] = [
-  { hash: "oem", key: "oem", icon: Settings2 },
-  { hash: "cert", key: "cert", icon: Award },
+  { hash: "oem", key: "oem" },
+  { hash: "cert", key: "cert" },
 ];
 
 type NavKey = "about" | "production" | "product" | "notice" | "contact";
@@ -180,32 +171,19 @@ function AboutDropdown({ active }: { active: boolean }) {
           aria-label={t("nav.about") as string}
           className="absolute left-1/2 top-full -translate-x-1/2 pt-3 z-50"
         >
-          <div className="w-[520px] grid grid-cols-2 gap-2 p-4 rounded-xl border border-slate-200 bg-white shadow-xl">
-            {ABOUT_SUB.map((s) => {
-              const Icon = s.icon;
-              return (
-                <Link
-                  key={s.hash}
-                  href={`/about#${s.hash}`}
-                  role="menuitem"
-                  data-testid={`nav-about-${s.hash}`}
-                  className="flex items-start gap-3 p-3 rounded-lg hover:bg-slate-50 focus:bg-slate-100 focus:outline-none transition group"
-                  onClick={() => setOpen(false)}
-                >
-                  <div className="flex-shrink-0 w-9 h-9 rounded-md bg-accent/10 flex items-center justify-center text-accent group-hover:bg-accent group-hover:text-white transition">
-                    <Icon className="h-4 w-4" />
-                  </div>
-                  <div className="min-w-0">
-                    <div className="text-sm font-semibold text-primary">
-                      {t(`about.sections.${s.key}`) as string}
-                    </div>
-                    <div className="text-xs text-muted-foreground mt-0.5 line-clamp-2">
-                      {t(`about.sectionDesc.${s.key}`) as string}
-                    </div>
-                  </div>
-                </Link>
-              );
-            })}
+          <div className="w-56 flex flex-col py-2 px-1.5 rounded-xl border border-slate-200 bg-white shadow-xl">
+            {ABOUT_SUB.map((s) => (
+              <Link
+                key={s.hash}
+                href={`/about#${s.hash}`}
+                role="menuitem"
+                data-testid={`nav-about-${s.hash}`}
+                className="px-3 py-2 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-50 hover:text-primary transition focus:bg-slate-100 focus:outline-none"
+                onClick={() => setOpen(false)}
+              >
+                {t(`about.sections.${s.key}`) as string}
+              </Link>
+            ))}
           </div>
         </div>
       )}
@@ -281,32 +259,19 @@ function ProcessDropdown({ active }: { active: boolean }) {
           aria-label={t("nav.production") as string}
           className="absolute left-1/2 top-full -translate-x-1/2 pt-3 z-50"
         >
-          <div className="w-[420px] grid grid-cols-2 gap-2 p-4 rounded-xl border border-slate-200 bg-white shadow-xl">
-            {PROCESS_SUB.map((s) => {
-              const Icon = s.icon;
-              return (
-                <Link
-                  key={s.hash}
-                  href={`/production#${s.hash}`}
-                  role="menuitem"
-                  data-testid={`nav-process-${s.hash}`}
-                  className="flex items-start gap-3 p-3 rounded-lg hover:bg-slate-50 focus:bg-slate-100 focus:outline-none transition group"
-                  onClick={() => setOpen(false)}
-                >
-                  <div className="flex-shrink-0 w-9 h-9 rounded-md bg-accent/10 flex items-center justify-center text-accent group-hover:bg-accent group-hover:text-white transition">
-                    <Icon className="h-4 w-4" />
-                  </div>
-                  <div className="min-w-0">
-                    <div className="text-sm font-semibold text-primary">
-                      {t(`production.sections.${s.key}`) as string}
-                    </div>
-                    <div className="text-xs text-muted-foreground mt-0.5 line-clamp-2">
-                      {t(`production.sectionDesc.${s.key}`) as string}
-                    </div>
-                  </div>
-                </Link>
-              );
-            })}
+          <div className="w-52 flex flex-col py-2 px-1.5 rounded-xl border border-slate-200 bg-white shadow-xl">
+            {PROCESS_SUB.map((s) => (
+              <Link
+                key={s.hash}
+                href={`/production#${s.hash}`}
+                role="menuitem"
+                data-testid={`nav-process-${s.hash}`}
+                className="px-3 py-2 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-50 hover:text-primary transition focus:bg-slate-100 focus:outline-none"
+                onClick={() => setOpen(false)}
+              >
+                {t(`production.sections.${s.key}`) as string}
+              </Link>
+            ))}
           </div>
         </div>
       )}
@@ -347,8 +312,12 @@ function Header() {
   return (
     <header className="sticky top-0 z-50 bg-white/95 backdrop-blur border-b border-slate-200/70">
       <div className="container mx-auto px-6 h-20 flex items-center justify-between">
-        <Link href="/" className="flex items-center gap-2">
-          <span className="font-display text-2xl font-bold tracking-tight text-primary">dostac</span>
+        <Link href="/" className="flex items-center" aria-label="Dostac home">
+          <img
+            src={dostacImage("dostac-logo.png")}
+            alt="Dostac"
+            className="h-8 w-auto"
+          />
         </Link>
 
         <nav className="hidden lg:flex items-center gap-8">
@@ -423,21 +392,17 @@ function Header() {
                         >
                           {t("nav.production") as string}
                         </Link>
-                        {PROCESS_SUB.map((s) => {
-                          const Icon = s.icon;
-                          return (
-                            <Link
-                              key={s.hash}
-                              href={`/production#${s.hash}`}
-                              data-testid={`mobile-nav-process-${s.hash}`}
-                              className="flex items-center gap-2 px-3 py-1.5 rounded-md text-sm text-slate-600 hover:bg-slate-100"
-                              onClick={() => setMobileOpen(false)}
-                            >
-                              <Icon className="h-3.5 w-3.5 text-accent" />
-                              {t(`production.sections.${s.key}`) as string}
-                            </Link>
-                          );
-                        })}
+                        {PROCESS_SUB.map((s) => (
+                          <Link
+                            key={s.hash}
+                            href={`/production#${s.hash}`}
+                            data-testid={`mobile-nav-process-${s.hash}`}
+                            className="block px-3 py-1.5 rounded-md text-sm text-slate-600 hover:bg-slate-100"
+                            onClick={() => setMobileOpen(false)}
+                          >
+                            {t(`production.sections.${s.key}`) as string}
+                          </Link>
+                        ))}
                       </div>
                     )}
                   </div>
@@ -473,21 +438,17 @@ function Header() {
                         >
                           {t("nav.about") as string}
                         </Link>
-                        {ABOUT_SUB.map((s) => {
-                          const Icon = s.icon;
-                          return (
-                            <Link
-                              key={s.hash}
-                              href={`/about#${s.hash}`}
-                              data-testid={`mobile-nav-about-${s.hash}`}
-                              className="flex items-center gap-2 px-3 py-1.5 rounded-md text-sm text-slate-600 hover:bg-slate-100"
-                              onClick={() => setMobileOpen(false)}
-                            >
-                              <Icon className="h-3.5 w-3.5 text-accent" />
-                              {t(`about.sections.${s.key}`) as string}
-                            </Link>
-                          );
-                        })}
+                        {ABOUT_SUB.map((s) => (
+                          <Link
+                            key={s.hash}
+                            href={`/about#${s.hash}`}
+                            data-testid={`mobile-nav-about-${s.hash}`}
+                            className="block px-3 py-1.5 rounded-md text-sm text-slate-600 hover:bg-slate-100"
+                            onClick={() => setMobileOpen(false)}
+                          >
+                            {t(`about.sections.${s.key}`) as string}
+                          </Link>
+                        ))}
                       </div>
                     )}
                   </div>
@@ -518,18 +479,52 @@ function Header() {
 function Footer() {
   const { t } = useT();
   return (
-    <footer className="bg-slate-900 text-slate-200">
-      <div className="container mx-auto px-6 py-8 flex flex-col md:flex-row items-center justify-between gap-4">
-        <div className="text-xs text-slate-400">{t("footer.copyright") as string}</div>
-        <Link href="/contact">
-          <Button
-            size="sm"
-            className="rounded-sm bg-accent hover:bg-accent/90 text-white h-9 px-5 text-sm font-medium"
-            data-testid="footer-contact-cta"
-          >
-            {t("footer.contact") as string} <ArrowRight className="ml-1.5 h-3.5 w-3.5" />
-          </Button>
-        </Link>
+    <footer className="bg-slate-900 text-white">
+      <div className="container mx-auto px-6 pt-14 pb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-12 pb-12 border-b border-slate-800">
+          <div>
+            <span className="inline-block font-display text-2xl font-bold tracking-tight text-white mb-6">
+              dostac
+            </span>
+            <p className="font-semibold text-white/90 mb-3 text-base leading-snug">
+              Connecting Korean Innovation to the Global Market
+            </p>
+            <p className="text-slate-400 text-sm leading-relaxed max-w-sm">
+              Dostac is committed to building reliable global partnerships through Korean manufacturing, K-beauty expertise, and international commerce solutions.
+            </p>
+          </div>
+          <div className="flex flex-col md:items-end justify-between gap-8">
+            <div className="space-y-2.5 text-sm md:text-right">
+              <p className="text-slate-400">
+                <span className="text-white/80 font-medium mr-2">Email</span>
+                info@dostac.com
+              </p>
+              <p className="text-slate-400">
+                <span className="text-white/80 font-medium mr-2">Tel</span>
+                070-4334-7333
+              </p>
+              <p className="text-slate-400">
+                <span className="text-white/80 font-medium mr-2">Fax</span>
+                0504-488-4345
+              </p>
+              <p className="text-slate-400">
+                <span className="text-white/80 font-medium mr-2">Hours</span>
+                Mon–Fri&nbsp;09:00–18:00 KST
+              </p>
+            </div>
+            <Link href="/contact">
+              <Button
+                className="rounded-full bg-accent hover:bg-accent/90 text-white h-10 px-6 text-sm font-medium"
+                data-testid="footer-contact-cta"
+              >
+                {t("footer.contact") as string} <ArrowRight className="ml-1.5 h-4 w-4" />
+              </Button>
+            </Link>
+          </div>
+        </div>
+        <div className="pt-6 text-center">
+          <p className="text-slate-500 text-xs">{t("footer.copyright") as string}</p>
+        </div>
       </div>
     </footer>
   );

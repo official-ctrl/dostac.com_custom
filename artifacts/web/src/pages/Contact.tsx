@@ -18,23 +18,23 @@ import { useCreateContactInquiry } from "@workspace/api-client-react";
 const SUCCESS_MSG: Record<string, { title: string; body: string }> = {
   ko: {
     title: "문의가 정상적으로 접수되었습니다.",
-    body: "영업일 기준 1~2일 내에 admin@dostac.co.kr 에서 회신드리겠습니다. 감사합니다.",
+    body: "영업일 기준 1~2일 내에 info@dostac.com 에서 회신드리겠습니다. 감사합니다.",
   },
   en: {
     title: "Your inquiry has been received.",
-    body: "Our team will reply from admin@dostac.co.kr within 1–2 business days. Thank you.",
+    body: "Our team will reply from info@dostac.com within 1–2 business days. Thank you.",
   },
   ja: {
     title: "お問い合わせを受け付けました。",
-    body: "admin@dostac.co.kr より1〜2営業日以内にご返信いたします。ありがとうございました。",
+    body: "info@dostac.com より1〜2営業日以内にご返信いたします。ありがとうございました。",
   },
   zh: {
     title: "我们已收到您的咨询。",
-    body: "我们将在 1–2 个工作日内通过 admin@dostac.co.kr 与您联系。感谢您的来信。",
+    body: "我们将在 1–2 个工作日内通过 info@dostac.com 与您联系。感谢您的来信。",
   },
   vi: {
     title: "Yêu cầu của bạn đã được tiếp nhận.",
-    body: "Chúng tôi sẽ phản hồi từ admin@dostac.co.kr trong vòng 1–2 ngày làm việc. Cảm ơn bạn.",
+    body: "Chúng tôi sẽ phản hồi từ info@dostac.com trong vòng 1–2 ngày làm việc. Cảm ơn bạn.",
   },
 };
 
@@ -272,14 +272,15 @@ function ContactContent() {
                     <Mail className="w-6 h-6 text-accent shrink-0" />
                     <div>
                       <h4 className="font-semibold mb-1">{t("contact.sales") as string}</h4>
-                      <p className="text-white/80 text-sm">admin@dostac.co.kr</p>
+                      <p className="text-white/80 text-sm">info@dostac.com</p>
                     </div>
                   </div>
                   <div className="flex items-start gap-4">
                     <Phone className="w-6 h-6 text-accent shrink-0" />
                     <div>
                       <h4 className="font-semibold mb-1">{t("contact.phone") as string}</h4>
-                      <p className="text-white/80 text-sm">+82-2-1234-5678</p>
+                      <p className="text-white/80 text-sm">070-4334-7333</p>
+                      <p className="text-white/60 text-xs mt-0.5">{t("contact.faxLabel") as string}: 0504-488-4345</p>
                     </div>
                   </div>
                   <div className="flex items-start gap-4">

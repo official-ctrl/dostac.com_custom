@@ -2,13 +2,13 @@ import React, { useEffect, useMemo, useState } from "react";
 import { Layout, dostacImage } from "@/components/dostac/Layout";
 import { useT, useLang, type Lang } from "@/components/dostac/i18n";
 import { useGetPublicAbout } from "@workspace/api-client-react";
-import { Globe2, MapPin, History, MessageSquareQuote } from "lucide-react";
+import { MapPin } from "lucide-react";
 
 const SECTIONS = [
-  { id: "greeting", icon: MessageSquareQuote },
-  { id: "history", icon: History },
-  { id: "worldwide", icon: Globe2 },
-  { id: "directions", icon: MapPin },
+  { id: "greeting" },
+  { id: "history" },
+  { id: "worldwide" },
+  { id: "directions" },
 ] as const;
 
 type SectionId = (typeof SECTIONS)[number]["id"];
@@ -67,25 +67,21 @@ function SectionNav({ active }: { active: SectionId }) {
     >
       <div className="container mx-auto px-6">
         <ul className="flex items-center gap-1 overflow-x-auto py-2 scrollbar-hide">
-          {SECTIONS.map((s) => {
-            const Icon = s.icon;
-            return (
-              <li key={s.id} className="flex-shrink-0">
-                <a
-                  href={`#${s.id}`}
-                  data-testid={`about-tab-${s.id}`}
-                  className={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold transition ${
-                    active === s.id
-                      ? "bg-primary text-white"
-                      : "text-slate-600 hover:bg-slate-100 hover:text-primary"
-                  }`}
-                >
-                  <Icon className="h-4 w-4" />
-                  {t(`about.sections.${s.id}`) as string}
-                </a>
-              </li>
-            );
-          })}
+          {SECTIONS.map((s) => (
+            <li key={s.id} className="flex-shrink-0">
+              <a
+                href={`#${s.id}`}
+                data-testid={`about-tab-${s.id}`}
+                className={`inline-flex items-center px-4 py-2 rounded-full text-sm font-medium transition ${
+                  active === s.id
+                    ? "bg-primary text-white"
+                    : "text-slate-600 hover:bg-slate-100 hover:text-primary"
+                }`}
+              >
+                {t(`about.sections.${s.id}`) as string}
+              </a>
+            </li>
+          ))}
         </ul>
       </div>
     </nav>
