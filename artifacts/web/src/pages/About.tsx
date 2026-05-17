@@ -536,7 +536,7 @@ function AboutContent() {
                 {
                   icon: Mail,
                   label: t("about.directionsEmailLabel") as string,
-                  value: "info@dostac.com",
+                  value: "official@dostac.com",
                 },
                 {
                   icon: Clock,
