@@ -1,0 +1,185 @@
+Create a premium “Production” section for the Dostac website.
+This section must visually match and stay fully consistent with the existing:
+“About Dostac”
+“Our Story”
+“Company Philosophy”
+sections.
+The design language, spacing, typography, animations, card style, and overall mood must remain unified across the entire website.
+The “Production” section represents:
+Korean manufacturing capability
+OEM / ODM expertise
+export readiness
+quality assurance
+global certification standards
+The section should feel:
+premium
+trustworthy
+clean
+globally scalable
+manufacturing-focused
+export-oriented
+professional Korean B2B beauty brand
+Avoid:
+generic ecommerce layouts
+crowded UI
+cheap factory visuals
+excessive colors
+outdated corporate style
+Use:
+clean white background
+soft gray accent blocks
+premium modern typography
+subtle fade-in animations
+responsive mobile-first design
+elegant spacing
+IMPORTANT NAVIGATION REQUIREMENT
+The Production section contains two submenu tabs:
+OEM / ODM
+Global Certifications
+The submenu links MUST function correctly with smooth scrolling navigation.
+Implement:
+active tab highlighting
+smooth scroll animation
+correct anchor navigation
+responsive mobile submenu
+sticky submenu on scroll
+Use proper anchor IDs:
+#oem-odm
+#global-certifications
+When users click each submenu:
+smoothly scroll to the correct section
+activate corresponding menu highlight
+maintain section alignment correctly
+Ensure:
+no broken links
+no overlapping sections
+no scroll offset issues
+mobile navigation works properly
+MAIN SECTION HEADER
+Small Label: PRODUCTION
+Main Heading: Advanced Korean Manufacturing & Global Export Solutions
+Sub Text:
+“Dostac supports global beauty brands through reliable Korean OEM/ODM manufacturing partnerships, export-ready production systems, and international certification support.”
+Add subtle premium animation on text appearance.
+SUBMENU DESIGN
+Create a premium horizontal submenu below the main heading.
+Menu items:
+OEM / ODM
+Global Certifications
+Style:
+minimalist premium tabs
+soft hover effect
+active underline animation
+modern Korean corporate aesthetic
+Desktop: horizontal layout
+Mobile: scrollable horizontal tabs
+SECTION 1 — OEM / ODM
+Anchor ID: #oem-odm
+Create a premium content section matching the “Our Story” style.
+Use a two-column layout.
+LEFT SIDE: content
+RIGHT SIDE: premium Korean cosmetics manufacturing visual
+Suggested visual mood:
+clean Korean laboratory
+cosmetic production line
+packaging process
+modern skincare manufacturing
+white sterile environment
+luxury cosmetic atmosphere
+OEM / ODM CONTENT
+Small Label: OEM / ODM
+Main Heading: Flexible Manufacturing Solutions for Global Beauty Brands
+Main Text:
+“Dostac collaborates with trusted Korean manufacturers to provide OEM and ODM solutions for global beauty brands, distributors, and online sellers.
+We support product sourcing, formulation development, packaging customization, and export-ready production for international markets.”
+OEM FEATURE CARDS
+Create premium icon cards for:
+Custom Product Development
+Private Label Solutions
+Packaging Customization
+MOQ Consultation
+Export Documentation Support
+Global Distribution Support
+Style:
+rounded cards
+subtle shadow
+soft hover effect
+luxury minimal design
+PROCESS FLOW
+Create a premium horizontal process timeline:
+Inquiry
+Product Consultation
+Sample Development
+Production
+Quality Inspection
+Export & Delivery
+Style:
+clean infographic design
+premium icons
+minimal modern line connectors
+subtle motion animation
+SECTION 2 — GLOBAL CERTIFICATIONS
+Anchor ID: #global-certifications
+Create another premium section matching the OEM section style.
+Use:
+premium corporate layout
+certification trust visuals
+export-focused atmosphere
+luxury clean spacing
+GLOBAL CERTIFICATIONS CONTENT
+Small Label: GLOBAL CERTIFICATIONS
+Main Heading: International Standards & Export Compliance Support
+Main Text:
+“Dostac works with Korean manufacturing partners that support international quality standards and export compliance requirements for global markets.
+We understand the importance of certifications, documentation, and regulatory support in international beauty distribution.”
+CERTIFICATION FEATURE BLOCKS
+Create premium certification cards for:
+GMP Manufacturing
+ISO Standards
+CPSR Support
+FDA Compliance Support
+Export Documentation
+International Quality Control
+Style:
+elegant trust-focused cards
+minimal luxury aesthetic
+clean iconography
+premium spacing
+GLOBAL CERTIFICATIONS IMAGE PROMPT
+Create a premium hero image for the “Global Certifications” section.
+IMAGE PROMPT:
+“Modern Korean cosmetics laboratory with premium white interior, scientists reviewing certification documents, luxury skincare packaging on clean production tables, export compliance atmosphere, soft natural lighting, ISO and GMP certification visual elements, minimal corporate aesthetic, high-end Korean beauty manufacturing mood, futuristic clean laboratory environment, global trade professionalism, elegant white and silver tones, premium B2B export brand style”
+Image style:
+ultra realistic
+premium corporate photography
+luxury Korean beauty manufacturing
+clean white minimalism
+export business atmosphere
+Avoid:
+dark factory mood
+industrial heavy machinery
+cluttered background
+generic stock photo appearance
+MOBILE RESPONSIVE REQUIREMENTS
+On mobile:
+submenu becomes horizontally scrollable
+sections stack vertically
+images resize proportionally
+process timeline becomes vertical
+cards remain readable
+smooth scrolling preserved
+Ensure:
+fast loading
+clean mobile spacing
+premium responsive experience
+FINAL BRAND FEELING
+The entire Production section should visually communicate:
+“Trusted Korean manufacturing partner for global beauty brands with export-ready systems and international quality standards.”
+The final result should feel:
+premium
+reliable
+globally scalable
+export-focused
+sophisticated
+investor-ready
+high-end Korean B2B beauty company

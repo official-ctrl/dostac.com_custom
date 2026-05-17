@@ -28,8 +28,8 @@ type ProcessSubItem = {
 };
 
 const PROCESS_SUB: ProcessSubItem[] = [
-  { hash: "oem", key: "oem" },
-  { hash: "cert", key: "cert" },
+  { hash: "oem-odm", key: "oem" },
+  { hash: "global-certifications", key: "cert" },
 ];
 
 type NavKey = "about" | "production" | "product" | "notice" | "contact";
