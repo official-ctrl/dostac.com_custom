@@ -1,0 +1,137 @@
+REPLIT PROMPT — REDESIGN DIRECTIONS SECTION FOR DOSTAC WEBSITE
+Redesign the existing “Directions” section of the Dostac website so it fully matches the visual identity and UX style of the entire website.
+The current Directions section does NOT match the premium Korean B2B aesthetic used in:
+About Dostac
+Our Story
+Company Philosophy
+Production
+Products
+Notice
+The new Directions section must feel:
+premium
+elegant
+minimal
+globally scalable
+export-focused
+trustworthy
+modern Korean corporate aesthetic
+Avoid:
+generic Google Maps embed styling
+cheap contact-page appearance
+outdated office-location layouts
+cluttered address blocks
+dark corporate visuals
+Use:
+clean white background
+soft gray section accents
+elegant typography
+premium spacing
+subtle fade-up animation
+responsive mobile-first layout
+SECTION PURPOSE
+The Directions section should communicate:
+professional business presence
+reliability
+accessibility
+global business readiness
+clean corporate identity
+The section should feel like: “A premium global sourcing company office presentation”
+NOT: “A local small business contact page”
+SECTION HEADER
+Small Label: DIRECTIONS
+Main Heading: Visit Dostac
+Sub Text:
+“Dostac supports global beauty brands and international business partners through reliable communication and professional sourcing solutions.”
+Add subtle fade-in animation.
+SECTION LAYOUT
+Create a modern two-column layout.
+LEFT SIDE:
+address information
+contact information
+business hours
+transportation information
+inquiry CTA
+RIGHT SIDE:
+premium styled map container
+elegant location visualization
+Use:
+balanced whitespace
+clean alignment
+premium modern spacing
+CONTACT INFORMATION BLOCK
+Create premium info cards.
+Include:
+Office Location
+Seoul, Korea
+Email
+info@dostac.com
+Business Hours
+Monday – Friday 09:00 – 18:00 (KST)
+Global Inquiry
+OEM / ODM / Export Consultation Available
+Style:
+elegant icon cards
+minimal borders
+premium typography
+subtle hover effect
+MAP DESIGN REQUIREMENTS
+The map area should NOT look like a default embedded map.
+Redesign the map container with:
+rounded corners
+premium frame styling
+soft shadow
+minimal UI overlay
+If using Google Maps:
+visually integrate with premium website aesthetic
+avoid harsh default styling
+Optional:
+use custom monochrome map styling
+clean white & gray palette
+luxury minimal appearance
+CTA AREA
+Add premium CTA below contact information.
+Button: “Contact Us”
+Secondary Button: “OEM Inquiry”
+Style:
+modern minimal buttons
+soft hover animation
+Korean luxury corporate aesthetic
+OPTIONAL BUSINESS IMAGE
+Add an optional premium visual:
+Korean business workspace
+modern office environment
+clean export business atmosphere
+global sourcing mood
+Image prompt:
+“Modern Korean beauty export office, minimal white interior, elegant corporate workspace, premium Korean business atmosphere, clean luxury office aesthetic, natural lighting, global sourcing company mood”
+MOBILE RESPONSIVE REQUIREMENTS
+On mobile:
+stack layout vertically
+map below contact info
+responsive spacing
+maintain premium typography
+preserve clean luxury feeling
+Ensure:
+smooth scrolling
+fast loading
+elegant mobile UX
+REMOVE OLD DESIGN ELEMENTS
+Delete:
+outdated map frames
+generic location icons
+dark contact sections
+excessive borders
+crowded text layout
+default Google Maps appearance
+small-business style address formatting
+FINAL BRAND FEELING
+The redesigned Directions section should visually communicate:
+“Premium Korean beauty sourcing company with a trustworthy global business presence.”
+The final result should feel:
+sophisticated
+investor-ready
+export-focused
+modern
+elegant
+globally scalable
+high-end Korean B2B brand aesthetic
