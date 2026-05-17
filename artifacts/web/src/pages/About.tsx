@@ -1,8 +1,60 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { Layout, dostacImage } from "@/components/dostac/Layout";
 import { useT, useLang, type Lang } from "@/components/dostac/i18n";
 import { useGetPublicAbout } from "@workspace/api-client-react";
-import { MapPin } from "lucide-react";
+import {
+  MapPin,
+  ShoppingBag,
+  Store,
+  Globe,
+  Factory,
+  BarChart2,
+  Zap,
+} from "lucide-react";
+
+const HISTORY_AREA_ICONS = [ShoppingBag, Store, Globe, Factory, BarChart2, Zap];
+
+function useStaggerReveal() {
+  const ref = useRef<HTMLDivElement>(null);
+  const [visible, setVisible] = useState(false);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setVisible(true);
+          obs.disconnect();
+        }
+      },
+      { threshold: 0.15 },
+    );
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, []);
+  return { ref, visible };
+}
+
+function useFadeUp() {
+  const ref = useRef<HTMLDivElement>(null);
+  const [visible, setVisible] = useState(false);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setVisible(true);
+          obs.disconnect();
+        }
+      },
+      { threshold: 0.1 },
+    );
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, []);
+  return { ref, visible };
+}
 
 const SECTIONS = [
   { id: "greeting" },
@@ -88,6 +140,108 @@ function SectionNav({ active }: { active: SectionId }) {
   );
 }
 
+function HistorySection() {
+  const { t } = useT();
+  const headerFade = useFadeUp();
+  const imgFade = useFadeUp();
+  const cards = useStaggerReveal();
+  const outroFade = useFadeUp();
+  const areas = t("about.historyAreas") as string[];
+
+  return (
+    <section id="history" className="scroll-mt-32 py-20 bg-white">
+      <div className="container mx-auto px-6 max-w-7xl">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-start">
+          {/* Right column image — rendered first in DOM for mobile (order-1 on small) */}
+          <div
+            ref={imgFade.ref}
+            className={`order-1 lg:order-2 transition-all duration-700 ease-out ${
+              imgFade.visible
+                ? "opacity-100 translate-y-0"
+                : "opacity-0 translate-y-8"
+            }`}
+          >
+            <div className="rounded-2xl overflow-hidden shadow-md aspect-[4/5] lg:aspect-auto lg:h-[600px]">
+              <img
+                src={dostacImage("hero-about.webp")}
+                alt={t("about.historyHeading") as string}
+                className="w-full h-full object-cover"
+              />
+            </div>
+          </div>
+
+          {/* Left column text */}
+          <div className="order-2 lg:order-1">
+            <div
+              ref={headerFade.ref}
+              className={`transition-all duration-700 ease-out ${
+                headerFade.visible
+                  ? "opacity-100 translate-y-0"
+                  : "opacity-0 translate-y-8"
+              }`}
+            >
+              <div className="text-xs font-semibold uppercase tracking-[0.25em] text-accent mb-3">
+                OUR STORY
+              </div>
+              <h2 className="font-display text-3xl md:text-4xl font-bold text-primary mb-6 leading-tight">
+                {t("about.historyHeading") as string}
+              </h2>
+              <p className="text-muted-foreground leading-relaxed mb-8 whitespace-pre-line">
+                {t("about.historyIntro") as string}
+              </p>
+            </div>
+
+            {/* Icon cards */}
+            <div
+              ref={cards.ref}
+              className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-8"
+            >
+              {areas.map((area, i) => {
+                const Icon = HISTORY_AREA_ICONS[i % HISTORY_AREA_ICONS.length];
+                return (
+                  <div
+                    key={i}
+                    className={`bg-slate-50 rounded-xl border border-slate-200 p-4 flex gap-3 items-start
+                      hover:shadow-md hover:border-accent/40 hover:-translate-y-0.5
+                      transition-all duration-300 ease-out
+                      ${cards.visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-5"}`}
+                    style={{
+                      transitionDelay: cards.visible ? `${i * 80}ms` : "0ms",
+                    }}
+                  >
+                    <div className="text-accent mt-0.5 flex-shrink-0 bg-accent/10 rounded-lg p-2">
+                      <Icon className="h-4 w-4" />
+                    </div>
+                    <p className="text-sm font-medium text-slate-700 leading-snug self-center">
+                      {area}
+                    </p>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Outro paragraph */}
+            <div
+              ref={outroFade.ref}
+              className={`transition-all duration-700 ease-out ${
+                outroFade.visible
+                  ? "opacity-100 translate-y-0"
+                  : "opacity-0 translate-y-4"
+              }`}
+            >
+              <div className="bg-slate-50 border-l-4 border-accent rounded-r-xl px-5 py-4">
+                <p className="text-sm text-slate-600 leading-relaxed whitespace-pre-line">
+                  {t("about.historyOutro") as string}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 function AboutContent() {
   const { t } = useT();
   const { lang } = useLang();
@@ -161,37 +315,7 @@ function AboutContent() {
       </section>
 
       {/* 2. HISTORY */}
-      <section id="history" className="scroll-mt-32 py-20 bg-primary text-white">
-        <div className="container mx-auto px-6 max-w-4xl">
-          <div className="text-xs font-semibold uppercase tracking-[0.25em] text-accent mb-2 text-center">
-            02 — {t("about.sections.history") as string}
-          </div>
-          <h2 className="font-display text-3xl md:text-4xl font-bold mb-6 text-center">
-            {t("about.historyHeading") as string}
-          </h2>
-          <p className="text-white/80 text-center leading-relaxed mb-10 max-w-2xl mx-auto whitespace-pre-line">
-            {t("about.historyIntro") as string}
-          </p>
-          <div className="space-y-4 mb-12">
-            {(t("about.historyAreas") as string[]).map((area, i) => (
-              <div
-                key={i}
-                className="grid grid-cols-1 md:grid-cols-[110px_1fr] gap-4 md:gap-8 items-start"
-              >
-                <div className="font-display text-2xl font-bold text-accent">
-                  {String(i + 1).padStart(2, "0")}
-                </div>
-                <div className="bg-white/5 backdrop-blur rounded-lg p-5 border border-white/10">
-                  <p className="text-base text-white/90 leading-relaxed">{area}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-          <p className="text-white/80 text-center leading-relaxed max-w-2xl mx-auto whitespace-pre-line">
-            {t("about.historyOutro") as string}
-          </p>
-        </div>
-      </section>
+      <HistorySection />
 
       {/* 3. WORLDWIDE */}
       <section id="worldwide" className="scroll-mt-32 py-20 bg-slate-50">

@@ -118,8 +118,8 @@ const ko: Dict = {
       { title: "품질", desc: "안전성, 효능, 글로벌 컴플라이언스에서 어떠한 타협도 없이 최종 소비자의 절대 만족을 보장합니다." },
       { title: "혁신", desc: "새로운 처방, 형태, 네트워크 시너지를 끊임없이 탐구하여 파트너가 시장 트렌드를 앞서가도록 지원합니다." },
     ],
-    historyHeading: "우리의 이야기",
-    historyIntro: "Dostac은 화장품 유통, 온라인 커머스, 글로벌 소싱 분야에서의 실제 경험을 바탕으로 만들어진 회사입니다.\n\n20여 년간 뷰티 및 이커머스 산업의 다양한 영역에서 활동해 왔습니다:",
+    historyHeading: "뷰티와 글로벌 비즈니스에서 쌓은 실전 경험",
+    historyIntro: "Dostac은 화장품 유통, 온라인 커머스, 글로벌 소싱 분야에서의 실제 경험을 바탕으로 만들어진 회사입니다.\n\n20여 년간 뷰티 및 이커머스 산업의 다양한 영역에서 직접 활동해 왔습니다:",
     historyAreas: [
       "화장품 소매 유통",
       "온라인 쇼핑몰 운영",
@@ -385,7 +385,7 @@ const en: Dict = {
       { title: "QUALITY", desc: "Maintaining zero compromises on safety, efficacy, and global compliance, ensuring absolute satisfaction for the end consumer." },
       { title: "INNOVATION", desc: "Continuously exploring new formulations, formats, and network synergies to keep our partners ahead of market trends." },
     ],
-    historyHeading: "Our Story",
+    historyHeading: "Built From Real Experience in Beauty & Global Commerce",
     historyIntro: "Dostac was built from years of real-world experience in cosmetics distribution, online commerce, and global sourcing.\n\nFor nearly two decades, we have worked across multiple areas of the beauty and e-commerce industry:",
     historyAreas: [
       "Cosmetics retail distribution",
@@ -650,7 +650,7 @@ const ja: Dict = {
       { title: "品質", desc: "安全性、有効性、グローバルコンプライアンスにおいて妥協せず、最終消費者の絶対的な満足を保証します。" },
       { title: "革新", desc: "新たな処方、形態、ネットワークシナジーを継続的に探求し、パートナーが市場トレンドを先取りできるよう支援します。" },
     ],
-    historyHeading: "私たちのストーリー",
+    historyHeading: "ビューティーとグローバルビジネスで培った実践的経験",
     historyIntro: "Dostacは、化粧品流通・オンラインコマース・グローバルソーシングの豊富な実務経験から生まれた会社です。\n\n約20年間、ビューティーとeコマース業界の多様な領域で活動してきました：",
     historyAreas: [
       "化粧品小売流通",
@@ -915,7 +915,7 @@ const zh: Dict = {
       { title: "品质", desc: "在安全性、有效性与全球合规上不做妥协,确保终端消费者的绝对满意。" },
       { title: "创新", desc: "持续探索新配方、新形态与网络协同,助力合作伙伴引领市场趋势。" },
     ],
-    historyHeading: "我们的故事",
+    historyHeading: "源自美妆与全球商贸的真实经验",
     historyIntro: "Dostac是从化妆品分销、在线电商和全球采购的多年实战经验中诞生的公司。\n\n近二十年来，我们在美妆和电商行业的多个领域深耕：",
     historyAreas: [
       "化妆品零售分销",
@@ -1180,7 +1180,7 @@ const vi: Dict = {
       { title: "CHẤT LƯỢNG", desc: "Không khoan nhượng về an toàn, hiệu quả và tuân thủ toàn cầu, đảm bảo sự hài lòng tuyệt đối cho người tiêu dùng cuối." },
       { title: "ĐỔI MỚI", desc: "Liên tục khám phá các công thức, định dạng mới và sự cộng hưởng mạng lưới để giúp đối tác đi trước xu hướng thị trường." },
     ],
-    historyHeading: "Câu chuyện của chúng tôi",
+    historyHeading: "Được Xây Dựng Từ Kinh Nghiệm Thực Tiễn Trong Làm Đẹp & Thương Mại Toàn Cầu",
     historyIntro: "Dostac được xây dựng từ nhiều năm kinh nghiệm thực tiễn trong phân phối mỹ phẩm, thương mại điện tử và tìm nguồn cung ứng toàn cầu.\n\nTrong gần hai thập kỷ, chúng tôi đã hoạt động trong nhiều lĩnh vực của ngành làm đẹp và thương mại điện tử:",
     historyAreas: [
       "Phân phối bán lẻ mỹ phẩm",
