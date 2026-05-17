@@ -1,0 +1,109 @@
+Create a premium “Our Story” section for a global K-beauty OEM/ODM and sourcing company called “Dostac”.
+The section should feel:
+trustworthy
+modern
+premium
+export-oriented
+globally scalable
+elegant but corporate
+Target audience:
+global beauty buyers
+OEM / ODM clients
+private label brands
+international distributors
+e-commerce sellers
+The design style should combine:
+Korean luxury beauty branding
+modern B2B corporate design
+minimal premium layout
+Apple-style whitespace
+smooth scrolling animation
+Use:
+clean white background
+soft gray accent sections
+modern typography
+subtle fade-in animation
+responsive mobile-first design
+Avoid:
+cluttered layout
+generic startup feeling
+cheap ecommerce design
+colorful gradients
+heavy shadows
+SECTION STRUCTURE
+Create a two-column premium layout.
+LEFT SIDE:
+elegant typography content
+section label
+heading
+paragraph text
+bullet point expertise list
+RIGHT SIDE:
+premium Korean beauty related image OR
+abstract global commerce visual OR
+clean business workspace image OR
+cosmetic product + export atmosphere visual
+Image mood:
+modern
+clean
+sophisticated
+global beauty business feeling
+SECTION CONTENT
+Small Label: OUR STORY
+Main Heading: Built From Real Experience in Beauty & Global Commerce
+Main Text:
+“Dostac was built from years of real-world experience in cosmetics distribution, online commerce, and global sourcing.
+For nearly two decades, we have worked across multiple areas of the beauty and e-commerce industry.”
+Create elegant premium bullet cards for:
+Cosmetics Retail Distribution
+Online Shopping Mall Operation
+Global Product Sourcing
+OEM / ODM Manufacturing Cooperation
+International Online Marketplaces
+Digital Marketing & E-Commerce Automation
+Below the cards, create another premium paragraph block:
+“Through hands-on experience in the rapidly changing K-beauty market, we learned that successful global brands require more than good products.
+Brand identity, pricing strategy, packaging, export capability, and digital content all play essential roles in global business growth.
+Dostac was created to connect Korean manufacturing quality with global market opportunities.”
+DESIGN DETAILS
+Typography:
+modern sans-serif
+premium corporate feel
+large bold heading
+readable spacing
+elegant hierarchy
+Animations:
+smooth fade-up entrance
+staggered card appearance
+subtle hover effects
+Cards:
+rounded corners
+soft border
+minimal luxury style
+icon for each expertise item
+Spacing:
+large premium whitespace
+balanced section proportions
+visually calm composition
+MOBILE DESIGN
+On mobile:
+stack layout vertically
+image on top
+text below
+responsive cards
+clean spacing
+Ensure:
+fast loading
+modern responsive UI
+mobile-first optimization
+BRAND FEELING
+The section should visually communicate:
+“Experienced Korean beauty export partner with real industry knowledge and global business understanding.”
+The final result should feel:
+premium
+trustworthy
+experienced
+international
+scalable
+investor-ready
+export-focused
