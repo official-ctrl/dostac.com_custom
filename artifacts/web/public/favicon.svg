@@ -1,10 +1,11 @@
 <svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
-  <!-- Background -->
+  <!-- Navy background -->
   <rect width="512" height="512" rx="110" fill="#0F172A"/>
-  <!-- Bold "D" lettermark — path-based, no font dependency, thick walls for small-size legibility -->
-  <path fill-rule="evenodd" fill="white"
-    d="M 108 94 H 258 C 438 94 438 418 258 418 H 108 Z
-       M 193 170 H 248 C 362 170 362 342 248 342 H 193 Z"/>
-  <!-- Orange brand accent dot — upper-right, visible even at 16px -->
-  <circle cx="396" cy="106" r="74" fill="#FF6A1A"/>
+  <!-- 3-block brand mark: top block + bottom-left + bottom-right -->
+  <!-- Top block -->
+  <rect x="108" y="68" width="190" height="190" rx="32" fill="#FF6A1A"/>
+  <!-- Bottom-left block -->
+  <rect x="64"  y="282" width="190" height="190" rx="32" fill="#FF6A1A"/>
+  <!-- Bottom-right block -->
+  <rect x="274" y="282" width="174" height="174" rx="32" fill="#FF6A1A"/>
 </svg>
