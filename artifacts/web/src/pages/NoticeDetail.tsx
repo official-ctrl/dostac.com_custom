@@ -134,6 +134,8 @@ function NoticeDetailContent() {
           <img
             src={article.thumbnailUrl ?? dostacImage("hero-home.webp")}
             alt={article.title}
+            fetchPriority="high"
+            loading="eager"
             className="w-full h-full object-cover object-center"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-primary/90 via-primary/50 to-primary/20" />

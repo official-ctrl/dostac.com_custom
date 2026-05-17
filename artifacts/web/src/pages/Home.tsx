@@ -470,6 +470,7 @@ function ProductShowcaseSection() {
                 <img
                   src={dostacImage(item.imageKey)}
                   alt={item.name}
+                  loading="lazy"
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                 />
               </div>
@@ -530,6 +531,7 @@ function FactoryQualitySection() {
               <img
                 src={dostacImage("hero-production.webp")}
                 alt="Factory"
+                loading="lazy"
                 className="w-full h-full object-cover"
               />
             </motion.div>

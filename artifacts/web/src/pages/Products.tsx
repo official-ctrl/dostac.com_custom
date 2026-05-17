@@ -85,6 +85,8 @@ function ProductsContent() {
           <img
             src={dostacImage("hero-products.webp")}
             alt=""
+            fetchPriority="high"
+            loading="eager"
             className="w-full h-full object-cover object-center"
           />
           <div className="absolute inset-0 bg-gradient-to-b from-primary/65 via-primary/55 to-primary/72" />
@@ -232,6 +234,7 @@ function ProductsContent() {
                       <img
                         src={product.imageUrl ?? fallbackImg}
                         alt={product.name}
+                        loading="lazy"
                         className="w-full aspect-[4/3] object-cover object-center"
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-primary/10 to-transparent" />

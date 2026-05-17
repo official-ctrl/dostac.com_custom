@@ -116,6 +116,8 @@ function NoticeContent() {
           <img
             src={dostacImage("hero-home.webp")}
             alt=""
+            fetchPriority="high"
+            loading="eager"
             className="w-full h-full object-cover object-center"
           />
           <div className="absolute inset-0 bg-gradient-to-b from-primary/65 via-primary/55 to-primary/70" />
@@ -213,6 +215,7 @@ function NoticeContent() {
                     featured.thumbnailUrl ?? dostacImage("hero-home.webp")
                   }
                   alt={featured.title}
+                  loading="lazy"
                   className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                 />
                 <span

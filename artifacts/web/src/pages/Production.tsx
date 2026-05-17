@@ -98,6 +98,8 @@ function ProductionContent() {
           <img
             src={data.oemImageUrl ?? dostacImage("hero-production.webp")}
             alt=""
+            fetchPriority="high"
+            loading="eager"
             className="w-full h-full object-cover object-center"
           />
           <div className="absolute inset-0 bg-gradient-to-b from-[#0F172A]/70 via-[#0F172A]/60 to-[#0F172A]/75" />
@@ -192,6 +194,7 @@ function ProductionContent() {
               <img
                 src={data.oemImageUrl ?? dostacImage("hero-production.webp")}
                 alt="Korean cosmetics manufacturing"
+                loading="lazy"
                 className="w-full aspect-[4/3] object-cover object-center"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-[#0F172A]/15 to-transparent" />
@@ -311,7 +314,7 @@ function ProductionContent() {
                 >
                   <div className="w-14 h-14 rounded-lg bg-slate-50 border border-slate-200 flex items-center justify-center mb-4 overflow-hidden">
                     {cert.imageUrl ? (
-                      <img src={cert.imageUrl} alt={cert.code} className="w-full h-full object-contain p-1" />
+                      <img src={cert.imageUrl} alt={cert.code} loading="lazy" className="w-full h-full object-contain p-1" />
                     ) : (
                       <BadgeCheck className="w-7 h-7 text-[#0F172A]" />
                     )}

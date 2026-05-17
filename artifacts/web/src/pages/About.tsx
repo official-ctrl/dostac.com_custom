@@ -222,6 +222,7 @@ function PhilosophySection({
               <img
                 src={dbImageUrl || dostacImage("hero-production.webp")}
                 alt={dbHeading || (t("about.philosophyHeading") as string)}
+                loading="lazy"
                 className="w-full h-full object-cover"
               />
             </div>
@@ -421,6 +422,7 @@ function HistorySection({
               <img
                 src={heroImg}
                 alt={t("about.historyHeading") as string}
+                loading="lazy"
                 className="w-full h-full object-cover"
               />
             </div>
@@ -537,6 +539,8 @@ function AboutContent() {
           <img
             src={dostacImage("hero-about.webp")}
             alt=""
+            fetchPriority="high"
+            loading="eager"
             className="w-full h-full object-cover"
           />
           <div className="absolute inset-0 bg-gradient-to-b from-[#0F172A]/70 via-[#0F172A]/60 to-[#0F172A]/75" />
@@ -585,6 +589,7 @@ function AboutContent() {
               <img
                 src={greetingImg}
                 alt=""
+                loading="lazy"
                 className="w-full h-full object-cover"
               />
             </div>

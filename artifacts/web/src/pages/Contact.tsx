@@ -116,6 +116,8 @@ function ContactContent() {
           <img
             src={dostacImage("hero-contact.webp")}
             alt=""
+            fetchPriority="high"
+            loading="eager"
             className="w-full h-full object-cover object-center"
           />
           <div className="absolute inset-0 bg-gradient-to-b from-primary/55 via-primary/45 to-primary/65" />
@@ -372,6 +374,7 @@ function ContactContent() {
                   src={dostacImage("hero-about.webp")}
                   className="w-full h-full object-cover opacity-50"
                   alt=""
+                  loading="lazy"
                 />
                 <div className="absolute inset-0 flex items-center justify-center flex-col text-[#0F172A]">
                   <div className="w-11 h-11 rounded-full bg-white/90 backdrop-blur flex items-center justify-center shadow-md mb-2">
