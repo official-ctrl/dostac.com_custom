@@ -1,0 +1,224 @@
+Create a modern AI-powered B2B OEM/ODM product management system for a Korean beauty and hygiene manufacturing company.
+
+The platform should focus on:
+
+* Simple product catalog management
+* AI-assisted product importing
+* OEM inquiry conversion
+* Request a Quote workflow
+
+The system is NOT a normal e-commerce store.
+It should function as a professional B2B OEM supplier catalog.
+
+---
+
+## MAIN PRODUCT CATEGORIES
+
+1. Cotton Pads
+
+   * Round Cotton Pad
+   * Square Cotton Pad
+
+2. Wet Wipes
+
+   * Multi-purpose Wipes
+   * Baby Wipes
+   * Bidet Wipes
+   * Biodegradable Wipes
+
+3. Feminine Wipes
+
+   * 10 Sheets
+   * 15 Sheets
+
+4. Cooling Towel
+
+5. Cleansing Tissue
+
+6. Deodorant Tissue
+
+7. Dry Wipes
+
+   * Cotton Dry Pad
+   * Cleansing Dry Pad
+
+8. Nose Strip
+
+9. Acne Patch
+
+   * Trouble Clear Patch
+   * Hydrocolloid Band
+
+---
+
+## PRODUCT IMPORT SYSTEM
+
+Admins will input ONE product detail page URL at a time.
+
+The system should:
+
+1. Analyze the product page
+2. Extract product information
+3. Generate a draft product
+4. Store images internally
+5. Allow admin editing
+6. Publish product
+
+Supported source websites:
+
+* Manufacturer websites
+* Alibaba
+* Amazon
+* OEM supplier pages
+* Brand websites
+
+---
+
+## IMPORTANT IMAGE RULE
+
+NEVER hotlink external manufacturer images.
+
+The system must:
+
+* Download all images immediately
+* Store images internally
+* Convert images to WEBP
+* Generate thumbnails
+* Optimize image sizes
+* Prevent dependency on external image URLs
+
+---
+
+## ONLY REQUIRED PRODUCT FIELDS
+
+Each product should only include:
+
+* Product name
+* Product images
+* Main category
+* Sub category
+* Features
+* Product descriptions
+* Material
+
+DO NOT require:
+
+* MOQ
+* Lead time
+* Certifications
+* Packaging details
+* Size
+* Ingredients
+* Sheet count
+* OEM specifications
+* Pricing
+
+Those details should be handled through:
+"Request a Quote"
+
+---
+
+## REQUEST A QUOTE SYSTEM
+
+Every product page must prominently include:
+
+* Request a Quote button
+* OEM Inquiry button
+
+Inquiry form fields:
+
+* Company name
+* Buyer name
+* Email
+* Country
+* WhatsApp
+* Product interest
+* Quantity
+* Customization request
+* Message
+
+The inquiry system should be the main conversion goal of the website.
+
+---
+
+## AI CONTENT GENERATION
+
+The AI should:
+
+* Rewrite descriptions into professional OEM/B2B English
+* Remove excessive branding
+* Create clean SEO-friendly product content
+* Generate concise product features
+* Detect category automatically
+
+---
+
+## ADMIN DASHBOARD
+
+Sidebar:
+
+* Dashboard
+* Products
+* Categories
+* Product Import
+* OEM Inquiries
+* Media Library
+* SEO Settings
+* Site Settings
+
+---
+
+## PRODUCT MANAGEMENT FEATURES
+
+* Draft products
+* Product editing
+* Rich text editor
+* Multi-image upload
+* Drag-and-drop image upload
+* Search/filter
+* Featured product toggle
+* Product status toggle
+
+---
+
+## DESIGN STYLE
+
+The design should feel:
+
+* Modern SaaS
+* Industrial OEM supplier
+* Premium Korean manufacturer
+* Minimal and clean
+* White background
+* Orange accent color
+* Responsive
+* Fast workflow
+
+Visual references:
+
+* Shopify Admin
+* Alibaba Supplier Center
+* Linear
+* Replit modern UI
+
+---
+
+## PRODUCT PAGE STYLE
+
+Each product page should focus on:
+
+* Strong product visuals
+* Clean product summary
+* Feature highlights
+* OEM inquiry conversion
+
+The page should NOT feel like a retail shopping mall.
+
+It should feel like:
+
+* OEM supplier catalog
+* B2B export product page
+* Korean manufacturer presentation
+
+The main CTA on every product page should be:
+"Request a Quote"
