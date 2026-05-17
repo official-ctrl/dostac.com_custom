@@ -166,30 +166,30 @@ function AboutContent() {
           <div className="text-xs font-semibold uppercase tracking-[0.25em] text-accent mb-2 text-center">
             02 — {t("about.sections.history") as string}
           </div>
-          <h2 className="font-display text-3xl md:text-4xl font-bold mb-4 text-center">
+          <h2 className="font-display text-3xl md:text-4xl font-bold mb-6 text-center">
             {t("about.historyHeading") as string}
           </h2>
-          <p className="text-white/80 text-center leading-relaxed mb-14 max-w-2xl mx-auto whitespace-pre-line">
-            {t("about.historyBody") as string}
+          <p className="text-white/80 text-center leading-relaxed mb-10 max-w-2xl mx-auto whitespace-pre-line">
+            {t("about.historyIntro") as string}
           </p>
-          <div className="space-y-6 relative">
-            {(data?.historyItems ?? []).map((h, i) => (
+          <div className="space-y-4 mb-12">
+            {(t("about.historyAreas") as string[]).map((area, i) => (
               <div
                 key={i}
-                data-testid={`about-history-${i}`}
                 className="grid grid-cols-1 md:grid-cols-[110px_1fr] gap-4 md:gap-8 items-start"
               >
                 <div className="font-display text-2xl font-bold text-accent">
-                  {h.year}
+                  {String(i + 1).padStart(2, "0")}
                 </div>
                 <div className="bg-white/5 backdrop-blur rounded-lg p-5 border border-white/10">
-                  <p className="text-base text-white/90 leading-relaxed">
-                    {pickItem(h, "text", lang)}
-                  </p>
+                  <p className="text-base text-white/90 leading-relaxed">{area}</p>
                 </div>
               </div>
             ))}
           </div>
+          <p className="text-white/80 text-center leading-relaxed max-w-2xl mx-auto whitespace-pre-line">
+            {t("about.historyOutro") as string}
+          </p>
         </div>
       </section>
 
