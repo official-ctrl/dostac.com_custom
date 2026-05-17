@@ -388,7 +388,7 @@ const en: Dict = {
     ],
     sections: { greeting: "About Us", history: "Our History", worldwide: "Worldwide", directions: "Directions" },
     sectionDesc: {
-      greeting: "A message from leadership and our vision.",
+      greeting: "Who we are and our vision.",
       history: "Three decades of milestones and growth.",
       worldwide: "Partnerships across 30 countries.",
       directions: "Headquarters & factory location and contact.",
