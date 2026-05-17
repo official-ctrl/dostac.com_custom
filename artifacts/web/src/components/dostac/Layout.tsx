@@ -156,8 +156,8 @@ function AboutDropdown({ active }: { active: boolean }) {
         aria-haspopup="menu"
         aria-expanded={open}
         aria-controls={menuId}
-        className={`inline-flex items-center gap-1 text-sm font-semibold transition-colors outline-none focus-visible:ring-2 focus-visible:ring-accent rounded-sm ${
-          active ? "text-accent" : "text-slate-700 hover:text-primary"
+        className={`inline-flex items-center gap-1 text-sm font-medium transition-colors outline-none focus-visible:ring-2 focus-visible:ring-accent rounded-sm ${
+          active ? "text-accent" : "text-slate-600 hover:text-primary"
         }`}
         data-testid="nav-about"
       >
@@ -244,8 +244,8 @@ function ProcessDropdown({ active }: { active: boolean }) {
         aria-haspopup="menu"
         aria-expanded={open}
         aria-controls={menuId}
-        className={`inline-flex items-center gap-1 text-sm font-semibold transition-colors outline-none focus-visible:ring-2 focus-visible:ring-accent rounded-sm ${
-          active ? "text-accent" : "text-slate-700 hover:text-primary"
+        className={`inline-flex items-center gap-1 text-sm font-medium transition-colors outline-none focus-visible:ring-2 focus-visible:ring-accent rounded-sm ${
+          active ? "text-accent" : "text-slate-600 hover:text-primary"
         }`}
         data-testid="nav-production"
       >
@@ -316,7 +316,7 @@ function Header() {
       <div className="container mx-auto px-6 h-20 flex items-center justify-between">
         <Link href="/" className="flex items-center" aria-label="Dostac home">
           <span
-            className="text-[22px] font-black tracking-[-0.04em] text-primary leading-none select-none"
+            className="text-[36px] font-black tracking-[-0.05em] text-[#0F172A] leading-none select-none"
             style={{ fontFamily: "'Outfit', sans-serif" }}
           >
             dostac
@@ -336,8 +336,8 @@ function Header() {
               <Link
                 key={item.href}
                 href={item.href}
-                className={`text-sm font-semibold transition-colors ${
-                  active ? "text-accent" : "text-slate-700 hover:text-primary"
+                className={`text-sm font-medium transition-colors ${
+                  active ? "text-accent" : "text-slate-600 hover:text-primary"
                 }`}
               >
                 {t(`nav.${item.key}`) as string}
@@ -349,7 +349,7 @@ function Header() {
         <div className="flex items-center gap-3">
           <LanguageSwitcher />
           <Link href="/contact" className="hidden md:inline-flex">
-            <Button className="rounded-sm bg-accent hover:bg-accent/90 text-white h-10 px-5 text-sm font-medium">
+            <Button className="rounded-full bg-accent hover:bg-accent/90 text-white h-10 px-6 text-sm font-medium shadow-sm">
               {t("nav.cta") as string} <ArrowRight className="ml-1.5 h-4 w-4" />
             </Button>
           </Link>
@@ -468,7 +468,7 @@ function Header() {
               );
             })}
             <Link href="/contact" className="mt-2">
-              <Button className="w-full rounded-sm bg-accent hover:bg-accent/90 text-white">
+              <Button className="w-full rounded-full bg-accent hover:bg-accent/90 text-white">
                 {t("nav.cta") as string}
               </Button>
             </Link>

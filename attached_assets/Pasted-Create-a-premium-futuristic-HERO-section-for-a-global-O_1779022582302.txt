@@ -1,0 +1,105 @@
+Create a premium futuristic HERO section for a global OEM/ODM manufacturing company website named “dostac”.
+
+STYLE DIRECTION:
+- modern premium industrial aesthetic
+- white-based luxury layout
+- cinematic dark atmosphere blended into clean white UI
+- inspired by Linear, Apple, Vercel, and high-end SaaS websites
+- minimal but highly refined
+- balanced between manufacturing trust and futuristic branding
+
+LAYOUT:
+- full screen HERO section
+- split atmosphere:
+  upper background subtly dark cinematic gradient
+  lower area smoothly blending into clean white
+- large centered typography
+- floating 3D cosmetic bottle and package objects
+- soft depth and spatial layering
+- elegant spacing and composition
+- responsive modern grid system
+
+VISUAL ELEMENTS:
+- floating premium skincare bottle
+- subtle particle motion in background
+- soft cinematic glow
+- very light volumetric lighting
+- orange accent lighting (#FF6A1A)
+- premium white surface reflections
+- subtle industrial metallic feeling
+- soft ambient shadows
+- luxury Korean beauty OEM mood
+
+TYPOGRAPHY:
+Headline:
+“K-Beauty OEM & Global Sourcing Partner”
+
+Subheadline:
+“Connecting Korean manufacturers with global buyers through OEM, ODM, private label, and international distribution solutions.”
+
+Typography style:
+- bold modern sans-serif
+- premium spacing
+- ultra clean
+- large scale headline
+- Apple / Linear inspired typography hierarchy
+
+BUTTONS:
+Primary Button:
+“OEM Inquiry”
+
+Secondary Button:
+“View Products”
+
+Button style:
+- modern rounded corners
+- subtle hover animation
+- orange accent glow
+- premium minimal style
+
+ANIMATION:
+- smooth floating animation on bottles
+- subtle mouse parallax interaction
+- cinematic slow movement
+- smooth scroll transition
+- elegant fade-in typography
+- soft motion only (not excessive)
+
+BACKGROUND:
+- white premium base
+- subtle dark cinematic gradients
+- light gray industrial texture
+- blurred abstract particles
+- premium lighting atmosphere
+- no clutter
+- clean luxury composition
+
+TECH STACK TARGET:
+- Next.js
+- Tailwind CSS
+- Framer Motion
+- React Three Fiber
+- Three.js
+- GSAP ScrollTrigger
+
+IMPORTANT:
+- avoid heavy or excessive 3D
+- optimized for fast loading
+- premium OEM manufacturing feeling
+- clean and trustworthy B2B image
+- futuristic but realistic
+- no gaming style
+- no excessive neon cyberpunk
+- maintain elegant Korean beauty industry tone
+
+DESIGN KEYWORDS:
+premium
+minimal
+cinematic
+industrial luxury
+future manufacturing
+clean OEM
+K-beauty
+high-end SaaS
+soft motion
+modern trust

@@ -266,7 +266,7 @@ function ProductionContent() {
           </p>
           <Link
             href="/contact"
-            className="inline-flex h-12 items-center justify-center rounded-sm bg-accent px-8 text-base font-medium text-white shadow hover:bg-accent/90 transition-colors"
+            className="inline-flex h-12 items-center justify-center rounded-full bg-accent px-8 text-base font-medium text-white shadow-sm hover:bg-accent/90 hover:shadow-accent/20 hover:shadow-md transition-all"
           >
             {t("production.ctaButton") as string}
             <ArrowRight className="ml-2 h-4 w-4" />

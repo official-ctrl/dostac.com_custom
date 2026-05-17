@@ -90,7 +90,7 @@ function HomeSlider() {
             <Link href="/contact">
               <Button
                 size="lg"
-                className="rounded-sm bg-accent hover:bg-accent/90 text-white h-12 px-8 text-base font-medium"
+                className="rounded-full bg-accent hover:bg-accent/90 text-white h-12 px-8 text-base font-medium"
               >
                 {t("home.heroCta3") as string} <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
@@ -99,7 +99,7 @@ function HomeSlider() {
               <Button
                 size="lg"
                 variant="outline"
-                className="rounded-sm border-white/40 text-white bg-transparent hover:bg-white/10 hover:text-white h-12 px-8 text-base font-medium"
+                className="rounded-full border-white/40 text-white bg-transparent hover:bg-white/10 hover:text-white h-12 px-8 text-base font-medium"
               >
                 {t("home.heroCta1") as string}
               </Button>
@@ -108,7 +108,7 @@ function HomeSlider() {
               <Button
                 size="lg"
                 variant="outline"
-                className="rounded-sm border-white/40 text-white bg-transparent hover:bg-white/10 hover:text-white h-12 px-8 text-base font-medium"
+                className="rounded-full border-white/40 text-white bg-transparent hover:bg-white/10 hover:text-white h-12 px-8 text-base font-medium"
               >
                 {t("home.heroCta2") as string}
               </Button>
@@ -176,7 +176,7 @@ function HomeSlider() {
                   <Link href="/contact">
                     <Button
                       size="lg"
-                      className="rounded-sm bg-accent hover:bg-accent/90 text-white h-11 px-7 text-sm font-medium"
+                      className="rounded-full bg-accent hover:bg-accent/90 text-white h-11 px-7 text-sm font-medium"
                     >
                       {t("home.heroCta3") as string} <ArrowRight className="ml-2 h-4 w-4" />
                     </Button>
@@ -185,7 +185,7 @@ function HomeSlider() {
                     <Button
                       size="lg"
                       variant="outline"
-                      className="rounded-sm border-white/40 text-white bg-transparent hover:bg-white/10 hover:text-white h-11 px-7 text-sm font-medium"
+                      className="rounded-full border-white/40 text-white bg-transparent hover:bg-white/10 hover:text-white h-11 px-7 text-sm font-medium"
                     >
                       {t("home.heroCta1") as string}
                     </Button>
@@ -194,7 +194,7 @@ function HomeSlider() {
                     <Button
                       size="lg"
                       variant="outline"
-                      className="rounded-sm border-white/40 text-white bg-transparent hover:bg-white/10 hover:text-white h-11 px-7 text-sm font-medium"
+                      className="rounded-full border-white/40 text-white bg-transparent hover:bg-white/10 hover:text-white h-11 px-7 text-sm font-medium"
                     >
                       {t("home.heroCta2") as string}
                     </Button>
@@ -389,7 +389,7 @@ function ProductsCategorySection() {
           <Link href="/products">
             <Button
               size="lg"
-              className="rounded-sm bg-accent hover:bg-accent/90 text-white h-12 px-10 text-base font-medium"
+              className="rounded-full bg-accent hover:bg-accent/90 text-white h-12 px-10 text-base font-medium"
             >
               {t("home.productsCatCta") as string} <ArrowRight className="ml-2 h-4 w-4" />
             </Button>
@@ -441,7 +441,7 @@ function OEMProcessSection() {
           <Link href="/contact">
             <Button
               size="lg"
-              className="rounded-sm bg-accent hover:bg-accent/90 text-white h-12 px-10 text-base font-medium"
+              className="rounded-full bg-accent hover:bg-accent/90 text-white h-12 px-10 text-base font-medium"
             >
               {t("home.oemCta") as string} <ArrowRight className="ml-2 h-4 w-4" />
             </Button>
@@ -520,7 +520,7 @@ function FinalCTASection() {
           <Link href="/contact">
             <Button
               size="lg"
-              className="rounded-sm bg-accent hover:bg-accent/90 text-white h-14 px-12 text-base font-medium"
+              className="rounded-full bg-accent hover:bg-accent/90 text-white h-14 px-12 text-base font-medium"
             >
               {t("home.finalCtaButton") as string} <ArrowRight className="ml-2 h-5 w-5" />
             </Button>

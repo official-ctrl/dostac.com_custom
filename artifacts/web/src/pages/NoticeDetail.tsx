@@ -199,7 +199,7 @@ function NoticeDetailContent() {
               <button
                 type="button"
                 onClick={handleCopy}
-                className="inline-flex items-center gap-2 rounded-sm border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 transition"
+                className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 transition"
               >
                 {copied ? (
                   <Check className="h-4 w-4 text-emerald-600" />
@@ -281,7 +281,7 @@ function NoticeDetailContent() {
           </p>
           <Link
             href="/contact"
-            className="inline-flex h-12 items-center justify-center rounded-sm bg-accent px-8 text-base font-medium text-white shadow hover:bg-accent/90 transition-colors"
+            className="inline-flex h-12 items-center justify-center rounded-full bg-accent px-8 text-base font-medium text-white shadow-sm hover:bg-accent/90 hover:shadow-accent/20 hover:shadow-md transition-all"
           >
             {t("notice.ctaButton") as string}
             <ArrowRight className="ml-2 h-4 w-4" />

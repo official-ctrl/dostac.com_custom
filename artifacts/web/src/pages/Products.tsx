@@ -220,7 +220,7 @@ function ProductsContent() {
                       <div className="flex flex-wrap gap-3">
                         <Link
                           href="/contact"
-                          className="inline-flex h-11 items-center justify-center rounded-sm bg-accent px-6 text-sm font-medium text-white shadow hover:bg-accent/90 transition-colors"
+                          className="inline-flex h-11 items-center justify-center rounded-full bg-accent px-6 text-sm font-medium text-white shadow-sm hover:bg-accent/90 transition-colors"
                           data-testid={`product-cta-oem-${product.slug}`}
                         >
                           {t("products.oemInquiry") as string}
@@ -228,7 +228,7 @@ function ProductsContent() {
                         </Link>
                         <Link
                           href="/contact"
-                          className="inline-flex h-11 items-center justify-center rounded-sm border border-slate-300 bg-white px-6 text-sm font-medium text-primary hover:bg-slate-50 transition-colors"
+                          className="inline-flex h-11 items-center justify-center rounded-full border border-slate-300 bg-white px-6 text-sm font-medium text-primary hover:bg-slate-50 transition-colors"
                           data-testid={`product-cta-contact-${product.slug}`}
                         >
                           {t("products.contactUs") as string}
@@ -269,7 +269,7 @@ function ProductsContent() {
           </p>
           <Link
             href="/contact"
-            className="inline-flex h-12 items-center justify-center rounded-sm bg-accent px-8 text-base font-medium text-white shadow hover:bg-accent/90 transition-colors"
+            className="inline-flex h-12 items-center justify-center rounded-full bg-accent px-8 text-base font-medium text-white shadow-sm hover:bg-accent/90 hover:shadow-accent/20 hover:shadow-md transition-all"
           >
             {t("products.bottomCtaButton") as string}
             <ArrowRight className="ml-2 h-4 w-4" />

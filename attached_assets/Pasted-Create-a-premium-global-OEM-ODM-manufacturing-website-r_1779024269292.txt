@@ -1,0 +1,307 @@
+Create a premium global OEM/ODM manufacturing website redesign for “dostac”, specialized in wet wipes, deodorant tissues, sanitary disposable products, household hygiene products, and private label manufacturing.
+
+The website must feel:
+- clean
+- trustworthy
+- premium
+- modern
+- globally scalable
+- hygienic
+- industrial but elegant
+
+Avoid making the site look:
+- too tech startup
+- too cyberpunk
+- too dark
+- too abstract
+- too cosmetic luxury focused
+- too template-like
+
+The design should balance:
+premium OEM manufacturing trust
++
+modern global SaaS refinement
++
+clean hygienic product presentation
+
+OVERALL DESIGN DIRECTION:
+- white dominant layout
+- subtle cinematic atmosphere
+- soft industrial premium aesthetic
+- minimal but sophisticated
+- high-end Korean manufacturing image
+- global B2B export platform feeling
+- modern spacing and typography
+- subtle motion only
+- ultra clean structure
+
+INSPIRED BY:
+- Linear
+- Apple
+- Stripe
+- modern industrial branding
+- premium sanitary product companies
+- high-end Korean OEM manufacturers
+
+MAIN COLOR STRUCTURE:
+- Primary background: #FFFFFF
+- Secondary background: #F5F7FA
+- Main text: #111827
+- Soft gray text: #6B7280
+- Border: #E5E7EB
+- Accent orange: #FF6A1A
+- Dark cinematic gradient: #0F172A
+
+IMPORTANT:
+The site must prioritize:
+- trust
+- cleanliness
+- production capability
+- export professionalism
+- OEM manufacturing confidence
+
+instead of excessive visual effects.
+
+HEADER / NAVIGATION:
+Improve overall visual balance.
+
+Current issue:
+The dostac logo appears too small compared to the navigation and CTA button.
+
+Recommended improvements:
+- increase logo size by approximately 130%
+- logo height around 40~44px
+- strengthen logo visual weight
+- use darker premium navy logo color
+- maintain clean spacing
+- navigation font-weight should be lighter than logo
+- preserve minimal premium appearance
+
+HEADER STYLE:
+- transparent white header
+- subtle blur on scroll
+- elegant spacing
+- soft hover transitions
+- modern rounded CTA button
+
+Navigation menu:
+- About Dostac
+- Production
+- Product
+- Notice
+- Contact Us
+
+CTA BUTTON:
+“Request a Quote”
+
+CTA STYLE:
+- orange accent
+- rounded corners
+- subtle hover glow
+- premium minimal interaction
+
+HERO SECTION:
+Design a premium balanced HERO section.
+
+STRUCTURE:
+- white-based cinematic layout
+- upper background contains subtle dark cinematic gradient
+- lower area smoothly blends into clean white
+- elegant composition with large spacing
+- centered premium typography
+- soft industrial atmosphere
+- floating product packaging visuals
+
+DO NOT use:
+- excessive black backgrounds
+- gaming style 3D
+- neon effects
+- aggressive futuristic UI
+
+Instead use:
+- soft lighting
+- subtle particles
+- gentle depth
+- realistic premium reflections
+- clean manufacturing mood
+
+HERO VISUALS:
+Use realistic product-oriented objects:
+- wet wipes packaging
+- deodorant tissue packs
+- sanitary pouch packaging
+- disposable household product packaging
+
+Avoid:
+- luxury cosmetic bottle focus
+- fashion beauty branding mood
+
+TYPOGRAPHY:
+Headline:
+“K-Beauty OEM & Global Sourcing Partner”
+
+Subheadline:
+“Trusted OEM manufacturing solutions for sanitary wipes, disposable hygiene products, and global private label distribution.”
+
+Typography style:
+- large modern sans-serif
+- premium spacing
+- ultra clean hierarchy
+- strong readability
+- modern Korean manufacturing brand feeling
+
+BUTTONS:
+Primary:
+“Request OEM Inquiry”
+
+Secondary:
+“Contact Us”
+
+BUTTON STYLE:
+- minimal premium buttons
+- soft shadow
+- subtle hover motion
+- orange accent line or glow
+- modern rounded radius
+
+ANIMATION:
+- extremely subtle motion
+- soft floating movement
+- smooth fade-in
+- gentle parallax
+- lightweight interactions only
+
+Performance priority is critical.
+
+SITE STRUCTURE:
+
+1. HERO SECTION
+Premium clean cinematic introduction.
+
+2. TRUST SECTION
+Global certifications and export trust.
+
+Include:
+- GMP
+- FDA
+- ISO
+- Global Distribution
+- OEM/ODM Expertise
+
+3. PRODUCTION FLOW
+Interactive clean process structure.
+
+Flow:
+Raw Materials
+→ Manufacturing
+→ Filling
+→ Packaging
+→ Global Shipment
+
+Style:
+- clean horizontal timeline
+- modern card layout
+- subtle hover motion
+- manufacturing trust focus
+
+4. PRODUCT SECTION
+Premium product showcase grid.
+
+Categories:
+- Wet Wipes
+- Deodorant Tissues
+- Household Wipes
+- Sanitary Products
+- Disposable Hygiene Products
+
+Style:
+- clean white product cards
+- soft shadow
+- premium spacing
+- realistic packaging photography
+
+5. FACTORY & QUALITY SECTION
+Focus on real manufacturing trust.
+
+Use:
+- real production images
+- cinematic factory video
+- clean automation visuals
+- QC systems
+- hygiene management
+
+Avoid fake futuristic factory renders.
+
+6. GLOBAL DISTRIBUTION SECTION
+Show:
+- export countries
+- logistics capability
+- global OEM support
+
+Style:
+- clean global map
+- orange accent highlights
+- modern data presentation
+
+7. OEM / ODM SERVICE SECTION
+Present:
+- OEM
+- ODM
+- Private Label
+- Packaging
+- Export Documentation
+
+Style:
+- modern SaaS-inspired cards
+- minimal icons
+- clean industrial aesthetic
+
+8. CONTACT / RFQ SECTION
+Modern conversion-focused inquiry section.
+
+Include:
+- MOQ
+- packaging type
+- target country
+- product category
+- certification requirements
+
+Style:
+- premium B2B inquiry experience
+- clean white form UI
+- trustworthy layout
+
+DESIGN PRINCIPLES:
+- premium balance over excessive effects
+- trust over trendiness
+- cleanliness over complexity
+- modern OEM professionalism
+- elegant spacing and layout rhythm
+- lightweight optimized experience
+- mobile responsive optimization
+- fast loading priority
+
+TECH STACK:
+- Next.js
+- Tailwind CSS
+- Framer Motion
+- GSAP (minimal usage)
+- React Three Fiber (very limited)
+- lightweight optimized interactions only
+
+FINAL GOAL:
+The website should feel like:
+“A premium global hygienic OEM manufacturing platform”
+
+not:
+- a tech startup
+- a gaming website
+- a cyberpunk portfolio
+- a cosmetic luxury brand
+
+The final experience must communicate:
+cleanliness
+trust
+global production capability
+modern OEM expertise
+premium Korean manufacturing quality
