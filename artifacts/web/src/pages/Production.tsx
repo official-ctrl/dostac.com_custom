@@ -341,7 +341,7 @@ function ProductionContent() {
             variants={sectionHeaderStagger}
           >
             <motion.p variants={fadeUp} className="text-xs uppercase tracking-[0.3em] text-white/50 font-semibold mb-4">
-              {t("production.certLabel") as string}
+              {t("production.ctaEyebrow") as string}
             </motion.p>
             <motion.h2 variants={fadeUp} className="font-display text-3xl md:text-4xl font-bold mb-4 max-w-2xl mx-auto leading-tight">
               {t("production.ctaHeading") as string}

@@ -766,6 +766,37 @@ function AboutContent() {
           </div>
         </div>
       </section>
+
+      {/* CTA STRIP */}
+      <section className="py-24 bg-[#0F172A] text-white text-center">
+        <div className="container mx-auto px-6">
+          <motion.div
+            initial="hidden"
+            whileInView="show"
+            viewport={{ once: true, amount: 0.2 }}
+            variants={sectionHeaderStagger}
+          >
+            <motion.p variants={fadeUp} className="text-xs uppercase tracking-[0.3em] text-white/50 font-semibold mb-4">
+              {t("about.ctaEyebrow") as string}
+            </motion.p>
+            <motion.h2 variants={fadeUp} className="font-display text-3xl md:text-4xl font-bold mb-4 max-w-2xl mx-auto leading-tight">
+              {t("about.ctaHeading") as string}
+            </motion.h2>
+            <motion.p variants={fadeUp} className="text-white/70 text-lg mb-8 max-w-xl mx-auto leading-relaxed">
+              {t("about.ctaSub") as string}
+            </motion.p>
+            <motion.div variants={fadeUp}>
+              <Link
+                href="/contact"
+                className="inline-flex h-12 items-center justify-center rounded-full bg-accent px-8 text-base font-medium text-white shadow-sm hover:bg-accent/90 hover:shadow-accent/20 hover:shadow-md transition-all"
+              >
+                {t("about.ctaButton") as string}
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Link>
+            </motion.div>
+          </motion.div>
+        </div>
+      </section>
     </>
   );
 }
