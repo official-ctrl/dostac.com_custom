@@ -335,13 +335,31 @@ function PhilosophySection({ dbWhyItems }: { dbWhyItems?: { titleKo: string; tit
   );
 }
 
-function HistorySection() {
+function HistorySection({
+  dbImageUrl,
+  dbIntro,
+  dbAreas,
+}: {
+  dbImageUrl?: string | null;
+  dbIntro?: string;
+  dbAreas?: { title: string }[];
+}) {
   const { t } = useT();
   const headerFade = useFadeUp();
   const imgFade = useFadeUp();
   const cards = useStaggerReveal();
   const outroFade = useFadeUp();
-  const areas = t("about.historyAreas") as string[];
+
+  const i18nAreas = t("about.historyAreas") as string[];
+  const areas: string[] =
+    dbAreas && dbAreas.length > 0
+      ? dbAreas.map((a) => a.title)
+      : i18nAreas;
+
+  const introText =
+    (dbIntro && dbIntro.trim()) ? dbIntro : (t("about.historyIntro") as string);
+
+  const heroImg = dbImageUrl || dostacImage("hero-about.webp");
 
   return (
     <section id="history" className="scroll-mt-32 py-20 bg-white">
@@ -358,7 +376,7 @@ function HistorySection() {
           >
             <div className="rounded-2xl overflow-hidden shadow-md aspect-[4/5] lg:aspect-auto lg:h-[600px]">
               <img
-                src={dostacImage("hero-about.webp")}
+                src={heroImg}
                 alt={t("about.historyHeading") as string}
                 className="w-full h-full object-cover"
               />
@@ -382,7 +400,7 @@ function HistorySection() {
                 {t("about.historyHeading") as string}
               </h2>
               <p className="text-muted-foreground leading-relaxed mb-8 whitespace-pre-line">
-                {t("about.historyIntro") as string}
+                {introText}
               </p>
             </div>
 
@@ -452,7 +470,21 @@ function AboutContent() {
   const directionsAddress = pickByLang(data, "directionsAddress", lang) || (t("about.directionsAddress") as string);
 
   const greetingImg = data?.greetingImageUrl || dostacImage("ceo-portrait.webp");
-  const worldwideImg = data?.worldwideImageUrl || dostacImage("hero-production.webp");
+  const worldwideImg = data?.worldwideImageUrl || null;
+
+  const worldwideAreas = useMemo(() => {
+    if (!data?.worldwideItems || !Array.isArray(data.worldwideItems) || data.worldwideItems.length === 0) return undefined;
+    return data.worldwideItems.map((item) => {
+      const titleByLang: Record<string, string> = {
+        ko: item.titleKo,
+        en: item.titleEn,
+        ja: item.titleJa,
+        zh: item.titleZh,
+        vi: item.titleVi,
+      };
+      return { title: titleByLang[lang] || item.titleEn || item.titleKo || "" };
+    });
+  }, [data, lang]);
 
   return (
     <>
@@ -510,7 +542,11 @@ function AboutContent() {
       </section>
 
       {/* 2. HISTORY */}
-      <HistorySection />
+      <HistorySection
+        dbImageUrl={worldwideImg}
+        dbIntro={worldwideIntro ?? undefined}
+        dbAreas={worldwideAreas}
+      />
 
       {/* 3. COMPANY PHILOSOPHY */}
       <PhilosophySection dbWhyItems={data?.whyDostacItems ?? null} />

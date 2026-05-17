@@ -406,22 +406,37 @@ export default function AboutEdit() {
           </Card>
 
           <Card>
-            <CardHeader>
-              <CardTitle className="text-base">글로벌 네트워크 소개</CardTitle>
-              <p className="text-xs text-muted-foreground mt-1">
-                지역별 거점 섹션의 도입 문구를 관리합니다.
-              </p>
+            <CardHeader className="flex-row items-center justify-between space-y-0">
+              <div>
+                <CardTitle className="text-base">OUR STORY — 이미지 &amp; 6가지 강점</CardTitle>
+                <p className="text-xs text-muted-foreground mt-1">
+                  About 페이지 "OUR STORY" 섹션의 우측 이미지, 소개 설명, 강점 카드(최대 6개)를 관리합니다.
+                </p>
+              </div>
+              <Button
+                type="button" size="sm" variant="outline"
+                onClick={() => { if (form.worldwideItems.length < 6) addWorldwideItem(); }}
+                disabled={form.worldwideItems.length >= 6}
+                className="gap-2 shrink-0" data-testid="add-worldwide-item"
+              >
+                <Plus className="h-4 w-4" />
+                강점 추가 ({form.worldwideItems.length}/6)
+              </Button>
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="space-y-5">
+              {/* Section image */}
               <div className="space-y-2">
-                <Label>대표 이미지 (지도/공장 외관 등)</Label>
+                <Label>섹션 우측 이미지</Label>
                 <ImageUploader
                   value={form.worldwideImageUrl ?? null}
                   onChange={(url) => setField("worldwideImageUrl", url ?? null)}
-                  previewClassName="h-48 w-full max-w-2xl rounded object-cover bg-muted border border-border"
+                  previewClassName="h-52 w-full max-w-2xl rounded-xl object-cover bg-muted border border-border"
                   testId="upload-worldwide-image"
                 />
+                <p className="text-xs text-muted-foreground">비워두면 기본 이미지가 사용됩니다.</p>
               </div>
+
+              {/* Intro description */}
               <LangTabs
                 activeLang={activeLang}
                 onChange={setActiveLang}
@@ -430,13 +445,13 @@ export default function AboutEdit() {
                 {(lang) => (
                   <div className="space-y-2">
                     <div className="flex items-center justify-between">
-                      <Label>소개 문구</Label>
+                      <Label>소개 설명 ({LANG_LABEL[lang]})</Label>
                       {lang === "ko" && (
                         <Button type="button" size="sm" variant="ghost"
                           onClick={() => void translateWorldwideIntro()}
                           disabled={translateMut.isPending}
                           className="h-7 gap-1.5 text-xs text-accent hover:text-accent">
-                          <Sparkles className="h-3 w-3" /> 자동 번역
+                          <Sparkles className="h-3 w-3" /> KO → 4개 언어 자동 번역
                         </Button>
                       )}
                     </div>
@@ -444,86 +459,62 @@ export default function AboutEdit() {
                       rows={3}
                       value={(form[langKey("worldwideIntro", lang)] as string) ?? ""}
                       onChange={(e) => setField(langKey("worldwideIntro", lang), e.target.value)}
-                      placeholder="글로벌 30개국 파트너와 함께…"
+                      placeholder={lang === "ko"
+                        ? "Dostac는 화장품 유통, 온라인 커머스, 글로벌 소싱의 실제 경험을 바탕으로 설립되었습니다.\n\n약 20년간 뷰티 및 이커머스 산업 전반에 걸쳐 다음 분야에서 활동해왔습니다:"
+                        : ""}
                       data-testid={`input-worldwide-intro-${lang}`}
                     />
                   </div>
                 )}
               </LangTabs>
 
-              {/* Worldwide items */}
-              <div className="pt-2 space-y-3">
-                <div className="flex items-center justify-between">
-                  <Label className="text-sm font-semibold">지역별 거점</Label>
-                  <Button type="button" size="sm" variant="outline" onClick={addWorldwideItem} className="gap-2" data-testid="add-worldwide-item">
-                    <Plus className="h-4 w-4" /> 거점 추가
-                  </Button>
+              {/* 6 strength cards */}
+              <div className="space-y-3 pt-1">
+                <div className="flex items-center gap-2">
+                  <Label className="text-sm font-semibold">6가지 강점 카드</Label>
+                  <span className="text-xs text-muted-foreground">(제목만 입력해도 됩니다 — 아이콘은 순서에 따라 자동 지정)</span>
                 </div>
                 {form.worldwideItems.length === 0 && (
-                  <p className="text-sm text-muted-foreground py-4 text-center">거점이 등록되어 있지 않습니다.</p>
+                  <div className="py-8 text-center border-2 border-dashed rounded-lg">
+                    <p className="text-sm text-muted-foreground mb-3">강점 카드가 없습니다.</p>
+                    <Button type="button" size="sm" variant="outline" onClick={addWorldwideItem} className="gap-2">
+                      <Plus className="h-4 w-4" /> 첫 번째 강점 추가
+                    </Button>
+                  </div>
                 )}
                 {form.worldwideItems.map((w, i) => (
-                  <div key={i} className="border rounded-md p-4 space-y-4" data-testid={`worldwide-item-${i}`}>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                      <div className="space-y-1 md:col-span-2">
-                        <Label>지역 코드 (영문)</Label>
-                        <Input value={w.region} onChange={(e) => updateWorldwideItem(i, { region: e.target.value })}
-                          placeholder="Southeast Asia" data-testid={`worldwide-region-${i}`} />
-                      </div>
-                      <div className="flex items-end justify-end">
-                        <Button type="button" size="sm" variant="ghost" onClick={() => removeWorldwideItem(i)}
-                          className="h-8 gap-1.5 text-xs text-destructive hover:text-destructive">
-                          <Trash2 className="h-3 w-3" /> 삭제
-                        </Button>
-                      </div>
+                  <div key={i} className="border rounded-lg p-4 space-y-3" data-testid={`worldwide-item-${i}`}>
+                    {/* Card header */}
+                    <div className="flex items-center gap-2">
+                      <Badge variant="outline" className="text-xs font-mono shrink-0">#{i + 1}</Badge>
+                      <p className="text-sm font-medium flex-1 truncate">
+                        {w.titleKo || <span className="text-muted-foreground italic">제목 없음</span>}
+                      </p>
+                      <Button type="button" size="sm" variant="ghost"
+                        onClick={() => void translateWorldwideItemTitle(i)}
+                        disabled={translateMut.isPending}
+                        className="h-7 gap-1.5 text-xs text-accent hover:text-accent shrink-0">
+                        <Sparkles className="h-3 w-3" /> KO → 4개 언어
+                      </Button>
+                      <Button type="button" size="sm" variant="ghost" onClick={() => removeWorldwideItem(i)}
+                        className="h-7 gap-1.5 text-xs text-destructive hover:text-destructive shrink-0">
+                        <Trash2 className="h-3 w-3" /> 삭제
+                      </Button>
                     </div>
-                    <div className="space-y-1">
-                      <Label>이미지 (선택)</Label>
-                      <ImageUploader value={w.imageUrl ?? null}
-                        onChange={(url) => updateWorldwideItem(i, { imageUrl: url ?? null })}
-                        previewClassName="h-32 w-full max-w-md rounded object-cover bg-muted border border-border"
-                        testId={`upload-worldwide-${i}`} />
-                    </div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <div className="flex items-center justify-between">
-                          <Label>제목 (5개 언어)</Label>
-                          <Button type="button" size="sm" variant="ghost"
-                            onClick={() => void translateWorldwideItemTitle(i)}
-                            disabled={translateMut.isPending}
-                            className="h-7 gap-1.5 text-xs text-accent hover:text-accent">
-                            <Sparkles className="h-3 w-3" /> KO → 4개 언어
-                          </Button>
+
+                    {/* Title fields (5 langs, inline) */}
+                    <div className="grid grid-cols-1 sm:grid-cols-5 gap-2">
+                      {LANGS.map((lang) => (
+                        <div key={lang} className="space-y-1">
+                          <Label className="text-xs font-mono text-muted-foreground">{lang.toUpperCase()}</Label>
+                          <Input
+                            value={w[langKey("title", lang) as keyof WorldwideItem] as string}
+                            onChange={(e) => updateWorldwideItem(i, { [langKey("title", lang)]: e.target.value } as Partial<WorldwideItem>)}
+                            placeholder={lang === "ko" ? "강점 제목" : ""}
+                            data-testid={`worldwide-title-${i}-${lang}`}
+                          />
                         </div>
-                        <div className="space-y-1.5">
-                          {LANGS.map((lang) => (
-                            <Input key={lang}
-                              value={w[langKey("title", lang) as keyof WorldwideItem] as string}
-                              onChange={(e) => updateWorldwideItem(i, { [langKey("title", lang)]: e.target.value } as Partial<WorldwideItem>)}
-                              placeholder={`${LANG_LABEL[lang]} 제목`} />
-                          ))}
-                        </div>
-                      </div>
-                      <div className="space-y-2">
-                        <div className="flex items-center justify-between">
-                          <Label>설명 (5개 언어)</Label>
-                          <Button type="button" size="sm" variant="ghost"
-                            onClick={() => void translateWorldwideItemDesc(i)}
-                            disabled={translateMut.isPending}
-                            className="h-7 gap-1.5 text-xs text-accent hover:text-accent">
-                            <Sparkles className="h-3 w-3" /> KO → 4개 언어
-                          </Button>
-                        </div>
-                        <div className="space-y-1.5">
-                          {LANGS.map((lang) => (
-                            <Textarea key={lang} rows={2}
-                              value={w[langKey("description", lang) as keyof WorldwideItem] as string}
-                              onChange={(e) => updateWorldwideItem(i, { [langKey("description", lang)]: e.target.value } as Partial<WorldwideItem>)}
-                              placeholder={`${LANG_LABEL[lang]} 설명`}
-                              data-testid={`worldwide-desc-${i}-${lang}`} />
-                          ))}
-                        </div>
-                      </div>
+                      ))}
                     </div>
                   </div>
                 ))}
