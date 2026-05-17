@@ -313,11 +313,12 @@ function Header() {
     <header className="sticky top-0 z-50 bg-white/95 backdrop-blur border-b border-slate-200/70">
       <div className="container mx-auto px-6 h-20 flex items-center justify-between">
         <Link href="/" className="flex items-center" aria-label="Dostac home">
-          <img
-            src={dostacImage("dostac-logo.png")}
-            alt="Dostac"
-            className="h-8 w-auto"
-          />
+          <span
+            className="text-[22px] font-black tracking-[-0.04em] text-primary leading-none select-none"
+            style={{ fontFamily: "'Outfit', sans-serif" }}
+          >
+            dostac
+          </span>
         </Link>
 
         <nav className="hidden lg:flex items-center gap-8">
@@ -483,7 +484,10 @@ function Footer() {
       <div className="container mx-auto px-6 pt-14 pb-8">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-12 pb-12 border-b border-slate-800">
           <div>
-            <span className="inline-block font-display text-2xl font-bold tracking-tight text-white mb-6">
+            <span
+              className="inline-block text-2xl font-black tracking-[-0.04em] text-white mb-6 leading-none"
+              style={{ fontFamily: "'Outfit', sans-serif" }}
+            >
               dostac
             </span>
             <p className="font-semibold text-white/90 mb-3 text-base leading-snug">

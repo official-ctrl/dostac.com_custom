@@ -331,7 +331,7 @@ const ko: Dict = {
 };
 
 const en: Dict = {
-  nav: { about: "ABOUT DOSTAC", production: "PRODUCTION", product: "PRODUCT", notice: "NOTICE", contact: "CONTACT US", cta: "Request a Quote" },
+  nav: { about: "About Dostac", production: "PRODUCTION", product: "PRODUCT", notice: "NOTICE", contact: "CONTACT US", cta: "Request a Quote" },
   footer: {
     tagline: "A confident, trust-building global manufacturing partner. Your Premier OEM/ODM Partner for Beauty & Health Innovation.",
     secure: "Your information is secure. Our global sales team aims to respond within 24-48 business hours.",
