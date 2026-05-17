@@ -43,7 +43,7 @@ const ko: Dict = {
     heroCta3: "OEM 문의",
     aboutEyebrow: "About Dostac",
     aboutHeading: "한국 뷰티의 글로벌 소싱 & OEM/ODM 파트너",
-    aboutBody: "Dostac은 K-뷰티 OEM/ODM, 프라이빗 레이블 개발, 국제 이커머스 유통을 전문으로 하는 한국의 글로벌 소싱·무역 회사입니다.\n\n신뢰할 수 있는 소싱, 제품 개발, 브랜딩, 수출 솔루션을 통해 한국 제조업체와 전 세계 바이어를 연결합니다.",
+    aboutBody: "Dostac은 K-뷰티 OEM/ODM, 프라이빗 레이블 개발, 국제 이커머스 유통을 전문으로 하는 한국의 글로벌 소싱·무역 회사입니다.\n\n신뢰할 수 있는 소싱, 제품 개발, 브랜딩, 수출 솔루션을 통해 한국 제조업체와 전 세계 바이어를 연결합니다.\n\n수년간의 화장품 유통 및 온라인 커머스 경험을 바탕으로, Dostac은 신뢰·품질·지속 가능한 성장을 기반으로 한 장기적인 파트너십 구축에 집중합니다.",
     aboutValues: [
       { title: "신뢰", desc: "투명한 커뮤니케이션과 정직한 비즈니스 관행으로 글로벌 파트너와 장기적인 관계를 구축합니다." },
       { title: "연결", desc: "한국 최고의 제조업체와 전 세계 바이어를 위한 최적의 매칭을 실현합니다." },
@@ -301,7 +301,7 @@ const en: Dict = {
     heroCta3: "OEM Inquiry",
     aboutEyebrow: "About Dostac",
     aboutHeading: "K-Beauty OEM & Global Sourcing Partner",
-    aboutBody: "Dostac is a Korea-based global sourcing and trading company specializing in K-beauty, cosmetics OEM/ODM, private label development, and international e-commerce distribution.\n\nWe connect Korean manufacturers with global buyers through reliable sourcing, product development, branding, and export solutions.",
+    aboutBody: "Dostac is a Korea-based global sourcing and trading company specializing in K-beauty, cosmetics OEM/ODM, private label development, and international e-commerce distribution.\n\nWe connect Korean manufacturers with global buyers through reliable sourcing, product development, branding, and export solutions.\n\nWith years of experience in cosmetics distribution and online commerce, Dostac focuses on building long-term partnerships based on trust, quality, and sustainable growth.",
     aboutValues: [
       { title: "Trust", desc: "Building long-term, transparent relationships with global partners through reliable communication and honest business practices." },
       { title: "Connection", desc: "Creating the best match between Korea's top manufacturers and global buyers for outstanding results." },
@@ -557,7 +557,7 @@ const ja: Dict = {
     heroCta3: "OEMお問い合わせ",
     aboutEyebrow: "About Dostac",
     aboutHeading: "K-BeautyのグローバルOEM/ODMソーシングパートナー",
-    aboutBody: "DostacはK-ビューティーOEM/ODM、プライベートレーベル開発、国際Eコマース流通を専門とする韓国のグローバルソーシング・貿易会社です。\n\n信頼できるソーシング、製品開発、ブランディング、輸出ソリューションで韓国メーカーとグローバルバイヤーをつなぎます。",
+    aboutBody: "DostacはK-ビューティーOEM/ODM、プライベートレーベル開発、国際Eコマース流通を専門とする韓国のグローバルソーシング・貿易会社です。\n\n信頼できるソーシング、製品開発、ブランディング、輸出ソリューションで韓国メーカーとグローバルバイヤーをつなぎます。\n\n化粧品流通とオンラインコマースでの豊富な経験を活かし、Dostacは信頼・品質・持続可能な成長を軸とした長期的なパートナーシップの構築に注力しています。",
     aboutValues: [
       { title: "信頼", desc: "信頼あるコミュニケーションと誠実なビジネスで、グローバルパートナーと長期的な関係を構築します。" },
       { title: "つながり", desc: "韓国トップメーカーとグローバルバイヤーを最適にマッチングし、優れた成果を実現します。" },
@@ -813,7 +813,7 @@ const zh: Dict = {
     heroCta3: "OEM咨询",
     aboutEyebrow: "About Dostac",
     aboutHeading: "K-Beauty全球OEM采购合作伙伴",
-    aboutBody: "Dostac是一家韩国全球采购贸易公司,专注于K-beauty OEM/ODM、自有品牌开发和国际电商分销。\n\n我们通过可靠的采购、产品开发、品牌建设和出口解决方案,将韩国制造商与全球买家连接起来。",
+    aboutBody: "Dostac是一家韩国全球采购贸易公司,专注于K-beauty OEM/ODM、自有品牌开发和国际电商分销。\n\n我们通过可靠的采购、产品开发、品牌建设和出口解决方案,将韩国制造商与全球买家连接起来。\n\n凭借多年的化妆品分销和电商运营经验,Dostac致力于以信任、质量和可持续发展为基础,建立长期合作伙伴关系。",
     aboutValues: [
       { title: "信任", desc: "通过可靠沟通与诚信经营,与全球合作伙伴建立长期透明的关系。" },
       { title: "连接", desc: "在韩国顶级制造商与全球买家之间创造最佳匹配,实现卓越成果。" },
@@ -1069,7 +1069,7 @@ const vi: Dict = {
     heroCta3: "Yêu cầu OEM",
     aboutEyebrow: "About Dostac",
     aboutHeading: "Đối tác OEM & Nguồn cung K-Beauty Toàn cầu",
-    aboutBody: "Dostac là công ty thương mại và tìm nguồn cung ứng toàn cầu của Hàn Quốc, chuyên về K-beauty OEM/ODM, phát triển nhãn hàng riêng và phân phối thương mại điện tử quốc tế.\n\nChúng tôi kết nối các nhà sản xuất Hàn Quốc với người mua toàn cầu thông qua tìm nguồn cung ứng, phát triển sản phẩm, xây dựng thương hiệu và giải pháp xuất khẩu đáng tin cậy.",
+    aboutBody: "Dostac là công ty thương mại và tìm nguồn cung ứng toàn cầu của Hàn Quốc, chuyên về K-beauty OEM/ODM, phát triển nhãn hàng riêng và phân phối thương mại điện tử quốc tế.\n\nChúng tôi kết nối các nhà sản xuất Hàn Quốc với người mua toàn cầu thông qua tìm nguồn cung ứng, phát triển sản phẩm, xây dựng thương hiệu và giải pháp xuất khẩu đáng tin cậy.\n\nVới nhiều năm kinh nghiệm trong lĩnh vực phân phối mỹ phẩm và thương mại điện tử, Dostac tập trung xây dựng quan hệ đối tác dài hạn dựa trên sự tin tưởng, chất lượng và tăng trưởng bền vững.",
     aboutValues: [
       { title: "Tin Cậy", desc: "Xây dựng mối quan hệ lâu dài, minh bạch với đối tác toàn cầu thông qua giao tiếp đáng tin cậy và thực tiễn kinh doanh trung thực." },
       { title: "Kết Nối", desc: "Tạo ra sự kết hợp tốt nhất giữa các nhà sản xuất hàng đầu Hàn Quốc và người mua toàn cầu để đạt kết quả xuất sắc." },
