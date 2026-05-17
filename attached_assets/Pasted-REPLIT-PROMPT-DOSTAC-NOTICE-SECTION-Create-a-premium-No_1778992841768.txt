@@ -1,0 +1,198 @@
+REPLIT PROMPT — DOSTAC NOTICE SECTION
+Create a premium “Notice” section for the Dostac website.
+This section must visually match the existing:
+About Dostac
+Our Story
+Company Philosophy
+Production
+Products
+sections.
+The overall design language must remain:
+premium
+minimal
+trustworthy
+modern Korean B2B aesthetic
+export-focused
+globally scalable
+The Notice section should feel like:
+a premium corporate insights page
+a global beauty business media section
+a trustworthy export company news center
+Avoid:
+generic blog appearance
+crowded article layout
+cheap news-card styling
+outdated corporate design
+Use:
+elegant whitespace
+clean typography
+subtle animations
+modern article cards
+premium corporate magazine aesthetic
+responsive mobile-first design
+IMPORTANT FUNCTIONAL REQUIREMENT
+The current “Read Full Story” button is NOT working.
+Fix and implement a fully functional article detail system.
+Requirements:
+each notice card must open a dedicated detail page OR
+dynamically open a full article modal/page
+The following MUST work correctly:
+article routing
+dynamic slug generation
+SEO-friendly URLs
+read full story navigation
+browser back navigation
+mobile compatibility
+Example URL structure:
+/notice/global-kbeauty-market-trends
+/notice/oem-private-label-guide
+/notice/export-shipping-update
+Ensure:
+no broken links
+no empty detail pages
+no placeholder routing
+proper dynamic content rendering
+IMPORTANT ADMIN CMS REQUIREMENT
+The Notice section MUST be fully manageable from the admin dashboard.
+Admin must be able to:
+create new notices/articles
+edit article title
+edit article description
+upload featured image
+edit full article content
+add categories
+publish/unpublish posts
+edit SEO metadata
+change featured order
+delete articles
+schedule posts
+Use dynamic CMS/database structure.
+Recommended content structure:
+title
+slug
+summary
+full content
+featured image
+category
+publish date
+SEO title
+SEO description
+tags
+status
+Ensure:
+frontend updates automatically after admin edits
+no hardcoded article content
+scalable blog/news architecture
+MAIN NOTICE SECTION
+Small Label: NOTICE & INSIGHTS
+Main Heading: Global Beauty Industry News & Business Insights
+Sub Text:
+“Explore the latest updates, export information, K-beauty trends, OEM insights, and global business news from Dostac.”
+Add subtle fade-up animation.
+ARTICLE CARD DESIGN
+Create premium article cards matching the website’s luxury B2B aesthetic.
+Each article card should contain:
+featured image
+category label
+article title
+short summary
+publish date
+Read Full Story button
+Style:
+modern editorial layout
+premium Korean beauty business magazine feel
+soft hover animation
+rounded image corners
+elegant spacing
+Hover effects:
+subtle image zoom
+soft shadow increase
+animated underline on CTA
+NOTICE CATEGORIES
+Create filter tabs/categories.
+Categories:
+K-Beauty Trends
+OEM / ODM Insights
+Export Information
+Global E-Commerce
+Company Notice
+Requirements:
+smooth filtering animation
+active category highlight
+responsive mobile tabs
+READ FULL STORY PAGE
+When user clicks “Read Full Story”:
+Open a premium article detail page.
+The detail page must include:
+hero image
+article title
+category
+publish date
+article content
+related posts
+back to notice button
+share buttons
+Design style:
+premium editorial magazine
+luxury whitespace
+highly readable typography
+modern clean article layout
+ARTICLE DETAIL PAGE SEO
+Generate dynamic SEO metadata:
+dynamic page title
+meta description
+Open Graph image
+structured article schema
+optimized URL slug
+Ensure:
+Google indexing friendly
+mobile SEO optimized
+fast loading
+SAMPLE ARTICLE CONTENTS
+Create demo articles for initial structure:
+
+“K-Beauty Market Trends 2026”
+
+“How Private Label Cosmetics Work”
+
+“Understanding OEM & ODM Manufacturing”
+
+“Global Export Compliance for Beauty Brands”
+
+“Why Korean Beauty Products Continue to Grow Globally”
+IMAGE STYLE PROMPTS
+Use premium editorial-style images.
+Image mood:
+Korean beauty industry
+global business atmosphere
+modern cosmetics laboratory
+export and logistics
+luxury skincare branding
+minimalist corporate aesthetic
+Avoid:
+generic office stock photos
+dark corporate mood
+cluttered business visuals
+MOBILE RESPONSIVE REQUIREMENTS
+On mobile:
+article cards stack vertically
+category tabs scroll horizontally
+article detail pages remain readable
+images resize proportionally
+smooth navigation preserved
+Ensure:
+clean mobile UX
+fast page speed
+premium responsive feel
+FINAL BRAND FEELING
+The Notice section should visually communicate:
+“Trusted Korean beauty export company sharing real industry insights and global business expertise.”
+The final result should feel:
+premium
+editorial
+globally scalable
+SEO-focused
+trustworthy
+modern Korean B2B brand
+investor-ready
+export-oriented

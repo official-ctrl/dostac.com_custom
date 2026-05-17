@@ -10,6 +10,7 @@ import About from "@/pages/About";
 import Production from "@/pages/Production";
 import Products from "@/pages/Products";
 import Notice from "@/pages/Notice";
+import NoticeDetail from "@/pages/NoticeDetail";
 import Contact from "@/pages/Contact";
 import NotFound from "@/pages/not-found";
 
@@ -30,6 +31,7 @@ function Router() {
       <Route path="/production" component={Production} />
       <Route path="/products" component={Products} />
       <Route path="/notice" component={Notice} />
+      <Route path="/notice/:slug" component={NoticeDetail} />
       <Route path="/contact" component={Contact} />
       <Route component={NotFound} />
     </Switch>

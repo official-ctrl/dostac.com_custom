@@ -112,7 +112,7 @@ const ko: Dict = {
       { step: "01", title: "컨셉" }, { step: "02", title: "처방 개발" }, { step: "03", title: "품질 관리" },
       { step: "04", title: "패키징 디자인" }, { step: "05", title: "생산" }, { step: "06", title: "납품" },
     ],
-    philosophyHeading: "우리의 철학",
+    philosophyPillarsHeading: "우리의 철학",
     philosophy: [
       { title: "신뢰", desc: "신뢰할 수 있는 커뮤니케이션과 정직한 비즈니스 관행을 통해 글로벌 파트너와 장기적이고 투명한 관계를 구축합니다." },
       { title: "품질", desc: "안전성, 효능, 글로벌 컴플라이언스에서 어떠한 타협도 없이 최종 소비자의 절대 만족을 보장합니다." },
@@ -272,9 +272,11 @@ const ko: Dict = {
   },
   notice: {
     eyebrow: "뉴스룸",
-    heroTitle: "최신 소식, 신제품 업데이트 & 산업 동향",
-    heroBody: "회사 공지, 산업 핫이슈, 전시 참가, 신제품 출시, 글로벌 뷰티·퍼스널케어 시장에서 dostac의 활발한 활동을 반영하는 주요 소식까지 — 파트너와 방문객에게 가장 최신 업데이트를 전합니다.",
+    heroLabel: "NOTICE & INSIGHTS",
+    heroTitle: "글로벌 뷰티 산업 뉴스 & 비즈니스 인사이트",
+    heroBody: "Dostac의 최신 업데이트, 수출 정보, K-뷰티 트렌드, OEM 인사이트, 글로벌 비즈니스 소식을 살펴보세요.",
     searchPlaceholder: "소식 & 공지 검색",
+    allCategories: "전체", backToNotice: "목록으로 돌아가기", relatedPosts: "관련 아티클",
     categories: [
       { name: "전체", count: 24 }, { name: "회사 소식", count: 8 }, { name: "신제품", count: 7 }, { name: "전시회", count: 5 }, { name: "인증", count: 4 },
     ],
@@ -428,7 +430,7 @@ const en: Dict = {
       { step: "01", title: "Concept" }, { step: "02", title: "Formula Development" }, { step: "03", title: "Quality Assurance" },
       { step: "04", title: "Packaging Design" }, { step: "05", title: "Production" }, { step: "06", title: "Delivery" },
     ],
-    philosophyHeading: "Our Philosophy",
+    philosophyPillarsHeading: "Our Philosophy",
     philosophy: [
       { title: "TRUST", desc: "Building long-term, transparent relationships with global partners through reliable communication and honest business practices." },
       { title: "QUALITY", desc: "Maintaining zero compromises on safety, efficacy, and global compliance, ensuring absolute satisfaction for the end consumer." },
@@ -588,9 +590,11 @@ const en: Dict = {
   },
   notice: {
     eyebrow: "Newsroom",
-    heroTitle: "Latest News, Product Updates & Industry Highlights",
-    heroBody: "Keep your partners and visitors informed with the latest updates from dostac — company announcements, hot industry news, exhibition participation, newly launched products, and important notices that reinforce our active presence in the global beauty and personal care market.",
+    heroLabel: "NOTICE & INSIGHTS",
+    heroTitle: "Global Beauty Industry News & Business Insights",
+    heroBody: "Explore the latest updates, export information, K-beauty trends, OEM insights, and global business news from Dostac.",
     searchPlaceholder: "Search news & notices",
+    allCategories: "All", backToNotice: "Back to Notice", relatedPosts: "Related Articles",
     categories: [
       { name: "All", count: 24 }, { name: "Company News", count: 8 }, { name: "New Products", count: 7 }, { name: "Exhibitions", count: 5 }, { name: "Certifications", count: 4 },
     ],
@@ -742,7 +746,7 @@ const ja: Dict = {
       { step: "01", title: "コンセプト" }, { step: "02", title: "処方開発" }, { step: "03", title: "品質保証" },
       { step: "04", title: "パッケージデザイン" }, { step: "05", title: "生産" }, { step: "06", title: "納品" },
     ],
-    philosophyHeading: "私たちの哲学",
+    philosophyPillarsHeading: "私たちの哲学",
     philosophy: [
       { title: "信頼", desc: "信頼性のあるコミュニケーションと誠実なビジネスにより、グローバルパートナーと長期的で透明な関係を築きます。" },
       { title: "品質", desc: "安全性、有効性、グローバルコンプライアンスにおいて妥協せず、最終消費者の絶対的な満足を保証します。" },
@@ -902,9 +906,11 @@ const ja: Dict = {
   },
   notice: {
     eyebrow: "ニュースルーム",
-    heroTitle: "最新ニュース、新製品アップデート&業界ハイライト",
-    heroBody: "会社のお知らせ、業界ホットイシュー、展示参加、新製品リリース、グローバル美容・パーソナルケア市場におけるdostacの活発な活動を反映する重要なお知らせまで — パートナーと訪問者へ最新情報をお届けします。",
+    heroLabel: "NOTICE & INSIGHTS",
+    heroTitle: "グローバル美容業界ニュース & ビジネスインサイト",
+    heroBody: "Dostacからの最新アップデート、輸出情報、K-beautyトレンド、OEMインサイト、グローバルビジネスニュースをご覧ください。",
     searchPlaceholder: "ニュース・お知らせを検索",
+    allCategories: "すべて", backToNotice: "一覧に戻る", relatedPosts: "関連記事",
     categories: [
       { name: "全て", count: 24 }, { name: "会社ニュース", count: 8 }, { name: "新製品", count: 7 }, { name: "展示会", count: 5 }, { name: "認証", count: 4 },
     ],
@@ -1056,7 +1062,7 @@ const zh: Dict = {
       { step: "01", title: "概念" }, { step: "02", title: "配方开发" }, { step: "03", title: "品质管控" },
       { step: "04", title: "包装设计" }, { step: "05", title: "生产" }, { step: "06", title: "交付" },
     ],
-    philosophyHeading: "我们的理念",
+    philosophyPillarsHeading: "我们的理念",
     philosophy: [
       { title: "信任", desc: "通过可靠沟通与诚信经营,与全球合作伙伴建立长期透明的关系。" },
       { title: "品质", desc: "在安全性、有效性与全球合规上不做妥协,确保终端消费者的绝对满意。" },
@@ -1216,9 +1222,11 @@ const zh: Dict = {
   },
   notice: {
     eyebrow: "新闻中心",
-    heroTitle: "最新动态、新品更新与行业焦点",
-    heroBody: "通过公司公告、行业热点、展会参与、新品发布以及彰显dostac在全球美容与个护市场积极存在的重要资讯,为合作伙伴与访客带来最新动态。",
+    heroLabel: "NOTICE & INSIGHTS",
+    heroTitle: "全球美容行业新闻 & 商业洞察",
+    heroBody: "探索来自Dostac的最新动态、出口信息、K-beauty趋势、OEM洞察和全球商业资讯。",
     searchPlaceholder: "搜索新闻与公告",
+    allCategories: "全部", backToNotice: "返回列表", relatedPosts: "相关文章",
     categories: [
       { name: "全部", count: 24 }, { name: "公司动态", count: 8 }, { name: "新品", count: 7 }, { name: "展会", count: 5 }, { name: "认证", count: 4 },
     ],
@@ -1370,7 +1378,7 @@ const vi: Dict = {
       { step: "01", title: "Ý tưởng" }, { step: "02", title: "Phát triển công thức" }, { step: "03", title: "Đảm bảo chất lượng" },
       { step: "04", title: "Thiết kế bao bì" }, { step: "05", title: "Sản xuất" }, { step: "06", title: "Giao hàng" },
     ],
-    philosophyHeading: "Triết lý của chúng tôi",
+    philosophyPillarsHeading: "Triết lý của chúng tôi",
     philosophy: [
       { title: "TIN CẬY", desc: "Xây dựng các mối quan hệ minh bạch dài hạn với đối tác toàn cầu thông qua giao tiếp đáng tin cậy và thực tiễn kinh doanh trung thực." },
       { title: "CHẤT LƯỢNG", desc: "Không khoan nhượng về an toàn, hiệu quả và tuân thủ toàn cầu, đảm bảo sự hài lòng tuyệt đối cho người tiêu dùng cuối." },
@@ -1530,9 +1538,11 @@ const vi: Dict = {
   },
   notice: {
     eyebrow: "Phòng Tin tức",
-    heroTitle: "Tin tức Mới nhất, Cập nhật Sản phẩm & Điểm nổi bật Ngành",
-    heroBody: "Cập nhật cho đối tác và khách của bạn với các thông tin mới nhất từ dostac — thông báo công ty, tin tức ngành nóng, tham gia triển lãm, sản phẩm mới ra mắt và các thông báo quan trọng củng cố sự hiện diện tích cực của chúng tôi trong thị trường mỹ phẩm và chăm sóc cá nhân toàn cầu.",
+    heroLabel: "NOTICE & INSIGHTS",
+    heroTitle: "Tin tức Ngành Làm đẹp Toàn cầu & Thông tin Kinh doanh",
+    heroBody: "Khám phá các cập nhật mới nhất, thông tin xuất khẩu, xu hướng K-beauty, thông tin OEM và tin tức kinh doanh toàn cầu từ Dostac.",
     searchPlaceholder: "Tìm kiếm tin tức & thông báo",
+    allCategories: "Tất cả", backToNotice: "Quay lại danh sách", relatedPosts: "Bài viết liên quan",
     categories: [
       { name: "Tất cả", count: 24 }, { name: "Tin Công ty", count: 8 }, { name: "Sản phẩm Mới", count: 7 }, { name: "Triển lãm", count: 5 }, { name: "Chứng nhận", count: 4 },
     ],
