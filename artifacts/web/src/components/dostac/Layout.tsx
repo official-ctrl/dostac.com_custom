@@ -320,6 +320,7 @@ function Header() {
   }, [location]);
 
   return (
+    <>
     <header
       className={`sticky top-0 z-50 transition-all duration-200 ${
         scrolled
@@ -490,6 +491,16 @@ function Header() {
         </div>
       )}
     </header>
+    {location !== "/contact" && (
+      <div className="fixed bottom-0 inset-x-0 z-40 md:hidden bg-white/96 backdrop-blur-sm border-t border-slate-100 shadow-[0_-4px_20px_rgba(15,23,42,0.10)] px-4 py-3">
+        <Link href="/contact">
+          <Button className="w-full h-11 rounded-full bg-accent hover:bg-accent/90 text-white text-sm font-semibold shadow-sm">
+            {t("nav.cta") as string} <ArrowRight className="ml-2 h-4 w-4" />
+          </Button>
+        </Link>
+      </div>
+    )}
+    </>
   );
 }
 
@@ -535,7 +546,7 @@ function Footer() {
           <Link href="/contact">
             <Button
               size="sm"
-              className="rounded-full bg-accent hover:bg-accent/90 text-white text-xs h-8 px-4 font-semibold"
+              className="rounded-full bg-accent hover:bg-accent/90 text-white text-xs h-10 px-5 font-semibold"
             >
               {t("nav.cta") as string} <ArrowRight className="ml-1 h-3.5 w-3.5" />
             </Button>
@@ -550,7 +561,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
   return (
     <div className="dostac-root min-h-screen flex flex-col">
       <Header />
-      <main className="flex-1">{children}</main>
+      <main className="flex-1 pb-[4.5rem] md:pb-0">{children}</main>
       <Footer />
     </div>
   );

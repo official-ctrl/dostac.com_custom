@@ -294,7 +294,7 @@ function HeroTextOverlay({
                   <Button
                     size="lg"
                     variant="outline"
-                    className="rounded-full border-white/30 text-white bg-white/5 hover:bg-white/15 hover:text-white h-13 px-8 text-base font-semibold backdrop-blur-sm"
+                    className="rounded-full border-white/50 text-white bg-white/8 hover:bg-white/20 hover:text-white h-13 px-8 text-base font-semibold backdrop-blur-sm"
                   >
                     {t("homeNew.heroCtaContact") as string}
                   </Button>
