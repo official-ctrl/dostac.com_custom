@@ -481,7 +481,7 @@ const en: Dict = {
       { year: "2023", title: "Global Partnerships Formed", desc: "Strategic alliances with top-tier beauty brands across Europe and North America." },
       { year: "2026", title: "Advanced Manufacturing Network", desc: "Full orchestration of global R&D and manufacturing facilities." },
     ],
-    sections: { greeting: "About Us", history: "Our Story", philosophy: "Company Philosophy", directions: "Directions" },
+    sections: { greeting: "Greeting", history: "Our Story", philosophy: "Company Philosophy", directions: "Directions" },
     sectionDesc: {
       greeting: "Who we are and our vision.",
       history: "Three decades of milestones and growth.",
