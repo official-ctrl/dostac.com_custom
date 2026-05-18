@@ -589,69 +589,59 @@ export default function ProductImport() {
             </button>
 
             {showExample && (
-              <div className="overflow-x-auto border-t border-border">
-                <table className="w-full text-xs">
-                  <thead>
-                    <tr className="bg-muted/20 border-b border-border">
-                      {[
-                        { key: "slug", hint: null },
-                        { key: "category", hint: null },
-                        { key: "subCategory", hint: null },
-                        { key: "material", hint: null },
-                        { key: "name_ko", hint: null },
-                        { key: "features_ko", hint: "줄바꿈으로 구분" },
-                        { key: "certs", hint: "쉼표로 구분" },
-                      ].map(({ key, hint }) => (
-                        <th
-                          key={key}
-                          className="px-3 py-2 text-left font-medium text-muted-foreground whitespace-nowrap"
-                        >
-                          <code className="text-[11px]">{key}</code>
-                          {hint && (
-                            <span className="ml-1.5 text-[10px] font-normal text-accent/80 bg-accent/10 rounded px-1 py-0.5">
-                              {hint}
-                            </span>
-                          )}
-                        </th>
-                      ))}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td className="px-3 py-2 align-top">
-                        <code className="bg-muted rounded px-1 py-0.5 text-[11px]">
-                          {TEMPLATE_EXAMPLE[0]}
+              <div className="border-t border-border">
+                <div className="divide-y divide-border text-xs">
+                  {[
+                    { key: "slug", hint: null, value: TEMPLATE_EXAMPLE[0], render: "code" as const },
+                    { key: "category", hint: null, value: TEMPLATE_EXAMPLE[1], render: "text" as const },
+                    { key: "subCategory", hint: null, value: TEMPLATE_EXAMPLE[2], render: "text" as const },
+                    { key: "material", hint: null, value: TEMPLATE_EXAMPLE[3], render: "text" as const },
+                    { key: "name_ko", hint: null, value: TEMPLATE_EXAMPLE[4], render: "text" as const },
+                    { key: "features_ko", hint: "줄바꿈으로 구분", value: TEMPLATE_EXAMPLE[5] ?? "", render: "lines" as const },
+                    { key: "certs", hint: "쉼표로 구분", value: TEMPLATE_EXAMPLE[6] ?? "", render: "tags" as const },
+                  ].map(({ key, hint, value, render }) => (
+                    <div key={key} className="flex items-start gap-3 px-4 py-2.5 bg-muted/10">
+                      <div className="w-36 shrink-0 flex items-center gap-1.5 pt-0.5">
+                        <code className="bg-muted rounded px-1 py-0.5 text-[11px] text-foreground">
+                          {key}
                         </code>
-                      </td>
-                      <td className="px-3 py-2 align-top text-foreground">{TEMPLATE_EXAMPLE[1]}</td>
-                      <td className="px-3 py-2 align-top text-foreground">{TEMPLATE_EXAMPLE[2]}</td>
-                      <td className="px-3 py-2 align-top text-foreground">{TEMPLATE_EXAMPLE[3]}</td>
-                      <td className="px-3 py-2 align-top text-foreground">{TEMPLATE_EXAMPLE[4]}</td>
-                      <td className="px-3 py-2 align-top max-w-[180px]">
-                        <ul className="space-y-0.5">
-                          {(TEMPLATE_EXAMPLE[5] ?? "").split("\n").map((line, i) => (
-                            <li key={i} className="flex items-start gap-1 text-foreground">
-                              <span className="text-muted-foreground mt-0.5">·</span>
-                              <span>{line}</span>
-                            </li>
-                          ))}
-                        </ul>
-                      </td>
-                      <td className="px-3 py-2 align-top">
-                        <div className="flex flex-wrap gap-1">
-                          {(TEMPLATE_EXAMPLE[6] ?? "").split(",").map((cert) => (
-                            <span
-                              key={cert}
-                              className="text-[10px] bg-accent/10 text-accent rounded-full px-2 py-0.5 whitespace-nowrap"
-                            >
-                              {cert.trim()}
-                            </span>
-                          ))}
-                        </div>
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
+                        {hint && (
+                          <span className="text-[10px] text-accent/80 bg-accent/10 rounded px-1 py-0.5 whitespace-nowrap">
+                            {hint}
+                          </span>
+                        )}
+                      </div>
+                      <div className="flex-1 text-foreground">
+                        {render === "code" && (
+                          <code className="bg-muted rounded px-1 py-0.5 text-[11px]">{value}</code>
+                        )}
+                        {render === "text" && <span>{value}</span>}
+                        {render === "lines" && (
+                          <ul className="space-y-0.5">
+                            {value.split("\n").map((line, i) => (
+                              <li key={i} className="flex items-start gap-1">
+                                <span className="text-muted-foreground mt-0.5">·</span>
+                                <span>{line}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        )}
+                        {render === "tags" && (
+                          <div className="flex flex-wrap gap-1">
+                            {value.split(",").map((cert) => (
+                              <span
+                                key={cert}
+                                className="text-[10px] bg-accent/10 text-accent rounded-full px-2 py-0.5 whitespace-nowrap"
+                              >
+                                {cert.trim()}
+                              </span>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
             )}
           </div>
