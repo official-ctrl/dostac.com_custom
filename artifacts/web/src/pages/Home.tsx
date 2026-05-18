@@ -421,7 +421,6 @@ function ProductShowcaseSection() {
   const { data } = useListPublicProducts({ lang });
   const products = data ?? [];
   const fallbackCategories = t("homeNew.fallbackCategories") as Array<{ name: string; badge: string; slug: string }>;
-
   const getSubCategoryLabel = useSubCategoryLabel();
 
   const displayItems = products.length > 0
@@ -467,18 +466,18 @@ function ProductShowcaseSection() {
           className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-12"
         >
           {displayItems.map((item, idx) => {
-            const href = item.category
+            const categoryHref = item.category
               ? `/products?category=${encodeURIComponent(item.category)}`
               : "/products";
             const subHref =
               item.category && item.subCategory
                 ? `/products?category=${encodeURIComponent(item.category)}&subCategory=${encodeURIComponent(item.subCategory)}`
                 : null;
-            const subLabel = item.subCategory ? getSubCategoryLabel(item.subCategory) : null;
+            const primaryHref = subHref ?? categoryHref;
             return (
               <motion.div key={idx} variants={fadeUp}>
                 <div className="group rounded-2xl overflow-hidden border border-slate-100 hover:border-accent/30 hover:shadow-xl transition-all bg-white">
-                  <Link href={href} className="block">
+                  <Link href={primaryHref} className="block">
                     <div className="aspect-[4/3] overflow-hidden bg-[#F5F7FA]">
                       <img
                         src={dostacImage(item.imageKey)}
@@ -492,26 +491,29 @@ function ProductShowcaseSection() {
                     <span className="inline-block text-xs font-bold text-accent bg-accent/10 px-2.5 py-0.5 rounded-full mb-3">
                       {item.badge}
                     </span>
-                    <Link href={href} className="block mb-3">
+                    <Link href={primaryHref} className="block mb-3">
                       <h3 className="font-bold text-[#0F172A] text-base group-hover:text-accent transition-colors">{item.name}</h3>
                     </Link>
-                    <div className="flex flex-col gap-1">
-                      {item.category && (
-                        <Link href={href} className="inline-flex items-center gap-1 text-xs font-semibold text-accent hover:underline w-fit">
-                          {(t("homeNew.showcaseSeeAll") as string).replace("{cat}", item.badge)}
+                    {item.category && (
+                      <div className="flex flex-col gap-1">
+                        <Link href={primaryHref} className="inline-flex items-center gap-1 text-xs font-semibold text-accent hover:underline w-fit">
+                          {(t("homeNew.showcaseSeeAll") as string).replace(
+                            "{cat}",
+                            item.subCategory ? getSubCategoryLabel(item.subCategory) : item.badge
+                          )}
                           <ArrowRight className="h-3 w-3" />
                         </Link>
-                      )}
-                      {subHref && subLabel && (
-                        <Link
-                          href={subHref}
-                          className="inline-flex items-center gap-1 text-xs font-semibold text-slate-500 hover:text-accent hover:underline transition-colors w-fit"
-                        >
-                          {(t("homeNew.showcaseSeeAll") as string).replace("{cat}", subLabel)}
-                          <ArrowRight className="h-3 w-3" />
-                        </Link>
-                      )}
-                    </div>
+                        {subHref && (
+                          <Link
+                            href={categoryHref}
+                            className="inline-flex items-center gap-1 text-xs font-semibold text-slate-400 hover:text-slate-600 hover:underline transition-colors w-fit"
+                          >
+                            {(t("homeNew.showcaseSeeAll") as string).replace("{cat}", item.badge)}
+                            <ArrowRight className="h-3 w-3" />
+                          </Link>
+                        )}
+                      </div>
+                    )}
                   </div>
                 </div>
               </motion.div>
