@@ -6,7 +6,7 @@ import {
   getAdminListProductsQueryKey,
 } from "@workspace/api-client-react";
 import { useQueryClient } from "@tanstack/react-query";
-import { Plus, Search, Pencil, Trash2, Eye, EyeOff, Upload, ImageOff } from "lucide-react";
+import { Plus, Search, Pencil, Trash2, Eye, EyeOff, Upload, ImageOff, AlertTriangle } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -254,7 +254,25 @@ export default function Products() {
                         </div>
                       </td>
                       <td className="px-4 py-3 font-medium text-foreground">
-                        {ko?.name ?? <span className="text-muted-foreground">(미입력)</span>}
+                        <div className="flex items-center gap-2">
+                          {ko?.name ?? <span className="text-muted-foreground">(미입력)</span>}
+                          {!ko?.name?.trim() && p.published && (
+                            <TooltipProvider delayDuration={200}>
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <Link href={`/products/${p.id}`}>
+                                    <span className="flex items-center justify-center h-7 w-7 rounded-full bg-yellow-100 text-yellow-600 hover:bg-yellow-200 transition-colors cursor-pointer">
+                                      <AlertTriangle className="h-4 w-4" />
+                                    </span>
+                                  </Link>
+                                </TooltipTrigger>
+                                <TooltipContent side="right">
+                                  <p>게시된 제품에 한국어 이름이 없습니다. 클릭하여 수정하세요.</p>
+                                </TooltipContent>
+                              </Tooltip>
+                            </TooltipProvider>
+                          )}
+                        </div>
                       </td>
                       <td className="px-4 py-3 text-muted-foreground font-mono text-xs">
                         {p.slug}
