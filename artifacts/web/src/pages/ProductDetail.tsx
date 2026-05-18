@@ -37,11 +37,25 @@ function ProductDetailContent() {
 
   useEffect(() => () => { if (copyTimerRef.current) clearTimeout(copyTimerRef.current); }, []);
 
-  const handleCopy = () => {
+  const fallbackCopyToClipboard = () => {
     navigator.clipboard.writeText(window.location.href).then(() => {
       setCopied(true);
       copyTimerRef.current = setTimeout(() => setCopied(false), 2000);
     }).catch(() => {});
+  };
+
+  const handleShare = () => {
+    if (navigator.share) {
+      navigator.share({
+        title: product?.name ?? "",
+        url: window.location.href,
+      }).catch((err: unknown) => {
+        if (err instanceof DOMException && err.name === "AbortError") return;
+        fallbackCopyToClipboard();
+      });
+    } else {
+      fallbackCopyToClipboard();
+    }
   };
 
   const { data: product, isLoading, isError } = useGetPublicProduct(slug, { lang });
@@ -114,7 +128,7 @@ function ProductDetailContent() {
               )}
             </div>
             <button
-              onClick={handleCopy}
+              onClick={handleShare}
               aria-label={copied ? (t("products.copied") as string) : (t("products.copyLink") as string)}
               className="inline-flex items-center gap-1.5 rounded-full border border-white/25 bg-white/10 backdrop-blur px-3 py-1.5 text-xs font-semibold text-white/80 hover:bg-white/20 hover:text-white transition-all"
             >
