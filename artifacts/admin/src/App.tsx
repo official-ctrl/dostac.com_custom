@@ -17,6 +17,7 @@ import Banners from "@/pages/Banners";
 import BannerEdit from "@/pages/BannerEdit";
 import AboutEdit from "@/pages/AboutEdit";
 import ProcessEdit from "@/pages/ProcessEdit";
+import ProductImport from "@/pages/ProductImport";
 import NotFound from "@/pages/not-found";
 
 const queryClient = new QueryClient({
@@ -60,6 +61,7 @@ function ProtectedRoutes() {
         <Route path="/about" component={AboutEdit} />
         <Route path="/process" component={ProcessEdit} />
         <Route path="/products" component={Products} />
+        <Route path="/products/import" component={ProductImport} />
         <Route path="/products/new" component={ProductEdit} />
         <Route path="/products/:id" component={ProductEdit} />
         <Route path="/notices" component={Notices} />

@@ -6,7 +6,7 @@ import {
   getAdminListProductsQueryKey,
 } from "@workspace/api-client-react";
 import { useQueryClient } from "@tanstack/react-query";
-import { Plus, Search, Pencil, Trash2, Eye, EyeOff } from "lucide-react";
+import { Plus, Search, Pencil, Trash2, Eye, EyeOff, Upload } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -81,11 +81,18 @@ export default function Products() {
             5개 언어로 제품을 등록·게시하고 카테고리별로 정렬합니다.
           </p>
         </div>
-        <Link href="/products/new">
-          <Button className="gap-2" data-testid="button-new-product">
-            <Plus className="h-4 w-4" /> 신규 제품
-          </Button>
-        </Link>
+        <div className="flex items-center gap-2">
+          <Link href="/products/import">
+            <Button variant="outline" className="gap-2" data-testid="button-import-products">
+              <Upload className="h-4 w-4" /> 일괄 가져오기
+            </Button>
+          </Link>
+          <Link href="/products/new">
+            <Button className="gap-2" data-testid="button-new-product">
+              <Plus className="h-4 w-4" /> 신규 제품
+            </Button>
+          </Link>
+        </div>
       </header>
 
       <Card className="p-4 space-y-4">
