@@ -1,15 +1,16 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Link, useLocation } from "wouter";
 import {
   Menu,
   X,
   Globe,
   ChevronDown,
+  ChevronRight,
   ArrowRight,
 } from "lucide-react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
-import { useT, useLang, useCategoryLabel, type Lang } from "./i18n";
+import { useT, useLang, useCategoryLabel, useSubCategoryLabel, type Lang } from "./i18n";
 import { getListPublicProductsQueryOptions } from "@workspace/api-client-react";
 
 type AboutSubItem = {
@@ -294,10 +295,14 @@ function ProductsDropdown({ active }: { active: boolean }) {
   const { t } = useT();
   const { lang } = useLang();
   const catLabel = useCategoryLabel();
+  const subCatLabel = useSubCategoryLabel();
   const [, navigate] = useLocation();
   const [open, setOpen] = useState(false);
-  const wrapRef = React.useRef<HTMLDivElement | null>(null);
-  const triggerRef = React.useRef<HTMLButtonElement | null>(null);
+  const [hoveredCategory, setHoveredCategory] = useState<string | null>(null);
+  const wrapRef = useRef<HTMLDivElement | null>(null);
+  const triggerRef = useRef<HTMLButtonElement | null>(null);
+  const leftPanelRef = useRef<HTMLDivElement | null>(null);
+  const rightPanelRef = useRef<HTMLDivElement | null>(null);
   const menuId = "products-dropdown-menu";
 
   const productsQuery = useQuery({
@@ -306,10 +311,6 @@ function ProductsDropdown({ active }: { active: boolean }) {
   });
   const products = productsQuery.data ?? [];
 
-  // Derive unique category slugs from the product list, then map each raw DB
-  // slug to its localized display name for the active language so the dropdown
-  // reflects the visitor's language (e.g. "skincare" → "스킨케어" / "Skin Care"
-  // / "スキンケア" / "护肤" / "Chăm sóc da" depending on the active lang).
   const rawCategories = Array.from(
     new Set(products.map((p) => p.category).filter((c): c is string => !!c))
   );
@@ -318,10 +319,24 @@ function ProductsDropdown({ active }: { active: boolean }) {
     label: catLabel(slug),
   }));
 
+  // Build a map of category → sorted list of unique sub-categories.
+  const subCatMap = products.reduce<Record<string, string[]>>((acc, p) => {
+    if (p.category && p.subCategory) {
+      if (!acc[p.category]) acc[p.category] = [];
+      if (!acc[p.category].includes(p.subCategory)) acc[p.category].push(p.subCategory);
+    }
+    return acc;
+  }, {});
+
+  const activeSubs = hoveredCategory ? (subCatMap[hoveredCategory] ?? []) : [];
+
   useEffect(() => {
     if (!open) return;
     const onDoc = (e: MouseEvent) => {
-      if (!wrapRef.current?.contains(e.target as Node)) setOpen(false);
+      if (!wrapRef.current?.contains(e.target as Node)) {
+        setOpen(false);
+        setHoveredCategory(null);
+      }
     };
     document.addEventListener("mousedown", onDoc);
     return () => document.removeEventListener("mousedown", onDoc);
@@ -330,6 +345,7 @@ function ProductsDropdown({ active }: { active: boolean }) {
   const onKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Escape") {
       setOpen(false);
+      setHoveredCategory(null);
       triggerRef.current?.focus();
     }
     if ((e.key === "ArrowDown" || e.key === "Enter" || e.key === " ") && !open) {
@@ -339,7 +355,15 @@ function ProductsDropdown({ active }: { active: boolean }) {
   };
 
   const onBlurCapture = (e: React.FocusEvent) => {
-    if (!wrapRef.current?.contains(e.relatedTarget as Node)) setOpen(false);
+    if (!wrapRef.current?.contains(e.relatedTarget as Node)) {
+      setOpen(false);
+      setHoveredCategory(null);
+    }
+  };
+
+  const close = () => {
+    setOpen(false);
+    setHoveredCategory(null);
   };
 
   return (
@@ -347,7 +371,7 @@ function ProductsDropdown({ active }: { active: boolean }) {
       ref={wrapRef}
       className="relative"
       onMouseEnter={() => setOpen(true)}
-      onMouseLeave={() => setOpen(false)}
+      onMouseLeave={() => { setOpen(false); setHoveredCategory(null); }}
       onKeyDown={onKeyDown}
       onBlurCapture={onBlurCapture}
     >
@@ -378,41 +402,103 @@ function ProductsDropdown({ active }: { active: boolean }) {
           aria-label={t("nav.product") as string}
           className="absolute left-1/2 top-full -translate-x-1/2 pt-3 z-50"
         >
-          <div className="w-52 flex flex-col py-2 px-1.5 rounded-xl border border-slate-200 bg-white shadow-xl">
-            <Link
-              href="/products"
-              role="menuitem"
-              data-testid="nav-products-all"
-              className="px-3 py-2 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-50 hover:text-primary transition focus:bg-slate-100 focus:outline-none"
-              onClick={() => setOpen(false)}
+          <div className="flex gap-1.5 items-start">
+            {/* Left panel — categories */}
+            <div
+              ref={leftPanelRef}
+              className="w-52 flex flex-col py-2 px-1.5 rounded-xl border border-slate-200 bg-white shadow-xl"
             >
-              {t("products.filterAll") as string}
-            </Link>
-            {productsQuery.isLoading && (
-              <>
-                <div className="my-1 mx-3 border-t border-slate-100" />
-                {[1, 2, 3].map((i) => (
-                  <div key={i} className="px-3 py-2">
-                    <div className="h-4 w-24 rounded bg-slate-100 animate-pulse" />
-                  </div>
-                ))}
-              </>
-            )}
-            {!productsQuery.isLoading && localizedCategories.length > 0 && (
-              <div className="my-1 mx-3 border-t border-slate-100" />
-            )}
-            {!productsQuery.isLoading && localizedCategories.map(({ slug, label }) => (
               <Link
-                key={slug}
-                href={`/products?category=${encodeURIComponent(slug)}`}
+                href="/products"
                 role="menuitem"
-                data-testid={`nav-products-cat-${slug}`}
+                data-testid="nav-products-all"
                 className="px-3 py-2 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-50 hover:text-primary transition focus:bg-slate-100 focus:outline-none"
-                onClick={() => setOpen(false)}
+                onClick={close}
+                onMouseEnter={() => setHoveredCategory(null)}
               >
-                {label}
+                {t("products.filterAll") as string}
               </Link>
-            ))}
+              {productsQuery.isLoading && (
+                <>
+                  <div className="my-1 mx-3 border-t border-slate-100" />
+                  {[1, 2, 3].map((i) => (
+                    <div key={i} className="px-3 py-2">
+                      <div className="h-4 w-24 rounded bg-slate-100 animate-pulse" />
+                    </div>
+                  ))}
+                </>
+              )}
+              {!productsQuery.isLoading && localizedCategories.length > 0 && (
+                <div className="my-1 mx-3 border-t border-slate-100" />
+              )}
+              {!productsQuery.isLoading && localizedCategories.map(({ slug, label }) => {
+                const hasSubs = (subCatMap[slug]?.length ?? 0) > 0;
+                const isHovered = hoveredCategory === slug;
+                return (
+                  <button
+                    key={slug}
+                    type="button"
+                    role="menuitem"
+                    data-testid={`nav-products-cat-${slug}`}
+                    aria-haspopup={hasSubs ? "menu" : undefined}
+                    aria-expanded={hasSubs ? isHovered : undefined}
+                    onMouseEnter={() => setHoveredCategory(slug)}
+                    onFocus={() => setHoveredCategory(slug)}
+                    onClick={() => { navigate(`/products?category=${encodeURIComponent(slug)}`); close(); }}
+                    onKeyDown={(e) => {
+                      if (e.key === "ArrowRight" && hasSubs) {
+                        e.preventDefault();
+                        const firstBtn = rightPanelRef.current?.querySelector<HTMLElement>("a, button");
+                        firstBtn?.focus();
+                      }
+                    }}
+                    className={`w-full flex items-center justify-between px-3 py-2 rounded-lg text-sm font-medium text-left transition focus:outline-none focus-visible:ring-2 focus-visible:ring-accent ${
+                      isHovered ? "bg-slate-50 text-primary" : "text-slate-700 hover:bg-slate-50 hover:text-primary"
+                    }`}
+                  >
+                    <span>{label}</span>
+                    {hasSubs && (
+                      <ChevronRight className="h-3.5 w-3.5 opacity-40 flex-shrink-0" />
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Right panel — sub-categories for hovered category */}
+            {hoveredCategory && activeSubs.length > 0 && (
+              <div
+                ref={rightPanelRef}
+                role="menu"
+                aria-label={catLabel(hoveredCategory)}
+                className="w-48 flex flex-col py-2 px-1.5 rounded-xl border border-slate-200 bg-white shadow-xl"
+              >
+                <p className="px-3 pt-1 pb-2 text-[10px] font-semibold uppercase tracking-widest text-slate-400 select-none">
+                  {catLabel(hoveredCategory)}
+                </p>
+                {activeSubs.map((sub) => (
+                  <Link
+                    key={sub}
+                    href={`/products?category=${encodeURIComponent(hoveredCategory)}&subCategory=${encodeURIComponent(sub)}`}
+                    role="menuitem"
+                    data-testid={`nav-products-sub-${sub}`}
+                    onClick={close}
+                    onKeyDown={(e) => {
+                      if (e.key === "ArrowLeft") {
+                        e.preventDefault();
+                        const catBtn = leftPanelRef.current?.querySelector<HTMLElement>(
+                          `[data-testid="nav-products-cat-${hoveredCategory}"]`
+                        );
+                        catBtn?.focus();
+                      }
+                    }}
+                    className="px-3 py-2 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-50 hover:text-primary transition focus:bg-slate-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+                  >
+                    {subCatLabel(sub)}
+                  </Link>
+                ))}
+              </div>
+            )}
           </div>
         </div>
       )}
@@ -432,14 +518,15 @@ function MobileProductsAccordion({
   const { t } = useT();
   const { lang } = useLang();
   const catLabel = useCategoryLabel();
+  const subCatLabel = useSubCategoryLabel();
+  const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
+
   const productsQuery = useQuery({
     ...getListPublicProductsQueryOptions({ lang }),
     staleTime: 5 * 60 * 1000,
   });
   const products = productsQuery.data ?? [];
 
-  // Same localization pattern as ProductsDropdown: derive unique slugs then
-  // translate each to the visitor's active language before rendering.
   const rawCategories = Array.from(
     new Set(products.map((p) => p.category).filter((c): c is string => !!c))
   );
@@ -447,6 +534,14 @@ function MobileProductsAccordion({
     slug,
     label: catLabel(slug),
   }));
+
+  const subCatMap = products.reduce<Record<string, string[]>>((acc, p) => {
+    if (p.category && p.subCategory) {
+      if (!acc[p.category]) acc[p.category] = [];
+      if (!acc[p.category].includes(p.subCategory)) acc[p.category].push(p.subCategory);
+    }
+    return acc;
+  }, {});
 
   return (
     <div>
@@ -480,17 +575,52 @@ function MobileProductsAccordion({
               <div className="h-3.5 w-20 rounded bg-slate-100 animate-pulse" />
             </div>
           ))}
-          {!productsQuery.isLoading && localizedCategories.map(({ slug, label }) => (
-            <Link
-              key={slug}
-              href={`/products?category=${encodeURIComponent(slug)}`}
-              data-testid={`mobile-nav-products-cat-${slug}`}
-              className="block px-3 py-1.5 rounded-md text-sm text-slate-600 hover:bg-slate-100"
-              onClick={onClose}
-            >
-              {label}
-            </Link>
-          ))}
+          {!productsQuery.isLoading && localizedCategories.map(({ slug, label }) => {
+            const subs = subCatMap[slug] ?? [];
+            const isExpanded = expandedCategory === slug;
+            return (
+              <div key={slug}>
+                <div className="flex items-center gap-0.5">
+                  <Link
+                    href={`/products?category=${encodeURIComponent(slug)}`}
+                    data-testid={`mobile-nav-products-cat-${slug}`}
+                    className="flex-1 px-3 py-1.5 rounded-md text-sm text-slate-600 hover:bg-slate-100"
+                    onClick={onClose}
+                  >
+                    {label}
+                  </Link>
+                  {subs.length > 0 && (
+                    <button
+                      type="button"
+                      aria-expanded={isExpanded}
+                      aria-label={`${label} — ${t("products.subCategoryLabel") as string}`}
+                      onClick={() => setExpandedCategory(isExpanded ? null : slug)}
+                      className="p-1.5 rounded-md text-slate-400 hover:bg-slate-100 hover:text-slate-600 transition-colors"
+                    >
+                      <ChevronRight
+                        className={`h-3.5 w-3.5 transition-transform ${isExpanded ? "rotate-90" : ""}`}
+                      />
+                    </button>
+                  )}
+                </div>
+                {isExpanded && subs.length > 0 && (
+                  <div className="ml-3 mt-0.5 mb-1 space-y-0.5 border-l border-slate-100 pl-3">
+                    {subs.map((sub) => (
+                      <Link
+                        key={sub}
+                        href={`/products?category=${encodeURIComponent(slug)}&subCategory=${encodeURIComponent(sub)}`}
+                        data-testid={`mobile-nav-products-sub-${sub}`}
+                        className="block px-3 py-1.5 rounded-md text-xs text-slate-500 hover:bg-slate-100 hover:text-slate-700"
+                        onClick={onClose}
+                      >
+                        {subCatLabel(sub)}
+                      </Link>
+                    ))}
+                  </div>
+                )}
+              </div>
+            );
+          })}
         </div>
       )}
     </div>
