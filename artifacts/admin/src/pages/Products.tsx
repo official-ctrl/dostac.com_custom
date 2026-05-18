@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { Link } from "wouter";
+import { Link, useSearch } from "wouter";
 import {
   useAdminListProducts,
   useAdminDeleteProduct,
@@ -30,7 +30,10 @@ export default function Products() {
   const { data: products, isLoading } = useAdminListProducts();
   const deleteMut = useAdminDeleteProduct();
 
-  const [search, setSearch] = useState("");
+  const searchString = useSearch();
+  const [search, setSearch] = useState(
+    () => new URLSearchParams(searchString).get("q") ?? "",
+  );
   const [pendingDelete, setPendingDelete] = useState<{ id: number; name: string } | null>(null);
 
   const categories = useMemo(() => {

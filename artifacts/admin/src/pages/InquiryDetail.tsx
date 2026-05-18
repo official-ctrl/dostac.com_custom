@@ -141,7 +141,15 @@ export default function InquiryDetail() {
                   <InfoRow icon={Globe} label="국가" value={inquiry.country} />
                 )}
                 {inquiry.productInterest && (
-                  <InfoRow icon={Package} label="관심 제품" value={inquiry.productInterest} />
+                  <InfoRow icon={Package} label="관심 제품">
+                    <Link
+                      href={`/products?q=${encodeURIComponent(inquiry.productInterest)}`}
+                      className="text-accent hover:underline"
+                      data-testid="link-product-interest"
+                    >
+                      {inquiry.productInterest}
+                    </Link>
+                  </InfoRow>
                 )}
                 {inquiry.quantity && (
                   <InfoRow icon={Layers} label="예상 수량" value={inquiry.quantity} />

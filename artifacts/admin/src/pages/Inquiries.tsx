@@ -101,7 +101,7 @@ export default function Inquiries() {
                   <th className="px-4 py-2 font-medium">상태</th>
                   <th className="px-4 py-2 font-medium">담당자 / 이메일</th>
                   <th className="px-4 py-2 font-medium">회사</th>
-                  <th className="px-4 py-2 font-medium">유형</th>
+                  <th className="px-4 py-2 font-medium">유형 / 제품</th>
                   <th className="px-4 py-2 font-medium">메시지</th>
                   <th className="px-4 py-2 font-medium">접수일</th>
                   <th className="px-4 py-2 font-medium text-right">상세</th>
@@ -128,7 +128,17 @@ export default function Inquiries() {
                         <div className="text-xs text-muted-foreground">{i.email}</div>
                       </td>
                       <td className="px-4 py-3 text-muted-foreground">{i.company || "—"}</td>
-                      <td className="px-4 py-3 text-muted-foreground text-xs">{typeLabel}</td>
+                      <td className="px-4 py-3 text-xs">
+                        <div className="text-muted-foreground">{typeLabel}</div>
+                        {i.productInterest && (
+                          <div
+                            className="text-foreground/70 mt-0.5 max-w-[140px] truncate"
+                            title={i.productInterest}
+                          >
+                            {i.productInterest}
+                          </div>
+                        )}
+                      </td>
                       <td className="px-4 py-3 text-muted-foreground text-xs max-w-[260px] truncate">
                         {i.message}
                       </td>
