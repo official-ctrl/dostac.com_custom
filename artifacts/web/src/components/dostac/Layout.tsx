@@ -303,6 +303,7 @@ function ProductsDropdown({ active }: { active: boolean }) {
   const triggerRef = useRef<HTMLButtonElement | null>(null);
   const leftPanelRef = useRef<HTMLDivElement | null>(null);
   const rightPanelRef = useRef<HTMLDivElement | null>(null);
+  const closeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const menuId = "products-dropdown-menu";
 
   const productsQuery = useQuery({
@@ -351,6 +352,28 @@ function ProductsDropdown({ active }: { active: boolean }) {
     return () => document.removeEventListener("mousedown", onDoc);
   }, [open]);
 
+  useEffect(() => {
+    return () => {
+      if (closeTimerRef.current !== null) clearTimeout(closeTimerRef.current);
+    };
+  }, []);
+
+  const scheduleClose = () => {
+    if (closeTimerRef.current !== null) clearTimeout(closeTimerRef.current);
+    closeTimerRef.current = setTimeout(() => {
+      closeTimerRef.current = null;
+      setOpen(false);
+      setHoveredCategory(null);
+    }, 150);
+  };
+
+  const cancelClose = () => {
+    if (closeTimerRef.current !== null) {
+      clearTimeout(closeTimerRef.current);
+      closeTimerRef.current = null;
+    }
+  };
+
   const onKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Escape") {
       setOpen(false);
@@ -379,8 +402,8 @@ function ProductsDropdown({ active }: { active: boolean }) {
     <div
       ref={wrapRef}
       className="relative"
-      onMouseEnter={() => setOpen(true)}
-      onMouseLeave={() => { setOpen(false); setHoveredCategory(null); }}
+      onMouseEnter={() => { cancelClose(); setOpen(true); }}
+      onMouseLeave={scheduleClose}
       onKeyDown={onKeyDown}
       onBlurCapture={onBlurCapture}
     >
