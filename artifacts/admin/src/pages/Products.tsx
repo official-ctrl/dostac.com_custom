@@ -39,12 +39,23 @@ export default function Products() {
     return ["all", ...Array.from(set).sort()];
   }, [products]);
   const [activeCat, setActiveCat] = useState<string>("all");
+  const [activeSubCat, setActiveSubCat] = useState<string>("all");
+
+  const subCategories = useMemo(() => {
+    if (activeCat === "all" || !products) return [];
+    const set = new Set<string>();
+    products
+      .filter((p) => p.category === activeCat && p.subCategory)
+      .forEach((p) => set.add(p.subCategory as string));
+    return Array.from(set).sort();
+  }, [products, activeCat]);
 
   const filtered = useMemo(() => {
     if (!products) return [];
     const q = search.trim().toLowerCase();
     return products.filter((p) => {
       if (activeCat !== "all" && p.category !== activeCat) return false;
+      if (activeSubCat !== "all" && p.subCategory !== activeSubCat) return false;
       if (!q) return true;
       const ko = getTr(p.translations, "ko");
       return (
@@ -54,7 +65,7 @@ export default function Products() {
         (ko?.headline?.toLowerCase().includes(q) ?? false)
       );
     });
-  }, [products, activeCat, search]);
+  }, [products, activeCat, activeSubCat, search]);
 
   const onDelete = async () => {
     if (!pendingDelete) return;
@@ -114,7 +125,10 @@ export default function Products() {
                 key={c}
                 variant={activeCat === c ? "default" : "outline"}
                 size="sm"
-                onClick={() => setActiveCat(c)}
+                onClick={() => {
+                  setActiveCat(c);
+                  setActiveSubCat("all");
+                }}
                 data-testid={`filter-cat-${c}`}
               >
                 {c === "all" ? "전체" : c}
@@ -122,6 +136,34 @@ export default function Products() {
             ))}
           </div>
         </div>
+
+        {subCategories.length > 0 && (
+          <div className="flex flex-wrap items-center gap-1 pt-1 border-t border-border">
+            <span className="text-xs text-muted-foreground mr-1">하위 카테고리:</span>
+            <Button
+              key="all"
+              variant={activeSubCat === "all" ? "secondary" : "ghost"}
+              size="sm"
+              className="h-7 text-xs px-2"
+              onClick={() => setActiveSubCat("all")}
+              data-testid="filter-subcat-all"
+            >
+              전체
+            </Button>
+            {subCategories.map((sc) => (
+              <Button
+                key={sc}
+                variant={activeSubCat === sc ? "secondary" : "ghost"}
+                size="sm"
+                className="h-7 text-xs px-2"
+                onClick={() => setActiveSubCat(sc)}
+                data-testid={`filter-subcat-${sc}`}
+              >
+                {sc}
+              </Button>
+            ))}
+          </div>
+        )}
 
         {isLoading ? (
           <p className="text-sm text-muted-foreground py-12 text-center">로딩 중…</p>
