@@ -20,7 +20,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
-import { ArrowLeft, Loader2, Save, Mail, Building2, Tag, MessageSquare, Globe, Package, Layers, Wrench } from "lucide-react";
+import { ArrowLeft, Loader2, Save, Mail, Building2, Tag, MessageSquare, Globe, Package, Layers, Wrench, ShoppingBag } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 const STATUS_OPTIONS = [
@@ -35,6 +35,30 @@ const INQUIRY_TYPE_LABEL: Record<string, string> = {
   sample: "Sample",
   other: "기타 (Other)",
 };
+
+const PREFILL_PREFIXES = [
+  "문의 제품: ",
+  "Inquiry about: ",
+  "お問い合わせ製品: ",
+  "咨询产品: ",
+  "Sản phẩm cần tư vấn: ",
+];
+
+function parseProductFromMessage(message: string): string | null {
+  for (const prefix of PREFILL_PREFIXES) {
+    if (message.startsWith(prefix)) {
+      const rest = message.slice(prefix.length);
+      let end = rest.length;
+      const parenIdx = rest.indexOf(" (");
+      const newlineIdx = rest.indexOf("\n");
+      if (parenIdx !== -1) end = Math.min(end, parenIdx);
+      if (newlineIdx !== -1) end = Math.min(end, newlineIdx);
+      const productName = rest.slice(0, end).trim();
+      return productName || null;
+    }
+  }
+  return null;
+}
 
 export default function InquiryDetail() {
   const params = useParams<{ id: string }>();
@@ -90,6 +114,8 @@ export default function InquiryDetail() {
   const typeLabel = inquiry.inquiryType
     ? INQUIRY_TYPE_LABEL[inquiry.inquiryType] ?? inquiry.inquiryType
     : "—";
+
+  const parsedProduct = parseProductFromMessage(inquiry.message);
 
   return (
     <div className="px-8 py-8 space-y-6 max-w-4xl">
@@ -158,6 +184,26 @@ export default function InquiryDetail() {
                   <InfoRow icon={Wrench} label="맞춤 요청" value={inquiry.customization} />
                 )}
               </div>
+
+              {parsedProduct && (
+                <div
+                  className="flex items-center gap-3 rounded-lg border border-blue-200 bg-blue-50 px-4 py-3"
+                  data-testid="product-context-banner"
+                >
+                  <ShoppingBag className="h-4 w-4 text-blue-600 shrink-0" />
+                  <div className="min-w-0">
+                    <p className="text-xs font-semibold text-blue-500 uppercase tracking-wide leading-none mb-0.5">
+                      문의 제품
+                    </p>
+                    <p
+                      className="text-sm font-semibold text-blue-900 truncate"
+                      data-testid="text-parsed-product"
+                    >
+                      {parsedProduct}
+                    </p>
+                  </div>
+                </div>
+              )}
 
               <div className="pt-2 border-t border-border">
                 <Label className="text-xs uppercase tracking-wider text-muted-foreground">
