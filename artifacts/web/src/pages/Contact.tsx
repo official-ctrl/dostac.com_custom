@@ -97,6 +97,8 @@ function ContactContent() {
     },
   );
 
+  const [formHighlight, setFormHighlight] = useState(false);
+
   useEffect(() => {
     const params = new URLSearchParams(search);
     const source = params.get("source");
@@ -109,6 +111,12 @@ function ContactContent() {
       if (el) {
         const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
         el.scrollIntoView({ behavior: reduced ? "instant" : "smooth", block: "start" });
+        if (!reduced && (source === "about" || source === "production")) {
+          setFormHighlight(false);
+          requestAnimationFrame(() => {
+            requestAnimationFrame(() => setFormHighlight(true));
+          });
+        }
       }
     }
   }, [search]);
@@ -232,7 +240,7 @@ function ContactContent() {
           >
             {/* FORM CARD */}
             <motion.div variants={fadeUp} className="lg:col-span-2">
-              <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-7 md:p-10">
+              <div className={`bg-white rounded-2xl border border-slate-200 shadow-sm p-7 md:p-10${formHighlight ? " form-highlight-pulse" : ""}`}>
                 <h2 className="font-display text-2xl font-bold text-[#0F172A] mb-7">
                   {t("contact.formHeading") as string}
                 </h2>
