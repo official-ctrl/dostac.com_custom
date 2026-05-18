@@ -175,6 +175,34 @@ function downloadTemplate() {
   URL.revokeObjectURL(url);
 }
 
+function downloadErrorRows(invalidRows: ParsedRow[]) {
+  const ERROR_HEADERS = [...TEMPLATE_HEADERS, "_errors"];
+  const csvRow = (values: string[]) =>
+    values.map((v) => `"${v.replace(/"/g, '""')}"`).join(",");
+
+  const dataRows = invalidRows.map((row) =>
+    csvRow([
+      row.slug,
+      row.category,
+      row.subCategory,
+      row.material,
+      row.name_ko,
+      row.features_ko,
+      row.certs.join(","),
+      row.errors.join(" / "),
+    ]),
+  );
+
+  const csv = [csvRow(ERROR_HEADERS), ...dataRows].join("\r\n");
+  const blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "product_import_errors.csv";
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
 export default function ProductImport() {
   const [, navigate] = useLocation();
   const qc = useQueryClient();
@@ -509,8 +537,8 @@ export default function ProductImport() {
 
           {rows.length > 0 && (
             <div className="space-y-3">
-              <div className="flex items-center justify-between text-sm">
-                <span className="text-muted-foreground">
+              <div className="flex items-center justify-between text-sm gap-3">
+                <span className="text-muted-foreground shrink-0">
                   총 <strong className="text-foreground">{rows.length}</strong>개 행 파싱됨 —{" "}
                   <span className="text-green-600">{importableRows.length}개 가져올 예정</span>
                   {duplicateRows.length > 0 && (
@@ -528,20 +556,34 @@ export default function ProductImport() {
                     </>
                   )}
                 </span>
-                <Button
-                  onClick={() => void runImport()}
-                  disabled={!canImport}
-                  className="gap-2"
-                >
-                  {isImporting ? (
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                  ) : (
-                    <PlayCircle className="h-4 w-4" />
+                <div className="flex items-center gap-2 shrink-0">
+                  {invalidRows.length > 0 && (
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      className="gap-2 border-destructive/40 text-destructive hover:bg-destructive/5 hover:text-destructive"
+                      onClick={() => downloadErrorRows(invalidRows)}
+                    >
+                      <Download className="h-4 w-4" />
+                      오류 행만 내보내기
+                    </Button>
                   )}
-                  {isImporting
-                    ? "가져오는 중…"
-                    : `${importableRows.length}개 가져오기`}
-                </Button>
+                  <Button
+                    onClick={() => void runImport()}
+                    disabled={!canImport}
+                    className="gap-2"
+                  >
+                    {isImporting ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : (
+                      <PlayCircle className="h-4 w-4" />
+                    )}
+                    {isImporting
+                      ? "가져오는 중…"
+                      : `${importableRows.length}개 가져오기`}
+                  </Button>
+                </div>
               </div>
 
               {duplicateRows.length > 0 && (
