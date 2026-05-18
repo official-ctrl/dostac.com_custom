@@ -489,9 +489,26 @@ function ProductsContent() {
                           </span>
                         )}
                         {product.subCategory && (
-                          <span className="inline-flex items-center rounded-full bg-accent/85 backdrop-blur px-3 py-1 text-xs font-semibold text-white shadow-sm">
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.preventDefault();
+                              if (selectedCategory !== product.category) {
+                                setSelectedCategory(product.category ?? null);
+                                setSelectedSubCategory(product.subCategory ?? null);
+                                navigate(buildUrl(product.category ?? null, product.subCategory ?? null), { replace: false });
+                                window.scrollTo({ top: 0, behavior: "smooth" });
+                                saveStoredFilter(product.category ?? null, product.subCategory ?? null);
+                              } else {
+                                handleSubCategorySelect(
+                                  selectedSubCategory === product.subCategory ? null : (product.subCategory ?? null)
+                                );
+                              }
+                            }}
+                            className="inline-flex items-center rounded-full bg-accent/85 backdrop-blur px-3 py-1 text-xs font-semibold text-white shadow-sm hover:bg-accent transition-colors cursor-pointer"
+                          >
                             {product.subCategory}
-                          </span>
+                          </button>
                         )}
                       </div>
                     </motion.div>
