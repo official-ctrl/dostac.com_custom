@@ -103,6 +103,10 @@ function ProductsContent() {
   const [activeSlug, setActiveSlug] = useState<string | null>(null);
   const [copiedCategory, setCopiedCategory] = useState(false);
   const [restoredFilter, setRestoredFilter] = useState<{ category: string; subCategory: string | null } | null>(null);
+  const [restoredFilterFading, setRestoredFilterFading] = useState(false);
+  const restoredFilterTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const restoredFilterFadeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const isRestoredHoveredRef = useRef(false);
 
   const didRestoreRef = useRef(false);
   useEffect(() => {
@@ -285,14 +289,35 @@ function ProductsContent() {
     if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
+  const dismissRestoredFilterWithFade = useCallback(() => {
+    if (restoredFilterTimerRef.current) clearTimeout(restoredFilterTimerRef.current);
+    if (restoredFilterFadeTimerRef.current) clearTimeout(restoredFilterFadeTimerRef.current);
+    setRestoredFilterFading(true);
+    restoredFilterFadeTimerRef.current = setTimeout(() => {
+      setRestoredFilter(null);
+      setRestoredFilterFading(false);
+    }, 350);
+  }, []);
+
+  const startRestoredFilterTimer = useCallback(() => {
+    if (restoredFilterTimerRef.current) clearTimeout(restoredFilterTimerRef.current);
+    restoredFilterTimerRef.current = setTimeout(() => {
+      if (!isRestoredHoveredRef.current) dismissRestoredFilterWithFade();
+    }, 5000);
+  }, [dismissRestoredFilterWithFade]);
+
   useEffect(() => {
     if (restoredFilter === null) return;
-    const id = setTimeout(() => setRestoredFilter(null), 3000);
-    return () => clearTimeout(id);
-  }, [restoredFilter]);
+    setRestoredFilterFading(false);
+    startRestoredFilterTimer();
+    return () => {
+      if (restoredFilterTimerRef.current) clearTimeout(restoredFilterTimerRef.current);
+      if (restoredFilterFadeTimerRef.current) clearTimeout(restoredFilterFadeTimerRef.current);
+    };
+  }, [restoredFilter, startRestoredFilterTimer]);
 
   const handleDismissRestoredFilter = () => {
-    setRestoredFilter(null);
+    dismissRestoredFilterWithFade();
   };
 
   const handleCategorySelect = (cat: string | null) => {
@@ -435,7 +460,18 @@ function ProductsContent() {
 
       {/* RESTORED FILTER CHIP */}
       {restoredFilter !== null && (
-        <div className="bg-amber-50 border-b border-amber-100">
+        <div
+          className="bg-amber-50 border-b border-amber-100"
+          style={{ opacity: restoredFilterFading ? 0 : 1, transition: "opacity 350ms ease" }}
+          onMouseEnter={() => {
+            isRestoredHoveredRef.current = true;
+            if (restoredFilterTimerRef.current) clearTimeout(restoredFilterTimerRef.current);
+          }}
+          onMouseLeave={() => {
+            isRestoredHoveredRef.current = false;
+            startRestoredFilterTimer();
+          }}
+        >
           <div className="container mx-auto px-6">
             <div className="flex items-center gap-2 py-2">
               <span className="text-xs text-amber-700 font-medium">
