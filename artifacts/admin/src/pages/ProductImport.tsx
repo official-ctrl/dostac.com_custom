@@ -15,6 +15,7 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
+import { ToastAction } from "@/components/ui/toast";
 import {
   ArrowLeft,
   Upload,
@@ -256,6 +257,7 @@ export default function ProductImport() {
     errors: number;
   } | null>(null);
   const [highlightedError, setHighlightedError] = useState<string | null>(null);
+  const [removedRows, setRemovedRows] = useState<ParsedRow[]>([]);
 
   const validRows = rows.filter((r) => r.errors.length === 0);
   const invalidRows = rows.filter((r) => r.errors.length > 0);
@@ -300,6 +302,7 @@ export default function ProductImport() {
     if (!file) return;
     setFileName(file.name);
     setRows([]);
+    setRemovedRows([]);
     setImportResult(null);
 
     try {
@@ -363,8 +366,28 @@ export default function ProductImport() {
     );
   };
 
+  const handleRestoreRow = useCallback((row: ParsedRow) => {
+    setRemovedRows((prev) => prev.filter((r) => r.index !== row.index));
+    setRows((prev) => {
+      const restored = [...prev, row];
+      restored.sort((a, b) => a.index - b.index);
+      return restored;
+    });
+  }, []);
+
   const handleRemoveRow = (rowIndex: number) => {
+    const row = rows.find((r) => r.index === rowIndex);
+    if (!row) return;
     setRows((prev) => prev.filter((r) => r.index !== rowIndex));
+    setRemovedRows((prev) => [...prev, row]);
+    toast({
+      description: `행 #${rowIndex + 1} 삭제됨`,
+      action: (
+        <ToastAction altText="되돌리기" onClick={() => handleRestoreRow(row)}>
+          되돌리기
+        </ToastAction>
+      ),
+    });
   };
 
   const handleFieldEdit = (
@@ -1098,6 +1121,7 @@ export default function ProductImport() {
             variant="outline"
             onClick={() => {
               setRows([]);
+              setRemovedRows([]);
               setFileName(null);
               setImportResult(null);
               if (fileInputRef.current) fileInputRef.current.value = "";
