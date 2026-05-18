@@ -426,11 +426,13 @@ function ProductShowcaseSection() {
     ? products.slice(0, 6).map((p: { name: string; category: string }, i: number) => ({
         name: p.name,
         badge: p.category || "OEM / ODM",
+        category: p.category || null,
         imageKey: PRODUCT_IMAGES[i] ?? "product-01.webp",
       }))
     : fallbackCategories.map((cat, i) => ({
         name: cat.name,
         badge: cat.badge,
+        category: null as string | null,
         imageKey: PRODUCT_IMAGES[i] ?? "product-01.webp",
       }));
 
@@ -460,28 +462,31 @@ function ProductShowcaseSection() {
           variants={stagger}
           className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-12"
         >
-          {displayItems.map((item, idx) => (
-            <motion.div
-              key={idx}
-              variants={fadeUp}
-              className="group rounded-2xl overflow-hidden border border-slate-100 hover:border-accent/30 hover:shadow-xl transition-all bg-white"
-            >
-              <div className="aspect-[4/3] overflow-hidden bg-[#F5F7FA]">
-                <img
-                  src={dostacImage(item.imageKey)}
-                  alt={item.name}
-                  loading="lazy"
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                />
-              </div>
-              <div className="p-5">
-                <span className="inline-block text-xs font-bold text-accent bg-accent/10 px-2.5 py-0.5 rounded-full mb-3">
-                  {item.badge}
-                </span>
-                <h3 className="font-bold text-[#0F172A] text-base">{item.name}</h3>
-              </div>
-            </motion.div>
-          ))}
+          {displayItems.map((item, idx) => {
+            const href = item.category
+              ? `/products?category=${encodeURIComponent(item.category)}`
+              : "/products";
+            return (
+              <motion.div key={idx} variants={fadeUp}>
+                <Link href={href} className="block group rounded-2xl overflow-hidden border border-slate-100 hover:border-accent/30 hover:shadow-xl transition-all bg-white">
+                  <div className="aspect-[4/3] overflow-hidden bg-[#F5F7FA]">
+                    <img
+                      src={dostacImage(item.imageKey)}
+                      alt={item.name}
+                      loading="lazy"
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    />
+                  </div>
+                  <div className="p-5">
+                    <span className="inline-block text-xs font-bold text-accent bg-accent/10 px-2.5 py-0.5 rounded-full mb-3">
+                      {item.badge}
+                    </span>
+                    <h3 className="font-bold text-[#0F172A] text-base">{item.name}</h3>
+                  </div>
+                </Link>
+              </motion.div>
+            );
+          })}
         </motion.div>
 
         <div className="text-center">
