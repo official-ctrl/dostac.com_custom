@@ -79,7 +79,9 @@ function ProductDetailContent() {
     );
   }
 
-  const fallbackImg = dostacImage("hero-products.webp");
+  const fallbackImg = dostacImage(
+    `product-${String(((product.id - 1) % 10) + 1).padStart(2, "0")}.webp`,
+  );
 
   return (
     <>

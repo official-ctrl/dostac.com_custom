@@ -241,7 +241,7 @@ function ProductsContent() {
         ) : (
           filteredProducts.map((product, index) => {
             const fallbackImg = dostacImage(
-              `product-${String((index % 10) + 1).padStart(2, "0")}.webp`,
+              `product-${String(((product.id - 1) % 10) + 1).padStart(2, "0")}.webp`,
             );
             const isOdd = index % 2 !== 0;
             const features = product.features;
