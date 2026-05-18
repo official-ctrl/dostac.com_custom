@@ -7,7 +7,7 @@ import {
   ChevronDown,
   ArrowRight,
 } from "lucide-react";
-import { useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { useT, useLang, type Lang } from "./i18n";
 import { getListPublicProductsQueryOptions } from "@workspace/api-client-react";
@@ -290,12 +290,187 @@ function ProcessDropdown({ active, scrolled }: { active: boolean; scrolled: bool
   );
 }
 
+function ProductsDropdown({ active }: { active: boolean }) {
+  const { t } = useT();
+  const { lang } = useLang();
+  const [, navigate] = useLocation();
+  const [open, setOpen] = useState(false);
+  const wrapRef = React.useRef<HTMLDivElement | null>(null);
+  const triggerRef = React.useRef<HTMLButtonElement | null>(null);
+  const menuId = "products-dropdown-menu";
+
+  const productsQuery = useQuery({
+    ...getListPublicProductsQueryOptions({ lang }),
+    staleTime: 5 * 60 * 1000,
+  });
+  const products = productsQuery.data ?? [];
+  const categories = Array.from(
+    new Set(products.map((p) => p.category).filter((c): c is string => !!c))
+  );
+
+  useEffect(() => {
+    if (!open) return;
+    const onDoc = (e: MouseEvent) => {
+      if (!wrapRef.current?.contains(e.target as Node)) setOpen(false);
+    };
+    document.addEventListener("mousedown", onDoc);
+    return () => document.removeEventListener("mousedown", onDoc);
+  }, [open]);
+
+  const onKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Escape") {
+      setOpen(false);
+      triggerRef.current?.focus();
+    }
+    if ((e.key === "ArrowDown" || e.key === "Enter" || e.key === " ") && !open) {
+      e.preventDefault();
+      setOpen(true);
+    }
+  };
+
+  const onBlurCapture = (e: React.FocusEvent) => {
+    if (!wrapRef.current?.contains(e.relatedTarget as Node)) setOpen(false);
+  };
+
+  return (
+    <div
+      ref={wrapRef}
+      className="relative"
+      onMouseEnter={() => setOpen(true)}
+      onMouseLeave={() => setOpen(false)}
+      onKeyDown={onKeyDown}
+      onBlurCapture={onBlurCapture}
+    >
+      <button
+        ref={triggerRef}
+        type="button"
+        onClick={() => {
+          if (open) navigate("/products");
+          else setOpen(true);
+        }}
+        aria-haspopup="menu"
+        aria-expanded={open}
+        aria-controls={menuId}
+        className={`inline-flex items-center gap-1 text-sm font-medium transition-colors outline-none focus-visible:ring-2 focus-visible:ring-accent rounded-sm ${
+          active ? "text-accent" : "text-slate-700 hover:text-primary"
+        }`}
+        data-testid="nav-products"
+      >
+        {t("nav.product") as string}
+        <ChevronDown
+          className={`h-3.5 w-3.5 opacity-70 transition-transform ${open ? "rotate-180" : ""}`}
+        />
+      </button>
+      {open && (
+        <div
+          id={menuId}
+          role="menu"
+          aria-label={t("nav.product") as string}
+          className="absolute left-1/2 top-full -translate-x-1/2 pt-3 z-50"
+        >
+          <div className="w-52 flex flex-col py-2 px-1.5 rounded-xl border border-slate-200 bg-white shadow-xl">
+            <Link
+              href="/products"
+              role="menuitem"
+              data-testid="nav-products-all"
+              className="px-3 py-2 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-50 hover:text-primary transition focus:bg-slate-100 focus:outline-none"
+              onClick={() => setOpen(false)}
+            >
+              {t("products.filterAll") as string}
+            </Link>
+            {categories.length > 0 && (
+              <div className="my-1 mx-3 border-t border-slate-100" />
+            )}
+            {categories.map((cat) => (
+              <Link
+                key={cat}
+                href={`/products?category=${encodeURIComponent(cat)}`}
+                role="menuitem"
+                data-testid={`nav-products-cat-${cat}`}
+                className="px-3 py-2 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-50 hover:text-primary transition focus:bg-slate-100 focus:outline-none"
+                onClick={() => setOpen(false)}
+              >
+                {cat}
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function MobileProductsAccordion({
+  open,
+  onToggle,
+  onClose,
+}: {
+  open: boolean;
+  onToggle: () => void;
+  onClose: () => void;
+}) {
+  const { t } = useT();
+  const { lang } = useLang();
+  const productsQuery = useQuery({
+    ...getListPublicProductsQueryOptions({ lang }),
+    staleTime: 5 * 60 * 1000,
+  });
+  const products = productsQuery.data ?? [];
+  const categories = Array.from(
+    new Set(products.map((p) => p.category).filter((c): c is string => !!c))
+  );
+
+  return (
+    <div>
+      <button
+        type="button"
+        onClick={onToggle}
+        aria-expanded={open}
+        aria-controls="mobile-products-submenu"
+        className="w-full flex items-center justify-between px-3 py-2 rounded-md text-sm font-medium text-slate-700 hover:bg-slate-100"
+        data-testid="mobile-nav-products"
+      >
+        <span>{t("nav.product") as string}</span>
+        <ChevronDown
+          className={`h-4 w-4 transition-transform ${open ? "rotate-180" : ""}`}
+        />
+      </button>
+      {open && (
+        <div
+          id="mobile-products-submenu"
+          className="ml-4 mt-1 mb-2 space-y-1 border-l border-slate-200 pl-3"
+        >
+          <Link
+            href="/products"
+            className="block px-3 py-1.5 rounded-md text-sm text-slate-600 hover:bg-slate-100"
+            onClick={onClose}
+          >
+            {t("products.filterAll") as string}
+          </Link>
+          {categories.map((cat) => (
+            <Link
+              key={cat}
+              href={`/products?category=${encodeURIComponent(cat)}`}
+              data-testid={`mobile-nav-products-cat-${cat}`}
+              className="block px-3 py-1.5 rounded-md text-sm text-slate-600 hover:bg-slate-100"
+              onClick={onClose}
+            >
+              {cat}
+            </Link>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 function Header() {
   const { t } = useT();
   const [location] = useLocation();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [mobileAboutOpen, setMobileAboutOpen] = useState(false);
   const [mobileProcessOpen, setMobileProcessOpen] = useState(false);
+  const [mobileProductsOpen, setMobileProductsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
@@ -353,6 +528,9 @@ function Header() {
             }
             if (item.key === "production") {
               return <ProcessDropdown key={item.href} active={active} scrolled={scrolled} />;
+            }
+            if (item.key === "product") {
+              return <ProductsDropdown key={item.href} active={active} />;
             }
             return (
               <Link
@@ -431,6 +609,16 @@ function Header() {
                       </div>
                     )}
                   </div>
+                );
+              }
+              if (item.key === "product") {
+                return (
+                  <MobileProductsAccordion
+                    key={item.href}
+                    open={mobileProductsOpen}
+                    onToggle={() => setMobileProductsOpen((v) => !v)}
+                    onClose={() => setMobileOpen(false)}
+                  />
                 );
               }
               if (item.key === "about") {
