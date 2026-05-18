@@ -233,6 +233,29 @@ export default function ProductImport() {
     );
   };
 
+  const handleFieldEdit = (
+    rowIndex: number,
+    field: "slug" | "category" | "name_ko" | "certs",
+    value: string,
+  ) => {
+    setRows((prev) =>
+      prev.map((r) => {
+        if (r.index !== rowIndex) return r;
+        const raw: RawRow = {
+          slug: field === "slug" ? value : r.slug,
+          category: field === "category" ? value : r.category,
+          name_ko: field === "name_ko" ? value : r.name_ko,
+          subCategory: r.subCategory,
+          material: r.material,
+          features_ko: r.features_ko,
+          certs: field === "certs" ? value : r.certs.join(","),
+        };
+        const revalidated = validateRow(raw, rowIndex);
+        return { ...revalidated, status: r.status };
+      }),
+    );
+  };
+
   const runImport = async () => {
     if (validRows.length === 0) return;
     setIsImporting(true);
@@ -354,7 +377,7 @@ export default function ProductImport() {
     });
   };
 
-  const canImport = validRows.length > 0 && !isImporting;
+  const canImport = rows.length > 0 && invalidRows.length === 0 && !isImporting;
 
   return (
     <div className="px-8 py-8 space-y-6 max-w-5xl">
@@ -573,27 +596,92 @@ export default function ProductImport() {
                           </div>
                         </td>
                         <td className="px-4 py-2.5">
-                          <code className="text-xs bg-muted rounded px-1 py-0.5">
-                            {row.slug || <span className="text-muted-foreground italic">없음</span>}
-                          </code>
+                          {row.errors.length > 0 && row.status === "pending" ? (
+                            <input
+                              type="text"
+                              value={row.slug}
+                              onChange={(e) =>
+                                handleFieldEdit(row.index, "slug", e.target.value)
+                              }
+                              placeholder="slug"
+                              className={cn(
+                                "w-full text-xs font-mono rounded border px-1.5 py-1 bg-background focus:outline-none focus:ring-1",
+                                row.errors.some((e) => e.includes("slug"))
+                                  ? "border-destructive focus:ring-destructive"
+                                  : "border-border focus:ring-ring",
+                              )}
+                            />
+                          ) : (
+                            <code className="text-xs bg-muted rounded px-1 py-0.5">
+                              {row.slug || <span className="text-muted-foreground italic">없음</span>}
+                            </code>
+                          )}
                         </td>
-                        <td className="px-4 py-2.5 text-xs">{row.category || "—"}</td>
-                        <td className="px-4 py-2.5 text-xs max-w-[200px] truncate">
-                          {row.name_ko || "—"}
+                        <td className="px-4 py-2.5 text-xs">
+                          {row.errors.length > 0 && row.status === "pending" ? (
+                            <input
+                              type="text"
+                              value={row.category}
+                              onChange={(e) =>
+                                handleFieldEdit(row.index, "category", e.target.value)
+                              }
+                              placeholder="category"
+                              className={cn(
+                                "w-full text-xs rounded border px-1.5 py-1 bg-background focus:outline-none focus:ring-1",
+                                row.errors.some((e) => e.includes("category"))
+                                  ? "border-destructive focus:ring-destructive"
+                                  : "border-border focus:ring-ring",
+                              )}
+                            />
+                          ) : (
+                            row.category || "—"
+                          )}
+                        </td>
+                        <td className="px-4 py-2.5 text-xs max-w-[200px]">
+                          {row.errors.length > 0 && row.status === "pending" ? (
+                            <input
+                              type="text"
+                              value={row.name_ko}
+                              onChange={(e) =>
+                                handleFieldEdit(row.index, "name_ko", e.target.value)
+                              }
+                              placeholder="name_ko"
+                              className={cn(
+                                "w-full text-xs rounded border px-1.5 py-1 bg-background focus:outline-none focus:ring-1",
+                                row.errors.some((e) => e.includes("name_ko"))
+                                  ? "border-destructive focus:ring-destructive"
+                                  : "border-border focus:ring-ring",
+                              )}
+                            />
+                          ) : (
+                            <span className="truncate block">{row.name_ko || "—"}</span>
+                          )}
                         </td>
                         <td className="px-4 py-2.5">
-                          <div className="flex flex-wrap gap-1">
-                            {row.certs.length > 0
-                              ? row.certs.map((c) => (
-                                  <span
-                                    key={c}
-                                    className="text-[10px] bg-accent/10 text-accent rounded-full px-2 py-0.5"
-                                  >
-                                    {c}
-                                  </span>
-                                ))
-                              : <span className="text-xs text-muted-foreground">—</span>}
-                          </div>
+                          {row.errors.length > 0 && row.status === "pending" ? (
+                            <input
+                              type="text"
+                              value={row.certs.join(",")}
+                              onChange={(e) =>
+                                handleFieldEdit(row.index, "certs", e.target.value)
+                              }
+                              placeholder="ISO22716,COSMOS"
+                              className="w-full text-xs rounded border border-border px-1.5 py-1 bg-background focus:outline-none focus:ring-1 focus:ring-ring"
+                            />
+                          ) : (
+                            <div className="flex flex-wrap gap-1">
+                              {row.certs.length > 0
+                                ? row.certs.map((c) => (
+                                    <span
+                                      key={c}
+                                      className="text-[10px] bg-accent/10 text-accent rounded-full px-2 py-0.5"
+                                    >
+                                      {c}
+                                    </span>
+                                  ))
+                                : <span className="text-xs text-muted-foreground">—</span>}
+                            </div>
+                          )}
                         </td>
                         <td className="px-4 py-2.5">
                           {row.errors.length > 0 ? (
