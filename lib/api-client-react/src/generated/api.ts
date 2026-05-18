@@ -29,6 +29,7 @@ import type {
   AdminUser,
   BadRequestResponse,
   BannerReorderInput,
+  CategoryTranslationRow,
   ContactInquiryInput,
   GetPublicNoticeParams,
   GetPublicProductParams,
@@ -744,6 +745,86 @@ export function useGetPublicProcess<
   request?: SecondParameter<typeof customFetch>;
 }): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
   const queryOptions = getGetPublicProcessQueryOptions(options);
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey;
+  };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+/**
+ * @summary List all category translation rows (slug → names in 5 languages)
+ */
+export const getListPublicCategoryTranslationsUrl = () => {
+  return `/api/public/category-translations`;
+};
+
+export const listPublicCategoryTranslations = async (
+  options?: RequestInit,
+): Promise<CategoryTranslationRow[]> => {
+  return customFetch<CategoryTranslationRow[]>(
+    getListPublicCategoryTranslationsUrl(),
+    {
+      ...options,
+      method: "GET",
+    },
+  );
+};
+
+export const getListPublicCategoryTranslationsQueryKey = () => {
+  return [`/api/public/category-translations`] as const;
+};
+
+export const getListPublicCategoryTranslationsQueryOptions = <
+  TData = Awaited<ReturnType<typeof listPublicCategoryTranslations>>,
+  TError = ErrorType<unknown>,
+>(options?: {
+  query?: UseQueryOptions<
+    Awaited<ReturnType<typeof listPublicCategoryTranslations>>,
+    TError,
+    TData
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ?? getListPublicCategoryTranslationsQueryKey();
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof listPublicCategoryTranslations>>
+  > = ({ signal }) =>
+    listPublicCategoryTranslations({ signal, ...requestOptions });
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof listPublicCategoryTranslations>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey };
+};
+
+export type ListPublicCategoryTranslationsQueryResult = NonNullable<
+  Awaited<ReturnType<typeof listPublicCategoryTranslations>>
+>;
+export type ListPublicCategoryTranslationsQueryError = ErrorType<unknown>;
+
+/**
+ * @summary List all category translation rows (slug → names in 5 languages)
+ */
+
+export function useListPublicCategoryTranslations<
+  TData = Awaited<ReturnType<typeof listPublicCategoryTranslations>>,
+  TError = ErrorType<unknown>,
+>(options?: {
+  query?: UseQueryOptions<
+    Awaited<ReturnType<typeof listPublicCategoryTranslations>>,
+    TError,
+    TData
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getListPublicCategoryTranslationsQueryOptions(options);
 
   const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
     queryKey: QueryKey;
@@ -2905,6 +2986,177 @@ export const useAdminUpdateProcess = <
   TContext
 > => {
   return useMutation(getAdminUpdateProcessMutationOptions(options));
+};
+
+/**
+ * @summary List all category translation rows
+ */
+export const getAdminListCategoryTranslationsUrl = () => {
+  return `/api/admin/category-translations`;
+};
+
+export const adminListCategoryTranslations = async (
+  options?: RequestInit,
+): Promise<CategoryTranslationRow[]> => {
+  return customFetch<CategoryTranslationRow[]>(
+    getAdminListCategoryTranslationsUrl(),
+    {
+      ...options,
+      method: "GET",
+    },
+  );
+};
+
+export const getAdminListCategoryTranslationsQueryKey = () => {
+  return [`/api/admin/category-translations`] as const;
+};
+
+export const getAdminListCategoryTranslationsQueryOptions = <
+  TData = Awaited<ReturnType<typeof adminListCategoryTranslations>>,
+  TError = ErrorType<unknown>,
+>(options?: {
+  query?: UseQueryOptions<
+    Awaited<ReturnType<typeof adminListCategoryTranslations>>,
+    TError,
+    TData
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ?? getAdminListCategoryTranslationsQueryKey();
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof adminListCategoryTranslations>>
+  > = ({ signal }) =>
+    adminListCategoryTranslations({ signal, ...requestOptions });
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof adminListCategoryTranslations>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey };
+};
+
+export type AdminListCategoryTranslationsQueryResult = NonNullable<
+  Awaited<ReturnType<typeof adminListCategoryTranslations>>
+>;
+export type AdminListCategoryTranslationsQueryError = ErrorType<unknown>;
+
+/**
+ * @summary List all category translation rows
+ */
+
+export function useAdminListCategoryTranslations<
+  TData = Awaited<ReturnType<typeof adminListCategoryTranslations>>,
+  TError = ErrorType<unknown>,
+>(options?: {
+  query?: UseQueryOptions<
+    Awaited<ReturnType<typeof adminListCategoryTranslations>>,
+    TError,
+    TData
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getAdminListCategoryTranslationsQueryOptions(options);
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey;
+  };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+/**
+ * @summary Bulk upsert category translations
+ */
+export const getAdminSaveCategoryTranslationsUrl = () => {
+  return `/api/admin/category-translations`;
+};
+
+export const adminSaveCategoryTranslations = async (
+  categoryTranslationRow: CategoryTranslationRow[],
+  options?: RequestInit,
+): Promise<CategoryTranslationRow[]> => {
+  return customFetch<CategoryTranslationRow[]>(
+    getAdminSaveCategoryTranslationsUrl(),
+    {
+      ...options,
+      method: "PUT",
+      headers: { "Content-Type": "application/json", ...options?.headers },
+      body: JSON.stringify(categoryTranslationRow),
+    },
+  );
+};
+
+export const getAdminSaveCategoryTranslationsMutationOptions = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof adminSaveCategoryTranslations>>,
+    TError,
+    { data: BodyType<CategoryTranslationRow[]> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof adminSaveCategoryTranslations>>,
+  TError,
+  { data: BodyType<CategoryTranslationRow[]> },
+  TContext
+> => {
+  const mutationKey = ["adminSaveCategoryTranslations"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof adminSaveCategoryTranslations>>,
+    { data: BodyType<CategoryTranslationRow[]> }
+  > = (props) => {
+    const { data } = props ?? {};
+
+    return adminSaveCategoryTranslations(data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type AdminSaveCategoryTranslationsMutationResult = NonNullable<
+  Awaited<ReturnType<typeof adminSaveCategoryTranslations>>
+>;
+export type AdminSaveCategoryTranslationsMutationBody = BodyType<
+  CategoryTranslationRow[]
+>;
+export type AdminSaveCategoryTranslationsMutationError = ErrorType<unknown>;
+
+/**
+ * @summary Bulk upsert category translations
+ */
+export const useAdminSaveCategoryTranslations = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof adminSaveCategoryTranslations>>,
+    TError,
+    { data: BodyType<CategoryTranslationRow[]> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof adminSaveCategoryTranslations>>,
+  TError,
+  { data: BodyType<CategoryTranslationRow[]> },
+  TContext
+> => {
+  return useMutation(getAdminSaveCategoryTranslationsMutationOptions(options));
 };
 
 export const getAdminTranslateUrl = () => {

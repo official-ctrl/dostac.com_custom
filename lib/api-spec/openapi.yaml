@@ -24,6 +24,8 @@ tags:
   - name: admin-about
   - name: public-process
   - name: admin-process
+  - name: public-category-translations
+  - name: admin-category-translations
 paths:
   /healthz:
     get:
@@ -138,6 +140,20 @@ paths:
           content:
             application/json:
               schema: { $ref: "#/components/schemas/ProcessContent" }
+
+  /public/category-translations:
+    get:
+      operationId: listPublicCategoryTranslations
+      tags: [public-category-translations]
+      summary: List all category translation rows (slug → names in 5 languages)
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/CategoryTranslationRow" }
 
   /public/contact-inquiries:
     post:
@@ -525,6 +541,40 @@ paths:
           content:
             application/json:
               schema: { $ref: "#/components/schemas/ProcessContent" }
+
+  # ───────────────────── ADMIN CATEGORY TRANSLATIONS ─────────────────────
+  /admin/category-translations:
+    get:
+      operationId: adminListCategoryTranslations
+      tags: [admin-category-translations]
+      summary: List all category translation rows
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/CategoryTranslationRow" }
+    put:
+      operationId: adminSaveCategoryTranslations
+      tags: [admin-category-translations]
+      summary: Bulk upsert category translations
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items: { $ref: "#/components/schemas/CategoryTranslationRow" }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/CategoryTranslationRow" }
 
   # ───────────────────── ADMIN TRANSLATE ─────────────────────
   /admin/translate:
@@ -1150,3 +1200,14 @@ components:
         uploadUrl: { type: string }
         publicUrl: { type: string }
         key: { type: string }
+
+    CategoryTranslationRow:
+      type: object
+      required: [slug, nameKo, nameEn, nameJa, nameZh, nameVi]
+      properties:
+        slug: { type: string }
+        nameKo: { type: string }
+        nameEn: { type: string }
+        nameJa: { type: string }
+        nameZh: { type: string }
+        nameVi: { type: string }

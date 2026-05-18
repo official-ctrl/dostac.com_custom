@@ -10,6 +10,7 @@ import {
   Image as ImageIcon,
   Info,
   Settings2,
+  Languages,
 } from "lucide-react";
 import { useAuth } from "./AuthProvider";
 import { cn } from "@/lib/utils";
@@ -27,6 +28,7 @@ const NAV: NavItem[] = [
   { href: "/about", label: "About", icon: Info, match: (p) => p.startsWith("/about") },
   { href: "/process", label: "Process", icon: Settings2, match: (p) => p.startsWith("/process") },
   { href: "/products", label: "Products", icon: Package, match: (p) => p.startsWith("/products") },
+  { href: "/category-translations", label: "Category Names", icon: Languages, match: (p) => p.startsWith("/category-translations") },
   { href: "/notices", label: "Notices", icon: Megaphone, match: (p) => p.startsWith("/notices") },
   { href: "/inquiries", label: "Inquiries", icon: Inbox, match: (p) => p.startsWith("/inquiries") },
 ];

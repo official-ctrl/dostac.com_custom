@@ -1,4 +1,5 @@
 import React, { createContext, useCallback, useContext, useEffect, useState } from "react";
+import { useListPublicCategoryTranslations } from "@workspace/api-client-react";
 
 export type Lang = "ko" | "en" | "ja" | "zh" | "vi";
 
@@ -2371,16 +2372,31 @@ function normalizeKey(key: string, slugMap: Record<string, string>): string {
   return slugMap[key] ?? key;
 }
 
+const LANG_TO_NAME_KEY: Record<Lang, "nameKo" | "nameEn" | "nameJa" | "nameZh" | "nameVi"> = {
+  ko: "nameKo",
+  en: "nameEn",
+  ja: "nameJa",
+  zh: "nameZh",
+  vi: "nameVi",
+};
+
 export function useCategoryLabel(): (key: string | null | undefined) => string {
   const { lang } = useLang();
+  const { data: apiRows } = useListPublicCategoryTranslations();
+  const nameKey = LANG_TO_NAME_KEY[lang];
   return useCallback(
     (key: string | null | undefined) => {
       if (!key) return key ?? "";
       const slug = normalizeKey(key, CATEGORY_SLUG_MAP);
+      if (apiRows) {
+        const row = apiRows.find((r) => r.slug === slug || r.slug === key);
+        const apiName = row ? (row[nameKey] as string | undefined) : undefined;
+        if (apiName && apiName.trim()) return apiName;
+      }
       const map = (translations[lang]?.products?.categoryNames ?? {}) as Record<string, string>;
       return map[slug] ?? map[key] ?? slug;
     },
-    [lang],
+    [lang, apiRows, nameKey],
   );
 }
 

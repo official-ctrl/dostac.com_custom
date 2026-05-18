@@ -59,3 +59,14 @@ export const insertProductTranslationSchema = createInsertSchema(
 ).omit({ id: true });
 export type InsertProductTranslation = z.infer<typeof insertProductTranslationSchema>;
 export type ProductTranslation = typeof productTranslationsTable.$inferSelect;
+
+export const categoryTranslationsTable = pgTable("category_translations", {
+  slug: varchar("slug", { length: 80 }).primaryKey(),
+  nameKo: varchar("name_ko", { length: 120 }).notNull().default(""),
+  nameEn: varchar("name_en", { length: 120 }).notNull().default(""),
+  nameJa: varchar("name_ja", { length: 120 }).notNull().default(""),
+  nameZh: varchar("name_zh", { length: 120 }).notNull().default(""),
+  nameVi: varchar("name_vi", { length: 120 }).notNull().default(""),
+});
+
+export type CategoryTranslationRow = typeof categoryTranslationsTable.$inferSelect;

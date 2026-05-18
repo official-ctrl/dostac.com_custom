@@ -15,6 +15,8 @@ import publicAboutRouter from "./public-about";
 import adminAboutRouter from "./admin-about";
 import publicProcessRouter from "./public-process";
 import adminProcessRouter from "./admin-process";
+import publicCategoryTranslationsRouter from "./public-category-translations";
+import adminCategoryTranslationsRouter from "./admin-category-translations";
 
 const router: IRouter = Router();
 
@@ -34,5 +36,7 @@ router.use(publicAboutRouter);
 router.use(adminAboutRouter);
 router.use(publicProcessRouter);
 router.use(adminProcessRouter);
+router.use(publicCategoryTranslationsRouter);
+router.use(adminCategoryTranslationsRouter);
 
 export default router;

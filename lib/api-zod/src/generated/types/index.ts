@@ -22,6 +22,7 @@ export * from "./apiError";
 export * from "./badRequestResponse";
 export * from "./bannerReorderInput";
 export * from "./bannerTranslations";
+export * from "./categoryTranslationRow";
 export * from "./certItem";
 export * from "./contactInquiryInput";
 export * from "./contactInquiryInputInquiryType";

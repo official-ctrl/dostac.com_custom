@@ -482,6 +482,15 @@ export interface UploadSignResult {
   key: string;
 }
 
+export interface CategoryTranslationRow {
+  slug: string;
+  nameKo: string;
+  nameEn: string;
+  nameJa: string;
+  nameZh: string;
+  nameVi: string;
+}
+
 /**
  * Not found
  */

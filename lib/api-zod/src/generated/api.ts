@@ -305,6 +305,21 @@ export const GetPublicProcessResponse = zod.object({
   ),
 });
 
+/**
+ * @summary List all category translation rows (slug → names in 5 languages)
+ */
+export const ListPublicCategoryTranslationsResponseItem = zod.object({
+  slug: zod.string(),
+  nameKo: zod.string(),
+  nameEn: zod.string(),
+  nameJa: zod.string(),
+  nameZh: zod.string(),
+  nameVi: zod.string(),
+});
+export const ListPublicCategoryTranslationsResponse = zod.array(
+  ListPublicCategoryTranslationsResponseItem,
+);
+
 export const CreateContactInquiryBody = zod.object({
   name: zod.string(),
   email: zod.string(),
@@ -1298,6 +1313,48 @@ export const AdminUpdateProcessResponse = zod.object({
     }),
   ),
 });
+
+/**
+ * @summary List all category translation rows
+ */
+export const AdminListCategoryTranslationsResponseItem = zod.object({
+  slug: zod.string(),
+  nameKo: zod.string(),
+  nameEn: zod.string(),
+  nameJa: zod.string(),
+  nameZh: zod.string(),
+  nameVi: zod.string(),
+});
+export const AdminListCategoryTranslationsResponse = zod.array(
+  AdminListCategoryTranslationsResponseItem,
+);
+
+/**
+ * @summary Bulk upsert category translations
+ */
+export const AdminSaveCategoryTranslationsBodyItem = zod.object({
+  slug: zod.string(),
+  nameKo: zod.string(),
+  nameEn: zod.string(),
+  nameJa: zod.string(),
+  nameZh: zod.string(),
+  nameVi: zod.string(),
+});
+export const AdminSaveCategoryTranslationsBody = zod.array(
+  AdminSaveCategoryTranslationsBodyItem,
+);
+
+export const AdminSaveCategoryTranslationsResponseItem = zod.object({
+  slug: zod.string(),
+  nameKo: zod.string(),
+  nameEn: zod.string(),
+  nameJa: zod.string(),
+  nameZh: zod.string(),
+  nameVi: zod.string(),
+});
+export const AdminSaveCategoryTranslationsResponse = zod.array(
+  AdminSaveCategoryTranslationsResponseItem,
+);
 
 export const adminTranslateBodyFormatDefault = `text`;
 
