@@ -29,7 +29,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Layout, dostacImage } from "@/components/dostac/Layout";
-import { useT, useLang, type Lang } from "@/components/dostac/i18n";
+import { useT, useLang, useSubCategoryLabel, type Lang } from "@/components/dostac/i18n";
 import {
   useListPublicBanners,
   useListPublicProducts,
@@ -422,17 +422,21 @@ function ProductShowcaseSection() {
   const products = data ?? [];
   const fallbackCategories = t("homeNew.fallbackCategories") as Array<{ name: string; badge: string }>;
 
+  const getSubCategoryLabel = useSubCategoryLabel();
+
   const displayItems = products.length > 0
-    ? products.slice(0, 6).map((p: { name: string; category: string }, i: number) => ({
+    ? products.slice(0, 6).map((p: { name: string; category: string; subCategory: string }, i: number) => ({
         name: p.name,
         badge: p.category || "OEM / ODM",
         category: p.category || null,
+        subCategory: p.subCategory || null,
         imageKey: PRODUCT_IMAGES[i] ?? "product-01.webp",
       }))
     : fallbackCategories.map((cat, i) => ({
         name: cat.name,
         badge: cat.badge,
         category: null as string | null,
+        subCategory: null as string | null,
         imageKey: PRODUCT_IMAGES[i] ?? "product-01.webp",
       }));
 
@@ -466,30 +470,50 @@ function ProductShowcaseSection() {
             const href = item.category
               ? `/products?category=${encodeURIComponent(item.category)}`
               : "/products";
+            const subHref =
+              item.category && item.subCategory
+                ? `/products?category=${encodeURIComponent(item.category)}&subCategory=${encodeURIComponent(item.subCategory)}`
+                : null;
+            const subLabel = item.subCategory ? getSubCategoryLabel(item.subCategory) : null;
             return (
               <motion.div key={idx} variants={fadeUp}>
-                <Link href={href} className="block group rounded-2xl overflow-hidden border border-slate-100 hover:border-accent/30 hover:shadow-xl transition-all bg-white">
-                  <div className="aspect-[4/3] overflow-hidden bg-[#F5F7FA]">
-                    <img
-                      src={dostacImage(item.imageKey)}
-                      alt={item.name}
-                      loading="lazy"
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                    />
-                  </div>
+                <div className="group rounded-2xl overflow-hidden border border-slate-100 hover:border-accent/30 hover:shadow-xl transition-all bg-white">
+                  <Link href={href} className="block">
+                    <div className="aspect-[4/3] overflow-hidden bg-[#F5F7FA]">
+                      <img
+                        src={dostacImage(item.imageKey)}
+                        alt={item.name}
+                        loading="lazy"
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      />
+                    </div>
+                  </Link>
                   <div className="p-5">
                     <span className="inline-block text-xs font-bold text-accent bg-accent/10 px-2.5 py-0.5 rounded-full mb-3">
                       {item.badge}
                     </span>
-                    <h3 className="font-bold text-[#0F172A] text-base mb-3">{item.name}</h3>
-                    {item.category && (
-                      <span className="inline-flex items-center gap-1 text-xs font-semibold text-accent group-hover:underline">
-                        {(t("homeNew.showcaseSeeAll") as string).replace("{cat}", item.badge)}
-                        <ArrowRight className="h-3 w-3" />
-                      </span>
-                    )}
+                    <Link href={href} className="block mb-3">
+                      <h3 className="font-bold text-[#0F172A] text-base group-hover:text-accent transition-colors">{item.name}</h3>
+                    </Link>
+                    <div className="flex flex-col gap-1">
+                      {item.category && (
+                        <Link href={href} className="inline-flex items-center gap-1 text-xs font-semibold text-accent hover:underline w-fit">
+                          {(t("homeNew.showcaseSeeAll") as string).replace("{cat}", item.badge)}
+                          <ArrowRight className="h-3 w-3" />
+                        </Link>
+                      )}
+                      {subHref && subLabel && (
+                        <Link
+                          href={subHref}
+                          className="inline-flex items-center gap-1 text-xs font-semibold text-slate-500 hover:text-accent hover:underline transition-colors w-fit"
+                        >
+                          {(t("homeNew.showcaseSeeAll") as string).replace("{cat}", subLabel)}
+                          <ArrowRight className="h-3 w-3" />
+                        </Link>
+                      )}
+                    </div>
                   </div>
-                </Link>
+                </div>
               </motion.div>
             );
           })}
