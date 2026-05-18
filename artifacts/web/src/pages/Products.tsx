@@ -7,6 +7,7 @@ import {
   Loader2,
 } from "lucide-react";
 import { Layout, dostacImage } from "@/components/dostac/Layout";
+import { SectionNav } from "@/components/dostac/SectionNav";
 import { useT, useLang } from "@/components/dostac/i18n";
 import { useListPublicProducts } from "@workspace/api-client-react";
 
@@ -198,34 +199,13 @@ function ProductsContent() {
 
       {/* STICKY SUBMENU */}
       {filteredProducts.length > 0 && (
-        <div className="sticky top-20 z-40 bg-white border-b border-slate-200 shadow-sm">
-          <div className="container mx-auto px-6">
-            <nav
-              className="flex overflow-x-auto no-scrollbar"
-              style={{ scrollbarWidth: "none", WebkitOverflowScrolling: "touch" } as React.CSSProperties}
-            >
-              {filteredProducts.map((p) => (
-                <button
-                  key={p.id}
-                  type="button"
-                  onClick={() => scrollTo(p.slug)}
-                  className={`relative flex-shrink-0 px-5 py-4 text-sm font-semibold transition-colors whitespace-nowrap focus:outline-none ${
-                    activeSlug === p.slug
-                      ? "text-accent"
-                      : "text-slate-500 hover:text-primary"
-                  }`}
-                >
-                  {p.name}
-                  <span
-                    className={`absolute bottom-0 left-0 right-0 h-0.5 rounded-full transition-all duration-300 ${
-                      activeSlug === p.slug ? "bg-accent" : "bg-transparent"
-                    }`}
-                  />
-                </button>
-              ))}
-            </nav>
-          </div>
-        </div>
+        <SectionNav
+          items={filteredProducts.map((p) => ({ id: p.slug, label: p.name }))}
+          activeId={activeSlug ?? ""}
+          onSelect={scrollTo}
+          ariaLabel="Products navigation"
+          testIdPrefix="products-nav-"
+        />
       )}
 
       {/* PRODUCT SECTIONS */}
