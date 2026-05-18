@@ -12,7 +12,7 @@ import {
 } from "lucide-react";
 import { Layout, dostacImage } from "@/components/dostac/Layout";
 import { SectionNav } from "@/components/dostac/SectionNav";
-import { useT, useLang, LANGUAGES, useCategoryLabel, useSubCategoryLabel } from "@/components/dostac/i18n";
+import { useT, useLang, LANGUAGES, useCategoryLabel, useSubCategoryLabel, normalizeCategory, normalizeSubCategory } from "@/components/dostac/i18n";
 import { getListPublicProductsQueryOptions } from "@workspace/api-client-react";
 
 const fadeUp = {
@@ -47,8 +47,8 @@ function readStoredFilter(): { category: string; subCategory: string | null } | 
     ) {
       const p = parsed as { category: string; subCategory?: unknown };
       return {
-        category: p.category,
-        subCategory: typeof p.subCategory === "string" ? p.subCategory : null,
+        category: normalizeCategory(p.category),
+        subCategory: typeof p.subCategory === "string" ? normalizeSubCategory(p.subCategory) : null,
       };
     }
     return null;
@@ -95,8 +95,8 @@ function ProductsContent() {
   const [, navigate] = useLocation();
 
   const params = new URLSearchParams(search);
-  const categoryFromUrl = params.get("category");
-  const subCategoryFromUrl = params.get("subCategory");
+  const categoryFromUrl = params.get("category") ? normalizeCategory(params.get("category")!) : null;
+  const subCategoryFromUrl = params.get("subCategory") ? normalizeSubCategory(params.get("subCategory")!) : null;
 
   const [selectedCategory, setSelectedCategory] = useState<string | null>(categoryFromUrl);
   const [selectedSubCategory, setSelectedSubCategory] = useState<string | null>(subCategoryFromUrl);
@@ -154,12 +154,41 @@ function ProductsContent() {
     setCopiedCategory(false);
   }, [categoryFromUrl, subCategoryFromUrl]);
 
+  // ── Filter normalization ───────────────────────────────────────────────────
+  // All category and sub-category values (from URL, localStorage, and the API
+  // response) are normalised to canonical slugs (e.g. "skincare") before any
+  // comparison or state update.  This prevents the active filter chip from
+  // being silently cleared when the user switches language and the API returns
+  // the same product with a differently-formatted category string (e.g. the DB
+  // might store "스킨케어" for KO but the English response returns "Skin Care").
+  //
+  // Manual QA — lang-switch × category filter:
+  //   1. Open /products in English, click a category chip (e.g. "Skin Care").
+  //      Confirm the chip stays highlighted and the sub-category bar appears.
+  //   2. Switch language to 한국어 via the header switcher.
+  //      ✓ The same category chip must remain active, now labelled in Korean.
+  //      ✓ Sub-category chips (if any) must remain visible and labelled in Korean.
+  //   3. Switch back to English — chip and sub-category bar must still be active.
+  //   4. Repeat steps 1-3 starting in Korean, switching to English and then to
+  //      Japanese/Chinese/Vietnamese.
+  //   5. Open /products?category=스킨케어 (Korean raw value in URL).
+  //      ✓ The "Skin Care" chip must be selected regardless of active language.
+  //   6. Clear localStorage (devtools → Application → Storage → Clear site data),
+  //      select "Specialty" + sub-category, navigate away, return.
+  //      ✓ The restored-filter chip must show the translated label for whichever
+  //        language is currently active, not a raw slug.
+  //   7. With a category active, hard-reload the page — chip must be restored
+  //      from the URL without being cleared on the first render.
+
   const categories = Array.from(
-    new Set(products.map((p) => p.category).filter((c): c is string => !!c))
+    new Set(products.map((p) => p.category).filter((c): c is string => !!c).map(normalizeCategory))
   );
 
   const categoryCounts = products.reduce<Record<string, number>>((acc, p) => {
-    if (p.category) acc[p.category] = (acc[p.category] ?? 0) + 1;
+    if (p.category) {
+      const slug = normalizeCategory(p.category);
+      acc[slug] = (acc[slug] ?? 0) + 1;
+    }
     return acc;
   }, {});
 
@@ -176,18 +205,22 @@ function ProductsContent() {
   const categoryFilteredProducts =
     selectedCategory === null
       ? products
-      : products.filter((p) => p.category === selectedCategory);
+      : products.filter((p) => p.category != null && normalizeCategory(p.category) === selectedCategory);
 
   const subCategories = Array.from(
     new Set(
       categoryFilteredProducts
         .map((p) => p.subCategory)
         .filter((s): s is string => !!s)
+        .map(normalizeSubCategory)
     )
   );
 
   const subCategoryCounts = categoryFilteredProducts.reduce<Record<string, number>>((acc, p) => {
-    if (p.subCategory) acc[p.subCategory] = (acc[p.subCategory] ?? 0) + 1;
+    if (p.subCategory) {
+      const slug = normalizeSubCategory(p.subCategory);
+      acc[slug] = (acc[slug] ?? 0) + 1;
+    }
     return acc;
   }, {});
 
@@ -212,7 +245,7 @@ function ProductsContent() {
   const filteredProducts =
     selectedSubCategory === null || selectedSubCategory === undefined
       ? categoryFilteredProducts
-      : categoryFilteredProducts.filter((p) => p.subCategory === selectedSubCategory);
+      : categoryFilteredProducts.filter((p) => p.subCategory != null && normalizeSubCategory(p.subCategory) === selectedSubCategory);
 
   // ── Language-switch cross-fade ─────────────────────────────────────────────
   // isFadedOut drives opacity 1→0→1 on the content+nav wrappers.

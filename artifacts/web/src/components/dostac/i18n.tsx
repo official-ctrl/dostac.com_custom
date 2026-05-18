@@ -2375,6 +2375,16 @@ function normalizeKey(key: string, slugMap: Record<string, string>): string {
   return slugMap[key] ?? key;
 }
 
+/** Convert any stored / URL / API category value to its canonical slug. */
+export function normalizeCategory(key: string): string {
+  return normalizeKey(key, CATEGORY_SLUG_MAP);
+}
+
+/** Convert any stored / URL / API sub-category value to its canonical slug. */
+export function normalizeSubCategory(key: string): string {
+  return normalizeKey(key, SUBCATEGORY_SLUG_MAP);
+}
+
 const LANG_TO_NAME_KEY: Record<Lang, "nameKo" | "nameEn" | "nameJa" | "nameZh" | "nameVi"> = {
   ko: "nameKo",
   en: "nameEn",
