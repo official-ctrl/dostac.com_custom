@@ -328,6 +328,15 @@ function ProductsDropdown({ active }: { active: boolean }) {
     return acc;
   }, {});
 
+  // Build a count map: category → subCategory → product count
+  const subCatCountMap = products.reduce<Record<string, Record<string, number>>>((acc, p) => {
+    if (p.category && p.subCategory) {
+      if (!acc[p.category]) acc[p.category] = {};
+      acc[p.category][p.subCategory] = (acc[p.category][p.subCategory] ?? 0) + 1;
+    }
+    return acc;
+  }, {});
+
   const activeSubs = hoveredCategory ? (subCatMap[hoveredCategory] ?? []) : [];
 
   useEffect(() => {
@@ -476,27 +485,35 @@ function ProductsDropdown({ active }: { active: boolean }) {
                 <p className="px-3 pt-1 pb-2 text-[10px] font-semibold uppercase tracking-widest text-slate-400 select-none">
                   {catLabel(hoveredCategory)}
                 </p>
-                {activeSubs.map((sub) => (
-                  <Link
-                    key={sub}
-                    href={`/products?category=${encodeURIComponent(hoveredCategory)}&subCategory=${encodeURIComponent(sub)}`}
-                    role="menuitem"
-                    data-testid={`nav-products-sub-${sub}`}
-                    onClick={close}
-                    onKeyDown={(e) => {
-                      if (e.key === "ArrowLeft") {
-                        e.preventDefault();
-                        const catBtn = leftPanelRef.current?.querySelector<HTMLElement>(
-                          `[data-testid="nav-products-cat-${hoveredCategory}"]`
-                        );
-                        catBtn?.focus();
-                      }
-                    }}
-                    className="px-3 py-2 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-50 hover:text-primary transition focus:bg-slate-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
-                  >
-                    {subCatLabel(sub)}
-                  </Link>
-                ))}
+                {activeSubs.map((sub) => {
+                  const count = subCatCountMap[hoveredCategory]?.[sub] ?? 0;
+                  return (
+                    <Link
+                      key={sub}
+                      href={`/products?category=${encodeURIComponent(hoveredCategory)}&subCategory=${encodeURIComponent(sub)}`}
+                      role="menuitem"
+                      data-testid={`nav-products-sub-${sub}`}
+                      onClick={close}
+                      onKeyDown={(e) => {
+                        if (e.key === "ArrowLeft") {
+                          e.preventDefault();
+                          const catBtn = leftPanelRef.current?.querySelector<HTMLElement>(
+                            `[data-testid="nav-products-cat-${hoveredCategory}"]`
+                          );
+                          catBtn?.focus();
+                        }
+                      }}
+                      className="px-3 py-2 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-50 hover:text-primary transition focus:bg-slate-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent flex items-center justify-between gap-2"
+                    >
+                      <span>{subCatLabel(sub)}</span>
+                      {count > 0 && (
+                        <span className="inline-flex items-center justify-center min-w-[1.25rem] h-5 px-1.5 rounded-full bg-slate-100 text-slate-500 text-[10px] font-semibold tabular-nums flex-shrink-0">
+                          {count}
+                        </span>
+                      )}
+                    </Link>
+                  );
+                })}
               </div>
             )}
           </div>
