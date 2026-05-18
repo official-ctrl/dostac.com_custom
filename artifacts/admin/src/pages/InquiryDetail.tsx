@@ -4,6 +4,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import {
   useAdminGetInquiry,
   useAdminUpdateInquiry,
+  useAdminListProducts,
   getAdminGetInquiryQueryKey,
   getAdminListInquiriesQueryKey,
   getAdminInquiriesSummaryQueryKey,
@@ -68,6 +69,7 @@ export default function InquiryDetail() {
 
   const { data: inquiry, isLoading } = useAdminGetInquiry(id);
   const updateMut = useAdminUpdateInquiry();
+  const { data: products } = useAdminListProducts();
 
   const [status, setStatus] = useState<string>("new");
   const [adminNote, setAdminNote] = useState<string>("");
@@ -116,6 +118,20 @@ export default function InquiryDetail() {
     : "—";
 
   const parsedProduct = parseProductFromMessage(inquiry.message);
+
+  const resolvedProductId: number | null = (() => {
+    if (!parsedProduct || !products) return null;
+    const needle = parsedProduct.trim().toLowerCase();
+    const normalize = (s: string) => s.trim().toLowerCase();
+    const koMatch = products.find((p) =>
+      p.translations.some((t) => t.lang === "ko" && normalize(t.name) === needle),
+    );
+    if (koMatch) return koMatch.id;
+    const anyMatch = products.find((p) =>
+      p.translations.some((t) => normalize(t.name) === needle),
+    );
+    return anyMatch?.id ?? null;
+  })();
 
   return (
     <div className="px-8 py-8 space-y-6 max-w-4xl">
@@ -198,12 +214,22 @@ export default function InquiryDetail() {
                     <p className="text-xs font-semibold text-blue-500 uppercase tracking-wide leading-none mb-0.5">
                       문의 제품
                     </p>
-                    <p
-                      className="text-sm font-semibold text-blue-900 truncate"
-                      data-testid="text-parsed-product"
-                    >
-                      {parsedProduct}
-                    </p>
+                    {resolvedProductId !== null ? (
+                      <Link
+                        href={`/products/${resolvedProductId}`}
+                        className="text-sm font-semibold text-blue-900 truncate hover:underline"
+                        data-testid="text-parsed-product"
+                      >
+                        {parsedProduct}
+                      </Link>
+                    ) : (
+                      <p
+                        className="text-sm font-semibold text-blue-900 truncate"
+                        data-testid="text-parsed-product"
+                      >
+                        {parsedProduct}
+                      </p>
+                    )}
                   </div>
                 </div>
               )}
