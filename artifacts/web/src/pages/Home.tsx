@@ -420,7 +420,7 @@ function ProductShowcaseSection() {
   const { lang } = useLang();
   const { data } = useListPublicProducts({ lang });
   const products = data ?? [];
-  const fallbackCategories = t("homeNew.fallbackCategories") as Array<{ name: string; badge: string }>;
+  const fallbackCategories = t("homeNew.fallbackCategories") as Array<{ name: string; badge: string; slug: string }>;
 
   const getSubCategoryLabel = useSubCategoryLabel();
 
@@ -435,7 +435,7 @@ function ProductShowcaseSection() {
     : fallbackCategories.map((cat, i) => ({
         name: cat.name,
         badge: cat.badge,
-        category: null as string | null,
+        category: cat.slug as string | null,
         subCategory: null as string | null,
         imageKey: PRODUCT_IMAGES[i] ?? "product-01.webp",
       }));
