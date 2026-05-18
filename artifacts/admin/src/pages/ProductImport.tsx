@@ -26,6 +26,7 @@ import {
   PlayCircle,
   Download,
   SkipForward,
+  ChevronDown,
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { LANGS } from "@/lib/langs";
@@ -214,6 +215,7 @@ export default function ProductImport() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [fileName, setFileName] = useState<string | null>(null);
   const [rows, setRows] = useState<ParsedRow[]>([]);
+  const [showExample, setShowExample] = useState(false);
   const [existingSlugs, setExistingSlugs] = useState<Set<string>>(new Set());
   const [isImporting, setIsImporting] = useState(false);
   const [importResult, setImportResult] = useState<{
@@ -509,6 +511,89 @@ export default function ProductImport() {
                 </div>
               ))}
             </div>
+          </div>
+
+          <div className="rounded-md border border-border overflow-hidden">
+            <button
+              type="button"
+              className="w-full flex items-center justify-between px-4 py-2.5 text-sm font-medium bg-muted/30 hover:bg-muted/50 transition-colors"
+              onClick={() => setShowExample((v) => !v)}
+            >
+              <span>예시 보기</span>
+              <ChevronDown
+                className={cn(
+                  "h-4 w-4 text-muted-foreground transition-transform duration-200",
+                  showExample && "rotate-180",
+                )}
+              />
+            </button>
+
+            {showExample && (
+              <div className="overflow-x-auto border-t border-border">
+                <table className="w-full text-xs">
+                  <thead>
+                    <tr className="bg-muted/20 border-b border-border">
+                      {[
+                        { key: "slug", hint: null },
+                        { key: "category", hint: null },
+                        { key: "subCategory", hint: null },
+                        { key: "material", hint: null },
+                        { key: "name_ko", hint: null },
+                        { key: "features_ko", hint: "줄바꿈으로 구분" },
+                        { key: "certs", hint: "쉼표로 구분" },
+                      ].map(({ key, hint }) => (
+                        <th
+                          key={key}
+                          className="px-3 py-2 text-left font-medium text-muted-foreground whitespace-nowrap"
+                        >
+                          <code className="text-[11px]">{key}</code>
+                          {hint && (
+                            <span className="ml-1.5 text-[10px] font-normal text-accent/80 bg-accent/10 rounded px-1 py-0.5">
+                              {hint}
+                            </span>
+                          )}
+                        </th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td className="px-3 py-2 align-top">
+                        <code className="bg-muted rounded px-1 py-0.5 text-[11px]">
+                          {TEMPLATE_EXAMPLE[0]}
+                        </code>
+                      </td>
+                      <td className="px-3 py-2 align-top text-foreground">{TEMPLATE_EXAMPLE[1]}</td>
+                      <td className="px-3 py-2 align-top text-foreground">{TEMPLATE_EXAMPLE[2]}</td>
+                      <td className="px-3 py-2 align-top text-foreground">{TEMPLATE_EXAMPLE[3]}</td>
+                      <td className="px-3 py-2 align-top text-foreground">{TEMPLATE_EXAMPLE[4]}</td>
+                      <td className="px-3 py-2 align-top max-w-[180px]">
+                        <ul className="space-y-0.5">
+                          {(TEMPLATE_EXAMPLE[5] ?? "").split("\n").map((line, i) => (
+                            <li key={i} className="flex items-start gap-1 text-foreground">
+                              <span className="text-muted-foreground mt-0.5">·</span>
+                              <span>{line}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </td>
+                      <td className="px-3 py-2 align-top">
+                        <div className="flex flex-wrap gap-1">
+                          {(TEMPLATE_EXAMPLE[6] ?? "").split(",").map((cert) => (
+                            <span
+                              key={cert}
+                              className="text-[10px] bg-accent/10 text-accent rounded-full px-2 py-0.5 whitespace-nowrap"
+                            >
+                              {cert.trim()}
+                            </span>
+                          ))}
+                        </div>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            )}
           </div>
 
           <div
