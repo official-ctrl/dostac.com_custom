@@ -200,7 +200,7 @@ function ProductsContent() {
               {categories.map((cat) => {
                 const isActive = selectedCategory === cat;
                 return (
-                  <div key={cat} className="flex-shrink-0 flex items-center gap-1">
+                  <div key={cat} className="flex-shrink-0 flex items-center gap-2">
                     <button
                       type="button"
                       onClick={() => handleCategorySelect(cat)}
@@ -226,12 +226,13 @@ function ProductsContent() {
                         type="button"
                         onClick={handleCopyLink}
                         title={copiedCategory ? (t("products.copied") as string) : (t("products.copyLink") as string)}
-                        className="flex items-center justify-center w-7 h-7 rounded-full bg-slate-100 text-slate-500 hover:bg-slate-200 hover:text-slate-700 transition-colors focus:outline-none"
+                        aria-label={copiedCategory ? (t("products.copied") as string) : (t("products.copyLink") as string)}
+                        className="flex items-center justify-center w-11 h-11 rounded-full bg-slate-100 text-slate-500 hover:bg-slate-200 hover:text-slate-700 transition-colors focus:outline-none active:scale-95"
                       >
                         {copiedCategory ? (
-                          <Check className="w-3.5 h-3.5 text-emerald-600" />
+                          <Check className="w-4 h-4 text-emerald-600" />
                         ) : (
-                          <Copy className="w-3.5 h-3.5" />
+                          <Copy className="w-4 h-4" />
                         )}
                       </button>
                     )}
