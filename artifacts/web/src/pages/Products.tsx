@@ -12,7 +12,7 @@ import {
 } from "lucide-react";
 import { Layout, dostacImage } from "@/components/dostac/Layout";
 import { SectionNav } from "@/components/dostac/SectionNav";
-import { useT, useLang, LANGUAGES } from "@/components/dostac/i18n";
+import { useT, useLang, LANGUAGES, useCategoryLabel, useSubCategoryLabel } from "@/components/dostac/i18n";
 import { getListPublicProductsQueryOptions } from "@workspace/api-client-react";
 
 const fadeUp = {
@@ -72,6 +72,8 @@ function saveStoredFilter(category: string | null, subCategory: string | null) {
 function ProductsContent() {
   const { t } = useT();
   const { lang } = useLang();
+  const catLabel = useCategoryLabel();
+  const subLabel = useSubCategoryLabel();
   const queryClient = useQueryClient();
 
   useEffect(() => {
@@ -397,7 +399,7 @@ function ProductsContent() {
                           : "bg-slate-100 text-slate-600 hover:bg-slate-200"
                       }`}
                     >
-                      {cat}
+                      {catLabel(cat)}
                       <span
                         className={`ml-1.5 rounded-full px-1.5 py-0.5 text-[10px] font-bold leading-none ${
                           isActive
@@ -441,8 +443,8 @@ function ProductsContent() {
               </span>
               <span className="inline-flex items-center gap-1.5 rounded-full bg-amber-100 border border-amber-200 px-3 py-1 text-xs font-semibold text-amber-800">
                 {restoredFilter.subCategory
-                  ? `${restoredFilter.category} · ${restoredFilter.subCategory}`
-                  : restoredFilter.category}
+                  ? `${catLabel(restoredFilter.category)} · ${subLabel(restoredFilter.subCategory)}`
+                  : catLabel(restoredFilter.category)}
                 <button
                   type="button"
                   onClick={handleDismissRestoredFilter}
@@ -498,7 +500,7 @@ function ProductsContent() {
                         : "bg-white border border-slate-200 text-slate-600 hover:bg-slate-100"
                     }`}
                   >
-                    {sub}
+                    {subLabel(sub)}
                     <span
                       className={`ml-1.5 rounded-full px-1.5 py-0.5 text-[10px] font-bold leading-none ${
                         isActive
@@ -589,7 +591,7 @@ function ProductsContent() {
                       <div className="absolute top-4 left-4 flex flex-wrap gap-1.5">
                         {product.category && (
                           <span className="inline-flex items-center rounded-full bg-white/90 backdrop-blur px-3 py-1 text-xs font-bold text-accent shadow-sm">
-                            {product.category}
+                            {catLabel(product.category)}
                           </span>
                         )}
                         {product.subCategory && (
@@ -611,7 +613,7 @@ function ProductsContent() {
                             }}
                             className="inline-flex items-center rounded-full bg-accent/85 backdrop-blur px-3 py-1 text-xs font-semibold text-white shadow-sm hover:bg-accent transition-colors cursor-pointer"
                           >
-                            {product.subCategory}
+                            {subLabel(product.subCategory)}
                           </button>
                         )}
                       </div>

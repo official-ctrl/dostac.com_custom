@@ -265,6 +265,8 @@ const ko: Dict = {
     copyLink: "링크 복사", copied: "복사됨!",
     filterRestoredPrefix: "마지막 필터 적용 중:",
     filterClearAriaLabel: "필터 초기화",
+    categoryNames: { body: "바디", cleanser: "클렌저", mask: "마스크", skincare: "스킨케어", specialty: "전문 케어", wipes: "물티슈" } as Record<string, string>,
+    subCategoryNames: { serum: "세럼", toner: "토너", cream: "크림", lotion: "로션", "sheet-mask": "시트 마스크", "sleeping-mask": "슬리핑 마스크", "clay-mask": "클레이 마스크", "pore-strip": "코팩", "spot-patch": "스팟 패치", "micro-needle": "마이크로 니들", "cleansing-foam": "클렌징 폼", "cleansing-oil": "클렌징 오일", baby: "베이비", feminine: "여성 위생", scrub: "스크럽", "body-lotion": "바디 로션", "cooling-wipe": "쿨링 티슈", "deodorant-wipe": "데오드란트 티슈" } as Record<string, string>,
     items: [
       { id: "01", name: "코팩", headline: "고도화된 블랙헤드 및 피지 관리 솔루션",
         copy: "높은 효능의 코팩으로 스킨케어 포트폴리오를 강화해 보세요. 막힌 모공에 강력하게 밀착되도록 설계된 이 제품은 T존의 과잉 피지, 노폐물, 고질적인 블랙헤드를 손쉽게 제거하여 피부를 즉각적으로 더욱 매끄럽고 깨끗하게 가꿔줍니다. 높은 커스터마이징이 가능해 어떤 브랜드 콘셉트에도 맞는 다양한 제품 라인을 제공합니다.",
@@ -715,6 +717,8 @@ const en: Dict = {
     copyLink: "Copy link", copied: "Copied!",
     filterRestoredPrefix: "Showing last-used filter:",
     filterClearAriaLabel: "Clear filter",
+    categoryNames: { body: "Body", cleanser: "Cleanser", mask: "Mask", skincare: "Skin Care", specialty: "Specialty", wipes: "Wipes" } as Record<string, string>,
+    subCategoryNames: { serum: "Serum", toner: "Toner", cream: "Cream", lotion: "Lotion", "sheet-mask": "Sheet Mask", "sleeping-mask": "Sleeping Mask", "clay-mask": "Clay Mask", "pore-strip": "Pore Strip", "spot-patch": "Spot Patch", "micro-needle": "Micro Needle", "cleansing-foam": "Cleansing Foam", "cleansing-oil": "Cleansing Oil", baby: "Baby", feminine: "Feminine Care", scrub: "Scrub", "body-lotion": "Body Lotion", "cooling-wipe": "Cooling Wipe", "deodorant-wipe": "Deodorant Wipe" } as Record<string, string>,
     items: [
       { id: "01", name: "Pore Strips", headline: "Advanced Blackhead & Sebum Control Solutions",
         copy: "Maximize your skincare portfolio with our highly effective Nose Pore Strips. Formulated to powerfully adhere to clogged pores, these strips effortlessly extract excess sebum, impurities, and stubborn blackheads from the T-zone, leaving skin instantly smoother and clearer. With high customizability, we offer versatile product lines to fit any brand concept.",
@@ -1165,6 +1169,8 @@ const ja: Dict = {
     copyLink: "リンクをコピー", copied: "コピーしました!",
     filterRestoredPrefix: "前回のフィルター適用中:",
     filterClearAriaLabel: "フィルターをクリア",
+    categoryNames: { body: "ボディ", cleanser: "クレンザー", mask: "マスク", skincare: "スキンケア", specialty: "スペシャルケア", wipes: "ウェットティッシュ" } as Record<string, string>,
+    subCategoryNames: { serum: "セラム", toner: "トナー", cream: "クリーム", lotion: "ローション", "sheet-mask": "シートマスク", "sleeping-mask": "スリーピングマスク", "clay-mask": "クレイマスク", "pore-strip": "毛穴ストリップ", "spot-patch": "スポットパッチ", "micro-needle": "マイクロニードル", "cleansing-foam": "クレンジングフォーム", "cleansing-oil": "クレンジングオイル", baby: "ベビー", feminine: "フェミニンケア", scrub: "スクラブ", "body-lotion": "ボディローション", "cooling-wipe": "クールウェットティッシュ", "deodorant-wipe": "デオドラントティッシュ" } as Record<string, string>,
     items: [
       { id: "01", name: "毛穴ストリップ", headline: "先進的なブラックヘッド・皮脂コントロールソリューション",
         copy: "高機能なノーズ用毛穴ストリップで、スキンケア製品ラインアップを強化できます。詰まった毛穴にしっかり密着するよう設計されており、Tゾーンの余分な皮脂、不純物、頑固なブラックヘッドを手軽に取り除き、肌をすぐになめらかでクリアな状態へ導きます。高いカスタマイズ性により、あらゆるブランドコンセプトに対応する多彩な製品ラインをご提供します。",
@@ -1615,6 +1621,8 @@ const zh: Dict = {
     copyLink: "复制链接", copied: "已复制!",
     filterRestoredPrefix: "正在应用上次筛选:",
     filterClearAriaLabel: "清除筛选",
+    categoryNames: { body: "身体护理", cleanser: "洁肤", mask: "面膜", skincare: "护肤", specialty: "特殊护理", wipes: "湿巾" } as Record<string, string>,
+    subCategoryNames: { serum: "精华液", toner: "化妆水", cream: "面霜", lotion: "乳液", "sheet-mask": "片状面膜", "sleeping-mask": "睡眠面膜", "clay-mask": "泥膜", "pore-strip": "鼻贴", "spot-patch": "祛痘贴", "micro-needle": "微针贴", "cleansing-foam": "洁面泡沫", "cleansing-oil": "卸妆油", baby: "婴儿护理", feminine: "女性护理", scrub: "磨砂膏", "body-lotion": "身体乳", "cooling-wipe": "清凉湿巾", "deodorant-wipe": "除臭湿巾" } as Record<string, string>,
     items: [
       { id: "01", name: "鼻贴", headline: "先进的黑头与皮脂控制解决方案",
         copy: "通过我们高效的鼻贴，提升您的护肤产品组合。这些鼻贴能够强力贴合堵塞毛孔，轻松吸附并去除 T 区多余皮脂、杂质和顽固黑头，让肌肤即刻更加平滑清透。凭借高度可定制化，我们可提供多样化产品线，以匹配任何品牌理念。",
@@ -2065,6 +2073,8 @@ const vi: Dict = {
     copyLink: "Sao chép liên kết", copied: "Đã sao chép!",
     filterRestoredPrefix: "Đang hiển thị bộ lọc đã dùng:",
     filterClearAriaLabel: "Xóa bộ lọc",
+    categoryNames: { body: "Chăm sóc cơ thể", cleanser: "Tẩy trang", mask: "Mặt nạ", skincare: "Chăm sóc da", specialty: "Chuyên biệt", wipes: "Khăn ướt" } as Record<string, string>,
+    subCategoryNames: { serum: "Serum", toner: "Toner", cream: "Kem dưỡng", lotion: "Lotion", "sheet-mask": "Mặt nạ giấy", "sleeping-mask": "Mặt nạ ngủ", "clay-mask": "Mặt nạ đất sét", "pore-strip": "Miếng lột mụn", "spot-patch": "Miếng dán mụn", "micro-needle": "Vi kim", "cleansing-foam": "Sữa rửa mặt", "cleansing-oil": "Tẩy trang dầu", baby: "Cho bé", feminine: "Chăm sóc phụ nữ", scrub: "Tẩy tế bào chết", "body-lotion": "Dưỡng thể", "cooling-wipe": "Khăn ướt làm mát", "deodorant-wipe": "Khăn ướt khử mùi" } as Record<string, string>,
     items: [
       { id: "01", name: "Miếng lột mụn đầu đen", headline: "Giải pháp kiểm soát mụn đầu đen & bã nhờn tiên tiến",
         copy: "Tối ưu danh mục chăm sóc da của bạn với dòng miếng lột mụn mũi hiệu quả cao của chúng tôi. Được thiết kế để bám chắc vào lỗ chân lông bị bít tắc, các miếng lột này dễ dàng loại bỏ bã nhờn dư thừa, tạp chất và mụn đầu đen cứng đầu ở vùng chữ T, giúp da trở nên mịn màng và sạch thoáng ngay tức thì. Với khả năng tùy chỉnh cao, chúng tôi cung cấp nhiều dòng sản phẩm linh hoạt phù hợp với mọi định hướng thương hiệu.",
@@ -2324,5 +2334,56 @@ export function useT(): LangContextValue {
 export function useLang(): { lang: Lang; setLang: (l: Lang) => void } {
   const { lang, setLang } = useT();
   return { lang, setLang };
+}
+
+// Normalize legacy or Korean DB values to canonical slug keys so translation
+// lookups succeed regardless of what was stored in the database.
+const CATEGORY_SLUG_MAP: Record<string, string> = {
+  스킨케어: "skincare", 클렌저: "cleanser", 마스크: "mask", 바디: "body",
+  "전문 케어": "specialty", 물티슈: "wipes",
+  Skincare: "skincare", Cleanser: "cleanser", Mask: "mask", Body: "body",
+  Specialty: "specialty", Wipes: "wipes",
+};
+
+const SUBCATEGORY_SLUG_MAP: Record<string, string> = {
+  세럼: "serum", 토너: "toner", 크림: "cream", 로션: "lotion",
+  "시트 마스크": "sheet-mask", "슬리핑 마스크": "sleeping-mask",
+  "클레이 마스크": "clay-mask", 코팩: "pore-strip", "스팟 패치": "spot-patch",
+  "마이크로 니들": "micro-needle", "클렌징 폼": "cleansing-foam",
+  "클렌징 오일": "cleansing-oil", 베이비: "baby", "여성 위생": "feminine",
+  스크럽: "scrub", "바디 로션": "body-lotion", "쿨링 티슈": "cooling-wipe",
+  "데오드란트 티슈": "deodorant-wipe",
+  Serum: "serum", Toner: "toner", Cream: "cream", Lotion: "lotion",
+  "Sheet Mask": "sheet-mask", "Sleeping Mask": "sleeping-mask",
+  "Clay Mask": "clay-mask", "Pore Strip": "pore-strip",
+  "Spot Patch": "spot-patch", "Micro Needle": "micro-needle",
+  "Cleansing Foam": "cleansing-foam", "Cleansing Oil": "cleansing-oil",
+  Baby: "baby", Feminine: "feminine", Scrub: "scrub",
+  "Body Lotion": "body-lotion", "Cooling Wipe": "cooling-wipe",
+  "Deodorant Wipe": "deodorant-wipe",
+};
+
+function normalizeKey(key: string, slugMap: Record<string, string>): string {
+  return slugMap[key] ?? key;
+}
+
+export function useCategoryLabel(): (key: string | null | undefined) => string {
+  const { lang } = useLang();
+  return (key: string | null | undefined) => {
+    if (!key) return key ?? "";
+    const slug = normalizeKey(key, CATEGORY_SLUG_MAP);
+    const map = (translations[lang]?.products?.categoryNames ?? {}) as Record<string, string>;
+    return map[slug] ?? map[key] ?? slug;
+  };
+}
+
+export function useSubCategoryLabel(): (key: string | null | undefined) => string {
+  const { lang } = useLang();
+  return (key: string | null | undefined) => {
+    if (!key) return key ?? "";
+    const slug = normalizeKey(key, SUBCATEGORY_SLUG_MAP);
+    const map = (translations[lang]?.products?.subCategoryNames ?? {}) as Record<string, string>;
+    return map[slug] ?? map[key] ?? slug;
+  };
 }
 

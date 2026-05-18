@@ -9,7 +9,7 @@ import {
 } from "lucide-react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
-import { useT, useLang, type Lang } from "./i18n";
+import { useT, useLang, useCategoryLabel, type Lang } from "./i18n";
 import { getListPublicProductsQueryOptions } from "@workspace/api-client-react";
 
 type AboutSubItem = {
@@ -293,6 +293,7 @@ function ProcessDropdown({ active, scrolled }: { active: boolean; scrolled: bool
 function ProductsDropdown({ active }: { active: boolean }) {
   const { t } = useT();
   const { lang } = useLang();
+  const catLabel = useCategoryLabel();
   const [, navigate] = useLocation();
   const [open, setOpen] = useState(false);
   const wrapRef = React.useRef<HTMLDivElement | null>(null);
@@ -390,7 +391,7 @@ function ProductsDropdown({ active }: { active: boolean }) {
                 className="px-3 py-2 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-50 hover:text-primary transition focus:bg-slate-100 focus:outline-none"
                 onClick={() => setOpen(false)}
               >
-                {cat}
+                {catLabel(cat)}
               </Link>
             ))}
           </div>
@@ -411,6 +412,7 @@ function MobileProductsAccordion({
 }) {
   const { t } = useT();
   const { lang } = useLang();
+  const catLabel = useCategoryLabel();
   const productsQuery = useQuery({
     ...getListPublicProductsQueryOptions({ lang }),
     staleTime: 5 * 60 * 1000,
@@ -455,7 +457,7 @@ function MobileProductsAccordion({
               className="block px-3 py-1.5 rounded-md text-sm text-slate-600 hover:bg-slate-100"
               onClick={onClose}
             >
-              {cat}
+              {catLabel(cat)}
             </Link>
           ))}
         </div>
