@@ -8,6 +8,7 @@ import {
   Loader2,
   Copy,
   Check,
+  X,
 } from "lucide-react";
 import { Layout, dostacImage } from "@/components/dostac/Layout";
 import { SectionNav } from "@/components/dostac/SectionNav";
@@ -99,6 +100,7 @@ function ProductsContent() {
   const [selectedSubCategory, setSelectedSubCategory] = useState<string | null>(subCategoryFromUrl);
   const [activeSlug, setActiveSlug] = useState<string | null>(null);
   const [copiedCategory, setCopiedCategory] = useState(false);
+  const [restoredFilter, setRestoredFilter] = useState<{ category: string; subCategory: string | null } | null>(null);
 
   const didRestoreRef = useRef(false);
   useEffect(() => {
@@ -107,6 +109,7 @@ function ProductsContent() {
     if (categoryFromUrl !== null) return;
     const stored = readStoredFilter();
     if (stored) {
+      setRestoredFilter(stored);
       navigate(buildUrl(stored.category, stored.subCategory), { replace: true });
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -158,6 +161,7 @@ function ProductsContent() {
     if (selectedCategory !== null && categories.length > 0 && !categories.includes(selectedCategory)) {
       setSelectedCategory(null);
       setSelectedSubCategory(null);
+      setRestoredFilter(null);
       navigate("/products", { replace: true });
       saveStoredFilter(null, null);
     }
@@ -227,7 +231,18 @@ function ProductsContent() {
     if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
+  const handleDismissRestoredFilter = () => {
+    setRestoredFilter(null);
+    saveStoredFilter(null, null);
+    setSelectedCategory(null);
+    setSelectedSubCategory(null);
+    setActiveSlug(null);
+    navigate("/products", { replace: true });
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
   const handleCategorySelect = (cat: string | null) => {
+    setRestoredFilter(null);
     setSelectedCategory(cat);
     setSelectedSubCategory(null);
     setActiveSlug(null);
@@ -237,6 +252,7 @@ function ProductsContent() {
   };
 
   const handleSubCategorySelect = (sub: string | null) => {
+    setRestoredFilter(null);
     setSelectedSubCategory(sub);
     setActiveSlug(null);
     navigate(buildUrl(selectedCategory, sub), { replace: false });
@@ -358,6 +374,32 @@ function ProductsContent() {
                   </div>
                 );
               })}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* RESTORED FILTER CHIP */}
+      {restoredFilter !== null && (
+        <div className="bg-amber-50 border-b border-amber-100">
+          <div className="container mx-auto px-6">
+            <div className="flex items-center gap-2 py-2">
+              <span className="text-xs text-amber-700 font-medium">
+                {t("products.filterRestoredPrefix") as string}
+              </span>
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-amber-100 border border-amber-200 px-3 py-1 text-xs font-semibold text-amber-800">
+                {restoredFilter.subCategory
+                  ? `${restoredFilter.category} · ${restoredFilter.subCategory}`
+                  : restoredFilter.category}
+                <button
+                  type="button"
+                  onClick={handleDismissRestoredFilter}
+                  aria-label={t("products.filterClearAriaLabel") as string}
+                  className="ml-0.5 rounded-full hover:bg-amber-200 transition-colors p-0.5 focus:outline-none"
+                >
+                  <X className="w-3 h-3" />
+                </button>
+              </span>
             </div>
           </div>
         </div>

@@ -263,6 +263,8 @@ const ko: Dict = {
     certsLabel: "인증", featuresLabel: "핵심 특징", relatedProducts: "관련 제품",
     materialLabel: "성분/소재", subCategoryLabel: "세부 카테고리",
     copyLink: "링크 복사", copied: "복사됨!",
+    filterRestoredPrefix: "마지막 필터 적용 중:",
+    filterClearAriaLabel: "필터 초기화",
     items: [
       { id: "01", name: "코팩", headline: "고도화된 블랙헤드 및 피지 관리 솔루션",
         copy: "높은 효능의 코팩으로 스킨케어 포트폴리오를 강화해 보세요. 막힌 모공에 강력하게 밀착되도록 설계된 이 제품은 T존의 과잉 피지, 노폐물, 고질적인 블랙헤드를 손쉽게 제거하여 피부를 즉각적으로 더욱 매끄럽고 깨끗하게 가꿔줍니다. 높은 커스터마이징이 가능해 어떤 브랜드 콘셉트에도 맞는 다양한 제품 라인을 제공합니다.",
@@ -711,6 +713,8 @@ const en: Dict = {
     certsLabel: "Certifications", featuresLabel: "Key Features", relatedProducts: "Related Products",
     materialLabel: "Material", subCategoryLabel: "Sub-category",
     copyLink: "Copy link", copied: "Copied!",
+    filterRestoredPrefix: "Showing last-used filter:",
+    filterClearAriaLabel: "Clear filter",
     items: [
       { id: "01", name: "Pore Strips", headline: "Advanced Blackhead & Sebum Control Solutions",
         copy: "Maximize your skincare portfolio with our highly effective Nose Pore Strips. Formulated to powerfully adhere to clogged pores, these strips effortlessly extract excess sebum, impurities, and stubborn blackheads from the T-zone, leaving skin instantly smoother and clearer. With high customizability, we offer versatile product lines to fit any brand concept.",
@@ -1159,6 +1163,8 @@ const ja: Dict = {
     certsLabel: "認証", featuresLabel: "主な特徴", relatedProducts: "関連製品",
     materialLabel: "原材料", subCategoryLabel: "サブカテゴリ",
     copyLink: "リンクをコピー", copied: "コピーしました!",
+    filterRestoredPrefix: "前回のフィルター適用中:",
+    filterClearAriaLabel: "フィルターをクリア",
     items: [
       { id: "01", name: "毛穴ストリップ", headline: "先進的なブラックヘッド・皮脂コントロールソリューション",
         copy: "高機能なノーズ用毛穴ストリップで、スキンケア製品ラインアップを強化できます。詰まった毛穴にしっかり密着するよう設計されており、Tゾーンの余分な皮脂、不純物、頑固なブラックヘッドを手軽に取り除き、肌をすぐになめらかでクリアな状態へ導きます。高いカスタマイズ性により、あらゆるブランドコンセプトに対応する多彩な製品ラインをご提供します。",
@@ -1607,6 +1613,8 @@ const zh: Dict = {
     certsLabel: "认证", featuresLabel: "核心特点", relatedProducts: "相关产品",
     materialLabel: "原料", subCategoryLabel: "子类别",
     copyLink: "复制链接", copied: "已复制!",
+    filterRestoredPrefix: "正在应用上次筛选:",
+    filterClearAriaLabel: "清除筛选",
     items: [
       { id: "01", name: "鼻贴", headline: "先进的黑头与皮脂控制解决方案",
         copy: "通过我们高效的鼻贴，提升您的护肤产品组合。这些鼻贴能够强力贴合堵塞毛孔，轻松吸附并去除 T 区多余皮脂、杂质和顽固黑头，让肌肤即刻更加平滑清透。凭借高度可定制化，我们可提供多样化产品线，以匹配任何品牌理念。",
@@ -2055,6 +2063,8 @@ const vi: Dict = {
     certsLabel: "Chứng nhận", featuresLabel: "Tính năng chính", relatedProducts: "Sản phẩm liên quan",
     materialLabel: "Thành phần", subCategoryLabel: "Danh mục phụ",
     copyLink: "Sao chép liên kết", copied: "Đã sao chép!",
+    filterRestoredPrefix: "Đang hiển thị bộ lọc đã dùng:",
+    filterClearAriaLabel: "Xóa bộ lọc",
     items: [
       { id: "01", name: "Miếng lột mụn đầu đen", headline: "Giải pháp kiểm soát mụn đầu đen & bã nhờn tiên tiến",
         copy: "Tối ưu danh mục chăm sóc da của bạn với dòng miếng lột mụn mũi hiệu quả cao của chúng tôi. Được thiết kế để bám chắc vào lỗ chân lông bị bít tắc, các miếng lột này dễ dàng loại bỏ bã nhờn dư thừa, tạp chất và mụn đầu đen cứng đầu ở vùng chữ T, giúp da trở nên mịn màng và sạch thoáng ngay tức thì. Với khả năng tùy chỉnh cao, chúng tôi cung cấp nhiều dòng sản phẩm linh hoạt phù hợp với mọi định hướng thương hiệu.",
