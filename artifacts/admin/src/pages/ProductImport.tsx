@@ -6,6 +6,7 @@ import * as XLSX from "xlsx";
 import {
   useAdminCreateProduct,
   useAdminTranslate,
+  adminListProducts,
   getAdminListProductsQueryKey,
   type AdminProductInput,
   type Translation,
@@ -24,6 +25,7 @@ import {
   FileSpreadsheet,
   PlayCircle,
   Download,
+  SkipForward,
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { LANGS } from "@/lib/langs";
@@ -42,7 +44,7 @@ type RawRow = {
   certs?: string;
 };
 
-type RowStatus = "pending" | "translating" | "creating" | "done" | "error";
+type RowStatus = "pending" | "translating" | "creating" | "done" | "error" | "skipped";
 
 type ParsedRow = {
   index: number;
@@ -56,9 +58,10 @@ type ParsedRow = {
   errors: string[];
   status: RowStatus;
   errorMsg?: string;
+  isDuplicate?: boolean;
 };
 
-function validateRow(raw: RawRow, index: number): ParsedRow {
+function validateRow(raw: RawRow, index: number, existingSlugs?: Set<string>): ParsedRow {
   const slug = (raw.slug ?? "").trim();
   const category = (raw.category ?? "").trim();
   const name_ko = (raw.name_ko ?? "").trim();
@@ -79,6 +82,10 @@ function validateRow(raw: RawRow, index: number): ParsedRow {
   if (!category) errors.push("category 필수");
   if (!name_ko) errors.push("name_ko 필수");
 
+  const isDuplicate = existingSlugs != null && slug.length > 0 && SLUG_RE.test(slug)
+    ? existingSlugs.has(slug)
+    : undefined;
+
   return {
     index,
     slug,
@@ -90,6 +97,7 @@ function validateRow(raw: RawRow, index: number): ParsedRow {
     certs,
     errors,
     status: "pending",
+    isDuplicate,
   };
 }
 
@@ -129,6 +137,7 @@ const STATUS_ICON: Record<RowStatus, React.ReactNode> = {
   creating: <Loader2 className="h-4 w-4 animate-spin text-amber-500" />,
   done: <CheckCircle2 className="h-4 w-4 text-green-500" />,
   error: <XCircle className="h-4 w-4 text-destructive" />,
+  skipped: <SkipForward className="h-4 w-4 text-amber-500" />,
 };
 
 const STATUS_LABEL: Record<RowStatus, string> = {
@@ -137,6 +146,7 @@ const STATUS_LABEL: Record<RowStatus, string> = {
   creating: "저장 중",
   done: "완료",
   error: "오류",
+  skipped: "건너뜀",
 };
 
 const TEMPLATE_HEADERS = ["slug", "category", "subCategory", "material", "name_ko", "features_ko", "certs"];
@@ -176,16 +186,25 @@ export default function ProductImport() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [fileName, setFileName] = useState<string | null>(null);
   const [rows, setRows] = useState<ParsedRow[]>([]);
+  const [existingSlugs, setExistingSlugs] = useState<Set<string>>(new Set());
   const [isImporting, setIsImporting] = useState(false);
-  const [importResult, setImportResult] = useState<{ done: number; errors: number } | null>(null);
+  const [importResult, setImportResult] = useState<{
+    done: number;
+    skipped: number;
+    errors: number;
+  } | null>(null);
 
   const validRows = rows.filter((r) => r.errors.length === 0);
   const invalidRows = rows.filter((r) => r.errors.length > 0);
+  const duplicateRows = validRows.filter((r) => r.isDuplicate);
+  const importableRows = validRows.filter((r) => !r.isDuplicate);
+
   const doneCount = rows.filter((r) => r.status === "done").length;
+  const skippedCount = rows.filter((r) => r.status === "skipped").length;
   const errorCount = rows.filter((r) => r.status === "error").length;
-  const finishedCount = doneCount + errorCount;
-  const totalImportable = validRows.length;
-  const progress = totalImportable > 0 ? Math.round((finishedCount / totalImportable) * 100) : 0;
+  const finishedCount = doneCount + skippedCount + errorCount;
+  const totalToProcess = validRows.length;
+  const progress = totalToProcess > 0 ? Math.round((finishedCount / totalToProcess) * 100) : 0;
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -215,7 +234,22 @@ export default function ProductImport() {
         return;
       }
 
-      const parsed = rawRows.map((raw, i) => validateRow(raw, i));
+      // Fetch existing slugs first so we can mark duplicates during validation
+      let slugSet = new Set<string>();
+      try {
+        const existing = await adminListProducts();
+        slugSet = new Set(existing.map((p) => p.slug));
+        setExistingSlugs(slugSet);
+      } catch {
+        toast({
+          title: "슬러그 중복 확인 실패",
+          description: "기존 제품 슬러그를 불러오지 못했습니다. 중복 감지 없이 진행합니다.",
+          variant: "destructive",
+        });
+        setExistingSlugs(new Set());
+      }
+
+      const parsed = rawRows.map((raw, i) => validateRow(raw, i, slugSet));
       setRows(parsed);
     } catch (err) {
       toast({
@@ -250,7 +284,8 @@ export default function ProductImport() {
           features_ko: r.features_ko,
           certs: field === "certs" ? value : r.certs.join(","),
         };
-        const revalidated = validateRow(raw, rowIndex);
+        // Re-validate and re-check duplicate status against the cached slug set
+        const revalidated = validateRow(raw, rowIndex, existingSlugs);
         return { ...revalidated, status: r.status };
       }),
     );
@@ -262,9 +297,20 @@ export default function ProductImport() {
     setImportResult(null);
 
     let localDone = 0;
+    let localSkipped = 0;
     let localErrors = 0;
 
     for (const row of validRows) {
+      // Duplicate slugs are skipped — admins should edit the existing product instead
+      if (row.isDuplicate) {
+        updateRowStatus(row.index, {
+          status: "skipped",
+          errorMsg: "이미 존재하는 슬러그",
+        });
+        localSkipped++;
+        continue;
+      }
+
       updateRowStatus(row.index, { status: "translating" });
 
       let translations = emptyTranslations();
@@ -369,15 +415,20 @@ export default function ProductImport() {
 
     await qc.invalidateQueries({ queryKey: getAdminListProductsQueryKey() });
     setIsImporting(false);
-    setImportResult({ done: localDone, errors: localErrors });
+    setImportResult({ done: localDone, skipped: localSkipped, errors: localErrors });
 
+    const parts: string[] = [];
+    if (localDone > 0) parts.push(`${localDone}개 성공`);
+    if (localSkipped > 0) parts.push(`${localSkipped}개 중복 건너뜀`);
+    if (localErrors > 0) parts.push(`${localErrors}개 오류`);
     toast({
       title: "가져오기 완료",
-      description: `${localDone}개 성공, ${localErrors}개 오류`,
+      description: parts.join(", "),
     });
   };
 
-  const canImport = rows.length > 0 && invalidRows.length === 0 && !isImporting;
+  const canImport =
+    rows.length > 0 && invalidRows.length === 0 && !isImporting && validRows.length > 0;
 
   return (
     <div className="px-8 py-8 space-y-6 max-w-5xl">
@@ -457,29 +508,51 @@ export default function ProductImport() {
           </div>
 
           {rows.length > 0 && (
-            <div className="flex items-center justify-between text-sm">
-              <span className="text-muted-foreground">
-                총 <strong className="text-foreground">{rows.length}</strong>개 행 파싱됨 —{" "}
-                <span className="text-green-600">{validRows.length}개 유효</span>
-                {invalidRows.length > 0 && (
-                  <>
-                    {", "}
-                    <span className="text-destructive">{invalidRows.length}개 오류</span>
-                  </>
-                )}
-              </span>
-              <Button
-                onClick={() => void runImport()}
-                disabled={!canImport}
-                className="gap-2"
-              >
-                {isImporting ? (
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                ) : (
-                  <PlayCircle className="h-4 w-4" />
-                )}
-                {isImporting ? "가져오는 중…" : `${validRows.length}개 가져오기`}
-              </Button>
+            <div className="space-y-3">
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-muted-foreground">
+                  총 <strong className="text-foreground">{rows.length}</strong>개 행 파싱됨 —{" "}
+                  <span className="text-green-600">{importableRows.length}개 가져올 예정</span>
+                  {duplicateRows.length > 0 && (
+                    <>
+                      {", "}
+                      <span className="text-amber-600">
+                        {duplicateRows.length}개 중복 건너뜀
+                      </span>
+                    </>
+                  )}
+                  {invalidRows.length > 0 && (
+                    <>
+                      {", "}
+                      <span className="text-destructive">{invalidRows.length}개 오류</span>
+                    </>
+                  )}
+                </span>
+                <Button
+                  onClick={() => void runImport()}
+                  disabled={!canImport}
+                  className="gap-2"
+                >
+                  {isImporting ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <PlayCircle className="h-4 w-4" />
+                  )}
+                  {isImporting
+                    ? "가져오는 중…"
+                    : `${importableRows.length}개 가져오기`}
+                </Button>
+              </div>
+
+              {duplicateRows.length > 0 && (
+                <div className="flex items-start gap-2 rounded-md border border-amber-200 bg-amber-50 px-4 py-2.5">
+                  <AlertTriangle className="h-4 w-4 text-amber-500 shrink-0 mt-0.5" />
+                  <p className="text-xs text-amber-700">
+                    <strong>{duplicateRows.length}개</strong> 행의 슬러그가 이미 데이터베이스에 존재합니다.
+                    해당 행은 자동으로 건너뜁니다. 내용을 변경하려면 제품 목록에서 직접 수정해 주세요.
+                  </p>
+                </div>
+              )}
             </div>
           )}
         </CardContent>
@@ -497,13 +570,21 @@ export default function ProductImport() {
             <div className="flex items-center justify-between text-xs text-muted-foreground">
               <span>
                 {importResult !== null
-                  ? `${totalImportable} / ${totalImportable} 처리됨`
-                  : `${finishedCount} / ${totalImportable} 처리됨`}
+                  ? `${totalToProcess} / ${totalToProcess} 처리됨`
+                  : `${finishedCount} / ${totalToProcess} 처리됨`}
               </span>
-              <span>
+              <span className="flex items-center gap-2">
                 <span className="text-green-600">
                   {importResult !== null ? importResult.done : doneCount}개 완료
                 </span>
+                {(importResult !== null ? importResult.skipped : skippedCount) > 0 && (
+                  <>
+                    {" · "}
+                    <span className="text-amber-600">
+                      {importResult !== null ? importResult.skipped : skippedCount}개 건너뜀
+                    </span>
+                  </>
+                )}
                 {(importResult !== null ? importResult.errors : errorCount) > 0 && (
                   <>
                     {" · "}
@@ -556,19 +637,22 @@ export default function ProductImport() {
                 </thead>
                 <tbody>
                   {rows.map((row) => {
-                    const hasError = row.errors.length > 0 || row.status === "error";
+                    const hasValidationError = row.errors.length > 0;
+                    const isDupPending = row.isDuplicate && row.status === "pending";
                     return (
                       <tr
                         key={row.index}
                         className={cn(
                           "border-b border-border last:border-0",
-                          hasError && row.errors.length > 0
+                          hasValidationError
                             ? "bg-destructive/5"
                             : row.status === "done"
                               ? "bg-green-500/5"
                               : row.status === "error"
                                 ? "bg-destructive/5"
-                                : "",
+                                : row.status === "skipped" || isDupPending
+                                  ? "bg-amber-500/5"
+                                  : "",
                         )}
                       >
                         <td className="px-4 py-2.5 text-muted-foreground text-xs">
@@ -576,7 +660,7 @@ export default function ProductImport() {
                         </td>
                         <td className="px-4 py-2.5">
                           <div className="flex items-center gap-1.5">
-                            {STATUS_ICON[row.status]}
+                            {isDupPending ? STATUS_ICON["skipped"] : STATUS_ICON[row.status]}
                             <span
                               className={cn(
                                 "text-xs",
@@ -584,19 +668,21 @@ export default function ProductImport() {
                                   ? "text-green-600"
                                   : row.status === "error"
                                     ? "text-destructive"
-                                    : row.status === "translating"
-                                      ? "text-blue-500"
-                                      : row.status === "creating"
-                                        ? "text-amber-500"
-                                        : "text-muted-foreground",
+                                    : row.status === "skipped" || isDupPending
+                                      ? "text-amber-500"
+                                      : row.status === "translating"
+                                        ? "text-blue-500"
+                                        : row.status === "creating"
+                                          ? "text-amber-500"
+                                          : "text-muted-foreground",
                               )}
                             >
-                              {STATUS_LABEL[row.status]}
+                              {isDupPending ? "중복 슬러그" : STATUS_LABEL[row.status]}
                             </span>
                           </div>
                         </td>
                         <td className="px-4 py-2.5">
-                          {row.errors.length > 0 && row.status === "pending" ? (
+                          {hasValidationError && row.status === "pending" ? (
                             <input
                               type="text"
                               value={row.slug}
@@ -612,13 +698,18 @@ export default function ProductImport() {
                               )}
                             />
                           ) : (
-                            <code className="text-xs bg-muted rounded px-1 py-0.5">
+                            <code
+                              className={cn(
+                                "text-xs rounded px-1 py-0.5",
+                                row.isDuplicate ? "bg-amber-100 text-amber-800" : "bg-muted",
+                              )}
+                            >
                               {row.slug || <span className="text-muted-foreground italic">없음</span>}
                             </code>
                           )}
                         </td>
                         <td className="px-4 py-2.5 text-xs">
-                          {row.errors.length > 0 && row.status === "pending" ? (
+                          {hasValidationError && row.status === "pending" ? (
                             <input
                               type="text"
                               value={row.category}
@@ -638,7 +729,7 @@ export default function ProductImport() {
                           )}
                         </td>
                         <td className="px-4 py-2.5 text-xs max-w-[200px]">
-                          {row.errors.length > 0 && row.status === "pending" ? (
+                          {hasValidationError && row.status === "pending" ? (
                             <input
                               type="text"
                               value={row.name_ko}
@@ -658,7 +749,7 @@ export default function ProductImport() {
                           )}
                         </td>
                         <td className="px-4 py-2.5">
-                          {row.errors.length > 0 && row.status === "pending" ? (
+                          {hasValidationError && row.status === "pending" ? (
                             <input
                               type="text"
                               value={row.certs.join(",")}
@@ -684,7 +775,7 @@ export default function ProductImport() {
                           )}
                         </td>
                         <td className="px-4 py-2.5">
-                          {row.errors.length > 0 ? (
+                          {hasValidationError ? (
                             <div className="flex items-start gap-1.5">
                               <AlertTriangle className="h-3.5 w-3.5 text-destructive shrink-0 mt-0.5" />
                               <ul className="text-xs text-destructive space-y-0.5">
@@ -693,10 +784,20 @@ export default function ProductImport() {
                                 ))}
                               </ul>
                             </div>
+                          ) : isDupPending ? (
+                            <div className="flex items-start gap-1.5">
+                              <SkipForward className="h-3.5 w-3.5 text-amber-500 shrink-0 mt-0.5" />
+                              <span className="text-xs text-amber-600">이미 존재하는 슬러그 — 건너뜁니다</span>
+                            </div>
                           ) : row.status === "error" && row.errorMsg ? (
                             <div className="flex items-start gap-1.5">
                               <XCircle className="h-3.5 w-3.5 text-destructive shrink-0 mt-0.5" />
                               <span className="text-xs text-destructive">{row.errorMsg}</span>
+                            </div>
+                          ) : row.status === "skipped" ? (
+                            <div className="flex items-start gap-1.5">
+                              <SkipForward className="h-3.5 w-3.5 text-amber-500 shrink-0 mt-0.5" />
+                              <span className="text-xs text-amber-600">{row.errorMsg ?? "건너뜀"}</span>
                             </div>
                           ) : (
                             <span className="text-xs text-green-600">✓</span>
