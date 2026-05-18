@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, { createContext, useCallback, useContext, useEffect, useState } from "react";
 
 export type Lang = "ko" | "en" | "ja" | "zh" | "vi";
 
@@ -2369,21 +2369,27 @@ function normalizeKey(key: string, slugMap: Record<string, string>): string {
 
 export function useCategoryLabel(): (key: string | null | undefined) => string {
   const { lang } = useLang();
-  return (key: string | null | undefined) => {
-    if (!key) return key ?? "";
-    const slug = normalizeKey(key, CATEGORY_SLUG_MAP);
-    const map = (translations[lang]?.products?.categoryNames ?? {}) as Record<string, string>;
-    return map[slug] ?? map[key] ?? slug;
-  };
+  return useCallback(
+    (key: string | null | undefined) => {
+      if (!key) return key ?? "";
+      const slug = normalizeKey(key, CATEGORY_SLUG_MAP);
+      const map = (translations[lang]?.products?.categoryNames ?? {}) as Record<string, string>;
+      return map[slug] ?? map[key] ?? slug;
+    },
+    [lang],
+  );
 }
 
 export function useSubCategoryLabel(): (key: string | null | undefined) => string {
   const { lang } = useLang();
-  return (key: string | null | undefined) => {
-    if (!key) return key ?? "";
-    const slug = normalizeKey(key, SUBCATEGORY_SLUG_MAP);
-    const map = (translations[lang]?.products?.subCategoryNames ?? {}) as Record<string, string>;
-    return map[slug] ?? map[key] ?? slug;
-  };
+  return useCallback(
+    (key: string | null | undefined) => {
+      if (!key) return key ?? "";
+      const slug = normalizeKey(key, SUBCATEGORY_SLUG_MAP);
+      const map = (translations[lang]?.products?.subCategoryNames ?? {}) as Record<string, string>;
+      return map[slug] ?? map[key] ?? slug;
+    },
+    [lang],
+  );
 }
 

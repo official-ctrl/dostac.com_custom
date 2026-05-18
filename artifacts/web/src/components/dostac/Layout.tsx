@@ -305,9 +305,18 @@ function ProductsDropdown({ active }: { active: boolean }) {
     staleTime: 5 * 60 * 1000,
   });
   const products = productsQuery.data ?? [];
-  const categories = Array.from(
+
+  // Derive unique category slugs from the product list, then map each raw DB
+  // slug to its localized display name for the active language so the dropdown
+  // reflects the visitor's language (e.g. "skincare" → "스킨케어" / "Skin Care"
+  // / "スキンケア" / "护肤" / "Chăm sóc da" depending on the active lang).
+  const rawCategories = Array.from(
     new Set(products.map((p) => p.category).filter((c): c is string => !!c))
   );
+  const localizedCategories = rawCategories.map((slug) => ({
+    slug,
+    label: catLabel(slug),
+  }));
 
   useEffect(() => {
     if (!open) return;
@@ -379,19 +388,29 @@ function ProductsDropdown({ active }: { active: boolean }) {
             >
               {t("products.filterAll") as string}
             </Link>
-            {categories.length > 0 && (
+            {productsQuery.isLoading && (
+              <>
+                <div className="my-1 mx-3 border-t border-slate-100" />
+                {[1, 2, 3].map((i) => (
+                  <div key={i} className="px-3 py-2">
+                    <div className="h-4 w-24 rounded bg-slate-100 animate-pulse" />
+                  </div>
+                ))}
+              </>
+            )}
+            {!productsQuery.isLoading && localizedCategories.length > 0 && (
               <div className="my-1 mx-3 border-t border-slate-100" />
             )}
-            {categories.map((cat) => (
+            {!productsQuery.isLoading && localizedCategories.map(({ slug, label }) => (
               <Link
-                key={cat}
-                href={`/products?category=${encodeURIComponent(cat)}`}
+                key={slug}
+                href={`/products?category=${encodeURIComponent(slug)}`}
                 role="menuitem"
-                data-testid={`nav-products-cat-${cat}`}
+                data-testid={`nav-products-cat-${slug}`}
                 className="px-3 py-2 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-50 hover:text-primary transition focus:bg-slate-100 focus:outline-none"
                 onClick={() => setOpen(false)}
               >
-                {catLabel(cat)}
+                {label}
               </Link>
             ))}
           </div>
@@ -418,9 +437,16 @@ function MobileProductsAccordion({
     staleTime: 5 * 60 * 1000,
   });
   const products = productsQuery.data ?? [];
-  const categories = Array.from(
+
+  // Same localization pattern as ProductsDropdown: derive unique slugs then
+  // translate each to the visitor's active language before rendering.
+  const rawCategories = Array.from(
     new Set(products.map((p) => p.category).filter((c): c is string => !!c))
   );
+  const localizedCategories = rawCategories.map((slug) => ({
+    slug,
+    label: catLabel(slug),
+  }));
 
   return (
     <div>
@@ -449,15 +475,20 @@ function MobileProductsAccordion({
           >
             {t("products.filterAll") as string}
           </Link>
-          {categories.map((cat) => (
+          {productsQuery.isLoading && [1, 2, 3].map((i) => (
+            <div key={i} className="px-3 py-1.5">
+              <div className="h-3.5 w-20 rounded bg-slate-100 animate-pulse" />
+            </div>
+          ))}
+          {!productsQuery.isLoading && localizedCategories.map(({ slug, label }) => (
             <Link
-              key={cat}
-              href={`/products?category=${encodeURIComponent(cat)}`}
-              data-testid={`mobile-nav-products-cat-${cat}`}
+              key={slug}
+              href={`/products?category=${encodeURIComponent(slug)}`}
+              data-testid={`mobile-nav-products-cat-${slug}`}
               className="block px-3 py-1.5 rounded-md text-sm text-slate-600 hover:bg-slate-100"
               onClick={onClose}
             >
-              {catLabel(cat)}
+              {label}
             </Link>
           ))}
         </div>
