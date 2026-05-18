@@ -19,4 +19,5 @@ export interface ContactInquiryInput {
   productInterest?: string;
   customization?: string;
   material?: string;
+  productSlug?: string;
 }

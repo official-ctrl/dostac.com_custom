@@ -37,29 +37,6 @@ const INQUIRY_TYPE_LABEL: Record<string, string> = {
   other: "기타 (Other)",
 };
 
-const PREFILL_PREFIXES = [
-  "문의 제품: ",
-  "Inquiry about: ",
-  "お問い合わせ製品: ",
-  "咨询产品: ",
-  "Sản phẩm cần tư vấn: ",
-];
-
-function parseProductFromMessage(message: string): string | null {
-  for (const prefix of PREFILL_PREFIXES) {
-    if (message.startsWith(prefix)) {
-      const rest = message.slice(prefix.length);
-      let end = rest.length;
-      const parenIdx = rest.indexOf(" (");
-      const newlineIdx = rest.indexOf("\n");
-      if (parenIdx !== -1) end = Math.min(end, parenIdx);
-      if (newlineIdx !== -1) end = Math.min(end, newlineIdx);
-      const productName = rest.slice(0, end).trim();
-      return productName || null;
-    }
-  }
-  return null;
-}
 
 export default function InquiryDetail() {
   const params = useParams<{ id: string }>();
@@ -117,21 +94,9 @@ export default function InquiryDetail() {
     ? INQUIRY_TYPE_LABEL[inquiry.inquiryType] ?? inquiry.inquiryType
     : "—";
 
-  const parsedProduct = parseProductFromMessage(inquiry.message);
-
-  const resolvedProductId: number | null = (() => {
-    if (!parsedProduct || !products) return null;
-    const needle = parsedProduct.trim().toLowerCase();
-    const normalize = (s: string) => s.trim().toLowerCase();
-    const koMatch = products.find((p) =>
-      p.translations.some((t) => t.lang === "ko" && normalize(t.name) === needle),
-    );
-    if (koMatch) return koMatch.id;
-    const anyMatch = products.find((p) =>
-      p.translations.some((t) => normalize(t.name) === needle),
-    );
-    return anyMatch?.id ?? null;
-  })();
+  const linkedProduct = inquiry.productSlug && products
+    ? products.find((p) => p.slug === inquiry.productSlug) ?? null
+    : null;
 
   return (
     <div className="px-8 py-8 space-y-6 max-w-4xl">
@@ -204,7 +169,7 @@ export default function InquiryDetail() {
                 )}
               </div>
 
-              {parsedProduct && (
+              {inquiry.productSlug && (
                 <div
                   className="flex items-center gap-3 rounded-lg border border-blue-200 bg-blue-50 px-4 py-3"
                   data-testid="product-context-banner"
@@ -214,20 +179,20 @@ export default function InquiryDetail() {
                     <p className="text-xs font-semibold text-blue-500 uppercase tracking-wide leading-none mb-0.5">
                       문의 제품
                     </p>
-                    {resolvedProductId !== null ? (
+                    {linkedProduct ? (
                       <Link
-                        href={`/products/${resolvedProductId}`}
+                        href={`/products/${linkedProduct.id}`}
                         className="text-sm font-semibold text-blue-900 truncate hover:underline"
                         data-testid="text-parsed-product"
                       >
-                        {parsedProduct}
+                        {linkedProduct.translations.find((t) => t.lang === "ko")?.name ?? inquiry.productSlug}
                       </Link>
                     ) : (
                       <p
                         className="text-sm font-semibold text-blue-900 truncate"
                         data-testid="text-parsed-product"
                       >
-                        {parsedProduct}
+                        {inquiry.productSlug}
                       </p>
                     )}
                   </div>

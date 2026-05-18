@@ -20,6 +20,7 @@ const StrictContactBody = CreateContactInquiryBody.extend({
   productInterest: z.string().trim().max(2000).optional(),
   customization: z.string().trim().max(2000).optional(),
   material: z.string().trim().max(500).optional(),
+  productSlug: z.string().trim().max(200).optional(),
 });
 
 router.post("/public/contact-inquiries", async (req, res): Promise<void> => {
@@ -43,6 +44,7 @@ router.post("/public/contact-inquiries", async (req, res): Promise<void> => {
       productInterest: data.productInterest ?? "",
       customization: data.customization ?? "",
       material: data.material ?? "",
+      productSlug: data.productSlug ?? null,
       source: "web",
     })
     .returning();

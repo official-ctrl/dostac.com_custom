@@ -886,6 +886,7 @@ components:
         productInterest: { type: string }
         customization: { type: string }
         material: { type: string }
+        productSlug: { type: ["string", "null"] }
         status:
           type: string
           enum: [new, in_progress, completed]
@@ -934,6 +935,7 @@ components:
         productInterest: { type: string }
         customization: { type: string }
         material: { type: string }
+        productSlug: { type: string }
 
     TranslateInput:
       type: object

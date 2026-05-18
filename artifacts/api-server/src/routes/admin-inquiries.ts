@@ -29,6 +29,7 @@ function serialize(i: typeof contactInquiriesTable.$inferSelect) {
     productInterest: i.productInterest,
     customization: i.customization,
     material: i.material,
+    productSlug: i.productSlug ?? null,
     status: i.status,
     adminNote: i.adminNote,
     source: i.source,

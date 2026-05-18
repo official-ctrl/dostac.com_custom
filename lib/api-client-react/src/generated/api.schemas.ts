@@ -166,6 +166,8 @@ export interface Inquiry {
   productInterest: string;
   customization: string;
   material?: string;
+  /** @nullable */
+  productSlug?: string | null;
   status: InquiryStatus;
   adminNote: string;
   source: string;
@@ -221,6 +223,7 @@ export interface ContactInquiryInput {
   productInterest?: string;
   customization?: string;
   material?: string;
+  productSlug?: string;
 }
 
 export type TranslateInputFormat =

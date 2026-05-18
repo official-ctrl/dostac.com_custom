@@ -193,6 +193,7 @@ function ContactContent() {
         quantity: form.quantity || undefined,
         customization: form.customization || undefined,
         message: form.message,
+        productSlug: prefillProductSlug || undefined,
       },
     });
   };
