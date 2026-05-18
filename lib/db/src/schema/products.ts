@@ -70,3 +70,14 @@ export const categoryTranslationsTable = pgTable("category_translations", {
 });
 
 export type CategoryTranslationRow = typeof categoryTranslationsTable.$inferSelect;
+
+export const subCategoryTranslationsTable = pgTable("sub_category_translations", {
+  slug: varchar("slug", { length: 80 }).primaryKey(),
+  nameKo: varchar("name_ko", { length: 120 }).notNull().default(""),
+  nameEn: varchar("name_en", { length: 120 }).notNull().default(""),
+  nameJa: varchar("name_ja", { length: 120 }).notNull().default(""),
+  nameZh: varchar("name_zh", { length: 120 }).notNull().default(""),
+  nameVi: varchar("name_vi", { length: 120 }).notNull().default(""),
+});
+
+export type SubCategoryTranslationRow = typeof subCategoryTranslationsTable.$inferSelect;

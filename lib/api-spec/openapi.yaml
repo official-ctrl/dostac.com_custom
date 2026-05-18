@@ -26,6 +26,9 @@ tags:
   - name: admin-process
   - name: public-category-translations
   - name: admin-category-translations
+  - name: public-sub-category-translations
+  - name: admin-sub-category-translations
+  - name: admin-category-discover
 paths:
   /healthz:
     get:
@@ -154,6 +157,20 @@ paths:
               schema:
                 type: array
                 items: { $ref: "#/components/schemas/CategoryTranslationRow" }
+
+  /public/sub-category-translations:
+    get:
+      operationId: listPublicSubCategoryTranslations
+      tags: [public-sub-category-translations]
+      summary: List all sub-category translation rows (slug → names in 5 languages)
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/SubCategoryTranslationRow" }
 
   /public/contact-inquiries:
     post:
@@ -575,6 +592,53 @@ paths:
               schema:
                 type: array
                 items: { $ref: "#/components/schemas/CategoryTranslationRow" }
+
+  # ───────────────────── ADMIN SUB-CATEGORY TRANSLATIONS ─────────────────────
+  /admin/sub-category-translations:
+    get:
+      operationId: adminListSubCategoryTranslations
+      tags: [admin-sub-category-translations]
+      summary: List all sub-category translation rows
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/SubCategoryTranslationRow" }
+    put:
+      operationId: adminSaveSubCategoryTranslations
+      tags: [admin-sub-category-translations]
+      summary: Bulk upsert sub-category translations
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items: { $ref: "#/components/schemas/SubCategoryTranslationRow" }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/SubCategoryTranslationRow" }
+
+  # ───────────────────── ADMIN CATEGORY DISCOVER ─────────────────────
+  /admin/category-discover:
+    get:
+      operationId: adminDiscoverCategorySlugs
+      tags: [admin-category-discover]
+      summary: Return distinct category and sub-category slugs from published products
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/CategoryDiscoverResult" }
 
   # ───────────────────── ADMIN TRANSLATE ─────────────────────
   /admin/translate:
@@ -1211,3 +1275,25 @@ components:
         nameJa: { type: string }
         nameZh: { type: string }
         nameVi: { type: string }
+
+    SubCategoryTranslationRow:
+      type: object
+      required: [slug, nameKo, nameEn, nameJa, nameZh, nameVi]
+      properties:
+        slug: { type: string }
+        nameKo: { type: string }
+        nameEn: { type: string }
+        nameJa: { type: string }
+        nameZh: { type: string }
+        nameVi: { type: string }
+
+    CategoryDiscoverResult:
+      type: object
+      required: [categories, subCategories]
+      properties:
+        categories:
+          type: array
+          items: { type: string }
+        subCategories:
+          type: array
+          items: { type: string }

@@ -491,6 +491,20 @@ export interface CategoryTranslationRow {
   nameVi: string;
 }
 
+export interface SubCategoryTranslationRow {
+  slug: string;
+  nameKo: string;
+  nameEn: string;
+  nameJa: string;
+  nameZh: string;
+  nameVi: string;
+}
+
+export interface CategoryDiscoverResult {
+  categories: string[];
+  subCategories: string[];
+}
+
 /**
  * Not found
  */

@@ -17,6 +17,9 @@ import publicProcessRouter from "./public-process";
 import adminProcessRouter from "./admin-process";
 import publicCategoryTranslationsRouter from "./public-category-translations";
 import adminCategoryTranslationsRouter from "./admin-category-translations";
+import publicSubCategoryTranslationsRouter from "./public-sub-category-translations";
+import adminSubCategoryTranslationsRouter from "./admin-sub-category-translations";
+import adminCategoryDiscoverRouter from "./admin-category-discover";
 
 const router: IRouter = Router();
 
@@ -38,5 +41,8 @@ router.use(publicProcessRouter);
 router.use(adminProcessRouter);
 router.use(publicCategoryTranslationsRouter);
 router.use(adminCategoryTranslationsRouter);
+router.use(publicSubCategoryTranslationsRouter);
+router.use(adminSubCategoryTranslationsRouter);
+router.use(adminCategoryDiscoverRouter);
 
 export default router;

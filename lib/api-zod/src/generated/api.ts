@@ -320,6 +320,21 @@ export const ListPublicCategoryTranslationsResponse = zod.array(
   ListPublicCategoryTranslationsResponseItem,
 );
 
+/**
+ * @summary List all sub-category translation rows (slug → names in 5 languages)
+ */
+export const ListPublicSubCategoryTranslationsResponseItem = zod.object({
+  slug: zod.string(),
+  nameKo: zod.string(),
+  nameEn: zod.string(),
+  nameJa: zod.string(),
+  nameZh: zod.string(),
+  nameVi: zod.string(),
+});
+export const ListPublicSubCategoryTranslationsResponse = zod.array(
+  ListPublicSubCategoryTranslationsResponseItem,
+);
+
 export const CreateContactInquiryBody = zod.object({
   name: zod.string(),
   email: zod.string(),
@@ -1355,6 +1370,56 @@ export const AdminSaveCategoryTranslationsResponseItem = zod.object({
 export const AdminSaveCategoryTranslationsResponse = zod.array(
   AdminSaveCategoryTranslationsResponseItem,
 );
+
+/**
+ * @summary List all sub-category translation rows
+ */
+export const AdminListSubCategoryTranslationsResponseItem = zod.object({
+  slug: zod.string(),
+  nameKo: zod.string(),
+  nameEn: zod.string(),
+  nameJa: zod.string(),
+  nameZh: zod.string(),
+  nameVi: zod.string(),
+});
+export const AdminListSubCategoryTranslationsResponse = zod.array(
+  AdminListSubCategoryTranslationsResponseItem,
+);
+
+/**
+ * @summary Bulk upsert sub-category translations
+ */
+export const AdminSaveSubCategoryTranslationsBodyItem = zod.object({
+  slug: zod.string(),
+  nameKo: zod.string(),
+  nameEn: zod.string(),
+  nameJa: zod.string(),
+  nameZh: zod.string(),
+  nameVi: zod.string(),
+});
+export const AdminSaveSubCategoryTranslationsBody = zod.array(
+  AdminSaveSubCategoryTranslationsBodyItem,
+);
+
+export const AdminSaveSubCategoryTranslationsResponseItem = zod.object({
+  slug: zod.string(),
+  nameKo: zod.string(),
+  nameEn: zod.string(),
+  nameJa: zod.string(),
+  nameZh: zod.string(),
+  nameVi: zod.string(),
+});
+export const AdminSaveSubCategoryTranslationsResponse = zod.array(
+  AdminSaveSubCategoryTranslationsResponseItem,
+);
+
+/**
+ * @summary Return distinct category and sub-category slugs from published products
+ */
+export const AdminDiscoverCategorySlugsResponse = zod.object({
+  categories: zod.array(zod.string()),
+  subCategories: zod.array(zod.string()),
+});
 
 export const adminTranslateBodyFormatDefault = `text`;
 

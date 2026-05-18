@@ -1,5 +1,8 @@
 import React, { createContext, useCallback, useContext, useEffect, useState } from "react";
-import { useListPublicCategoryTranslations } from "@workspace/api-client-react";
+import {
+  useListPublicCategoryTranslations,
+  useListPublicSubCategoryTranslations,
+} from "@workspace/api-client-react";
 
 export type Lang = "ko" | "en" | "ja" | "zh" | "vi";
 
@@ -2402,14 +2405,21 @@ export function useCategoryLabel(): (key: string | null | undefined) => string {
 
 export function useSubCategoryLabel(): (key: string | null | undefined) => string {
   const { lang } = useLang();
+  const { data: apiRows } = useListPublicSubCategoryTranslations();
+  const nameKey = LANG_TO_NAME_KEY[lang];
   return useCallback(
     (key: string | null | undefined) => {
       if (!key) return key ?? "";
       const slug = normalizeKey(key, SUBCATEGORY_SLUG_MAP);
+      if (apiRows) {
+        const row = apiRows.find((r) => r.slug === slug || r.slug === key);
+        const apiName = row ? (row[nameKey] as string | undefined) : undefined;
+        if (apiName && apiName.trim()) return apiName;
+      }
       const map = (translations[lang]?.products?.subCategoryNames ?? {}) as Record<string, string>;
       return map[slug] ?? map[key] ?? slug;
     },
-    [lang],
+    [lang, apiRows, nameKey],
   );
 }
 
