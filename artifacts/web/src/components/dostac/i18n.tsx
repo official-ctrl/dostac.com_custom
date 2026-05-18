@@ -321,7 +321,7 @@ const ko: Dict = {
         excerpt: "친환경 브랜드 오너는 이제 7단계 정제수 포뮬러와 함께 완전 생분해성 물티슈 원단을 이용할 수 있습니다." },
     ],
     archiveEyebrow: "아카이브", archiveHeading: "전체 공지 및 업데이트",
-    empty: "아직 등록된 공지가 없습니다.", readMore: "더 보기",
+    empty: "아직 등록된 공지가 없습니다.", readMore: "더 보기", copyLink: "링크 복사", copied: "복사됨!",
     archive: [
       { category: "전시회", date: "2026년 4월 15일", title: "dostac, Cosmoprof Bologna 2026에서 맞춤형 OEM 솔루션 선보일 예정 (부스 Hall 14, B-22)" },
       { category: "인증", date: "2026년 4월 02일", title: "dostac 생산 네트워크, ISO 22716 (화장품 GMP) 인증 갱신 완료" },
@@ -767,7 +767,7 @@ const en: Dict = {
         excerpt: "Eco-conscious brand owners can now access a fully biodegradable wet-wipe substrate with our 7-step purified-water formula." },
     ],
     archiveEyebrow: "Archive", archiveHeading: "All Announcements & Updates",
-    empty: "No announcements yet.", readMore: "Read more",
+    empty: "No announcements yet.", readMore: "Read more", copyLink: "Copy link", copied: "Copied!",
     archive: [
       { category: "Exhibition", date: "April 15, 2026", title: "dostac to Showcase Customized OEM Solutions at Cosmoprof Bologna 2026 (Booth Hall 14, B-22)" },
       { category: "Certification", date: "April 02, 2026", title: "dostac Production Network Achieves Renewal of ISO 22716 (Cosmetics GMP) Certification" },
@@ -1213,7 +1213,7 @@ const ja: Dict = {
         excerpt: "環境配慮型ブランドオーナー向けに、7段階の精製水処方を採用した完全生分解性ウェットワイプ基材をご提供できるようになりました。" },
     ],
     archiveEyebrow: "アーカイブ", archiveHeading: "すべてのお知らせ・更新情報",
-    empty: "お知らせはまだありません。", readMore: "続きを読む",
+    empty: "お知らせはまだありません。", readMore: "続きを読む", copyLink: "リンクをコピー", copied: "コピーしました!",
     archive: [
       { category: "展示会", date: "2026年4月15日", title: "dostac、Cosmoprof Bologna 2026にてカスタマイズOEMソリューションを展示予定（ブース Hall 14, B-22）" },
       { category: "認証", date: "2026年4月02日", title: "dostac生産ネットワーク、ISO 22716（Cosmetics GMP）認証を更新取得" },
@@ -1659,7 +1659,7 @@ const zh: Dict = {
         excerpt: "注重环保的品牌方现可使用我们 7 步净化水配方搭配的全可生物降解湿巾基材。" },
     ],
     archiveEyebrow: "归档", archiveHeading: "全部公告与更新",
-    empty: "暂无公告。", readMore: "阅读更多",
+    empty: "暂无公告。", readMore: "阅读更多", copyLink: "复制链接", copied: "已复制!",
     archive: [
       { category: "展会", date: "2026年4月15日", title: "dostac 将于 Cosmoprof Bologna 2026 展示定制 OEM 解决方案（展位 Hall 14, B-22）" },
       { category: "认证", date: "2026年4月02日", title: "dostac 生产网络完成 ISO 22716（化妆品 GMP）认证续期" },
@@ -2105,7 +2105,7 @@ const vi: Dict = {
         excerpt: "Các chủ thương hiệu chú trọng môi trường giờ đây có thể tiếp cận chất liệu khăn ướt phân hủy sinh học hoàn toàn với công thức nước tinh khiết 7 bước của chúng tôi." },
     ],
     archiveEyebrow: "Lưu trữ", archiveHeading: "Tất cả thông báo & cập nhật",
-    empty: "Chưa có thông báo nào.", readMore: "Đọc thêm",
+    empty: "Chưa có thông báo nào.", readMore: "Đọc thêm", copyLink: "Sao chép liên kết", copied: "Đã sao chép!",
     archive: [
       { category: "Triển lãm", date: "Ngày 15 tháng 4, 2026", title: "dostac sẽ giới thiệu các giải pháp OEM tùy chỉnh tại Cosmoprof Bologna 2026 (Gian hàng Hall 14, B-22)" },
       { category: "Chứng nhận", date: "Ngày 02 tháng 4, 2026", title: "Mạng lưới sản xuất của dostac đạt gia hạn chứng nhận ISO 22716 (Cosmetics GMP)" },

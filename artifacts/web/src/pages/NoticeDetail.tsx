@@ -208,7 +208,7 @@ function NoticeDetailContent() {
                 ) : (
                   <Copy className="h-4 w-4" />
                 )}
-                {copied ? "Copied!" : "Copy link"}
+                {copied ? t("notice.copied") as string : t("notice.copyLink") as string}
               </button>
             </div>
           </div>
