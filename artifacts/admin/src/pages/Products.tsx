@@ -1,5 +1,5 @@
-import { useMemo, useState } from "react";
-import { Link, useSearch } from "wouter";
+import { useMemo, useState, useEffect } from "react";
+import { Link, useSearch, useLocation } from "wouter";
 import {
   useAdminListProducts,
   useAdminDeleteProduct,
@@ -37,6 +37,9 @@ export default function Products() {
   const deleteMut = useAdminDeleteProduct();
 
   const searchString = useSearch();
+  const [, navigate] = useLocation();
+
+  const initialParams = new URLSearchParams(searchString);
   const [search, setSearch] = useState(
     () => new URLSearchParams(searchString).get("q") ?? "",
   );
@@ -47,8 +50,24 @@ export default function Products() {
     products?.forEach((p) => set.add(p.category));
     return ["all", ...Array.from(set).sort()];
   }, [products]);
-  const [activeCat, setActiveCat] = useState<string>("all");
-  const [activeSubCat, setActiveSubCat] = useState<string>("all");
+  const [activeCat, setActiveCat] = useState<string>(
+    () => initialParams.get("cat") ?? "all",
+  );
+  const [activeSubCat, setActiveSubCat] = useState<string>(() => {
+    const cat = initialParams.get("cat") ?? "all";
+    return cat !== "all" ? (initialParams.get("subCat") ?? "all") : "all";
+  });
+
+  useEffect(() => {
+    const params = new URLSearchParams();
+    if (search) params.set("q", search);
+    if (activeCat !== "all") {
+      params.set("cat", activeCat);
+      if (activeSubCat !== "all") params.set("subCat", activeSubCat);
+    }
+    const qs = params.toString();
+    navigate(`/products${qs ? `?${qs}` : ""}`, { replace: true });
+  }, [search, activeCat, activeSubCat]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const subCategories = useMemo(() => {
     if (activeCat === "all" || !products) return [];
