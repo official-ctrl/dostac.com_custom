@@ -5,6 +5,8 @@ import {
   CheckCircle2,
   ArrowRight,
   Loader2,
+  Copy,
+  Check,
 } from "lucide-react";
 import { Layout, dostacImage } from "@/components/dostac/Layout";
 import { SectionNav } from "@/components/dostac/SectionNav";
@@ -34,12 +36,38 @@ function ProductsContent() {
 
   const [selectedCategory, setSelectedCategory] = useState<string | null>(categoryFromUrl);
   const [activeSlug, setActiveSlug] = useState<string | null>(null);
+  const [copiedCategory, setCopiedCategory] = useState(false);
+
+  const handleCopyLink = () => {
+    navigator.clipboard.writeText(window.location.href).then(() => {
+      setCopiedCategory(true);
+      setTimeout(() => setCopiedCategory(false), 2000);
+    }).catch(() => {
+      // Fallback for browsers where clipboard API is unavailable
+      const el = document.createElement("textarea");
+      el.value = window.location.href;
+      el.style.position = "fixed";
+      el.style.opacity = "0";
+      document.body.appendChild(el);
+      el.select();
+      try {
+        document.execCommand("copy");
+        setCopiedCategory(true);
+        setTimeout(() => setCopiedCategory(false), 2000);
+      } catch {
+        // Silent — clipboard unavailable in this context
+      } finally {
+        document.body.removeChild(el);
+      }
+    });
+  };
 
   const sectionRefs = useRef<Map<string, HTMLElement>>(new Map());
 
   useEffect(() => {
     setSelectedCategory(categoryFromUrl);
     setActiveSlug(null);
+    setCopiedCategory(false);
   }, [categoryFromUrl]);
 
   const categories = Array.from(
@@ -169,29 +197,47 @@ function ProductsContent() {
                   {products.length}
                 </span>
               </button>
-              {categories.map((cat) => (
-                <button
-                  key={cat}
-                  type="button"
-                  onClick={() => handleCategorySelect(cat)}
-                  className={`flex-shrink-0 rounded-full px-4 py-1.5 text-xs font-semibold transition-colors focus:outline-none ${
-                    selectedCategory === cat
-                      ? "bg-accent text-white shadow-sm"
-                      : "bg-slate-100 text-slate-600 hover:bg-slate-200"
-                  }`}
-                >
-                  {cat}
-                  <span
-                    className={`ml-1.5 rounded-full px-1.5 py-0.5 text-[10px] font-bold leading-none ${
-                      selectedCategory === cat
-                        ? "bg-white/25 text-white"
-                        : "bg-slate-200 text-slate-500"
-                    }`}
-                  >
-                    {categoryCounts[cat] ?? 0}
-                  </span>
-                </button>
-              ))}
+              {categories.map((cat) => {
+                const isActive = selectedCategory === cat;
+                return (
+                  <div key={cat} className="flex-shrink-0 flex items-center gap-1">
+                    <button
+                      type="button"
+                      onClick={() => handleCategorySelect(cat)}
+                      className={`rounded-full px-4 py-1.5 text-xs font-semibold transition-colors focus:outline-none ${
+                        isActive
+                          ? "bg-accent text-white shadow-sm"
+                          : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                      }`}
+                    >
+                      {cat}
+                      <span
+                        className={`ml-1.5 rounded-full px-1.5 py-0.5 text-[10px] font-bold leading-none ${
+                          isActive
+                            ? "bg-white/25 text-white"
+                            : "bg-slate-200 text-slate-500"
+                        }`}
+                      >
+                        {categoryCounts[cat] ?? 0}
+                      </span>
+                    </button>
+                    {isActive && (
+                      <button
+                        type="button"
+                        onClick={handleCopyLink}
+                        title={copiedCategory ? (t("products.copied") as string) : (t("products.copyLink") as string)}
+                        className="flex items-center justify-center w-7 h-7 rounded-full bg-slate-100 text-slate-500 hover:bg-slate-200 hover:text-slate-700 transition-colors focus:outline-none"
+                      >
+                        {copiedCategory ? (
+                          <Check className="w-3.5 h-3.5 text-emerald-600" />
+                        ) : (
+                          <Copy className="w-3.5 h-3.5" />
+                        )}
+                      </button>
+                    )}
+                  </div>
+                );
+              })}
             </div>
           </div>
         </div>
