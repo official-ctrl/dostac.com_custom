@@ -285,14 +285,14 @@ function ProductsContent() {
     if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
+  useEffect(() => {
+    if (restoredFilter === null) return;
+    const id = setTimeout(() => setRestoredFilter(null), 3000);
+    return () => clearTimeout(id);
+  }, [restoredFilter]);
+
   const handleDismissRestoredFilter = () => {
     setRestoredFilter(null);
-    saveStoredFilter(null, null);
-    setSelectedCategory(null);
-    setSelectedSubCategory(null);
-    setActiveSlug(null);
-    navigate("/products", { replace: true });
-    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const handleCategorySelect = (cat: string | null) => {
