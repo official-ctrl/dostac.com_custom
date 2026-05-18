@@ -129,11 +129,18 @@ function ProductDetailContent() {
             </button>
           </nav>
 
-          {product.category && (
-            <span className="inline-flex items-center rounded-full bg-white/15 backdrop-blur border border-white/20 px-3 py-1 text-xs font-semibold text-white mb-5">
-              {product.category}
-            </span>
-          )}
+          <div className="flex flex-wrap items-center gap-2 mb-5">
+            {product.category && (
+              <span className="inline-flex items-center rounded-full bg-white/15 backdrop-blur border border-white/20 px-3 py-1 text-xs font-semibold text-white">
+                {product.category}
+              </span>
+            )}
+            {product.subCategory && (
+              <span className="inline-flex items-center rounded-full bg-accent/80 backdrop-blur border border-accent/40 px-3 py-1 text-xs font-semibold text-white">
+                {product.subCategory}
+              </span>
+            )}
+          </div>
 
           {product.valueProp && (
             <p className="text-xs uppercase tracking-[0.35em] text-accent font-semibold mb-4">
@@ -246,6 +253,36 @@ function ProductDetailContent() {
                       </motion.li>
                     ))}
                   </motion.ul>
+                </div>
+              )}
+
+              {/* SPEC PANEL — material + sub-category */}
+              {(product.material || product.subCategory) && (
+                <div className={`rounded-xl border border-slate-200 bg-slate-50 overflow-hidden ${product.features.length > 0 ? "mt-8" : ""}`}>
+                  <table className="w-full text-sm">
+                    <tbody>
+                      {product.subCategory && (
+                        <tr className="border-b border-slate-200 last:border-0">
+                          <td className="py-3 px-4 w-36 text-xs font-semibold uppercase tracking-[0.15em] text-slate-500 whitespace-nowrap">
+                            {t("products.subCategoryLabel") as string}
+                          </td>
+                          <td className="py-3 px-4 text-slate-700 font-medium">
+                            {product.subCategory}
+                          </td>
+                        </tr>
+                      )}
+                      {product.material && (
+                        <tr className="border-b border-slate-200 last:border-0">
+                          <td className="py-3 px-4 w-36 text-xs font-semibold uppercase tracking-[0.15em] text-slate-500 whitespace-nowrap">
+                            {t("products.materialLabel") as string}
+                          </td>
+                          <td className="py-3 px-4 text-slate-700 font-medium">
+                            {product.material}
+                          </td>
+                        </tr>
+                      )}
+                    </tbody>
+                  </table>
                 </div>
               )}
 

@@ -261,6 +261,7 @@ const ko: Dict = {
     bottomCtaButton: "맞춤 개발 시작하기",
     backToProducts: "제품 목록으로", notFound: "제품을 찾을 수 없습니다.", notFoundHelper: "해당 제품이 삭제되었거나 사용할 수 없습니다.", viewDetails: "자세히 보기",
     certsLabel: "인증", featuresLabel: "핵심 특징", relatedProducts: "관련 제품",
+    materialLabel: "성분/소재", subCategoryLabel: "세부 카테고리",
     copyLink: "링크 복사", copied: "복사됨!",
     items: [
       { id: "01", name: "코팩", headline: "고도화된 블랙헤드 및 피지 관리 솔루션",
@@ -706,6 +707,7 @@ const en: Dict = {
     bottomCtaButton: "Start Custom Development",
     backToProducts: "Back to Products", notFound: "Product not found.", notFoundHelper: "This product may have been removed or is unavailable.", viewDetails: "View Details",
     certsLabel: "Certifications", featuresLabel: "Key Features", relatedProducts: "Related Products",
+    materialLabel: "Material", subCategoryLabel: "Sub-category",
     copyLink: "Copy link", copied: "Copied!",
     items: [
       { id: "01", name: "Pore Strips", headline: "Advanced Blackhead & Sebum Control Solutions",
@@ -1151,6 +1153,7 @@ const ja: Dict = {
     bottomCtaButton: "カスタム開発を開始",
     backToProducts: "製品一覧に戻る", notFound: "製品が見つかりません。", notFoundHelper: "この製品は削除されたか、現在ご利用いただけません。", viewDetails: "詳細を見る",
     certsLabel: "認証", featuresLabel: "主な特徴", relatedProducts: "関連製品",
+    materialLabel: "原材料", subCategoryLabel: "サブカテゴリ",
     copyLink: "リンクをコピー", copied: "コピーしました!",
     items: [
       { id: "01", name: "毛穴ストリップ", headline: "先進的なブラックヘッド・皮脂コントロールソリューション",
@@ -1596,6 +1599,7 @@ const zh: Dict = {
     bottomCtaButton: "开始定制开发",
     backToProducts: "返回产品列表", notFound: "产品未找到。", notFoundHelper: "该产品可能已被删除或暂时无法访问。", viewDetails: "查看详情",
     certsLabel: "认证", featuresLabel: "核心特点", relatedProducts: "相关产品",
+    materialLabel: "原料", subCategoryLabel: "子类别",
     copyLink: "复制链接", copied: "已复制!",
     items: [
       { id: "01", name: "鼻贴", headline: "先进的黑头与皮脂控制解决方案",
@@ -2041,6 +2045,7 @@ const vi: Dict = {
     bottomCtaButton: "Bắt đầu phát triển tùy chỉnh",
     backToProducts: "Quay lại danh sách sản phẩm", notFound: "Không tìm thấy sản phẩm.", notFoundHelper: "Sản phẩm này có thể đã bị xóa hoặc không còn khả dụng.", viewDetails: "Xem chi tiết",
     certsLabel: "Chứng nhận", featuresLabel: "Tính năng chính", relatedProducts: "Sản phẩm liên quan",
+    materialLabel: "Thành phần", subCategoryLabel: "Danh mục phụ",
     copyLink: "Sao chép liên kết", copied: "Đã sao chép!",
     items: [
       { id: "01", name: "Miếng lột mụn đầu đen", headline: "Giải pháp kiểm soát mụn đầu đen & bã nhờn tiên tiến",

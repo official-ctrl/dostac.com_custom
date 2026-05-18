@@ -303,11 +303,18 @@ function ProductsContent() {
                         className="w-full aspect-[4/3] object-cover object-center"
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-primary/10 to-transparent" />
-                      {product.category && (
-                        <span className="absolute top-4 left-4 inline-flex items-center rounded-full bg-white/90 backdrop-blur px-3 py-1 text-xs font-bold text-accent shadow-sm">
-                          {product.category}
-                        </span>
-                      )}
+                      <div className="absolute top-4 left-4 flex flex-wrap gap-1.5">
+                        {product.category && (
+                          <span className="inline-flex items-center rounded-full bg-white/90 backdrop-blur px-3 py-1 text-xs font-bold text-accent shadow-sm">
+                            {product.category}
+                          </span>
+                        )}
+                        {product.subCategory && (
+                          <span className="inline-flex items-center rounded-full bg-accent/85 backdrop-blur px-3 py-1 text-xs font-semibold text-white shadow-sm">
+                            {product.subCategory}
+                          </span>
+                        )}
+                      </div>
                     </motion.div>
 
                     {/* CONTENT */}
