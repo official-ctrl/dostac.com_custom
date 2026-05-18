@@ -6,6 +6,7 @@ import {
   Tag,
   Copy,
   Check,
+  Share2,
   ArrowRight,
   Loader2,
 } from "lucide-react";
@@ -76,6 +77,7 @@ function NoticeDetailContent() {
   const { t } = useT();
   const { lang } = useLang();
   const [copied, setCopied] = useState(false);
+  const canNativeShare = typeof navigator !== "undefined" && !!navigator.share;
 
   const {
     data: article,
@@ -212,12 +214,18 @@ function NoticeDetailContent() {
                 onClick={handleShare}
                 className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 transition"
               >
-                {copied ? (
+                {canNativeShare ? (
+                  <Share2 className="h-4 w-4" />
+                ) : copied ? (
                   <Check className="h-4 w-4 text-emerald-600" />
                 ) : (
                   <Copy className="h-4 w-4" />
                 )}
-                {copied ? t("notice.copied") as string : t("notice.copyLink") as string}
+                {canNativeShare
+                  ? (t("notice.share") as string)
+                  : copied
+                    ? (t("notice.copied") as string)
+                    : (t("notice.copyLink") as string)}
               </button>
             </div>
           </div>
