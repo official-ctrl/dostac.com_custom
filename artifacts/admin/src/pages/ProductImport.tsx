@@ -23,6 +23,7 @@ import {
   AlertTriangle,
   FileSpreadsheet,
   PlayCircle,
+  Download,
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { LANGS } from "@/lib/langs";
@@ -137,6 +138,32 @@ const STATUS_LABEL: Record<RowStatus, string> = {
   done: "완료",
   error: "오류",
 };
+
+const TEMPLATE_HEADERS = ["slug", "category", "subCategory", "material", "name_ko", "features_ko", "certs"];
+
+const TEMPLATE_EXAMPLE = [
+  "moisture-cream",
+  "skincare",
+  "cream",
+  "히알루론산, 세라마이드",
+  "수분 크림",
+  "보습력 강화\n피부 장벽 개선\n빠른 흡수력",
+  "ISO22716,COSMOS",
+];
+
+function downloadTemplate() {
+  const csvRow = (values: string[]) =>
+    values.map((v) => `"${v.replace(/"/g, '""')}"`).join(",");
+
+  const csv = [csvRow(TEMPLATE_HEADERS), csvRow(TEMPLATE_EXAMPLE)].join("\r\n");
+  const blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "product_import_template.csv";
+  a.click();
+  URL.revokeObjectURL(url);
+}
 
 export default function ProductImport() {
   const [, navigate] = useLocation();
@@ -346,8 +373,18 @@ export default function ProductImport() {
       </div>
 
       <Card>
-        <CardHeader>
+        <CardHeader className="flex flex-row items-center justify-between pb-3">
           <CardTitle className="text-base">파일 업로드</CardTitle>
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            className="gap-2 shrink-0"
+            onClick={downloadTemplate}
+          >
+            <Download className="h-4 w-4" />
+            템플릿 다운로드
+          </Button>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="rounded-md bg-muted/40 border border-border p-4 space-y-2">
