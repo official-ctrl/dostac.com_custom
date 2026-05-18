@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Link, useSearch, useLocation } from "wouter";
 import { motion } from "framer-motion";
+import { useQuery, useQueryClient, keepPreviousData } from "@tanstack/react-query";
 import {
   CheckCircle2,
   ArrowRight,
@@ -10,8 +11,8 @@ import {
 } from "lucide-react";
 import { Layout, dostacImage } from "@/components/dostac/Layout";
 import { SectionNav } from "@/components/dostac/SectionNav";
-import { useT, useLang } from "@/components/dostac/i18n";
-import { useListPublicProducts } from "@workspace/api-client-react";
+import { useT, useLang, LANGUAGES } from "@/components/dostac/i18n";
+import { getListPublicProductsQueryOptions } from "@workspace/api-client-react";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 32 },
@@ -70,7 +71,21 @@ function saveStoredFilter(category: string | null, subCategory: string | null) {
 function ProductsContent() {
   const { t } = useT();
   const { lang } = useLang();
-  const productsQuery = useListPublicProducts({ lang });
+  const queryClient = useQueryClient();
+
+  useEffect(() => {
+    for (const { code } of LANGUAGES) {
+      if (code !== lang) {
+        void queryClient.prefetchQuery(getListPublicProductsQueryOptions({ lang: code }));
+      }
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const productsQuery = useQuery({
+    ...getListPublicProductsQueryOptions({ lang }),
+    placeholderData: keepPreviousData,
+  });
   const products = productsQuery.data ?? [];
 
   const search = useSearch();

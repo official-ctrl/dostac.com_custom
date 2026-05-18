@@ -7,8 +7,10 @@ import {
   ChevronDown,
   ArrowRight,
 } from "lucide-react";
+import { useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { useT, useLang, type Lang } from "./i18n";
+import { getListPublicProductsQueryOptions } from "@workspace/api-client-react";
 
 type AboutSubItem = {
   hash: string;
@@ -57,6 +59,13 @@ function LanguageSwitcher({ onDark }: { onDark?: boolean }) {
   const { t } = useT();
   const [open, setOpen] = useState(false);
   const current = LANG_OPTIONS.find((l) => l.code === lang) ?? LANG_OPTIONS[0];
+  const queryClient = useQueryClient();
+
+  const prefetchProducts = (targetLang: Lang) => {
+    if (targetLang === lang) return;
+    void queryClient.prefetchQuery(getListPublicProductsQueryOptions({ lang: targetLang }));
+  };
+
 
   useEffect(() => {
     if (!open) return;
@@ -87,10 +96,8 @@ function LanguageSwitcher({ onDark }: { onDark?: boolean }) {
             <button
               key={opt.code}
               type="button"
-              onClick={() => {
-                setLang(opt.code);
-                setOpen(false);
-              }}
+              onMouseEnter={() => prefetchProducts(opt.code)}
+              onClick={() => { setLang(opt.code); setOpen(false); }}
               className={`flex w-full items-center justify-between px-4 py-2 text-sm transition hover:bg-slate-100 ${
                 opt.code === lang ? "font-semibold text-primary" : "text-slate-700"
               }`}
