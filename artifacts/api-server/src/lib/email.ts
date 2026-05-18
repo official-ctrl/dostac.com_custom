@@ -32,9 +32,9 @@ function buildPlainBody(inquiry: ContactInquiry): string {
     `Company:     ${fmt(inquiry.company)}`,
     `Type:        ${inquiryTypeLabel(inquiry.inquiryType)}`,
   ];
+  if (inquiry.productInterest) lines.push(`Product:     ${inquiry.productInterest}`);
   if (inquiry.whatsapp) lines.push(`WhatsApp:    ${inquiry.whatsapp}`);
   if (inquiry.country) lines.push(`Country:     ${inquiry.country}`);
-  if (inquiry.productInterest) lines.push(`Product:     ${inquiry.productInterest}`);
   if (inquiry.quantity) lines.push(`Quantity:    ${inquiry.quantity}`);
   if (inquiry.customization) lines.push(`Custom:      ${inquiry.customization}`);
   lines.push(
@@ -74,9 +74,9 @@ function buildHtmlBody(inquiry: ContactInquiry): string {
       ${row("Email", inquiry.email)}
       ${row("Company", inquiry.company)}
       ${row("Type", inquiryTypeLabel(inquiry.inquiryType))}
+      ${inquiry.productInterest ? row("Product of Interest", inquiry.productInterest) : ""}
       ${inquiry.whatsapp ? row("WhatsApp", inquiry.whatsapp) : ""}
       ${inquiry.country ? row("Country", inquiry.country) : ""}
-      ${inquiry.productInterest ? row("Product Interest", inquiry.productInterest) : ""}
       ${inquiry.quantity ? row("Desired Quantity", inquiry.quantity) : ""}
       ${inquiry.customization ? row("Customization", inquiry.customization) : ""}
       ${row("Inquiry ID", String(inquiry.id))}
