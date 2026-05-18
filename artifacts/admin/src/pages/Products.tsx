@@ -240,7 +240,12 @@ export default function Products() {
                       <td className="px-4 py-3 text-muted-foreground font-mono text-xs">
                         {p.slug}
                       </td>
-                      <td className="px-4 py-3 text-muted-foreground">{p.category}</td>
+                      <td className="px-4 py-3 text-muted-foreground">
+                        {p.category}
+                        {p.subCategory && (
+                          <span className="text-muted-foreground/60"> / {p.subCategory}</span>
+                        )}
+                      </td>
                       <td className="px-4 py-3 text-muted-foreground">{p.sortOrder}</td>
                       <td className="px-4 py-3">
                         <Badge variant="outline">{langCount}/5</Badge>
