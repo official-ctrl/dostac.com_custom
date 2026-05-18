@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Link, useSearch, useLocation } from "wouter";
 import { motion } from "framer-motion";
 import { useQuery, useQueryClient, keepPreviousData } from "@tanstack/react-query";
@@ -208,6 +208,58 @@ function ProductsContent() {
       ? categoryFilteredProducts
       : categoryFilteredProducts.filter((p) => p.subCategory === selectedSubCategory);
 
+  // ── Language-switch cross-fade ─────────────────────────────────────────────
+  // isFadedOut drives opacity 1→0→1 on the content+nav wrappers.
+  // displayedFiltered is a frozen snapshot of the rendered product list;
+  // it only updates after the fade-out animation completes so old-language
+  // content is visible during exit and new-language content during entrance.
+  // This works for both warm-cache (instant data) and slow-network scenarios.
+  const [isFadedOut, setIsFadedOut] = useState(false);
+  const isFadedOutRef = useRef(false);
+  const isPlaceholderDataRef = useRef(productsQuery.isPlaceholderData);
+  isPlaceholderDataRef.current = productsQuery.isPlaceholderData;
+
+  const [displayedFiltered, setDisplayedFiltered] = useState(filteredProducts);
+  const latestFilteredRef = useRef(filteredProducts);
+
+  // Keep latestFilteredRef current whenever fresh (non-placeholder) data is ready.
+  // When not in a lang transition, push it to displayedFiltered immediately so
+  // category/sub-category filter changes and same-language refreshes stay live.
+  useEffect(() => {
+    if (productsQuery.isPlaceholderData) return;
+    latestFilteredRef.current = filteredProducts;
+    if (!isFadedOutRef.current) {
+      setDisplayedFiltered(filteredProducts);
+    }
+  }, [filteredProducts, productsQuery.isPlaceholderData]);
+
+  const prevLangRef = useRef(lang);
+  useEffect(() => {
+    if (prevLangRef.current === lang) return;
+    prevLangRef.current = lang;
+    isFadedOutRef.current = true;
+    setIsFadedOut(true);
+  }, [lang]);
+
+  // Slow-network path: new data arrives while content is faded out → swap + fade in.
+  useEffect(() => {
+    if (!isFadedOut || productsQuery.isPlaceholderData) return;
+    setDisplayedFiltered(latestFilteredRef.current);
+    isFadedOutRef.current = false;
+    setIsFadedOut(false);
+  }, [isFadedOut, productsQuery.isPlaceholderData]);
+
+  // Fast/cached path: called when the opacity-0 animation finishes.
+  // Data is already available → swap snapshot and fade back in.
+  // If still placeholder, the slow-network effect above will handle it instead.
+  const handleFadeComplete = useCallback(() => {
+    if (!isFadedOutRef.current) return;
+    if (isPlaceholderDataRef.current) return;
+    setDisplayedFiltered(latestFilteredRef.current);
+    isFadedOutRef.current = false;
+    setIsFadedOut(false);
+  }, []);
+
   useEffect(() => {
     if (filteredProducts.length === 0) return;
     const currentRefs = sectionRefs.current;
@@ -224,7 +276,7 @@ function ProductsContent() {
     );
     currentRefs.forEach((el) => observer.observe(el));
     return () => observer.disconnect();
-  }, [filteredProducts]);
+  }, [displayedFiltered]);
 
   const scrollTo = (slug: string) => {
     const el = document.getElementById(`product-${slug}`);
@@ -465,28 +517,38 @@ function ProductsContent() {
       )}
 
       {/* STICKY SUBMENU */}
-      {filteredProducts.length > 0 && (
-        <SectionNav
-          items={filteredProducts.map((p) => ({ id: p.slug, label: p.name }))}
-          activeId={activeSlug ?? ""}
-          onSelect={scrollTo}
-          ariaLabel="Products navigation"
-          testIdPrefix="products-nav-"
-        />
+      {displayedFiltered.length > 0 && (
+        <motion.div
+          animate={{ opacity: isFadedOut ? 0 : 1 }}
+          transition={{ duration: 0.2, ease: "easeInOut" }}
+        >
+          <SectionNav
+            items={displayedFiltered.map((p) => ({ id: p.slug, label: p.name }))}
+            activeId={activeSlug ?? ""}
+            onSelect={scrollTo}
+            ariaLabel="Products navigation"
+            testIdPrefix="products-nav-"
+          />
+        </motion.div>
       )}
 
       {/* PRODUCT SECTIONS */}
+      <motion.div
+        animate={{ opacity: isFadedOut ? 0 : 1 }}
+        transition={{ duration: 0.2, ease: "easeInOut" }}
+        onAnimationComplete={handleFadeComplete}
+      >
       <div className="bg-[#F5F7FA]">
         {productsQuery.isLoading ? (
           <div className="py-32 flex justify-center">
             <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
           </div>
-        ) : filteredProducts.length === 0 ? (
+        ) : displayedFiltered.length === 0 ? (
           <div className="py-32 text-center text-muted-foreground container mx-auto px-6">
             {t("products.empty") as string}
           </div>
         ) : (
-          filteredProducts.map((product, index) => {
+          displayedFiltered.map((product, index) => {
             const fallbackImg = dostacImage(
               `product-${String(((product.id - 1) % 10) + 1).padStart(2, "0")}.webp`,
             );
@@ -638,6 +700,7 @@ function ProductsContent() {
           })
         )}
       </div>
+      </motion.div>
 
       {/* BOTTOM CTA */}
       <section className="py-24 bg-[#0F172A] text-white text-center">
