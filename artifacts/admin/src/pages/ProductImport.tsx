@@ -61,6 +61,7 @@ type ParsedRow = {
   status: RowStatus;
   errorMsg?: string;
   isDuplicate?: boolean;
+  originallyInvalid?: boolean;
 };
 
 function validateRow(raw: RawRow, index: number, existingSlugs?: Set<string>): ParsedRow {
@@ -180,6 +181,32 @@ function downloadTemplate() {
   URL.revokeObjectURL(url);
 }
 
+function downloadCorrectedRows(correctedRows: ParsedRow[]) {
+  const csvRow = (values: string[]) =>
+    values.map((v) => `"${v.replace(/"/g, '""')}"`).join(",");
+
+  const dataRows = correctedRows.map((row) =>
+    csvRow([
+      row.slug,
+      row.category,
+      row.subCategory,
+      row.material,
+      row.name_ko,
+      row.features_ko,
+      row.certs.join(","),
+    ]),
+  );
+
+  const csv = [csvRow(TEMPLATE_HEADERS), ...dataRows].join("\r\n");
+  const blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "product_import_corrected.csv";
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
 function downloadErrorRows(invalidRows: ParsedRow[]) {
   const ERROR_HEADERS = [...TEMPLATE_HEADERS, "_errors"];
   const csvRow = (values: string[]) =>
@@ -232,6 +259,11 @@ export default function ProductImport() {
   const validRows = rows.filter((r) => r.errors.length === 0);
   const invalidRows = rows.filter((r) => r.errors.length > 0);
   const duplicateRows = invalidRows.filter((r) => r.isDuplicate);
+
+  const originallyInvalidRows = rows.filter((r) => r.originallyInvalid);
+  const correctedRows = originallyInvalidRows.filter((r) => r.errors.length === 0);
+  const allCorrected =
+    originallyInvalidRows.length > 0 && correctedRows.length === originallyInvalidRows.length;
 
   const doneCount = rows.filter((r) => r.status === "done").length;
   const skippedCount = rows.filter((r) => r.status === "skipped").length;
@@ -287,7 +319,10 @@ export default function ProductImport() {
         setExistingProductMap(new Map());
       }
 
-      const parsed = rawRows.map((raw, i) => validateRow(raw, i, slugSet));
+      const parsed = rawRows.map((raw, i) => {
+        const row = validateRow(raw, i, slugSet);
+        return { ...row, originallyInvalid: row.errors.length > 0 };
+      });
       setRows(parsed);
     } catch (err) {
       toast({
@@ -328,7 +363,7 @@ export default function ProductImport() {
         };
         // Re-validate and re-check duplicate status against the cached slug set
         const revalidated = validateRow(raw, rowIndex, existingSlugs);
-        return { ...revalidated, status: r.status };
+        return { ...revalidated, status: r.status, originallyInvalid: r.originallyInvalid };
       }),
     );
   };
@@ -641,6 +676,18 @@ export default function ProductImport() {
                   )}
                 </span>
                 <div className="flex items-center gap-2 shrink-0">
+                  {allCorrected && (
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      className="gap-2 border-green-500/50 text-green-700 hover:bg-green-500/5 hover:text-green-800"
+                      onClick={() => downloadCorrectedRows(correctedRows)}
+                    >
+                      <Download className="h-4 w-4" />
+                      수정된 파일 다운로드
+                    </Button>
+                  )}
                   {invalidRows.length > 0 && (
                     <Button
                       type="button"
