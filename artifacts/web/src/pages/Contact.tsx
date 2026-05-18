@@ -111,7 +111,7 @@ function ContactContent() {
       if (el) {
         const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
         el.scrollIntoView({ behavior: reduced ? "instant" : "smooth", block: "start" });
-        if (!reduced && (source === "about" || source === "production")) {
+        if (!reduced) {
           setFormHighlight(false);
           requestAnimationFrame(() => {
             requestAnimationFrame(() => setFormHighlight(true));
