@@ -332,7 +332,7 @@ function ProductionContent() {
             </motion.p>
             <motion.div variants={fadeUp}>
               <Link
-                href="/contact"
+                href="/contact?source=production&inquiryType=oem#contact-form"
                 className="inline-flex h-12 items-center justify-center rounded-full bg-accent px-8 text-base font-medium text-white shadow-sm hover:bg-accent/90 hover:shadow-accent/20 hover:shadow-md transition-all"
               >
                 {t("production.ctaButton") as string}

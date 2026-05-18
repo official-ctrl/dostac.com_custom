@@ -691,13 +691,13 @@ function AboutContent() {
 
               {/* CTA buttons */}
               <div className="flex flex-wrap gap-3 mt-2">
-                <Link href="/contact">
+                <Link href="/contact?source=about#contact-form">
                   <button className="inline-flex items-center gap-2 rounded-full bg-[#0F172A] text-white px-6 py-2.5 text-sm font-medium hover:bg-[#0F172A]/90 transition-colors">
                     {t("about.directionsCTAContact") as string}
                     <ArrowRight className="h-4 w-4" />
                   </button>
                 </Link>
-                <Link href="/contact?type=oem">
+                <Link href="/contact?source=about&inquiryType=oem#contact-form">
                   <button className="inline-flex items-center gap-2 rounded-full border border-[#0F172A] text-[#0F172A] px-6 py-2.5 text-sm font-medium hover:bg-[#0F172A]/5 transition-colors">
                     {t("about.directionsCTAOEM") as string}
                   </button>
@@ -764,7 +764,7 @@ function AboutContent() {
             </motion.p>
             <motion.div variants={fadeUp}>
               <Link
-                href="/contact"
+                href="/contact?source=about#contact-form"
                 className="inline-flex h-12 items-center justify-center rounded-full bg-accent px-8 text-base font-medium text-white shadow-sm hover:bg-accent/90 hover:shadow-accent/20 hover:shadow-md transition-all"
               >
                 {t("about.ctaButton") as string}

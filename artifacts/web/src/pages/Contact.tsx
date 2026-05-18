@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { MapPin, Phone, Mail, Clock, Send, ShieldCheck, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -14,7 +14,20 @@ import {
 } from "@/components/ui/select";
 import { Layout, dostacImage } from "@/components/dostac/Layout";
 import { useT } from "@/components/dostac/i18n";
+import { useSearch } from "wouter";
 import { useCreateContactInquiry } from "@workspace/api-client-react";
+
+const VALID_INQUIRY_TYPES = ["oem", "odm", "sample", "other"] as const;
+type InquiryType = (typeof VALID_INQUIRY_TYPES)[number];
+
+function parseInquiryType(search: string): InquiryType | "" {
+  const params = new URLSearchParams(search);
+  const raw = params.get("inquiryType") ?? params.get("source");
+  if (!raw) return "";
+  if ((VALID_INQUIRY_TYPES as readonly string[]).includes(raw)) return raw as InquiryType;
+  if (raw === "production") return "oem";
+  return "";
+}
 
 const fadeUp = {
   hidden: { opacity: 0, y: 28 },
@@ -53,6 +66,7 @@ const NONE_VALUE = "__none__";
 
 function ContactContent() {
   const { t, lang } = useT();
+  const search = useSearch();
   const successRef = useRef<HTMLDivElement>(null);
   const inquiryTypeOptions = t("contact.inquiryTypeOptions") as {
     oem: string;
@@ -61,11 +75,23 @@ function ContactContent() {
     other: string;
   };
 
+  const prefillInquiryType = parseInquiryType(search);
+
+  useEffect(() => {
+    if (window.location.hash === "#contact-form") {
+      const el = document.getElementById("contact-form");
+      if (el) {
+        const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        el.scrollIntoView({ behavior: reduced ? "instant" : "smooth", block: "start" });
+      }
+    }
+  }, [search]);
+
   const [form, setForm] = useState({
     name: "",
     email: "",
     company: "",
-    inquiryType: "" as "" | "oem" | "odm" | "sample" | "other",
+    inquiryType: prefillInquiryType as "" | "oem" | "odm" | "sample" | "other",
     whatsapp: "",
     country: "",
     productInterest: "",
@@ -153,7 +179,7 @@ function ContactContent() {
       </section>
 
       {/* MAIN FORM SECTION */}
-      <section className="py-24 bg-[#F5F7FA]">
+      <section id="contact-form" className="scroll-mt-20 py-24 bg-[#F5F7FA]">
         <div className="container mx-auto px-6">
           <motion.div
             initial="hidden"
