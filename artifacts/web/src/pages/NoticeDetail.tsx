@@ -91,11 +91,20 @@ function NoticeDetailContent() {
     .filter((n) => n.slug !== slug)
     .slice(0, 3);
 
-  const handleCopy = () => {
-    navigator.clipboard.writeText(window.location.href).then(() => {
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    });
+  const handleShare = async () => {
+    const url = window.location.href;
+    if (navigator.share) {
+      try {
+        await navigator.share({ title: article?.title ?? "", url });
+      } catch {
+        // user dismissed or share failed — do nothing
+      }
+    } else {
+      navigator.clipboard.writeText(url).then(() => {
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+      });
+    }
   };
 
   if (isLoading) {
@@ -200,7 +209,7 @@ function NoticeDetailContent() {
               </Link>
               <button
                 type="button"
-                onClick={handleCopy}
+                onClick={handleShare}
                 className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 transition"
               >
                 {copied ? (
