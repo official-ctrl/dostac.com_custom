@@ -84,9 +84,12 @@ function validateRow(raw: RawRow, index: number, existingSlugs?: Set<string>): P
   if (!category) errors.push("category 필수");
   if (!name_ko) errors.push("name_ko 필수");
 
-  const isDuplicate = existingSlugs != null && slug.length > 0 && SLUG_RE.test(slug)
-    ? existingSlugs.has(slug)
-    : undefined;
+  const isDuplicate =
+    existingSlugs != null && slug.length > 0 && SLUG_RE.test(slug)
+      ? existingSlugs.has(slug)
+      : false;
+
+  if (isDuplicate) errors.push("slug 중복");
 
   return {
     index,
@@ -227,8 +230,7 @@ export default function ProductImport() {
 
   const validRows = rows.filter((r) => r.errors.length === 0);
   const invalidRows = rows.filter((r) => r.errors.length > 0);
-  const duplicateRows = validRows.filter((r) => r.isDuplicate);
-  const importableRows = validRows.filter((r) => !r.isDuplicate);
+  const duplicateRows = invalidRows.filter((r) => r.isDuplicate);
 
   const doneCount = rows.filter((r) => r.status === "done").length;
   const skippedCount = rows.filter((r) => r.status === "skipped").length;
@@ -336,16 +338,6 @@ export default function ProductImport() {
     let localErrors = 0;
 
     for (const row of validRows) {
-      // Duplicate slugs are skipped — admins should edit the existing product instead
-      if (row.isDuplicate) {
-        updateRowStatus(row.index, {
-          status: "skipped",
-          errorMsg: "이미 존재하는 슬러그",
-        });
-        localSkipped++;
-        continue;
-      }
-
       updateRowStatus(row.index, { status: "translating" });
 
       let translations = emptyTranslations();
@@ -630,19 +622,16 @@ export default function ProductImport() {
               <div className="flex items-center justify-between text-sm gap-3">
                 <span className="text-muted-foreground shrink-0">
                   총 <strong className="text-foreground">{rows.length}</strong>개 행 파싱됨 —{" "}
-                  <span className="text-green-600">{importableRows.length}개 가져올 예정</span>
-                  {duplicateRows.length > 0 && (
-                    <>
-                      {", "}
-                      <span className="text-amber-600">
-                        {duplicateRows.length}개 중복 건너뜀
-                      </span>
-                    </>
-                  )}
+                  <span className="text-green-600">{validRows.length}개 가져올 예정</span>
                   {invalidRows.length > 0 && (
                     <>
                       {", "}
                       <span className="text-destructive">{invalidRows.length}개 오류</span>
+                      {duplicateRows.length > 0 && (
+                        <span className="text-destructive">
+                          {" "}(슬러그 중복 {duplicateRows.length}개 포함)
+                        </span>
+                      )}
                     </>
                   )}
                 </span>
@@ -671,17 +660,17 @@ export default function ProductImport() {
                     )}
                     {isImporting
                       ? "가져오는 중…"
-                      : `${importableRows.length}개 가져오기`}
+                      : `${validRows.length}개 가져오기`}
                   </Button>
                 </div>
               </div>
 
               {duplicateRows.length > 0 && (
-                <div className="flex items-start gap-2 rounded-md border border-amber-200 bg-amber-50 px-4 py-2.5">
-                  <AlertTriangle className="h-4 w-4 text-amber-500 shrink-0 mt-0.5" />
-                  <p className="text-xs text-amber-700">
+                <div className="flex items-start gap-2 rounded-md border border-destructive/20 bg-destructive/5 px-4 py-2.5">
+                  <AlertTriangle className="h-4 w-4 text-destructive shrink-0 mt-0.5" />
+                  <p className="text-xs text-destructive">
                     <strong>{duplicateRows.length}개</strong> 행의 슬러그가 이미 데이터베이스에 존재합니다.
-                    해당 행은 자동으로 건너뜁니다. 내용을 변경하려면 제품 목록에서 직접 수정해 주세요.
+                    슬러그를 다른 값으로 수정하거나 해당 행을 삭제한 뒤 가져오기를 진행해 주세요.
                   </p>
                 </div>
               )}
@@ -771,7 +760,6 @@ export default function ProductImport() {
                 <tbody>
                   {rows.map((row) => {
                     const hasValidationError = row.errors.length > 0;
-                    const isDupPending = row.isDuplicate && row.status === "pending";
                     return (
                       <tr
                         key={row.index}
@@ -783,7 +771,7 @@ export default function ProductImport() {
                               ? "bg-green-500/5"
                               : row.status === "error"
                                 ? "bg-destructive/5"
-                                : row.status === "skipped" || isDupPending
+                                : row.status === "skipped"
                                   ? "bg-amber-500/5"
                                   : "",
                         )}
@@ -793,7 +781,7 @@ export default function ProductImport() {
                         </td>
                         <td className="px-4 py-2.5">
                           <div className="flex items-center gap-1.5">
-                            {isDupPending ? STATUS_ICON["skipped"] : STATUS_ICON[row.status]}
+                            {STATUS_ICON[row.status]}
                             <span
                               className={cn(
                                 "text-xs",
@@ -801,7 +789,7 @@ export default function ProductImport() {
                                   ? "text-green-600"
                                   : row.status === "error"
                                     ? "text-destructive"
-                                    : row.status === "skipped" || isDupPending
+                                    : row.status === "skipped"
                                       ? "text-amber-500"
                                       : row.status === "translating"
                                         ? "text-blue-500"
@@ -810,7 +798,7 @@ export default function ProductImport() {
                                           : "text-muted-foreground",
                               )}
                             >
-                              {isDupPending ? "중복 슬러그" : STATUS_LABEL[row.status]}
+                              {STATUS_LABEL[row.status]}
                             </span>
                           </div>
                         </td>
@@ -916,11 +904,6 @@ export default function ProductImport() {
                                   <li key={e}>{e}</li>
                                 ))}
                               </ul>
-                            </div>
-                          ) : isDupPending ? (
-                            <div className="flex items-start gap-1.5">
-                              <SkipForward className="h-3.5 w-3.5 text-amber-500 shrink-0 mt-0.5" />
-                              <span className="text-xs text-amber-600">이미 존재하는 슬러그 — 건너뜁니다</span>
                             </div>
                           ) : row.status === "error" && row.errorMsg ? (
                             <div className="flex items-start gap-1.5">
