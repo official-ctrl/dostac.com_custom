@@ -14,6 +14,7 @@ export const contactInquiriesTable = pgTable("contact_inquiries", {
   quantity: varchar("quantity", { length: 80 }).notNull().default(""),
   productInterest: text("product_interest").notNull().default(""),
   customization: text("customization").notNull().default(""),
+  material: varchar("material", { length: 500 }).notNull().default(""),
   status: varchar("status", { length: 20 }).notNull().default("new"),
   adminNote: text("admin_note").notNull().default(""),
   source: varchar("source", { length: 30 }).notNull().default("web"),

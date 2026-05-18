@@ -20,7 +20,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
-import { ArrowLeft, Loader2, Save, Mail, Building2, Tag, MessageSquare, Globe, Package, Layers, Wrench, ShoppingBag } from "lucide-react";
+import { ArrowLeft, Loader2, Save, Mail, Building2, Tag, MessageSquare, Globe, Package, Layers, Wrench, ShoppingBag, FlaskConical } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 const STATUS_OPTIONS = [
@@ -176,6 +176,9 @@ export default function InquiryDetail() {
                       {inquiry.productInterest}
                     </Link>
                   </InfoRow>
+                )}
+                {inquiry.material && (
+                  <InfoRow icon={FlaskConical} label="성분/소재" value={inquiry.material} />
                 )}
                 {inquiry.quantity && (
                   <InfoRow icon={Layers} label="예상 수량" value={inquiry.quantity} />

@@ -64,13 +64,6 @@ const SUCCESS_MSG: Record<string, { title: string; body: string }> = {
 
 const NONE_VALUE = "__none__";
 
-const INQUIRY_PREFILL: Record<string, { about: string; material: string }> = {
-  ko: { about: "문의 제품", material: "성분/소재" },
-  en: { about: "Inquiry about", material: "Material" },
-  ja: { about: "お問い合わせ製品", material: "原材料" },
-  zh: { about: "咨询产品", material: "原料" },
-  vi: { about: "Sản phẩm cần tư vấn", material: "Thành phần" },
-};
 
 function ContactContent() {
   const { t, lang } = useT();
@@ -141,6 +134,7 @@ function ContactContent() {
     whatsapp: "",
     country: "",
     productInterest: "",
+    material: "",
     quantity: "",
     customization: "",
     message: "",
@@ -148,15 +142,11 @@ function ContactContent() {
 
   useEffect(() => {
     if (prefillProduct?.name) {
-      const labels = INQUIRY_PREFILL[lang] ?? INQUIRY_PREFILL.en;
-      let prefillMsg = `${labels.about}: ${prefillProduct.name}`;
-      if (prefillProduct.material) {
-        prefillMsg += ` (${labels.material}: ${prefillProduct.material})`;
-      }
       setForm((prev) => ({
         ...prev,
         productInterest: prev.productInterest === "" ? prefillProduct.name : prev.productInterest,
-        message: prev.message === "" ? prefillMsg : prev.message,
+        material: prev.material === "" && prefillProduct.material ? prefillProduct.material : prev.material,
+        message: prev.message === "" ? prefillProduct.name : prev.message,
       }));
     }
   }, [prefillProduct?.name, prefillProduct?.material, lang]);
@@ -169,7 +159,7 @@ function ContactContent() {
       onSuccess: () => {
         setSuccess(true);
         setError(null);
-        setForm({ name: "", email: "", company: "", inquiryType: "", whatsapp: "", country: "", productInterest: "", quantity: "", customization: "", message: "" });
+        setForm({ name: "", email: "", company: "", inquiryType: "", whatsapp: "", country: "", productInterest: "", material: "", quantity: "", customization: "", message: "" });
         setTimeout(() => {
           successRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
         }, 50);
@@ -199,6 +189,7 @@ function ContactContent() {
         whatsapp: form.whatsapp || undefined,
         country: form.country || undefined,
         productInterest: form.productInterest || undefined,
+        material: form.material || undefined,
         quantity: form.quantity || undefined,
         customization: form.customization || undefined,
         message: form.message,
@@ -424,6 +415,22 @@ function ContactContent() {
                           data-testid="input-product-interest"
                         />
                       </div>
+                      <div className="flex flex-col gap-1.5">
+                        <Label htmlFor="material" className="text-sm font-semibold text-slate-700">
+                          {t("contact.material") as string}
+                        </Label>
+                        <Input
+                          id="material"
+                          placeholder={t("contact.materialPh") as string}
+                          value={form.material}
+                          onChange={(e) => setForm({ ...form, material: e.target.value })}
+                          className="h-10 text-sm"
+                          data-testid="input-material"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div className="flex flex-col gap-1.5">
                         <Label htmlFor="quantity" className="text-sm font-semibold text-slate-700">
                           {t("contact.quantity") as string}

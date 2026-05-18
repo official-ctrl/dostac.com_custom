@@ -28,6 +28,7 @@ function serialize(i: typeof contactInquiriesTable.$inferSelect) {
     quantity: i.quantity,
     productInterest: i.productInterest,
     customization: i.customization,
+    material: i.material,
     status: i.status,
     adminNote: i.adminNote,
     source: i.source,

@@ -346,6 +346,7 @@ export const CreateContactInquiryBody = zod.object({
   quantity: zod.string().optional(),
   productInterest: zod.string().optional(),
   customization: zod.string().optional(),
+  material: zod.string().optional(),
 });
 
 export const AdminLoginBody = zod.object({
@@ -619,6 +620,7 @@ export const AdminListInquiriesResponseItem = zod.object({
   quantity: zod.string(),
   productInterest: zod.string(),
   customization: zod.string(),
+  material: zod.string().optional(),
   status: zod.enum(["new", "in_progress", "completed"]),
   adminNote: zod.string(),
   source: zod.string(),
@@ -648,6 +650,7 @@ export const AdminInquiriesSummaryResponse = zod.object({
       quantity: zod.string(),
       productInterest: zod.string(),
       customization: zod.string(),
+      material: zod.string().optional(),
       status: zod.enum(["new", "in_progress", "completed"]),
       adminNote: zod.string(),
       source: zod.string(),
@@ -672,6 +675,7 @@ export const AdminGetInquiryResponse = zod.object({
   quantity: zod.string(),
   productInterest: zod.string(),
   customization: zod.string(),
+  material: zod.string().optional(),
   status: zod.enum(["new", "in_progress", "completed"]),
   adminNote: zod.string(),
   source: zod.string(),
@@ -699,6 +703,7 @@ export const AdminUpdateInquiryResponse = zod.object({
   quantity: zod.string(),
   productInterest: zod.string(),
   customization: zod.string(),
+  material: zod.string().optional(),
   status: zod.enum(["new", "in_progress", "completed"]),
   adminNote: zod.string(),
   source: zod.string(),

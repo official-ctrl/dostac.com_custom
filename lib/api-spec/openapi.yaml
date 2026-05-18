@@ -885,6 +885,7 @@ components:
         quantity: { type: string }
         productInterest: { type: string }
         customization: { type: string }
+        material: { type: string }
         status:
           type: string
           enum: [new, in_progress, completed]
@@ -932,6 +933,7 @@ components:
         quantity: { type: string }
         productInterest: { type: string }
         customization: { type: string }
+        material: { type: string }
 
     TranslateInput:
       type: object

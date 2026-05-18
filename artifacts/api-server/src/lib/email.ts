@@ -18,23 +18,12 @@ function fmt(value: string | null | undefined): string {
   return value.length ? value : "-";
 }
 
-const MATERIAL_LABELS = ["성분/소재", "Material", "原材料", "原料", "Thành phần"];
-const MATERIAL_PATTERN = new RegExp(
-  `\\((?:${MATERIAL_LABELS.map((l) => l.replace(/\//g, "\\/")).join("|")}): ([^)]+)\\)`,
-);
-
-function extractMaterial(message: string): string | null {
-  const m = MATERIAL_PATTERN.exec(message);
-  return m ? m[1].trim() : null;
-}
-
 function inquiryTypeLabel(value: string): string {
   if (!value) return "-";
   return INQUIRY_TYPE_LABELS[value] ?? value;
 }
 
 function buildPlainBody(inquiry: ContactInquiry): string {
-  const material = extractMaterial(inquiry.message);
   const lines = [
     `New inquiry received from the DOSTAC website.`,
     ``,
@@ -44,7 +33,7 @@ function buildPlainBody(inquiry: ContactInquiry): string {
     `Type:        ${inquiryTypeLabel(inquiry.inquiryType)}`,
   ];
   if (inquiry.productInterest) lines.push(`Product:     ${inquiry.productInterest}`);
-  if (material) lines.push(`Material:    ${material}`);
+  if (inquiry.material) lines.push(`Material:    ${inquiry.material}`);
   if (inquiry.whatsapp) lines.push(`WhatsApp:    ${inquiry.whatsapp}`);
   if (inquiry.country) lines.push(`Country:     ${inquiry.country}`);
   if (inquiry.quantity) lines.push(`Quantity:    ${inquiry.quantity}`);
@@ -71,7 +60,6 @@ function escapeHtml(s: string): string {
 }
 
 function buildHtmlBody(inquiry: ContactInquiry): string {
-  const material = extractMaterial(inquiry.message);
   const row = (label: string, value: string | null | undefined) =>
     `<tr><td style="padding:6px 12px;color:#64748b;font-weight:600;white-space:nowrap;">${label}</td><td style="padding:6px 12px;color:#0f172a;">${escapeHtml(fmt(value))}</td></tr>`;
   const highlightRow = (label: string, value: string | null | undefined) =>
@@ -90,7 +78,7 @@ function buildHtmlBody(inquiry: ContactInquiry): string {
       ${row("Company", inquiry.company)}
       ${row("Type", inquiryTypeLabel(inquiry.inquiryType))}
       ${inquiry.productInterest ? highlightRow("Product of Interest", inquiry.productInterest) : ""}
-      ${material ? row("Material", material) : ""}
+      ${inquiry.material ? row("Material", inquiry.material) : ""}
       ${inquiry.whatsapp ? row("WhatsApp", inquiry.whatsapp) : ""}
       ${inquiry.country ? row("Country", inquiry.country) : ""}
       ${inquiry.quantity ? row("Desired Quantity", inquiry.quantity) : ""}
