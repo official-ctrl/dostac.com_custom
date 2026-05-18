@@ -64,6 +64,14 @@ const SUCCESS_MSG: Record<string, { title: string; body: string }> = {
 
 const NONE_VALUE = "__none__";
 
+const INQUIRY_PREFILL: Record<string, { about: string; material: string }> = {
+  ko: { about: "문의 제품", material: "성분/소재" },
+  en: { about: "Inquiry about", material: "Material" },
+  ja: { about: "お問い合わせ製品", material: "原材料" },
+  zh: { about: "咨询产品", material: "原料" },
+  vi: { about: "Sản phẩm cần tư vấn", material: "Thành phần" },
+};
+
 function ContactContent() {
   const { t, lang } = useT();
   const search = useSearch();
@@ -120,11 +128,18 @@ function ContactContent() {
 
   useEffect(() => {
     if (prefillProduct?.name) {
-      setForm((prev) =>
-        prev.productInterest === "" ? { ...prev, productInterest: prefillProduct.name } : prev,
-      );
+      const labels = INQUIRY_PREFILL[lang] ?? INQUIRY_PREFILL.en;
+      let prefillMsg = `${labels.about}: ${prefillProduct.name}`;
+      if (prefillProduct.material) {
+        prefillMsg += ` (${labels.material}: ${prefillProduct.material})`;
+      }
+      setForm((prev) => ({
+        ...prev,
+        productInterest: prev.productInterest === "" ? prefillProduct.name : prev.productInterest,
+        message: prev.message === "" ? prefillMsg : prev.message,
+      }));
     }
-  }, [prefillProduct?.name]);
+  }, [prefillProduct?.name, prefillProduct?.material, lang]);
 
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
