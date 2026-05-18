@@ -481,7 +481,13 @@ function ProductShowcaseSection() {
                     <span className="inline-block text-xs font-bold text-accent bg-accent/10 px-2.5 py-0.5 rounded-full mb-3">
                       {item.badge}
                     </span>
-                    <h3 className="font-bold text-[#0F172A] text-base">{item.name}</h3>
+                    <h3 className="font-bold text-[#0F172A] text-base mb-3">{item.name}</h3>
+                    {item.category && (
+                      <span className="inline-flex items-center gap-1 text-xs font-semibold text-accent group-hover:underline">
+                        {(t("homeNew.showcaseSeeAll") as string).replace("{cat}", item.badge)}
+                        <ArrowRight className="h-3 w-3" />
+                      </span>
+                    )}
                   </div>
                 </Link>
               </motion.div>
