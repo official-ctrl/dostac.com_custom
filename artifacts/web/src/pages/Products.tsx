@@ -30,6 +30,43 @@ function buildUrl(cat: string | null, sub: string | null) {
   return `/products?${p.toString()}`;
 }
 
+const SESSION_KEY = "dostac_products_last_filter";
+
+function readStoredFilter(): { category: string; subCategory: string | null } | null {
+  try {
+    const raw = sessionStorage.getItem(SESSION_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw) as unknown;
+    if (
+      parsed &&
+      typeof parsed === "object" &&
+      "category" in parsed &&
+      typeof (parsed as { category: unknown }).category === "string"
+    ) {
+      const p = parsed as { category: string; subCategory?: unknown };
+      return {
+        category: p.category,
+        subCategory: typeof p.subCategory === "string" ? p.subCategory : null,
+      };
+    }
+    return null;
+  } catch {
+    return null;
+  }
+}
+
+function saveStoredFilter(category: string | null, subCategory: string | null) {
+  try {
+    if (category === null) {
+      sessionStorage.removeItem(SESSION_KEY);
+    } else {
+      sessionStorage.setItem(SESSION_KEY, JSON.stringify({ category, subCategory }));
+    }
+  } catch {
+    // sessionStorage unavailable (e.g. private browsing strict mode) — ignore
+  }
+}
+
 function ProductsContent() {
   const { t } = useT();
   const { lang } = useLang();
@@ -47,6 +84,18 @@ function ProductsContent() {
   const [selectedSubCategory, setSelectedSubCategory] = useState<string | null>(subCategoryFromUrl);
   const [activeSlug, setActiveSlug] = useState<string | null>(null);
   const [copiedCategory, setCopiedCategory] = useState(false);
+
+  const didRestoreRef = useRef(false);
+  useEffect(() => {
+    if (didRestoreRef.current) return;
+    didRestoreRef.current = true;
+    if (categoryFromUrl !== null) return;
+    const stored = readStoredFilter();
+    if (stored) {
+      navigate(buildUrl(stored.category, stored.subCategory), { replace: true });
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleCopyLink = () => {
     navigator.clipboard.writeText(window.location.href).then(() => {
@@ -95,6 +144,7 @@ function ProductsContent() {
       setSelectedCategory(null);
       setSelectedSubCategory(null);
       navigate("/products", { replace: true });
+      saveStoredFilter(null, null);
     }
   }, [categories, selectedCategory, navigate]);
 
@@ -124,8 +174,15 @@ function ProductsContent() {
     ) {
       setSelectedSubCategory(null);
       navigate(buildUrl(selectedCategory, null), { replace: true });
+      saveStoredFilter(selectedCategory, null);
     }
   }, [subCategories, selectedSubCategory, selectedCategory, navigate]);
+
+  useEffect(() => {
+    if (selectedCategory !== null) {
+      saveStoredFilter(selectedCategory, selectedSubCategory ?? null);
+    }
+  }, [selectedCategory, selectedSubCategory]);
 
   const filteredProducts =
     selectedSubCategory === null || selectedSubCategory === undefined
@@ -161,6 +218,7 @@ function ProductsContent() {
     setActiveSlug(null);
     navigate(buildUrl(cat, null), { replace: false });
     window.scrollTo({ top: 0, behavior: "smooth" });
+    saveStoredFilter(cat, null);
   };
 
   const handleSubCategorySelect = (sub: string | null) => {
@@ -168,6 +226,7 @@ function ProductsContent() {
     setActiveSlug(null);
     navigate(buildUrl(selectedCategory, sub), { replace: false });
     window.scrollTo({ top: 0, behavior: "smooth" });
+    saveStoredFilter(selectedCategory, sub);
   };
 
   const showFilterBar = categories.length > 1;
