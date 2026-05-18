@@ -90,7 +90,13 @@ function ContactContent() {
   );
 
   useEffect(() => {
-    if (window.location.hash === "#contact-form") {
+    const params = new URLSearchParams(search);
+    const source = params.get("source");
+    const shouldScroll =
+      window.location.hash === "#contact-form" ||
+      source === "about" ||
+      source === "production";
+    if (shouldScroll) {
       const el = document.getElementById("contact-form");
       if (el) {
         const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
