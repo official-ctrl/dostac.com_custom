@@ -31,11 +31,11 @@ function buildUrl(cat: string | null, sub: string | null) {
   return `/products?${p.toString()}`;
 }
 
-const SESSION_KEY = "dostac_products_last_filter";
+const STORAGE_KEY = "dostac_products_last_filter";
 
 function readStoredFilter(): { category: string; subCategory: string | null } | null {
   try {
-    const raw = sessionStorage.getItem(SESSION_KEY);
+    const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return null;
     const parsed = JSON.parse(raw) as unknown;
     if (
@@ -59,12 +59,12 @@ function readStoredFilter(): { category: string; subCategory: string | null } | 
 function saveStoredFilter(category: string | null, subCategory: string | null) {
   try {
     if (category === null) {
-      sessionStorage.removeItem(SESSION_KEY);
+      localStorage.removeItem(STORAGE_KEY);
     } else {
-      sessionStorage.setItem(SESSION_KEY, JSON.stringify({ category, subCategory }));
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({ category, subCategory }));
     }
   } catch {
-    // sessionStorage unavailable (e.g. private browsing strict mode) — ignore
+    // localStorage unavailable (e.g. private browsing strict mode) — ignore
   }
 }
 
