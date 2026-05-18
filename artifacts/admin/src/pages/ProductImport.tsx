@@ -804,20 +804,30 @@ export default function ProductImport() {
                         </td>
                         <td className="px-4 py-2.5">
                           {hasValidationError && row.status === "pending" ? (
-                            <input
-                              type="text"
-                              value={row.slug}
-                              onChange={(e) =>
-                                handleFieldEdit(row.index, "slug", e.target.value)
-                              }
-                              placeholder="slug"
-                              className={cn(
-                                "w-full text-xs font-mono rounded border px-1.5 py-1 bg-background focus:outline-none focus:ring-1",
-                                row.errors.some((e) => e.includes("slug"))
-                                  ? "border-destructive focus:ring-destructive"
-                                  : "border-border focus:ring-ring",
+                            <div className="space-y-1">
+                              <input
+                                type="text"
+                                value={row.slug}
+                                onChange={(e) =>
+                                  handleFieldEdit(row.index, "slug", e.target.value)
+                                }
+                                placeholder="slug"
+                                className={cn(
+                                  "w-full text-xs font-mono rounded border px-1.5 py-1 bg-background focus:outline-none focus:ring-1",
+                                  row.isDuplicate
+                                    ? "border-amber-400 focus:ring-amber-400"
+                                    : row.errors.some((e) => e.includes("slug"))
+                                      ? "border-destructive focus:ring-destructive"
+                                      : "border-border focus:ring-ring",
+                                )}
+                              />
+                              {row.isDuplicate && (
+                                <span className="inline-flex items-center gap-1 text-[10px] rounded px-1.5 py-0.5 bg-amber-100 text-amber-800 font-medium">
+                                  <AlertTriangle className="h-3 w-3" />
+                                  중복 슬러그
+                                </span>
                               )}
-                            />
+                            </div>
                           ) : (
                             <code
                               className={cn(
