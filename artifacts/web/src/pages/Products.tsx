@@ -354,9 +354,9 @@ function ProductsContent() {
                         <Link
                           href="/contact"
                           className="inline-flex h-11 items-center justify-center rounded-full border border-slate-300 bg-white px-6 text-sm font-semibold text-[#0F172A] hover:bg-slate-50 transition-colors"
-                          data-testid={`product-cta-contact-${product.slug}`}
+                          data-testid={`product-cta-oem-${product.slug}`}
                         >
-                          {t("products.contactUs") as string}
+                          {t("products.oemInquiry") as string}
                         </Link>
                       </div>
                     </motion.div>
