@@ -27,6 +27,7 @@ import {
   Download,
   SkipForward,
   ChevronDown,
+  Trash2,
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { LANGS } from "@/lib/langs";
@@ -295,6 +296,10 @@ export default function ProductImport() {
     setRows((prev) =>
       prev.map((r) => (r.index === index ? { ...r, ...patch } : r)),
     );
+  };
+
+  const handleRemoveRow = (rowIndex: number) => {
+    setRows((prev) => prev.filter((r) => r.index !== rowIndex));
   };
 
   const handleFieldEdit = (
@@ -760,6 +765,7 @@ export default function ProductImport() {
                     <th className="px-4 py-2.5 text-left text-xs font-medium text-muted-foreground">
                       오류
                     </th>
+                    <th className="px-4 py-2.5 w-8" />
                   </tr>
                 </thead>
                 <tbody>
@@ -929,6 +935,17 @@ export default function ProductImport() {
                           ) : (
                             <span className="text-xs text-green-600">✓</span>
                           )}
+                        </td>
+                        <td className="px-4 py-2.5">
+                          <button
+                            type="button"
+                            disabled={isImporting}
+                            onClick={() => handleRemoveRow(row.index)}
+                            className="text-muted-foreground/40 hover:text-destructive disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                            title="행 삭제"
+                          >
+                            <Trash2 className="h-3.5 w-3.5" />
+                          </button>
                         </td>
                       </tr>
                     );
