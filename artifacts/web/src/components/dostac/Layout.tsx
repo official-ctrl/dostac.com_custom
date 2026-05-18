@@ -193,7 +193,7 @@ function AboutDropdown({ active, scrolled }: { active: boolean; scrolled: boolea
                 className="px-3 py-2 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-50 hover:text-primary transition focus:bg-slate-100 focus:outline-none"
                 onClick={() => setOpen(false)}
               >
-                {s.label}
+                {t(`nav.aboutSub.${s.key}`) as string}
               </Link>
             ))}
           </div>
@@ -281,7 +281,7 @@ function ProcessDropdown({ active, scrolled }: { active: boolean; scrolled: bool
                 className="px-3 py-2 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-50 hover:text-primary transition focus:bg-slate-100 focus:outline-none"
                 onClick={() => setOpen(false)}
               >
-                {s.label}
+                {t(`nav.processSub.${s.key}`) as string}
               </Link>
             ))}
           </div>
@@ -766,7 +766,7 @@ function Header() {
                             className="block px-3 py-1.5 rounded-md text-sm text-slate-600 hover:bg-slate-100"
                             onClick={() => setMobileOpen(false)}
                           >
-                            {s.label}
+                            {t(`nav.processSub.${s.key}`) as string}
                           </Link>
                         ))}
                       </div>
@@ -822,7 +822,7 @@ function Header() {
                             className="block px-3 py-1.5 rounded-md text-sm text-slate-600 hover:bg-slate-100"
                             onClick={() => setMobileOpen(false)}
                           >
-                            {s.label}
+                            {t(`nav.aboutSub.${s.key}`) as string}
                           </Link>
                         ))}
                       </div>
