@@ -100,6 +100,17 @@ function ContactContent() {
   const [formHighlight, setFormHighlight] = useState(false);
 
   useEffect(() => {
+    const scrollAndHighlight = (el: HTMLElement) => {
+      const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      el.scrollIntoView({ behavior: reduced ? "instant" : "smooth", block: "start" });
+      if (!reduced) {
+        setFormHighlight(false);
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => setFormHighlight(true));
+        });
+      }
+    };
+
     const params = new URLSearchParams(search);
     const source = params.get("source");
     const shouldScroll =
@@ -108,17 +119,18 @@ function ContactContent() {
       source === "production";
     if (shouldScroll) {
       const el = document.getElementById("contact-form");
-      if (el) {
-        const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-        el.scrollIntoView({ behavior: reduced ? "instant" : "smooth", block: "start" });
-        if (!reduced) {
-          setFormHighlight(false);
-          requestAnimationFrame(() => {
-            requestAnimationFrame(() => setFormHighlight(true));
-          });
-        }
-      }
+      if (el) scrollAndHighlight(el);
     }
+
+    const handleHashChange = () => {
+      if (window.location.hash === "#contact-form") {
+        const el = document.getElementById("contact-form");
+        if (el) scrollAndHighlight(el);
+      }
+    };
+
+    window.addEventListener("hashchange", handleHashChange);
+    return () => window.removeEventListener("hashchange", handleHashChange);
   }, [search]);
 
   const [form, setForm] = useState({
