@@ -74,6 +74,8 @@ function buildHtmlBody(inquiry: ContactInquiry): string {
   const material = extractMaterial(inquiry.message);
   const row = (label: string, value: string | null | undefined) =>
     `<tr><td style="padding:6px 12px;color:#64748b;font-weight:600;white-space:nowrap;">${label}</td><td style="padding:6px 12px;color:#0f172a;">${escapeHtml(fmt(value))}</td></tr>`;
+  const highlightRow = (label: string, value: string | null | undefined) =>
+    `<tr style="background:#eff6ff;"><td style="padding:8px 12px;color:#1e3a5f;font-weight:700;white-space:nowrap;border-left:3px solid #1e3a5f;">${label}</td><td style="padding:8px 12px;color:#0f172a;font-weight:600;">${escapeHtml(fmt(value))}</td></tr>`;
 
   return `<!doctype html>
 <html><body style="font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;background:#f8fafc;padding:24px;">
@@ -87,7 +89,7 @@ function buildHtmlBody(inquiry: ContactInquiry): string {
       ${row("Email", inquiry.email)}
       ${row("Company", inquiry.company)}
       ${row("Type", inquiryTypeLabel(inquiry.inquiryType))}
-      ${inquiry.productInterest ? row("Product of Interest", inquiry.productInterest) : ""}
+      ${inquiry.productInterest ? highlightRow("Product of Interest", inquiry.productInterest) : ""}
       ${material ? row("Material", material) : ""}
       ${inquiry.whatsapp ? row("WhatsApp", inquiry.whatsapp) : ""}
       ${inquiry.country ? row("Country", inquiry.country) : ""}
