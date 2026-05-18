@@ -6,7 +6,7 @@ import {
   getAdminListProductsQueryKey,
 } from "@workspace/api-client-react";
 import { useQueryClient } from "@tanstack/react-query";
-import { Plus, Search, Pencil, Trash2, Eye, EyeOff, Upload, ImageOff, AlertTriangle } from "lucide-react";
+import { Plus, Search, Pencil, Trash2, Eye, EyeOff, Upload, ImageOff, AlertTriangle, ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -44,6 +44,10 @@ export default function Products() {
     () => new URLSearchParams(searchString).get("q") ?? "",
   );
   const [pendingDelete, setPendingDelete] = useState<{ id: number; name: string } | null>(null);
+  const [catSort, setCatSort] = useState<"asc" | "desc" | null>(null);
+
+  const toggleCatSort = () =>
+    setCatSort((prev) => (prev === null ? "asc" : prev === "asc" ? "desc" : null));
 
   const categories = useMemo(() => {
     const set = new Set<string>();
@@ -81,7 +85,7 @@ export default function Products() {
   const filtered = useMemo(() => {
     if (!products) return [];
     const q = search.trim().toLowerCase();
-    return products.filter((p) => {
+    const list = products.filter((p) => {
       if (activeCat !== "all" && p.category !== activeCat) return false;
       if (activeSubCat !== "all" && p.subCategory !== activeSubCat) return false;
       if (!q) return true;
@@ -93,7 +97,14 @@ export default function Products() {
         (ko?.headline?.toLowerCase().includes(q) ?? false)
       );
     });
-  }, [products, activeCat, activeSubCat, search]);
+    if (!catSort) return list;
+    const dir = catSort === "asc" ? 1 : -1;
+    return [...list].sort((a, b) => {
+      const catCmp = a.category.localeCompare(b.category, "ko") * dir;
+      if (catCmp !== 0) return catCmp;
+      return ((a.subCategory ?? "").localeCompare(b.subCategory ?? "", "ko")) * dir;
+    });
+  }, [products, activeCat, activeSubCat, search, catSort]);
 
   const onDelete = async () => {
     if (!pendingDelete) return;
@@ -205,7 +216,18 @@ export default function Products() {
                   <th className="px-4 py-2 font-medium">이미지</th>
                   <th className="px-4 py-2 font-medium">제품명 (KO)</th>
                   <th className="px-4 py-2 font-medium">슬러그</th>
-                  <th className="px-4 py-2 font-medium">카테고리</th>
+                  <th className="px-4 py-2 font-medium">
+                    <button
+                      onClick={toggleCatSort}
+                      className="flex items-center gap-1 hover:text-foreground transition-colors"
+                      title="카테고리 정렬"
+                    >
+                      카테고리
+                      {catSort === null && <ArrowUpDown className="h-3 w-3 opacity-40" />}
+                      {catSort === "asc" && <ArrowUp className="h-3 w-3" />}
+                      {catSort === "desc" && <ArrowDown className="h-3 w-3" />}
+                    </button>
+                  </th>
                   <th className="px-4 py-2 font-medium">정렬</th>
                   <th className="px-4 py-2 font-medium">언어</th>
                   <th className="px-4 py-2 font-medium">상태</th>
