@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Link, useSearch, useLocation } from "wouter";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { useQuery, useQueryClient, keepPreviousData } from "@tanstack/react-query";
 import {
   CheckCircle2,
@@ -103,9 +103,7 @@ function ProductsContent() {
   const [activeSlug, setActiveSlug] = useState<string | null>(null);
   const [copiedCategory, setCopiedCategory] = useState(false);
   const [restoredFilter, setRestoredFilter] = useState<{ category: string; subCategory: string | null } | null>(null);
-  const [restoredFilterFading, setRestoredFilterFading] = useState(false);
   const restoredFilterTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const restoredFilterFadeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const isRestoredHoveredRef = useRef(false);
 
   const didRestoreRef = useRef(false);
@@ -322,35 +320,28 @@ function ProductsContent() {
     if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
-  const dismissRestoredFilterWithFade = useCallback(() => {
+  const dismissRestoredFilter = useCallback(() => {
     if (restoredFilterTimerRef.current) clearTimeout(restoredFilterTimerRef.current);
-    if (restoredFilterFadeTimerRef.current) clearTimeout(restoredFilterFadeTimerRef.current);
-    setRestoredFilterFading(true);
-    restoredFilterFadeTimerRef.current = setTimeout(() => {
-      setRestoredFilter(null);
-      setRestoredFilterFading(false);
-    }, 350);
+    setRestoredFilter(null);
   }, []);
 
   const startRestoredFilterTimer = useCallback(() => {
     if (restoredFilterTimerRef.current) clearTimeout(restoredFilterTimerRef.current);
     restoredFilterTimerRef.current = setTimeout(() => {
-      if (!isRestoredHoveredRef.current) dismissRestoredFilterWithFade();
+      if (!isRestoredHoveredRef.current) dismissRestoredFilter();
     }, 5000);
-  }, [dismissRestoredFilterWithFade]);
+  }, [dismissRestoredFilter]);
 
   useEffect(() => {
     if (restoredFilter === null) return;
-    setRestoredFilterFading(false);
     startRestoredFilterTimer();
     return () => {
       if (restoredFilterTimerRef.current) clearTimeout(restoredFilterTimerRef.current);
-      if (restoredFilterFadeTimerRef.current) clearTimeout(restoredFilterFadeTimerRef.current);
     };
   }, [restoredFilter, startRestoredFilterTimer]);
 
   const handleDismissRestoredFilter = () => {
-    dismissRestoredFilterWithFade();
+    dismissRestoredFilter();
   };
 
   const handleCategorySelect = (cat: string | null) => {
@@ -492,41 +483,47 @@ function ProductsContent() {
       )}
 
       {/* RESTORED FILTER CHIP */}
-      {restoredFilter !== null && (
-        <div
-          className="bg-amber-50 border-b border-amber-100"
-          style={{ opacity: restoredFilterFading ? 0 : 1, transition: "opacity 350ms ease" }}
-          onMouseEnter={() => {
-            isRestoredHoveredRef.current = true;
-            if (restoredFilterTimerRef.current) clearTimeout(restoredFilterTimerRef.current);
-          }}
-          onMouseLeave={() => {
-            isRestoredHoveredRef.current = false;
-            startRestoredFilterTimer();
-          }}
-        >
-          <div className="container mx-auto px-6">
-            <div className="flex items-center gap-2 py-2">
-              <span className="text-xs text-amber-700 font-medium">
-                {t("products.filterRestoredPrefix") as string}
-              </span>
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-amber-100 border border-amber-200 px-3 py-1 text-xs font-semibold text-amber-800">
-                {restoredFilter.subCategory
-                  ? `${catLabel(restoredFilter.category)} · ${subLabel(restoredFilter.subCategory)}`
-                  : catLabel(restoredFilter.category)}
-                <button
-                  type="button"
-                  onClick={handleDismissRestoredFilter}
-                  aria-label={t("products.filterClearAriaLabel") as string}
-                  className="ml-0.5 rounded-full hover:bg-amber-200 transition-colors p-0.5 focus:outline-none"
-                >
-                  <X className="w-3 h-3" />
-                </button>
-              </span>
+      <AnimatePresence>
+        {restoredFilter !== null && (
+          <motion.div
+            key="restored-filter-chip"
+            className="bg-amber-50 border-b border-amber-100 overflow-hidden"
+            initial={{ opacity: 0, y: -8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.2, ease: "easeOut" }}
+            onMouseEnter={() => {
+              isRestoredHoveredRef.current = true;
+              if (restoredFilterTimerRef.current) clearTimeout(restoredFilterTimerRef.current);
+            }}
+            onMouseLeave={() => {
+              isRestoredHoveredRef.current = false;
+              startRestoredFilterTimer();
+            }}
+          >
+            <div className="container mx-auto px-6">
+              <div className="flex items-center gap-2 py-2">
+                <span className="text-xs text-amber-700 font-medium">
+                  {t("products.filterRestoredPrefix") as string}
+                </span>
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-amber-100 border border-amber-200 px-3 py-1 text-xs font-semibold text-amber-800">
+                  {restoredFilter.subCategory
+                    ? `${catLabel(restoredFilter.category)} · ${subLabel(restoredFilter.subCategory)}`
+                    : catLabel(restoredFilter.category)}
+                  <button
+                    type="button"
+                    onClick={handleDismissRestoredFilter}
+                    aria-label={t("products.filterClearAriaLabel") as string}
+                    className="ml-0.5 rounded-full hover:bg-amber-200 transition-colors p-0.5 focus:outline-none"
+                  >
+                    <X className="w-3 h-3" />
+                  </button>
+                </span>
+              </div>
             </div>
-          </div>
-        </div>
-      )}
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* SUB-CATEGORY FILTER BAR */}
       {selectedCategory !== null && subCategories.length > 0 && (
