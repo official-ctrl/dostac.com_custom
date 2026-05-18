@@ -1,4 +1,4 @@
-import { useMemo, useState, useEffect } from "react";
+import { useMemo, useState, useEffect, useRef } from "react";
 import { Link, useSearch, useLocation } from "wouter";
 import {
   useAdminListProducts,
@@ -6,7 +6,7 @@ import {
   getAdminListProductsQueryKey,
 } from "@workspace/api-client-react";
 import { useQueryClient } from "@tanstack/react-query";
-import { Plus, Search, Pencil, Trash2, Eye, EyeOff, Upload, ImageOff, AlertTriangle, ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
+import { Plus, Search, Pencil, Trash2, Eye, EyeOff, Upload, ImageOff, AlertTriangle, ArrowUpDown, ArrowUp, ArrowDown, Info } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -43,6 +43,18 @@ export default function Products() {
   const [search, setSearch] = useState(
     () => new URLSearchParams(searchString).get("q") ?? "",
   );
+
+  const hasRestoredFilter = useRef(
+    initialParams.get("cat") != null && initialParams.get("cat") !== "all",
+  );
+  const [showFilterNotice, setShowFilterNotice] = useState(hasRestoredFilter.current);
+
+  useEffect(() => {
+    if (!hasRestoredFilter.current) return;
+    const timer = setTimeout(() => setShowFilterNotice(false), 3000);
+    return () => clearTimeout(timer);
+  }, []);
+
   const [pendingDelete, setPendingDelete] = useState<{ id: number; name: string } | null>(null);
   const [catSort, setCatSort] = useState<"asc" | "desc" | null>(null);
 
@@ -146,6 +158,13 @@ export default function Products() {
       </header>
 
       <Card className="p-4 space-y-4">
+        {showFilterNotice && (
+          <div className="flex items-center gap-2 text-sm text-blue-700 bg-blue-50 border border-blue-200 rounded-md px-3 py-2 transition-opacity duration-300">
+            <Info className="h-4 w-4 shrink-0" />
+            이전 필터가 복원되었습니다.
+          </div>
+        )}
+
         <div className="flex flex-wrap items-center gap-3">
           <div className="relative flex-1 min-w-[240px]">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
