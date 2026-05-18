@@ -11,7 +11,7 @@ import {
   Check,
 } from "lucide-react";
 import { Layout, dostacImage } from "@/components/dostac/Layout";
-import { useT, useLang } from "@/components/dostac/i18n";
+import { useT, useLang, useCategoryLabel, useSubCategoryLabel } from "@/components/dostac/i18n";
 import {
   useGetPublicProduct,
   useListPublicProducts,
@@ -32,6 +32,8 @@ function ProductDetailContent() {
   const slug = params.slug ?? "";
   const { t } = useT();
   const { lang } = useLang();
+  const catLabel = useCategoryLabel();
+  const subLabel = useSubCategoryLabel();
   const [copied, setCopied] = useState(false);
   const copyTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -123,7 +125,7 @@ function ProductDetailContent() {
               {product.category && (
                 <>
                   <span className="text-white/30">/</span>
-                  <span className="text-white/60">{product.category}</span>
+                  <span className="text-white/60">{catLabel(product.category)}</span>
                 </>
               )}
             </div>
@@ -146,12 +148,12 @@ function ProductDetailContent() {
           <div className="flex flex-wrap items-center gap-2 mb-5">
             {product.category && (
               <span className="inline-flex items-center rounded-full bg-white/15 backdrop-blur border border-white/20 px-3 py-1 text-xs font-semibold text-white">
-                {product.category}
+                {catLabel(product.category)}
               </span>
             )}
             {product.subCategory && (
               <span className="inline-flex items-center rounded-full bg-accent/80 backdrop-blur border border-accent/40 px-3 py-1 text-xs font-semibold text-white">
-                {product.subCategory}
+                {subLabel(product.subCategory)}
               </span>
             )}
           </div>
@@ -281,7 +283,7 @@ function ProductDetailContent() {
                             {t("products.subCategoryLabel") as string}
                           </td>
                           <td className="py-3 px-4 text-slate-700 font-medium">
-                            {product.subCategory}
+                            {subLabel(product.subCategory)}
                           </td>
                         </tr>
                       )}
@@ -341,7 +343,7 @@ function ProductDetailContent() {
                         />
                         {item.category && (
                           <span className="absolute top-3 left-3 inline-flex items-center rounded-full bg-white/90 backdrop-blur px-2.5 py-1 text-[11px] font-bold text-accent shadow-sm">
-                            {item.category}
+                            {catLabel(item.category)}
                           </span>
                         )}
                       </div>

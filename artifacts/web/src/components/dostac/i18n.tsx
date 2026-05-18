@@ -265,7 +265,7 @@ const ko: Dict = {
     copyLink: "링크 복사", copied: "복사됨!",
     filterRestoredPrefix: "마지막 필터 적용 중:",
     filterClearAriaLabel: "필터 초기화",
-    categoryNames: { body: "바디", cleanser: "클렌저", mask: "마스크", skincare: "스킨케어", specialty: "전문 케어", wipes: "물티슈" } as Record<string, string>,
+    categoryNames: { body: "바디", cleanser: "클렌저", mask: "마스크", skincare: "스킨케어", specialty: "전문 케어", wipes: "물티슈", suncare: "선케어", haircare: "헤어케어", bodycare: "바디케어", makeup: "메이크업", wellness: "웰니스" } as Record<string, string>,
     subCategoryNames: { serum: "세럼", toner: "토너", cream: "크림", lotion: "로션", "sheet-mask": "시트 마스크", "sleeping-mask": "슬리핑 마스크", "clay-mask": "클레이 마스크", "pore-strip": "코팩", "spot-patch": "스팟 패치", "micro-needle": "마이크로 니들", "cleansing-foam": "클렌징 폼", "cleansing-oil": "클렌징 오일", baby: "베이비", feminine: "여성 위생", scrub: "스크럽", "body-lotion": "바디 로션", "cooling-wipe": "쿨링 티슈", "deodorant-wipe": "데오드란트 티슈" } as Record<string, string>,
     items: [
       { id: "01", name: "코팩", headline: "고도화된 블랙헤드 및 피지 관리 솔루션",
@@ -717,7 +717,7 @@ const en: Dict = {
     copyLink: "Copy link", copied: "Copied!",
     filterRestoredPrefix: "Showing last-used filter:",
     filterClearAriaLabel: "Clear filter",
-    categoryNames: { body: "Body", cleanser: "Cleanser", mask: "Mask", skincare: "Skin Care", specialty: "Specialty", wipes: "Wipes" } as Record<string, string>,
+    categoryNames: { body: "Body", cleanser: "Cleanser", mask: "Mask", skincare: "Skin Care", specialty: "Specialty", wipes: "Wipes", suncare: "Sun Care", haircare: "Hair Care", bodycare: "Body Care", makeup: "Makeup", wellness: "Wellness" } as Record<string, string>,
     subCategoryNames: { serum: "Serum", toner: "Toner", cream: "Cream", lotion: "Lotion", "sheet-mask": "Sheet Mask", "sleeping-mask": "Sleeping Mask", "clay-mask": "Clay Mask", "pore-strip": "Pore Strip", "spot-patch": "Spot Patch", "micro-needle": "Micro Needle", "cleansing-foam": "Cleansing Foam", "cleansing-oil": "Cleansing Oil", baby: "Baby", feminine: "Feminine Care", scrub: "Scrub", "body-lotion": "Body Lotion", "cooling-wipe": "Cooling Wipe", "deodorant-wipe": "Deodorant Wipe" } as Record<string, string>,
     items: [
       { id: "01", name: "Pore Strips", headline: "Advanced Blackhead & Sebum Control Solutions",
@@ -1169,7 +1169,7 @@ const ja: Dict = {
     copyLink: "リンクをコピー", copied: "コピーしました!",
     filterRestoredPrefix: "前回のフィルター適用中:",
     filterClearAriaLabel: "フィルターをクリア",
-    categoryNames: { body: "ボディ", cleanser: "クレンザー", mask: "マスク", skincare: "スキンケア", specialty: "スペシャルケア", wipes: "ウェットティッシュ" } as Record<string, string>,
+    categoryNames: { body: "ボディ", cleanser: "クレンザー", mask: "マスク", skincare: "スキンケア", specialty: "スペシャルケア", wipes: "ウェットティッシュ", suncare: "サンケア", haircare: "ヘアケア", bodycare: "ボディケア", makeup: "メイクアップ", wellness: "ウェルネス" } as Record<string, string>,
     subCategoryNames: { serum: "セラム", toner: "トナー", cream: "クリーム", lotion: "ローション", "sheet-mask": "シートマスク", "sleeping-mask": "スリーピングマスク", "clay-mask": "クレイマスク", "pore-strip": "毛穴ストリップ", "spot-patch": "スポットパッチ", "micro-needle": "マイクロニードル", "cleansing-foam": "クレンジングフォーム", "cleansing-oil": "クレンジングオイル", baby: "ベビー", feminine: "フェミニンケア", scrub: "スクラブ", "body-lotion": "ボディローション", "cooling-wipe": "クールウェットティッシュ", "deodorant-wipe": "デオドラントティッシュ" } as Record<string, string>,
     items: [
       { id: "01", name: "毛穴ストリップ", headline: "先進的なブラックヘッド・皮脂コントロールソリューション",
@@ -1621,7 +1621,7 @@ const zh: Dict = {
     copyLink: "复制链接", copied: "已复制!",
     filterRestoredPrefix: "正在应用上次筛选:",
     filterClearAriaLabel: "清除筛选",
-    categoryNames: { body: "身体护理", cleanser: "洁肤", mask: "面膜", skincare: "护肤", specialty: "特殊护理", wipes: "湿巾" } as Record<string, string>,
+    categoryNames: { body: "身体护理", cleanser: "洁肤", mask: "面膜", skincare: "护肤", specialty: "特殊护理", wipes: "湿巾", suncare: "防晒护理", haircare: "护发", bodycare: "身体护理", makeup: "彩妆", wellness: "健康护理" } as Record<string, string>,
     subCategoryNames: { serum: "精华液", toner: "化妆水", cream: "面霜", lotion: "乳液", "sheet-mask": "片状面膜", "sleeping-mask": "睡眠面膜", "clay-mask": "泥膜", "pore-strip": "鼻贴", "spot-patch": "祛痘贴", "micro-needle": "微针贴", "cleansing-foam": "洁面泡沫", "cleansing-oil": "卸妆油", baby: "婴儿护理", feminine: "女性护理", scrub: "磨砂膏", "body-lotion": "身体乳", "cooling-wipe": "清凉湿巾", "deodorant-wipe": "除臭湿巾" } as Record<string, string>,
     items: [
       { id: "01", name: "鼻贴", headline: "先进的黑头与皮脂控制解决方案",
@@ -2073,7 +2073,7 @@ const vi: Dict = {
     copyLink: "Sao chép liên kết", copied: "Đã sao chép!",
     filterRestoredPrefix: "Đang hiển thị bộ lọc đã dùng:",
     filterClearAriaLabel: "Xóa bộ lọc",
-    categoryNames: { body: "Chăm sóc cơ thể", cleanser: "Tẩy trang", mask: "Mặt nạ", skincare: "Chăm sóc da", specialty: "Chuyên biệt", wipes: "Khăn ướt" } as Record<string, string>,
+    categoryNames: { body: "Chăm sóc cơ thể", cleanser: "Tẩy trang", mask: "Mặt nạ", skincare: "Chăm sóc da", specialty: "Chuyên biệt", wipes: "Khăn ướt", suncare: "Chăm sóc da nắng", haircare: "Chăm sóc tóc", bodycare: "Chăm sóc cơ thể", makeup: "Trang điểm", wellness: "Sức khỏe" } as Record<string, string>,
     subCategoryNames: { serum: "Serum", toner: "Toner", cream: "Kem dưỡng", lotion: "Lotion", "sheet-mask": "Mặt nạ giấy", "sleeping-mask": "Mặt nạ ngủ", "clay-mask": "Mặt nạ đất sét", "pore-strip": "Miếng lột mụn", "spot-patch": "Miếng dán mụn", "micro-needle": "Vi kim", "cleansing-foam": "Sữa rửa mặt", "cleansing-oil": "Tẩy trang dầu", baby: "Cho bé", feminine: "Chăm sóc phụ nữ", scrub: "Tẩy tế bào chết", "body-lotion": "Dưỡng thể", "cooling-wipe": "Khăn ướt làm mát", "deodorant-wipe": "Khăn ướt khử mùi" } as Record<string, string>,
     items: [
       { id: "01", name: "Miếng lột mụn đầu đen", headline: "Giải pháp kiểm soát mụn đầu đen & bã nhờn tiên tiến",
@@ -2341,8 +2341,12 @@ export function useLang(): { lang: Lang; setLang: (l: Lang) => void } {
 const CATEGORY_SLUG_MAP: Record<string, string> = {
   스킨케어: "skincare", 클렌저: "cleanser", 마스크: "mask", 바디: "body",
   "전문 케어": "specialty", 물티슈: "wipes",
+  선케어: "suncare", 헤어케어: "haircare", 바디케어: "bodycare",
+  메이크업: "makeup", 웰니스: "wellness",
   Skincare: "skincare", Cleanser: "cleanser", Mask: "mask", Body: "body",
   Specialty: "specialty", Wipes: "wipes",
+  "Sun Care": "suncare", "Hair Care": "haircare", "Body Care": "bodycare",
+  Makeup: "makeup", Wellness: "wellness",
 };
 
 const SUBCATEGORY_SLUG_MAP: Record<string, string> = {
