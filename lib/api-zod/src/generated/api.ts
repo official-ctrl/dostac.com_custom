@@ -20,6 +20,7 @@ export const HealthCheckResponse = zod.object({
 export const ListPublicProductsQueryParams = zod.object({
   lang: zod.enum(["ko", "en", "ja", "zh", "vi"]),
   category: zod.coerce.string().optional(),
+  subCategory: zod.coerce.string().optional(),
 });
 
 export const ListPublicProductsResponseItem = zod.object({

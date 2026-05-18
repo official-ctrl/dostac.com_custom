@@ -32,11 +32,12 @@ router.get("/public/products", async (req, res): Promise<void> => {
     res.status(400).json({ error: q.error.message });
     return;
   }
-  const { lang, category } = q.data;
+  const { lang, category, subCategory } = q.data;
 
-  const where = category
-    ? and(eq(productsTable.published, true), eq(productsTable.category, category))
-    : eq(productsTable.published, true);
+  const conditions = [eq(productsTable.published, true)];
+  if (category) conditions.push(eq(productsTable.category, category));
+  if (subCategory) conditions.push(eq(productsTable.subCategory, subCategory));
+  const where = conditions.length === 1 ? conditions[0] : and(...conditions);
 
   const products = await db
     .select()

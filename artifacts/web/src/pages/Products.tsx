@@ -23,6 +23,13 @@ const stagger = {
   show: { transition: { staggerChildren: 0.08 } },
 };
 
+function buildUrl(cat: string | null, sub: string | null) {
+  if (!cat) return "/products";
+  const p = new URLSearchParams({ category: cat });
+  if (sub) p.set("subCategory", sub);
+  return `/products?${p.toString()}`;
+}
+
 function ProductsContent() {
   const { t } = useT();
   const { lang } = useLang();
@@ -32,9 +39,12 @@ function ProductsContent() {
   const search = useSearch();
   const [, navigate] = useLocation();
 
-  const categoryFromUrl = new URLSearchParams(search).get("category");
+  const params = new URLSearchParams(search);
+  const categoryFromUrl = params.get("category");
+  const subCategoryFromUrl = params.get("subCategory");
 
   const [selectedCategory, setSelectedCategory] = useState<string | null>(categoryFromUrl);
+  const [selectedSubCategory, setSelectedSubCategory] = useState<string | null>(subCategoryFromUrl);
   const [activeSlug, setActiveSlug] = useState<string | null>(null);
   const [copiedCategory, setCopiedCategory] = useState(false);
 
@@ -66,9 +76,10 @@ function ProductsContent() {
 
   useEffect(() => {
     setSelectedCategory(categoryFromUrl);
+    setSelectedSubCategory(subCategoryFromUrl);
     setActiveSlug(null);
     setCopiedCategory(false);
-  }, [categoryFromUrl]);
+  }, [categoryFromUrl, subCategoryFromUrl]);
 
   const categories = Array.from(
     new Set(products.map((p) => p.category).filter((c): c is string => !!c))
@@ -82,14 +93,44 @@ function ProductsContent() {
   useEffect(() => {
     if (selectedCategory !== null && categories.length > 0 && !categories.includes(selectedCategory)) {
       setSelectedCategory(null);
+      setSelectedSubCategory(null);
       navigate("/products", { replace: true });
     }
   }, [categories, selectedCategory, navigate]);
 
-  const filteredProducts =
+  const categoryFilteredProducts =
     selectedCategory === null
       ? products
       : products.filter((p) => p.category === selectedCategory);
+
+  const subCategories = Array.from(
+    new Set(
+      categoryFilteredProducts
+        .map((p) => p.subCategory)
+        .filter((s): s is string => !!s)
+    )
+  );
+
+  const subCategoryCounts = categoryFilteredProducts.reduce<Record<string, number>>((acc, p) => {
+    if (p.subCategory) acc[p.subCategory] = (acc[p.subCategory] ?? 0) + 1;
+    return acc;
+  }, {});
+
+  useEffect(() => {
+    if (
+      selectedSubCategory !== null &&
+      subCategories.length > 0 &&
+      !subCategories.includes(selectedSubCategory)
+    ) {
+      setSelectedSubCategory(null);
+      navigate(buildUrl(selectedCategory, null), { replace: true });
+    }
+  }, [subCategories, selectedSubCategory, selectedCategory, navigate]);
+
+  const filteredProducts =
+    selectedSubCategory === null || selectedSubCategory === undefined
+      ? categoryFilteredProducts
+      : categoryFilteredProducts.filter((p) => p.subCategory === selectedSubCategory);
 
   useEffect(() => {
     if (filteredProducts.length === 0) return;
@@ -116,12 +157,16 @@ function ProductsContent() {
 
   const handleCategorySelect = (cat: string | null) => {
     setSelectedCategory(cat);
+    setSelectedSubCategory(null);
     setActiveSlug(null);
-    if (cat === null) {
-      navigate("/products", { replace: false });
-    } else {
-      navigate(`/products?category=${encodeURIComponent(cat)}`, { replace: false });
-    }
+    navigate(buildUrl(cat, null), { replace: false });
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const handleSubCategorySelect = (sub: string | null) => {
+    setSelectedSubCategory(sub);
+    setActiveSlug(null);
+    navigate(buildUrl(selectedCategory, sub), { replace: false });
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
@@ -237,6 +282,65 @@ function ProductsContent() {
                       </button>
                     )}
                   </div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* SUB-CATEGORY FILTER BAR */}
+      {selectedCategory !== null && subCategories.length > 0 && (
+        <div className="bg-slate-50 border-b border-slate-100">
+          <div className="container mx-auto px-6">
+            <div
+              className="flex overflow-x-auto no-scrollbar gap-2 py-2.5"
+              style={{ scrollbarWidth: "none", WebkitOverflowScrolling: "touch" } as React.CSSProperties}
+            >
+              <button
+                type="button"
+                onClick={() => handleSubCategorySelect(null)}
+                className={`flex-shrink-0 rounded-full px-3.5 py-1 text-xs font-semibold transition-colors focus:outline-none ${
+                  selectedSubCategory === null
+                    ? "bg-primary text-white shadow-sm"
+                    : "bg-white border border-slate-200 text-slate-600 hover:bg-slate-100"
+                }`}
+              >
+                {t("products.filterAll") as string}
+                <span
+                  className={`ml-1.5 rounded-full px-1.5 py-0.5 text-[10px] font-bold leading-none ${
+                    selectedSubCategory === null
+                      ? "bg-white/25 text-white"
+                      : "bg-slate-100 text-slate-500"
+                  }`}
+                >
+                  {categoryFilteredProducts.length}
+                </span>
+              </button>
+              {subCategories.map((sub) => {
+                const isActive = selectedSubCategory === sub;
+                return (
+                  <button
+                    key={sub}
+                    type="button"
+                    onClick={() => handleSubCategorySelect(isActive ? null : sub)}
+                    className={`flex-shrink-0 rounded-full px-3.5 py-1 text-xs font-semibold transition-colors focus:outline-none ${
+                      isActive
+                        ? "bg-primary text-white shadow-sm"
+                        : "bg-white border border-slate-200 text-slate-600 hover:bg-slate-100"
+                    }`}
+                  >
+                    {sub}
+                    <span
+                      className={`ml-1.5 rounded-full px-1.5 py-0.5 text-[10px] font-bold leading-none ${
+                        isActive
+                          ? "bg-white/25 text-white"
+                          : "bg-slate-100 text-slate-500"
+                      }`}
+                    >
+                      {subCategoryCounts[sub] ?? 0}
+                    </span>
+                  </button>
                 );
               })}
             </div>

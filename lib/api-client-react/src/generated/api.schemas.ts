@@ -500,6 +500,7 @@ export type BadRequestResponse = ApiError;
 export type ListPublicProductsParams = {
   lang: Lang;
   category?: string;
+  subCategory?: string;
 };
 
 export type GetPublicProductParams = {

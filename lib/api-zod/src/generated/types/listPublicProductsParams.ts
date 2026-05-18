@@ -10,4 +10,5 @@ import type { Lang } from "./lang";
 export type ListPublicProductsParams = {
   lang: Lang;
   category?: string;
+  subCategory?: string;
 };

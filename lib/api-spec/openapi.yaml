@@ -46,6 +46,7 @@ paths:
       parameters:
         - { name: lang, in: query, required: true, schema: { $ref: "#/components/schemas/Lang" } }
         - { name: category, in: query, required: false, schema: { type: string } }
+        - { name: subCategory, in: query, required: false, schema: { type: string } }
       responses:
         "200":
           description: OK
