@@ -48,7 +48,8 @@ export default function Inquiries() {
         i.name.toLowerCase().includes(q) ||
         i.email.toLowerCase().includes(q) ||
         i.message.toLowerCase().includes(q) ||
-        i.company.toLowerCase().includes(q),
+        i.company.toLowerCase().includes(q) ||
+        (i.productInterest ?? "").toLowerCase().includes(q),
     );
   }, [inquiries, search]);
 
@@ -67,7 +68,7 @@ export default function Inquiries() {
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
               type="search"
-              placeholder="이름·이메일·회사·메시지 검색"
+              placeholder="이름·이메일·회사·제품·메시지 검색"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="pl-9"
