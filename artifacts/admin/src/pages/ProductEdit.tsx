@@ -15,7 +15,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import { ArrowLeft, Loader2, Plus, Save, X } from "lucide-react";
+import { AlertTriangle, ArrowLeft, Loader2, Plus, Save, X } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { TranslationFields } from "@/components/TranslationFields";
 import { ImageUploader } from "@/components/ImageUploader";
@@ -164,12 +164,24 @@ export default function ProductEdit() {
         const created = await createMut.mutateAsync({ data: form });
         await qc.invalidateQueries({ queryKey: getAdminListProductsQueryKey() });
         toast({ title: "제품 등록 완료", description: ko.name });
+        if (!form.imageUrl) {
+          toast({
+            title: "이미지 없음",
+            description: "제품 이미지가 없습니다 — 웹사이트에서 플레이스홀더 이미지가 표시됩니다.",
+          });
+        }
         navigate(`/products/${created.id}`);
       } else if (id !== null) {
         await updateMut.mutateAsync({ id, data: form });
         await qc.invalidateQueries({ queryKey: getAdminListProductsQueryKey() });
         await qc.invalidateQueries({ queryKey: getAdminGetProductQueryKey(id) });
         toast({ title: "저장 완료", description: ko.name });
+        if (!form.imageUrl) {
+          toast({
+            title: "이미지 없음",
+            description: "제품 이미지가 없습니다 — 웹사이트에서 플레이스홀더 이미지가 표시됩니다.",
+          });
+        }
       }
     } catch (err) {
       toast({
@@ -287,6 +299,12 @@ export default function ProductEdit() {
               previewClassName="h-24 w-24 rounded object-cover bg-muted border border-border"
               testId="upload-product-image"
             />
+            {!form.imageUrl && (
+              <p className="flex items-center gap-1.5 text-xs text-amber-600 mt-1" data-testid="warning-no-image">
+                <AlertTriangle className="h-3.5 w-3.5 shrink-0" />
+                이미지가 없습니다 — 웹사이트에서 플레이스홀더가 표시됩니다.
+              </p>
+            )}
           </div>
 
           <div className="space-y-2 md:col-span-2 pt-2 border-t border-border">
