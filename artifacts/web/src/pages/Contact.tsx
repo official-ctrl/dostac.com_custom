@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
-import { MapPin, Phone, Mail, Clock, Send, ShieldCheck, CheckCircle2 } from "lucide-react";
+import { MapPin, Phone, Mail, Clock, Send, ShieldCheck, CheckCircle2, Package } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -15,7 +15,7 @@ import {
 import { Layout, dostacImage } from "@/components/dostac/Layout";
 import { useT } from "@/components/dostac/i18n";
 import { useSearch } from "wouter";
-import { useCreateContactInquiry } from "@workspace/api-client-react";
+import { useCreateContactInquiry, useGetPublicProduct, getGetPublicProductQueryKey } from "@workspace/api-client-react";
 
 const VALID_INQUIRY_TYPES = ["oem", "odm", "sample", "other"] as const;
 type InquiryType = (typeof VALID_INQUIRY_TYPES)[number];
@@ -76,6 +76,18 @@ function ContactContent() {
   };
 
   const prefillInquiryType = parseInquiryType(search);
+  const prefillProductSlug = new URLSearchParams(search).get("product") ?? "";
+
+  const { data: prefillProduct } = useGetPublicProduct(
+    prefillProductSlug || "_",
+    { lang },
+    {
+      query: {
+        enabled: !!prefillProductSlug,
+        queryKey: getGetPublicProductQueryKey(prefillProductSlug || "_", { lang }),
+      },
+    },
+  );
 
   useEffect(() => {
     if (window.location.hash === "#contact-form") {
@@ -99,6 +111,15 @@ function ContactContent() {
     customization: "",
     message: "",
   });
+
+  useEffect(() => {
+    if (prefillProduct?.name) {
+      setForm((prev) =>
+        prev.productInterest === "" ? { ...prev, productInterest: prefillProduct.name } : prev,
+      );
+    }
+  }, [prefillProduct?.name]);
+
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -194,6 +215,22 @@ function ContactContent() {
                 <h2 className="font-display text-2xl font-bold text-[#0F172A] mb-7">
                   {t("contact.formHeading") as string}
                 </h2>
+
+                {prefillProductSlug && (
+                  <div className="flex items-center gap-3 mb-6 rounded-xl bg-accent/8 border border-accent/20 px-4 py-3">
+                    <div className="w-8 h-8 rounded-lg bg-accent/15 flex items-center justify-center shrink-0">
+                      <Package className="w-4 h-4 text-accent" />
+                    </div>
+                    <div className="min-w-0">
+                      <p className="text-xs font-semibold text-accent uppercase tracking-wide leading-none mb-0.5">
+                        {t("contact.productContext") as string}
+                      </p>
+                      <p className="text-sm font-semibold text-[#0F172A] truncate">
+                        {prefillProduct?.name ?? prefillProductSlug}
+                      </p>
+                    </div>
+                  </div>
+                )}
 
                 {success && (
                   <div

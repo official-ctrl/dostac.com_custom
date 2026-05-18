@@ -549,7 +549,7 @@ function ProductsContent() {
                           <ArrowRight className="ml-2 h-4 w-4" />
                         </Link>
                         <Link
-                          href="/contact"
+                          href={`/contact?product=${encodeURIComponent(product.slug)}&inquiryType=oem`}
                           className="inline-flex h-11 items-center justify-center rounded-full border border-slate-300 bg-white px-6 text-sm font-semibold text-[#0F172A] hover:bg-slate-50 transition-colors"
                           data-testid={`product-cta-oem-${product.slug}`}
                         >

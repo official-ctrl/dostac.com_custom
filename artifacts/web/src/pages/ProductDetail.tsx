@@ -208,14 +208,14 @@ function ProductDetailContent() {
                   {t("products.bottomCtaHeading") as string}
                 </p>
                 <Link
-                  href="/contact"
+                  href={`/contact?product=${encodeURIComponent(product.slug)}&inquiryType=oem`}
                   className="inline-flex h-10 items-center justify-center rounded-full bg-accent px-5 text-sm font-semibold text-white shadow-sm hover:bg-accent/90 transition-colors"
                 >
                   {t("products.oemInquiry") as string}
                   <ArrowRight className="ml-2 h-3.5 w-3.5" />
                 </Link>
                 <Link
-                  href="/contact"
+                  href={`/contact?product=${encodeURIComponent(product.slug)}`}
                   className="inline-flex h-10 items-center justify-center rounded-full border border-slate-300 bg-white px-5 text-sm font-semibold text-[#0F172A] hover:bg-slate-50 transition-colors"
                 >
                   {t("products.contactUs") as string}
