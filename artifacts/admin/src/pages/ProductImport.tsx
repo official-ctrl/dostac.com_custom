@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useCallback } from "react";
 import { Link, useLocation } from "wouter";
 import { useQueryClient } from "@tanstack/react-query";
 import Papa from "papaparse";
@@ -255,10 +255,33 @@ export default function ProductImport() {
     skipped: number;
     errors: number;
   } | null>(null);
+  const [highlightedError, setHighlightedError] = useState<string | null>(null);
 
   const validRows = rows.filter((r) => r.errors.length === 0);
   const invalidRows = rows.filter((r) => r.errors.length > 0);
   const duplicateRows = invalidRows.filter((r) => r.isDuplicate);
+
+  const errorCounts = invalidRows.reduce<Map<string, number>>((acc, row) => {
+    for (const err of row.errors) {
+      acc.set(err, (acc.get(err) ?? 0) + 1);
+    }
+    return acc;
+  }, new Map());
+
+  const handleErrorSummaryClick = useCallback(
+    (errMsg: string) => {
+      if (highlightedError === errMsg) {
+        setHighlightedError(null);
+        return;
+      }
+      setHighlightedError(errMsg);
+      const firstAffected = invalidRows.find((r) => r.errors.includes(errMsg));
+      if (firstAffected == null) return;
+      const el = document.getElementById(`import-row-${firstAffected.index}`);
+      if (el) el.scrollIntoView({ behavior: "smooth", block: "center" });
+    },
+    [highlightedError, invalidRows],
+  );
 
   const originallyInvalidRows = rows.filter((r) => r.originallyInvalid);
   const correctedRows = originallyInvalidRows.filter((r) => r.errors.length === 0);
@@ -700,6 +723,7 @@ export default function ProductImport() {
                       오류 행만 내보내기
                     </Button>
                   )}
+
                   <Button
                     onClick={() => void runImport()}
                     disabled={!canImport}
@@ -716,6 +740,40 @@ export default function ProductImport() {
                   </Button>
                 </div>
               </div>
+
+              {invalidRows.length > 0 && errorCounts.size > 0 && (
+                <div className="rounded-md border border-destructive/30 bg-destructive/5 px-4 py-3">
+                  <p className="text-xs font-medium text-destructive mb-2">오류 유형별 요약 — 클릭하면 해당 행으로 이동</p>
+                  <div className="flex flex-wrap gap-2">
+                    {Array.from(errorCounts.entries()).map(([errMsg, count]) => {
+                      const isActive = highlightedError === errMsg;
+                      return (
+                        <button
+                          key={errMsg}
+                          type="button"
+                          onClick={() => handleErrorSummaryClick(errMsg)}
+                          className={cn(
+                            "inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-medium transition-colors",
+                            isActive
+                              ? "border-destructive bg-destructive text-white"
+                              : "border-destructive/40 bg-background text-destructive hover:bg-destructive/10",
+                          )}
+                        >
+                          {errMsg}
+                          <span
+                            className={cn(
+                              "inline-flex items-center justify-center rounded-full w-4 h-4 text-[10px] font-bold",
+                              isActive ? "bg-white/20 text-white" : "bg-destructive/10 text-destructive",
+                            )}
+                          >
+                            {count}
+                          </span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
 
               {duplicateRows.length > 0 && (
                 <div className="rounded-md border border-amber-300 bg-amber-50 px-4 py-3 space-y-2">
@@ -839,20 +897,25 @@ export default function ProductImport() {
                 <tbody>
                   {rows.map((row) => {
                     const hasValidationError = row.errors.length > 0;
+                    const isHighlighted =
+                      highlightedError !== null && row.errors.includes(highlightedError);
                     return (
                       <tr
                         key={row.index}
+                        id={`import-row-${row.index}`}
                         className={cn(
-                          "border-b border-border last:border-0",
-                          hasValidationError
-                            ? "bg-destructive/5"
-                            : row.status === "done"
-                              ? "bg-green-500/5"
-                              : row.status === "error"
-                                ? "bg-destructive/5"
-                                : row.status === "skipped"
-                                  ? "bg-amber-500/5"
-                                  : "",
+                          "border-b border-border last:border-0 transition-colors",
+                          isHighlighted
+                            ? "ring-2 ring-inset ring-destructive bg-destructive/10"
+                            : hasValidationError
+                              ? "bg-destructive/5"
+                              : row.status === "done"
+                                ? "bg-green-500/5"
+                                : row.status === "error"
+                                  ? "bg-destructive/5"
+                                  : row.status === "skipped"
+                                    ? "bg-amber-500/5"
+                                    : "",
                         )}
                       >
                         <td className="px-4 py-2.5 text-muted-foreground text-xs">
