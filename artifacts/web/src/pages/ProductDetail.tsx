@@ -1,4 +1,5 @@
 import { Link, useParams } from "wouter";
+import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import {
   ArrowLeft,
@@ -6,6 +7,8 @@ import {
   CheckCircle2,
   Loader2,
   Award,
+  Copy,
+  Check,
 } from "lucide-react";
 import { Layout, dostacImage } from "@/components/dostac/Layout";
 import { useT, useLang } from "@/components/dostac/i18n";
@@ -29,6 +32,17 @@ function ProductDetailContent() {
   const slug = params.slug ?? "";
   const { t } = useT();
   const { lang } = useLang();
+  const [copied, setCopied] = useState(false);
+  const copyTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => () => { if (copyTimerRef.current) clearTimeout(copyTimerRef.current); }, []);
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(window.location.href).then(() => {
+      setCopied(true);
+      copyTimerRef.current = setTimeout(() => setCopied(false), 2000);
+    }).catch(() => {});
+  };
 
   const { data: product, isLoading, isError } = useGetPublicProduct(slug, { lang });
   const { data: allProducts } = useListPublicProducts({ lang });
@@ -81,20 +95,36 @@ function ProductDetailContent() {
         </div>
         <div className="container relative z-10 mx-auto px-6 pb-16 pt-32 text-white">
           {/* Breadcrumb */}
-          <nav className="flex items-center gap-2 text-sm text-white/60 mb-8">
-            <Link
-              href="/products"
-              className="inline-flex items-center gap-1.5 hover:text-white transition"
+          <nav className="flex items-center justify-between gap-2 text-sm text-white/60 mb-8">
+            <div className="flex items-center gap-2">
+              <Link
+                href="/products"
+                className="inline-flex items-center gap-1.5 hover:text-white transition"
+              >
+                <ArrowLeft className="h-4 w-4" />
+                {t("products.backToProducts") as string}
+              </Link>
+              {product.category && (
+                <>
+                  <span className="text-white/30">/</span>
+                  <span className="text-white/60">{product.category}</span>
+                </>
+              )}
+            </div>
+            <button
+              onClick={handleCopy}
+              aria-label={copied ? (t("products.copied") as string) : (t("products.copyLink") as string)}
+              className="inline-flex items-center gap-1.5 rounded-full border border-white/25 bg-white/10 backdrop-blur px-3 py-1.5 text-xs font-semibold text-white/80 hover:bg-white/20 hover:text-white transition-all"
             >
-              <ArrowLeft className="h-4 w-4" />
-              {t("products.backToProducts") as string}
-            </Link>
-            {product.category && (
-              <>
-                <span className="text-white/30">/</span>
-                <span className="text-white/60">{product.category}</span>
-              </>
-            )}
+              {copied ? (
+                <Check className="h-3.5 w-3.5 text-emerald-400" />
+              ) : (
+                <Copy className="h-3.5 w-3.5" />
+              )}
+              <span aria-live="polite">
+                {copied ? (t("products.copied") as string) : (t("products.copyLink") as string)}
+              </span>
+            </button>
           </nav>
 
           {product.category && (
