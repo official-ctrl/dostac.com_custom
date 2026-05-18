@@ -221,6 +221,7 @@ export default function ProductImport() {
   const [rows, setRows] = useState<ParsedRow[]>([]);
   const [showExample, setShowExample] = useState(false);
   const [existingSlugs, setExistingSlugs] = useState<Set<string>>(new Set());
+  const [existingProductMap, setExistingProductMap] = useState<Map<string, number>>(new Map());
   const [isImporting, setIsImporting] = useState(false);
   const [importResult, setImportResult] = useState<{
     done: number;
@@ -269,10 +270,13 @@ export default function ProductImport() {
 
       // Fetch existing slugs first so we can mark duplicates during validation
       let slugSet = new Set<string>();
+      let productMap = new Map<string, number>();
       try {
         const existing = await adminListProducts();
-        slugSet = new Set(existing.map((p) => p.slug));
+        productMap = new Map(existing.map((p) => [p.slug, p.id]));
+        slugSet = new Set(productMap.keys());
         setExistingSlugs(slugSet);
+        setExistingProductMap(productMap);
       } catch {
         toast({
           title: "슬러그 중복 확인 실패",
@@ -280,6 +284,7 @@ export default function ProductImport() {
           variant: "destructive",
         });
         setExistingSlugs(new Set());
+        setExistingProductMap(new Map());
       }
 
       const parsed = rawRows.map((raw, i) => validateRow(raw, i, slugSet));
@@ -666,12 +671,39 @@ export default function ProductImport() {
               </div>
 
               {duplicateRows.length > 0 && (
-                <div className="flex items-start gap-2 rounded-md border border-destructive/20 bg-destructive/5 px-4 py-2.5">
-                  <AlertTriangle className="h-4 w-4 text-destructive shrink-0 mt-0.5" />
-                  <p className="text-xs text-destructive">
-                    <strong>{duplicateRows.length}개</strong> 행의 슬러그가 이미 데이터베이스에 존재합니다.
-                    슬러그를 다른 값으로 수정하거나 해당 행을 삭제한 뒤 가져오기를 진행해 주세요.
+                <div className="rounded-md border border-amber-300 bg-amber-50 px-4 py-3 space-y-2">
+                  <div className="flex items-start gap-2">
+                    <AlertTriangle className="h-4 w-4 text-amber-600 shrink-0 mt-0.5" />
+                    <p className="text-xs text-amber-800 font-medium">
+                      슬러그 중복 — 가져오기를 진행할 수 없습니다
+                    </p>
+                  </div>
+                  <p className="text-xs text-amber-700 pl-6">
+                    아래 {duplicateRows.length}개 슬러그가 이미 등록된 제품과 충돌합니다.
+                    일괄 가져오기는 기존 제품을 덮어쓰는 기능을 지원하지 않습니다.
+                    슬러그를 다른 값으로 변경하거나, 해당 행을 삭제한 뒤 진행하세요.
+                    기존 제품 내용을 수정하려면 각 제품의 편집 페이지를 이용하세요.
                   </p>
+                  <ul className="pl-6 space-y-1.5">
+                    {duplicateRows.map((row) => {
+                      const productId = existingProductMap.get(row.slug);
+                      return (
+                        <li key={row.slug} className="flex items-center gap-2 text-xs">
+                          <code className="bg-amber-100 text-amber-800 border border-amber-200 rounded px-1.5 py-0.5 text-[11px] font-mono">
+                            {row.slug}
+                          </code>
+                          {productId != null && (
+                            <Link
+                              href={`/products/${productId}`}
+                              className="text-amber-700 underline underline-offset-2 hover:text-amber-900 font-medium"
+                            >
+                              기존 제품 편집하기 →
+                            </Link>
+                          )}
+                        </li>
+                      );
+                    })}
+                  </ul>
                 </div>
               )}
             </div>
@@ -822,10 +854,20 @@ export default function ProductImport() {
                                 )}
                               />
                               {row.isDuplicate && (
-                                <span className="inline-flex items-center gap-1 text-[10px] rounded px-1.5 py-0.5 bg-amber-100 text-amber-800 font-medium">
-                                  <AlertTriangle className="h-3 w-3" />
-                                  중복 슬러그
-                                </span>
+                                <div className="flex items-center gap-1.5 flex-wrap">
+                                  <span className="inline-flex items-center gap-1 text-[10px] rounded px-1.5 py-0.5 bg-amber-100 text-amber-800 font-medium">
+                                    <AlertTriangle className="h-3 w-3" />
+                                    중복 슬러그
+                                  </span>
+                                  {existingProductMap.get(row.slug) != null && (
+                                    <Link
+                                      href={`/products/${existingProductMap.get(row.slug)}`}
+                                      className="text-[10px] text-amber-700 underline underline-offset-2 hover:text-amber-900 whitespace-nowrap"
+                                    >
+                                      편집하기 →
+                                    </Link>
+                                  )}
+                                </div>
                               )}
                             </div>
                           ) : (
