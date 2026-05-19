@@ -1,7 +1,8 @@
 import React, { createContext, useCallback, useContext, useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import {
-  useListPublicCategoryTranslations,
-  useListPublicSubCategoryTranslations,
+  getListPublicCategoryTranslationsQueryOptions,
+  getListPublicSubCategoryTranslationsQueryOptions,
 } from "@workspace/api-client-react";
 
 export type Lang = "ko" | "en" | "ja" | "zh" | "vi";
@@ -2398,9 +2399,14 @@ const LANG_TO_NAME_KEY: Record<Lang, "nameKo" | "nameEn" | "nameJa" | "nameZh" |
   vi: "nameVi",
 };
 
+const TRANSLATION_STALE_TIME = 10 * 60 * 1000;
+
 export function useCategoryLabel(): (key: string | null | undefined) => string {
   const { lang } = useLang();
-  const { data: apiRows } = useListPublicCategoryTranslations();
+  const { data: apiRows } = useQuery({
+    ...getListPublicCategoryTranslationsQueryOptions(),
+    staleTime: TRANSLATION_STALE_TIME,
+  });
   const nameKey = LANG_TO_NAME_KEY[lang];
   return useCallback(
     (key: string | null | undefined) => {
@@ -2420,7 +2426,10 @@ export function useCategoryLabel(): (key: string | null | undefined) => string {
 
 export function useSubCategoryLabel(): (key: string | null | undefined) => string {
   const { lang } = useLang();
-  const { data: apiRows } = useListPublicSubCategoryTranslations();
+  const { data: apiRows } = useQuery({
+    ...getListPublicSubCategoryTranslationsQueryOptions(),
+    staleTime: TRANSLATION_STALE_TIME,
+  });
   const nameKey = LANG_TO_NAME_KEY[lang];
   return useCallback(
     (key: string | null | undefined) => {
