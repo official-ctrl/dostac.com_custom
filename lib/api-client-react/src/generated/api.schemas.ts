@@ -576,6 +576,7 @@ export type GetPublicNoticeParams = {
 
 export type AdminListInquiriesParams = {
   status?: AdminListInquiriesStatus;
+  productSlug?: string;
 };
 
 export type AdminListInquiriesStatus =

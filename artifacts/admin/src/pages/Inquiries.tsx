@@ -1,10 +1,17 @@
 import { useMemo, useState } from "react";
 import { Link } from "wouter";
-import { useAdminListInquiries } from "@workspace/api-client-react";
+import { useAdminListInquiries, useAdminListProducts } from "@workspace/api-client-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Search, ArrowRight } from "lucide-react";
 
 const STATUSES = [
@@ -38,15 +45,24 @@ const INQUIRY_TYPE_LABEL: Record<string, string> = {
   other: "기타",
 };
 
+const ALL_PRODUCTS_VALUE = "__all__";
+
 export default function Inquiries() {
   const [status, setStatus] = useState<string>("all");
   const [inquiryType, setInquiryType] = useState<string>("all");
+  const [productSlug, setProductSlug] = useState<string>(ALL_PRODUCTS_VALUE);
   const [search, setSearch] = useState("");
-  const { data: inquiries, isLoading } = useAdminListInquiries(
-    status === "all"
-      ? undefined
-      : { status: status as "new" | "in_progress" | "completed" },
-  );
+
+  const { data: products } = useAdminListProducts();
+
+  const apiParams = useMemo(() => {
+    const p: { status?: "new" | "in_progress" | "completed"; productSlug?: string } = {};
+    if (status !== "all") p.status = status as "new" | "in_progress" | "completed";
+    if (productSlug !== ALL_PRODUCTS_VALUE) p.productSlug = productSlug;
+    return Object.keys(p).length > 0 ? p : undefined;
+  }, [status, productSlug]);
+
+  const { data: inquiries, isLoading } = useAdminListInquiries(apiParams);
 
   const filtered = useMemo(() => {
     if (!inquiries) return [];
@@ -105,18 +121,39 @@ export default function Inquiries() {
           </div>
         </div>
 
-        <div className="flex flex-wrap gap-1">
-          {INQUIRY_TYPES.map((t) => (
-            <Button
-              key={t.value}
-              variant={inquiryType === t.value ? "secondary" : "outline"}
-              size="sm"
-              onClick={() => setInquiryType(t.value)}
-              data-testid={`filter-type-${t.value}`}
-            >
-              {t.label}
-            </Button>
-          ))}
+        <div className="flex flex-wrap items-center gap-3">
+          <div className="flex flex-wrap gap-1">
+            {INQUIRY_TYPES.map((t) => (
+              <Button
+                key={t.value}
+                variant={inquiryType === t.value ? "secondary" : "outline"}
+                size="sm"
+                onClick={() => setInquiryType(t.value)}
+                data-testid={`filter-type-${t.value}`}
+              >
+                {t.label}
+              </Button>
+            ))}
+          </div>
+
+          {products && products.length > 0 && (
+            <Select value={productSlug} onValueChange={setProductSlug}>
+              <SelectTrigger
+                className="w-[220px] h-8 text-sm"
+                data-testid="filter-product-slug"
+              >
+                <SelectValue placeholder="제품별 필터" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value={ALL_PRODUCTS_VALUE}>전체 제품</SelectItem>
+                {products.map((p) => (
+                  <SelectItem key={p.slug} value={p.slug}>
+                    {p.translations.find((t) => t.lang === "ko")?.name || p.slug}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          )}
         </div>
 
         {isLoading ? (
@@ -160,6 +197,14 @@ export default function Inquiries() {
                       <td className="px-4 py-3 text-muted-foreground">{i.company || "—"}</td>
                       <td className="px-4 py-3 text-xs">
                         <div className="text-muted-foreground">{typeLabel}</div>
+                        {i.productSlug && (
+                          <div
+                            className="text-foreground/70 mt-0.5 max-w-[140px] truncate font-mono text-[11px]"
+                            title={i.productSlug}
+                          >
+                            {i.productSlug}
+                          </div>
+                        )}
                         {i.productInterest && (
                           <div
                             className="text-foreground/70 mt-0.5 max-w-[140px] truncate"

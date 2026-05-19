@@ -9,4 +9,5 @@ import type { AdminListInquiriesStatus } from "./adminListInquiriesStatus";
 
 export type AdminListInquiriesParams = {
   status?: AdminListInquiriesStatus;
+  productSlug?: string;
 };

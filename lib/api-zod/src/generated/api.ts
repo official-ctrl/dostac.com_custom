@@ -691,6 +691,7 @@ export const AdminDeleteNoticeResponse = zod.object({
 
 export const AdminListInquiriesQueryParams = zod.object({
   status: zod.enum(["new", "in_progress", "completed"]).optional(),
+  productSlug: zod.coerce.string().optional(),
 });
 
 export const AdminListInquiriesResponseItem = zod.object({

@@ -395,6 +395,11 @@ paths:
           schema:
             type: string
             enum: [new, in_progress, completed]
+        - name: productSlug
+          in: query
+          required: false
+          schema:
+            type: string
       responses:
         "200":
           description: OK

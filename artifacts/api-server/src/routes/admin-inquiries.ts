@@ -1,5 +1,5 @@
 import { Router, type IRouter } from "express";
-import { desc, eq, sql } from "drizzle-orm";
+import { and, desc, eq, sql } from "drizzle-orm";
 import { db, contactInquiriesTable } from "@workspace/db";
 import {
   AdminListInquiriesQueryParams,
@@ -67,9 +67,10 @@ router.get("/admin/inquiries", async (req, res): Promise<void> => {
     res.status(400).json({ error: q.error.message });
     return;
   }
-  const where = q.data.status
-    ? eq(contactInquiriesTable.status, q.data.status)
-    : undefined;
+  const conditions = [];
+  if (q.data.status) conditions.push(eq(contactInquiriesTable.status, q.data.status));
+  if (q.data.productSlug) conditions.push(eq(contactInquiriesTable.productSlug, q.data.productSlug));
+  const where = conditions.length > 0 ? and(...conditions) : undefined;
   const rows = await db
     .select()
     .from(contactInquiriesTable)
