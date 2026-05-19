@@ -19,6 +19,21 @@ import { requireAdmin } from "../middlewares/require-admin";
 
 const router: IRouter = Router();
 
+const SLUG_RE = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+
+function validateCategorySlugs(
+  category: string,
+  subCategory: string | null | undefined,
+): string | null {
+  if (!SLUG_RE.test(category)) {
+    return `category must be a lowercase slug (letters, digits, hyphens only, no spaces): got "${category}"`;
+  }
+  if (subCategory && !SLUG_RE.test(subCategory)) {
+    return `subCategory must be a lowercase slug (letters, digits, hyphens only, no spaces): got "${subCategory}"`;
+  }
+  return null;
+}
+
 type MissingTranslationInfo = { type: "category" | "subCategory"; slug: string };
 
 async function ensureCategoryTranslations(
@@ -135,6 +150,11 @@ router.post("/admin/products", async (req, res): Promise<void> => {
     res.status(400).json({ error: parsed.error.message });
     return;
   }
+  const slugError = validateCategorySlugs(parsed.data.category, parsed.data.subCategory);
+  if (slugError) {
+    res.status(400).json({ error: slugError });
+    return;
+  }
   const { translations, ...productData } = parsed.data;
   const [product] = await db
     .insert(productsTable)
@@ -176,6 +196,13 @@ router.put("/admin/products/upsert-by-slug", async (req, res): Promise<void> => 
   if (!parsed.success) {
     res.status(400).json({ error: parsed.error.message });
     return;
+  }
+  for (const item of parsed.data) {
+    const slugError = validateCategorySlugs(item.category, item.subCategory);
+    if (slugError) {
+      res.status(400).json({ error: `Row "${item.slug}": ${slugError}` });
+      return;
+    }
   }
 
   const results: Array<{ action: "created" | "updated"; product: unknown }> = [];
@@ -285,6 +312,11 @@ router.put("/admin/products/:id", async (req, res): Promise<void> => {
     res
       .status(400)
       .json({ error: params.success ? parsed.error!.message : params.error.message });
+    return;
+  }
+  const slugError = validateCategorySlugs(parsed.data.category, parsed.data.subCategory);
+  if (slugError) {
+    res.status(400).json({ error: slugError });
     return;
   }
   const id = params.data.id;

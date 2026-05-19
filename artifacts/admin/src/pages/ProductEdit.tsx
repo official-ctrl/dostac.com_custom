@@ -5,6 +5,8 @@ import {
   useAdminGetProduct,
   useAdminCreateProduct,
   useAdminUpdateProduct,
+  useAdminListCategoryTranslations,
+  useAdminListSubCategoryTranslations,
   getAdminListProductsQueryKey,
   getAdminGetProductQueryKey,
   type AdminProductInput,
@@ -52,8 +54,12 @@ const PRODUCT_FIELDS = [
   },
 ];
 
-const CATEGORY_SUGGESTIONS = ["skincare", "suncare", "haircare", "bodycare", "makeup", "wellness"];
 const CERT_SUGGESTIONS = ["ISO 22716", "CGMP", "CE", "FDA", "Halal", "Vegan", "EWG Green"];
+
+const SLUG_RE = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+function isValidSlug(v: string) {
+  return SLUG_RE.test(v);
+}
 
 function emptyTranslations(): Translation[] {
   return LANGS.map((lang) => ({
@@ -87,6 +93,11 @@ export default function ProductEdit() {
 
   const createMut = useAdminCreateProduct();
   const updateMut = useAdminUpdateProduct();
+
+  const { data: catTranslations } = useAdminListCategoryTranslations();
+  const { data: subCatTranslations } = useAdminListSubCategoryTranslations();
+  const categorySuggestions = catTranslations?.map((r) => r.slug) ?? [];
+  const subCategorySuggestions = subCatTranslations?.map((r) => r.slug) ?? [];
 
   const [form, setForm] = useState<AdminProductInput>({
     slug: "",
@@ -174,6 +185,22 @@ export default function ProductEdit() {
     e.preventDefault();
     if (!form.slug.trim()) {
       toast({ title: "슬러그 필수", description: "URL 슬러그를 입력하세요.", variant: "destructive" });
+      return;
+    }
+    if (!isValidSlug(form.category)) {
+      toast({
+        title: "카테고리 형식 오류",
+        description: "카테고리는 영문 소문자/숫자/하이픈만 사용하세요 (예: skincare, baby-care).",
+        variant: "destructive",
+      });
+      return;
+    }
+    if (form.subCategory && !isValidSlug(form.subCategory)) {
+      toast({
+        title: "서브카테고리 형식 오류",
+        description: "서브카테고리는 영문 소문자/숫자/하이픈만 사용하세요 (예: baby-wipes).",
+        variant: "destructive",
+      });
       return;
     }
     const ko = form.translations.find((t) => t.lang === "ko");
@@ -278,12 +305,19 @@ export default function ProductEdit() {
               list="category-suggestions"
               required
               data-testid="input-category"
+              className={form.category && !isValidSlug(form.category) ? "border-destructive focus-visible:ring-destructive" : ""}
             />
             <datalist id="category-suggestions">
-              {CATEGORY_SUGGESTIONS.map((c) => (
+              {categorySuggestions.map((c) => (
                 <option key={c} value={c} />
               ))}
             </datalist>
+            {form.category && !isValidSlug(form.category) && (
+              <p className="flex items-center gap-1 text-xs text-destructive" data-testid="error-category-slug">
+                <AlertTriangle className="h-3.5 w-3.5 shrink-0" />
+                영문 소문자/숫자/하이픈만 사용하세요 (예: skincare, baby-care)
+              </p>
+            )}
           </div>
           <div className="space-y-1.5">
             <Label htmlFor="subCategory">서브카테고리 (선택)</Label>
@@ -291,10 +325,24 @@ export default function ProductEdit() {
               id="subCategory"
               value={form.subCategory}
               onChange={(e) => update("subCategory", e.target.value)}
-              placeholder="예: Baby Wipes, Round Cotton Pad"
+              placeholder="예: baby-wipes, round-cotton-pad"
+              list="sub-category-suggestions"
               data-testid="input-sub-category"
+              className={form.subCategory && !isValidSlug(form.subCategory) ? "border-destructive focus-visible:ring-destructive" : ""}
             />
-            <p className="text-xs text-muted-foreground">카테고리 내 세분류 — 제품 필터링에 사용됩니다.</p>
+            <datalist id="sub-category-suggestions">
+              {subCategorySuggestions.map((c) => (
+                <option key={c} value={c} />
+              ))}
+            </datalist>
+            {form.subCategory && !isValidSlug(form.subCategory) ? (
+              <p className="flex items-center gap-1 text-xs text-destructive" data-testid="error-sub-category-slug">
+                <AlertTriangle className="h-3.5 w-3.5 shrink-0" />
+                영문 소문자/숫자/하이픈만 사용하세요 (예: baby-wipes, round-cotton-pad)
+              </p>
+            ) : (
+              <p className="text-xs text-muted-foreground">카테고리 내 세분류 — 영문 소문자/숫자/하이픈 슬러그. 제품 필터링에 사용됩니다.</p>
+            )}
           </div>
           <div className="space-y-1.5">
             <Label htmlFor="sortOrder">정렬 순서</Label>
