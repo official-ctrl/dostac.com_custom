@@ -305,7 +305,9 @@ export default function ProductImport() {
   } | null>(null);
   const [highlightedError, setHighlightedError] = useState<string | null>(null);
   const [removedRows, setRemovedRows] = useState<ParsedRow[]>([]);
-  const [allowOverwrite, setAllowOverwrite] = useState(false);
+  const [allowOverwrite, setAllowOverwrite] = useState(
+    () => localStorage.getItem("dostac_import_allow_overwrite") === "true",
+  );
   const [pendingConfirm, setPendingConfirm] = useState(false);
   const [correctedDownloaded, setCorrectedDownloaded] = useState(false);
   const [expandedDiffRows, setExpandedDiffRows] = useState<Set<number>>(new Set());
@@ -328,6 +330,7 @@ export default function ProductImport() {
 
   const handleAllowOverwriteChange = useCallback(
     (checked: boolean) => {
+      localStorage.setItem("dostac_import_allow_overwrite", String(checked));
       setAllowOverwrite(checked);
       setPendingConfirm(false);
       if (rows.length === 0) return;
