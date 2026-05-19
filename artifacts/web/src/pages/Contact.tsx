@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { MapPin, Phone, Mail, Clock, Send, ShieldCheck, CheckCircle2, Package } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -315,11 +315,17 @@ function ContactContent() {
                   </div>
                 )}
 
-                {success && (
-                  <div
+                <AnimatePresence mode="wait" initial={false}>
+                {success ? (
+                  <motion.div
+                    key="contact-success"
                     ref={successRef}
                     role="status"
                     data-testid="contact-success"
+                    initial={{ opacity: 0, y: -8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -8 }}
+                    transition={{ duration: 0.2, ease: "easeOut" }}
                   >
                     <div className="mb-6 flex flex-col items-center text-center py-10 gap-4">
                       <div className="w-14 h-14 rounded-full bg-accent/10 flex items-center justify-center">
@@ -340,10 +346,15 @@ function ContactContent() {
                         {t("contact.anotherInquiry") as string}
                       </Button>
                     </div>
-                  </div>
-                )}
-
-                {!success && (
+                  </motion.div>
+                ) : (
+                  <motion.div
+                    key="contact-form"
+                    initial={{ opacity: 0, y: -8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -8 }}
+                    transition={{ duration: 0.2, ease: "easeOut" }}
+                  >
                   <form className="flex flex-col gap-4" onSubmit={onSubmit} noValidate>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div className="flex flex-col gap-1.5">
@@ -554,7 +565,9 @@ function ContactContent() {
                       </div>
                     </div>
                   </form>
+                  </motion.div>
                 )}
+                </AnimatePresence>
               </div>
             </motion.div>
 

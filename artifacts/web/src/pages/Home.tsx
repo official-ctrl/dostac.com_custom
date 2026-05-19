@@ -1026,8 +1026,16 @@ function ContactRFQSection() {
             variants={fadeUp}
           >
             <div className="bg-white rounded-2xl border border-slate-200 p-7 shadow-sm">
+              <AnimatePresence mode="wait" initial={false}>
               {success ? (
-                <div className="flex flex-col items-center text-center py-10 gap-4">
+                <motion.div
+                  key="rfq-success"
+                  initial={{ opacity: 0, y: -8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -8 }}
+                  transition={{ duration: 0.2, ease: "easeOut" }}
+                  className="flex flex-col items-center text-center py-10 gap-4"
+                >
                   <div className="w-14 h-14 rounded-full bg-accent/10 flex items-center justify-center">
                     <CheckCircle2 className="h-7 w-7 text-accent" />
                   </div>
@@ -1045,8 +1053,15 @@ function ContactRFQSection() {
                   >
                     {t("homeNew.rfqSuccessReset") as string}
                   </Button>
-                </div>
+                </motion.div>
               ) : (
+                <motion.div
+                  key="rfq-form"
+                  initial={{ opacity: 0, y: -8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -8 }}
+                  transition={{ duration: 0.2, ease: "easeOut" }}
+                >
                 <form onSubmit={onSubmit} className="flex flex-col gap-4">
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="flex flex-col gap-1.5">
@@ -1205,7 +1220,9 @@ function ContactRFQSection() {
                     )}
                   </Button>
                 </form>
+                </motion.div>
               )}
+              </AnimatePresence>
             </div>
           </motion.div>
         </div>
