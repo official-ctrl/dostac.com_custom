@@ -9,9 +9,101 @@ import {
   bannersTable,
   aboutContentTable,
   processContentTable,
+  categoryTranslationsTable,
 } from "@workspace/db";
 import { hashPassword } from "./lib/auth";
 import { logger } from "./lib/logger";
+
+const CATEGORY_TRANSLATIONS = [
+  {
+    slug: "body",
+    nameKo: "바디",
+    nameEn: "Body",
+    nameJa: "ボディ",
+    nameZh: "身体护理",
+    nameVi: "Chăm sóc cơ thể",
+  },
+  {
+    slug: "cleanser",
+    nameKo: "클렌저",
+    nameEn: "Cleanser",
+    nameJa: "クレンザー",
+    nameZh: "洁肤",
+    nameVi: "Tẩy trang",
+  },
+  {
+    slug: "mask",
+    nameKo: "마스크",
+    nameEn: "Mask",
+    nameJa: "マスク",
+    nameZh: "面膜",
+    nameVi: "Mặt nạ",
+  },
+  {
+    slug: "skincare",
+    nameKo: "스킨케어",
+    nameEn: "Skin Care",
+    nameJa: "スキンケア",
+    nameZh: "护肤",
+    nameVi: "Chăm sóc da",
+  },
+  {
+    slug: "specialty",
+    nameKo: "전문 케어",
+    nameEn: "Specialty",
+    nameJa: "スペシャルケア",
+    nameZh: "特殊护理",
+    nameVi: "Chuyên biệt",
+  },
+  {
+    slug: "wipes",
+    nameKo: "물티슈",
+    nameEn: "Wipes",
+    nameJa: "ウェットティッシュ",
+    nameZh: "湿巾",
+    nameVi: "Khăn ướt",
+  },
+  {
+    slug: "suncare",
+    nameKo: "선케어",
+    nameEn: "Sun Care",
+    nameJa: "サンケア",
+    nameZh: "防晒护理",
+    nameVi: "Chăm sóc da nắng",
+  },
+  {
+    slug: "haircare",
+    nameKo: "헤어케어",
+    nameEn: "Hair Care",
+    nameJa: "ヘアケア",
+    nameZh: "护发",
+    nameVi: "Chăm sóc tóc",
+  },
+  {
+    slug: "bodycare",
+    nameKo: "바디케어",
+    nameEn: "Body Care",
+    nameJa: "ボディケア",
+    nameZh: "身体护理",
+    nameVi: "Chăm sóc cơ thể",
+  },
+  {
+    slug: "makeup",
+    nameKo: "메이크업",
+    nameEn: "Makeup",
+    nameJa: "メイクアップ",
+    nameZh: "彩妆",
+    nameVi: "Trang điểm",
+  },
+  {
+    slug: "wellness",
+    nameKo: "웰니스",
+    nameEn: "Wellness",
+    nameJa: "ウェルネス",
+    nameZh: "健康护理",
+    nameVi: "Sức khỏe",
+  },
+];
 
 interface BannerSeed {
   imageUrl: string;
@@ -916,6 +1008,15 @@ async function seed(): Promise<void> {
   } else {
     logger.info("Process content already exists, skipping seed");
   }
+
+  // Seed category translations (skip rows that already exist so admin edits are preserved)
+  for (const row of CATEGORY_TRANSLATIONS) {
+    await db
+      .insert(categoryTranslationsTable)
+      .values(row)
+      .onConflictDoNothing();
+  }
+  logger.info("Category translations seeded");
 
   logger.info("Seed complete");
 }
