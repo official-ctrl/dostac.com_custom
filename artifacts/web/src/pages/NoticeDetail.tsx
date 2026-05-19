@@ -12,10 +12,11 @@ import {
 } from "lucide-react";
 import { useState, useEffect, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import { Layout, dostacImage } from "@/components/dostac/Layout";
 import { useT, useLang } from "@/components/dostac/i18n";
 import {
-  useGetPublicNotice,
+  getGetPublicNoticeQueryOptions,
   useListPublicNotices,
 } from "@workspace/api-client-react";
 
@@ -104,21 +105,66 @@ function NoticeDetailContent() {
     data: article,
     isLoading,
     isError,
-  } = useGetPublicNotice(slug, { lang });
+    isPlaceholderData,
+  } = useQuery({
+    ...getGetPublicNoticeQueryOptions(slug, { lang }),
+    placeholderData: keepPreviousData,
+  });
+  // ── Language-switch cross-fade ───────────────────────────────────────────
+  const [isFadedOut, setIsFadedOut] = useState(false);
+  const isFadedOutRef = useRef(false);
+  const isPlaceholderDataRef = useRef(isPlaceholderData);
+  isPlaceholderDataRef.current = isPlaceholderData;
+
+  const [displayedArticle, setDisplayedArticle] = useState(article);
+  const latestArticleRef = useRef(article);
+
   const { data: allNotices } = useListPublicNotices({
     lang,
-    category: article?.category,
+    category: displayedArticle?.category,
   });
 
   const related = (allNotices ?? [])
     .filter((n) => n.slug !== slug)
     .slice(0, 3);
 
+  useEffect(() => {
+    if (isPlaceholderData) return;
+    latestArticleRef.current = article;
+    if (!isFadedOutRef.current) {
+      setDisplayedArticle(article);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [article, isPlaceholderData]);
+
+  const prevLangRef = useRef(lang);
+  useEffect(() => {
+    if (prevLangRef.current === lang) return;
+    prevLangRef.current = lang;
+    isFadedOutRef.current = true;
+    setIsFadedOut(true);
+  }, [lang]);
+
+  useEffect(() => {
+    if (!isFadedOut || isPlaceholderData) return;
+    setDisplayedArticle(latestArticleRef.current);
+    isFadedOutRef.current = false;
+    setIsFadedOut(false);
+  }, [isFadedOut, isPlaceholderData]);
+
+  const handleFadeComplete = useCallback(() => {
+    if (!isFadedOutRef.current) return;
+    if (isPlaceholderDataRef.current) return;
+    setDisplayedArticle(latestArticleRef.current);
+    isFadedOutRef.current = false;
+    setIsFadedOut(false);
+  }, []);
+
   const handleShare = async () => {
     const url = window.location.href;
     if (navigator.share) {
       try {
-        await navigator.share({ title: article?.title ?? "", url });
+        await navigator.share({ title: displayedArticle?.title ?? "", url });
       } catch {
         // user dismissed or share failed — do nothing
       }
@@ -129,7 +175,7 @@ function NoticeDetailContent() {
     }
   };
 
-  if (isLoading) {
+  if (isLoading && !displayedArticle) {
     return (
       <div className="min-h-[60vh] flex items-center justify-center">
         <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
@@ -137,7 +183,7 @@ function NoticeDetailContent() {
     );
   }
 
-  if (isError || !article) {
+  if (isError || !displayedArticle) {
     return (
       <div className="min-h-[60vh] flex flex-col items-center justify-center gap-6 text-center px-6">
         <h1 className="font-display text-3xl font-bold text-primary">
@@ -159,12 +205,18 @@ function NoticeDetailContent() {
 
   return (
     <>
+      {/* HERO + ARTICLE BODY (cross-fades on language change) */}
+      <motion.div
+        animate={{ opacity: isFadedOut ? 0 : 1 }}
+        transition={{ duration: 0.2, ease: "easeInOut" }}
+        onAnimationComplete={handleFadeComplete}
+      >
       {/* HERO */}
       <section className="relative w-full min-h-[520px] flex flex-col justify-end">
         <div className="absolute inset-0 z-0">
           <img
-            src={article.thumbnailUrl ?? dostacImage("hero-home.webp")}
-            alt={article.title}
+            src={displayedArticle.thumbnailUrl ?? dostacImage("hero-home.webp")}
+            alt={displayedArticle.title}
             fetchPriority="high"
             loading="eager"
             className="w-full h-full object-cover object-center"
@@ -181,24 +233,24 @@ function NoticeDetailContent() {
           </Link>
           <div className="flex items-center gap-3 mb-5">
             <span
-              className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold ${categoryColor(article.category)}`}
+              className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold ${categoryColor(displayedArticle.category)}`}
             >
               <Tag className="h-3 w-3" />
-              {article.category}
+              {displayedArticle.category}
             </span>
             <span className="inline-flex items-center gap-1.5 text-sm text-white/70">
               <Calendar className="h-4 w-4" />
-              {formatDate(article.publishedAt, lang)}
+              {formatDate(displayedArticle.publishedAt, lang)}
             </span>
-            {article.region && (
+            {displayedArticle.region && (
               <span className="inline-flex items-center gap-1.5 text-sm text-white/70">
                 <Globe2 className="h-4 w-4" />
-                {article.region}
+                {displayedArticle.region}
               </span>
             )}
           </div>
           <h1 className="font-display text-3xl md:text-4xl lg:text-5xl font-bold leading-tight max-w-4xl">
-            {article.title}
+            {displayedArticle.title}
           </h1>
         </div>
       </section>
@@ -208,16 +260,16 @@ function NoticeDetailContent() {
         <div className="container mx-auto px-6">
           <div className="max-w-3xl mx-auto">
             {/* Excerpt */}
-            {article.excerpt && (
+            {displayedArticle.excerpt && (
               <p className="text-xl text-muted-foreground leading-relaxed mb-10 pb-10 border-b border-slate-200">
-                {article.excerpt}
+                {displayedArticle.excerpt}
               </p>
             )}
 
             {/* Body */}
             <div
               className="rich-html text-base text-slate-700 leading-relaxed"
-              dangerouslySetInnerHTML={{ __html: article.body }}
+              dangerouslySetInnerHTML={{ __html: displayedArticle.body }}
             />
 
             {/* Actions */}
@@ -343,6 +395,7 @@ function NoticeDetailContent() {
           </Link>
         </div>
       </section>
+      </motion.div>
     </>
   );
 }
