@@ -1058,7 +1058,7 @@ export default function ProductImport() {
                       오류 행 전체 삭제
                     </Button>
                   </div>
-                  <div className="flex flex-wrap gap-2">
+                  <div className="flex flex-wrap items-center gap-2">
                     {Array.from(errorCounts.entries()).map(([errMsg, count]) => {
                       const isActive = highlightedError === errMsg;
                       return (
@@ -1085,6 +1085,16 @@ export default function ProductImport() {
                         </button>
                       );
                     })}
+                    {highlightedError !== null && (
+                      <button
+                        type="button"
+                        onClick={() => setHighlightedError(null)}
+                        className="inline-flex items-center gap-1 rounded-full border border-muted-foreground/30 bg-background px-2.5 py-1 text-xs font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                      >
+                        <span aria-hidden="true">×</span>
+                        해제
+                      </button>
+                    )}
                   </div>
                 </div>
               )}
