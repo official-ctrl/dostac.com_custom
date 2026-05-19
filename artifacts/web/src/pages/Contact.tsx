@@ -128,6 +128,14 @@ function ContactContent() {
         scrollAndHighlight(el);
         if (hasContactHash) {
           history.replaceState(null, "", window.location.pathname + window.location.search);
+        } else if (source === "about" || source === "production") {
+          params.delete("source");
+          const remaining = params.toString();
+          history.replaceState(
+            null,
+            "",
+            window.location.pathname + (remaining ? "?" + remaining : ""),
+          );
         }
       }
     }
