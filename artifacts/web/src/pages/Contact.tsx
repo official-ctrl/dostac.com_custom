@@ -128,14 +128,6 @@ function ContactContent() {
         scrollAndHighlight(el);
         if (hasContactHash) {
           history.replaceState(null, "", window.location.pathname + window.location.search);
-        } else if (source === "about" || source === "production") {
-          params.delete("source");
-          const remaining = params.toString();
-          history.replaceState(
-            null,
-            "",
-            window.location.pathname + (remaining ? "?" + remaining : ""),
-          );
         }
       }
     }
@@ -208,7 +200,6 @@ function ContactContent() {
     if (!el) return;
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     el.scrollIntoView({ behavior: reducedMotion ? "auto" : "smooth", block: "center" });
-    el.classList.add("field-error");
     if (reducedMotion) return;
     el.classList.remove("field-shake");
     void el.offsetWidth;
@@ -375,10 +366,7 @@ function ContactContent() {
                           required
                           placeholder={t("contact.namePh") as string}
                           value={form.name}
-                          onChange={(e) => {
-                            document.getElementById("name")?.classList.remove("field-error");
-                            setForm({ ...form, name: e.target.value });
-                          }}
+                          onChange={(e) => setForm({ ...form, name: e.target.value })}
                           className="h-10 text-sm"
                           data-testid="input-name"
                         />
@@ -393,10 +381,7 @@ function ContactContent() {
                           required
                           placeholder={t("contact.emailPh") as string}
                           value={form.email}
-                          onChange={(e) => {
-                            document.getElementById("email")?.classList.remove("field-error");
-                            setForm({ ...form, email: e.target.value });
-                          }}
+                          onChange={(e) => setForm({ ...form, email: e.target.value })}
                           className="h-10 text-sm"
                           data-testid="input-email"
                         />
@@ -547,10 +532,7 @@ function ContactContent() {
                         placeholder={t("contact.descPh") as string}
                         className="min-h-[140px] text-sm resize-none"
                         value={form.message}
-                        onChange={(e) => {
-                          document.getElementById("desc")?.classList.remove("field-error");
-                          setForm({ ...form, message: e.target.value });
-                        }}
+                        onChange={(e) => setForm({ ...form, message: e.target.value })}
                         data-testid="textarea-message"
                       />
                     </div>
