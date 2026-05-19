@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Link } from "wouter";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -130,6 +130,8 @@ function HeroSection() {
         <HeroTextOverlay
           title={t("homeNew.heroFallbackTitle") as string}
           description={t("homeNew.heroFallbackDesc") as string}
+          lang={lang}
+          slideKey="fallback"
         />
       </section>
     );
@@ -187,6 +189,8 @@ function HeroSection() {
             <HeroTextOverlay
               title={text.title || (t("homeNew.heroFallbackTitle") as string)}
               description={text.description || (t("homeNew.heroFallbackDesc") as string)}
+              lang={lang}
+              slideKey={b.id}
               isActive={isActive}
             />
           </div>
@@ -236,20 +240,70 @@ function HeroSection() {
 function HeroTextOverlay({
   title,
   description,
+  lang,
+  slideKey,
   isActive = true,
 }: {
   title: string;
   description: string;
+  lang: Lang;
+  slideKey: string | number;
   isActive?: boolean;
 }) {
   const { t } = useT();
+
+  // ── Language-switch cross-fade ────────────────────────────────────────────
+  // isFadedOut drives opacity 1→0→1 on the title+description wrapper.
+  // displayedTitle/Desc are frozen snapshots; they only update after the
+  // fade-out animation completes so old-language text is visible during exit
+  // and new-language text appears on the fade-in.
+  // Because banner translations are bundled in a single query response (no
+  // per-language re-fetch), new data is always instantly available — we swap
+  // in handleFadeComplete rather than waiting for isPlaceholderData to clear.
+  const [isFadedOut, setIsFadedOut] = useState(false);
+  const isFadedOutRef = useRef(false);
+  const [displayedTitle, setDisplayedTitle] = useState(title);
+  const [displayedDesc, setDisplayedDesc] = useState(description);
+  const latestTitleRef = useRef(title);
+  const latestDescRef = useRef(description);
+
+  // Keep latest refs current so handleFadeComplete always reads fresh text.
+  // Also push to displayed state immediately when not mid-fade (covers
+  // same-language data refreshes where no fade-out cycle is triggered).
+  useEffect(() => {
+    latestTitleRef.current = title;
+    latestDescRef.current = description;
+    if (!isFadedOutRef.current) {
+      setDisplayedTitle(title);
+      setDisplayedDesc(description);
+    }
+  }, [title, description]);
+
+  // Trigger fade-out on lang change.
+  const prevLangRef = useRef(lang);
+  useEffect(() => {
+    if (prevLangRef.current === lang) return;
+    prevLangRef.current = lang;
+    isFadedOutRef.current = true;
+    setIsFadedOut(true);
+  }, [lang]);
+
+  // When fade-out animation completes, swap the displayed text and fade back in.
+  const handleFadeComplete = useCallback(() => {
+    if (!isFadedOutRef.current) return;
+    setDisplayedTitle(latestTitleRef.current);
+    setDisplayedDesc(latestDescRef.current);
+    isFadedOutRef.current = false;
+    setIsFadedOut(false);
+  }, []);
+
   return (
     <div className="relative z-10 flex items-center min-h-[92vh] [min-height:92svh] w-full pointer-events-none">
       <div className="container mx-auto px-6 py-24 max-w-5xl">
         <AnimatePresence mode="sync">
           {isActive && (
             <motion.div
-              key={title}
+              key={slideKey}
               initial="hidden"
               animate="show"
               exit="hidden"
@@ -264,21 +318,26 @@ function HeroTextOverlay({
                 {t("homeNew.heroEyebrow") as string}
               </motion.p>
 
-              {/* 2. Headline */}
-              <motion.h1
-                variants={fadeUp}
-                className="font-display text-4xl md:text-6xl lg:text-7xl font-bold text-white leading-[1.08] mb-6"
+              {/* 2. Headline + 3. Subheadline: fade out/in on language switch */}
+              <motion.div
+                animate={{ opacity: isFadedOut ? 0 : 1 }}
+                transition={{ duration: 0.3, ease: [0.4, 0, 0.6, 1] }}
+                onAnimationComplete={handleFadeComplete}
               >
-                {title}
-              </motion.h1>
+                <motion.h1
+                  variants={fadeUp}
+                  className="font-display text-4xl md:text-6xl lg:text-7xl font-bold text-white leading-[1.08] mb-6"
+                >
+                  {displayedTitle}
+                </motion.h1>
 
-              {/* 3. Subheadline */}
-              <motion.p
-                variants={fadeUp}
-                className="text-lg md:text-xl text-white/75 leading-relaxed mb-10 max-w-2xl"
-              >
-                {description}
-              </motion.p>
+                <motion.p
+                  variants={fadeUp}
+                  className="text-lg md:text-xl text-white/75 leading-relaxed mb-10 max-w-2xl"
+                >
+                  {displayedDesc}
+                </motion.p>
+              </motion.div>
 
               {/* 4. CTA Buttons */}
               <motion.div variants={fadeUp} className="flex flex-wrap gap-4">
