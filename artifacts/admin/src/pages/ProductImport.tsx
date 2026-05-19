@@ -32,6 +32,7 @@ import {
   SkipForward,
   ChevronDown,
   Trash2,
+  RefreshCw,
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { LANGS } from "@/lib/langs";
@@ -834,6 +835,174 @@ export default function ProductImport() {
     });
   };
 
+  const handleRetryErrors = useCallback(async () => {
+    const errorRows = rows.filter((r) => r.status === "error");
+    if (errorRows.length === 0 || isImporting) return;
+
+    const alreadyDone = rows.filter((r) => r.status === "done").length;
+    const alreadySkipped = rows.filter((r) => r.status === "skipped").length;
+
+    setRows((prev) =>
+      prev.map((r) =>
+        r.status === "error" ? { ...r, status: "pending" as RowStatus, errorMsg: undefined } : r,
+      ),
+    );
+    setIsImporting(true);
+    setImportResult(null);
+
+    let freshProductMap = existingProductMap;
+    try {
+      const freshProducts = await adminListProducts();
+      freshProductMap = new Map(freshProducts.map((p) => [p.slug, p]));
+      setExistingSlugs(new Set(freshProductMap.keys()));
+      setExistingProductMap(freshProductMap);
+    } catch {
+      // Non-fatal: proceed with cached map
+    }
+
+    const productMapForLoop = freshProductMap;
+    let localDone = 0;
+    let localErrors = 0;
+
+    for (const row of errorRows) {
+      updateRowStatus(row.index, { status: "translating" });
+
+      let translations = emptyTranslations();
+      const koIdx = translations.findIndex((t) => t.lang === "ko");
+      if (koIdx >= 0) {
+        translations[koIdx] = {
+          ...translations[koIdx]!,
+          name: row.name_ko,
+          features: row.features_ko,
+          material: row.material,
+        };
+      }
+
+      let translateFailed = false;
+      try {
+        const fieldsToTranslate: Array<{
+          key: keyof Translation;
+          text: string;
+          context: string;
+          format: "text";
+        }> = [];
+
+        if (row.name_ko.trim()) {
+          fieldsToTranslate.push({
+            key: "name",
+            text: row.name_ko,
+            context: "cosmetic product name",
+            format: "text",
+          });
+        }
+        if (row.features_ko.trim()) {
+          fieldsToTranslate.push({
+            key: "features",
+            text: row.features_ko,
+            context:
+              "Newline-separated list of short B2B product feature bullets. Output MUST be plain text with one feature per line (\\n separated). Do NOT add numbering, hyphens, bullets (•/-), or extra blank lines. Preserve the same number of lines as the input.",
+            format: "text",
+          });
+        }
+        if (row.material.trim()) {
+          fieldsToTranslate.push({
+            key: "material",
+            text: row.material,
+            context: "product material description for cosmetic/personal care OEM product",
+            format: "text",
+          });
+        }
+
+        for (const field of fieldsToTranslate) {
+          const result = await translateMut.mutateAsync({
+            data: {
+              sourceText: field.text,
+              sourceLang: "ko",
+              targetLangs: TARGET_LANGS,
+              context: field.context,
+              format: field.format,
+            },
+          });
+          translations = translations.map((t) => {
+            if (t.lang === "ko") return t;
+            const tr = result.translations.find((x) => x.lang === t.lang);
+            if (!tr) return t;
+            return { ...t, [field.key]: tr.text };
+          });
+        }
+      } catch {
+        translateFailed = true;
+        updateRowStatus(row.index, {
+          status: "error",
+          errorMsg: "번역 실패 — 한국어로만 저장 시도",
+        });
+      }
+
+      updateRowStatus(row.index, { status: "creating" });
+
+      try {
+        const payload: AdminProductInput = {
+          slug: row.slug,
+          category: row.category,
+          subCategory: row.subCategory,
+          sortOrder: 100,
+          imageUrl: null,
+          published: true,
+          certs: row.certs,
+          translations,
+        };
+
+        let diffSummary: string[] | undefined;
+        if (row.isOverwrite) {
+          const existingProduct = productMapForLoop.get(row.slug);
+          if (existingProduct == null) throw new Error("기존 제품을 찾을 수 없습니다");
+          diffSummary = computeDiff(row, existingProduct);
+          await upsertMut.mutateAsync({ data: [payload] });
+        } else {
+          await createMut.mutateAsync({ data: payload });
+        }
+
+        updateRowStatus(row.index, {
+          status: "done",
+          errorMsg: translateFailed ? "번역 실패 (한국어만 저장됨)" : undefined,
+          diffSummary,
+        });
+        localDone++;
+      } catch (err) {
+        updateRowStatus(row.index, {
+          status: "error",
+          errorMsg: err instanceof Error ? err.message : "저장 실패",
+        });
+        localErrors++;
+      }
+    }
+
+    await qc.invalidateQueries({ queryKey: getAdminListProductsQueryKey() });
+    setIsImporting(false);
+    setImportResult({
+      done: alreadyDone + localDone,
+      skipped: alreadySkipped,
+      errors: localErrors,
+    });
+
+    const parts: string[] = [];
+    if (localDone > 0) parts.push(`${localDone}개 재시도 성공`);
+    if (localErrors > 0) parts.push(`${localErrors}개 여전히 오류`);
+    toast({
+      title: "재시도 완료",
+      description: parts.join(", "),
+    });
+  }, [
+    rows,
+    isImporting,
+    existingProductMap,
+    translateMut,
+    createMut,
+    upsertMut,
+    qc,
+    toast,
+  ]);
+
   const handleImportClick = () => {
     if (!canImport) return;
     if (overwriteRows.length > 0 && !pendingConfirm) {
@@ -1345,7 +1514,22 @@ export default function ProductImport() {
               </span>
             </div>
             {importResult !== null && (
-              <p className="text-sm text-green-600 font-medium">가져오기 완료!</p>
+              <div className="flex items-center justify-between gap-3">
+                <p className="text-sm text-green-600 font-medium">가져오기 완료!</p>
+                {importResult.errors > 0 && (
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="outline"
+                    className="gap-2 border-destructive/40 text-destructive hover:bg-destructive/5 hover:text-destructive"
+                    onClick={() => void handleRetryErrors()}
+                    disabled={isImporting}
+                  >
+                    <RefreshCw className="h-4 w-4" />
+                    오류 행만 재시도
+                  </Button>
+                )}
+              </div>
             )}
           </CardContent>
         </Card>
