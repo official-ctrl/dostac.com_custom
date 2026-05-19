@@ -548,7 +548,7 @@ function AboutContent() {
       <SectionNav
         items={SECTIONS.map((s) => ({ id: s.id, label: t(`about.sections.${s.id}`) as string }))}
         activeId={active}
-        ariaLabel="About sections"
+        ariaLabel={t("about.sectionNavLabel") as string}
         testIdPrefix="about-tab-"
       />
 
@@ -721,7 +721,7 @@ function AboutContent() {
                   style={{ border: 0 }}
                   loading="lazy"
                   referrerPolicy="no-referrer-when-downgrade"
-                  title="map"
+                  title={t("about.mapTitle") as string}
                   data-testid="about-map"
                   className="w-full h-full"
                 />

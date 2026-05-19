@@ -198,6 +198,7 @@ const ko: Dict = {
     ctaHeading: "함께 글로벌 뷰티를 만들어가겠습니다",
     ctaSub: "OEM, ODM, 프라이빗 라벨 등 어떤 형태의 협업도 환영합니다. 지금 문의하시면 전문가가 빠르게 답변드립니다.",
     ctaButton: "지금 문의하기",
+    sectionNavLabel: "회사 소개 섹션", mapTitle: "지도",
   },
   production: {
     heroTitle: "공정 — OEM/ODM부터 글로벌 인증까지",
@@ -252,6 +253,7 @@ const ko: Dict = {
     certIntroStatic: "Dostac은 글로벌 시장을 위한 국제 품질 기준과 수출 규정 준수 요건을 지원하는 한국 제조 파트너들과 협력합니다.\n\n당사는 국제 뷰티 유통에서 인증, 문서화, 규제 지원의 중요성을 잘 이해하고 있습니다.",
     ctaSub: "특정 규제 문서나 인증 가이드가 필요하신가요? 당사의 컴플라이언스 팀이 도와드릴 준비가 되어 있습니다.",
     ctaEyebrow: "파트너십 시작하기",
+    oemImageAlt: "한국 화장품 제조 현장", sectionNavLabel: "생산 섹션",
   },
   products: {
     heroLabel: "제품",
@@ -651,6 +653,7 @@ const en: Dict = {
     ctaHeading: "Ready to build something great together?",
     ctaSub: "Whether you're looking for OEM, ODM, private label, or export solutions — our team is ready to guide you from concept to delivery.",
     ctaButton: "Get in Touch",
+    sectionNavLabel: "About sections", mapTitle: "Map",
   },
   production: {
     heroTitle: "Process — From OEM/ODM to Global Certifications",
@@ -705,6 +708,7 @@ const en: Dict = {
     certIntroStatic: "Dostac works with Korean manufacturing partners that support international quality standards and export compliance requirements for global markets.\n\nWe understand the importance of certifications, documentation, and regulatory support in international beauty distribution.",
     ctaSub: "Need specific regulatory documents or certification guidance? Our compliance team is ready to help.",
     ctaEyebrow: "START A PARTNERSHIP",
+    oemImageAlt: "Korean cosmetics manufacturing facility", sectionNavLabel: "Production sections",
   },
   products: {
     heroLabel: "PRODUCTS",
@@ -1104,6 +1108,7 @@ const ja: Dict = {
     ctaHeading: "一緒に素晴らしいビジネスを築きませんか？",
     ctaSub: "OEM、ODM、プライベートラベル、輸出ソリューションなど、どのような形の協業もお気軽にご相談ください。専門スタッフが迅速にご対応します。",
     ctaButton: "お問い合わせ",
+    sectionNavLabel: "会社概要セクション", mapTitle: "地図",
   },
   production: {
     heroTitle: "工程 — OEM/ODMからグローバル認証まで",
@@ -1158,6 +1163,7 @@ const ja: Dict = {
     certIntroStatic: "Dostacは、グローバル市場向けに国際的な品質基準と輸出コンプライアンス要件に対応する韓国の製造パートナーと連携しています。\n\n国際的なビューティー流通において、認証、書類、規制サポートが重要であることを理解しています。",
     ctaSub: "特定の規制関連書類や認証ガイダンスが必要ですか？ 当社のコンプライアンスチームが対応いたします。",
     ctaEyebrow: "パートナーシップを始めましょう",
+    oemImageAlt: "韓国化粧品製造施設", sectionNavLabel: "生産セクション",
   },
   products: {
     heroLabel: "PRODUCTS",
@@ -1557,6 +1563,7 @@ const zh: Dict = {
     ctaHeading: "准备好携手打造卓越品牌了吗？",
     ctaSub: "无论您寻求 OEM、ODM、自有品牌还是出口解决方案，我们的团队随时准备从概念到交付全程陪伴您。",
     ctaButton: "立即联系",
+    sectionNavLabel: "关于我们章节", mapTitle: "地图",
   },
   production: {
     heroTitle: "生产流程 — 从 OEM/ODM 到全球认证",
@@ -1611,6 +1618,7 @@ const zh: Dict = {
     certIntroStatic: "Dostac 与韩国制造合作伙伴协作，以满足全球市场的国际质量标准和出口合规要求。\n\n我们深知认证、文件资料和法规支持在国际美妆分销中的重要性。",
     ctaSub: "需要特定的法规文件或认证指导吗？我们的合规团队随时为您提供帮助。",
     ctaEyebrow: "开始合作",
+    oemImageAlt: "韩国化妆品生产设施", sectionNavLabel: "生产章节",
   },
   products: {
     heroLabel: "产品",
@@ -2010,6 +2018,7 @@ const vi: Dict = {
     ctaHeading: "Sẵn sàng cùng nhau tạo nên điều tuyệt vời?",
     ctaSub: "Dù bạn đang tìm kiếm giải pháp OEM, ODM, nhãn hiệu riêng hay xuất khẩu — đội ngũ của chúng tôi sẵn sàng đồng hành từ ý tưởng đến giao hàng.",
     ctaButton: "Liên hệ ngay",
+    sectionNavLabel: "Mục giới thiệu", mapTitle: "Bản đồ",
   },
   production: {
     heroTitle: "Quy trình — Từ OEM/ODM đến các chứng nhận toàn cầu",
@@ -2064,6 +2073,7 @@ const vi: Dict = {
     certIntroStatic: "Dostac làm việc với các đối tác sản xuất tại Hàn Quốc có khả năng đáp ứng các tiêu chuẩn chất lượng quốc tế và yêu cầu tuân thủ xuất khẩu cho thị trường toàn cầu.\n\nChúng tôi hiểu tầm quan trọng của chứng nhận, hồ sơ và hỗ trợ pháp lý trong hoạt động phân phối mỹ phẩm quốc tế.",
     ctaSub: "Bạn cần hồ sơ pháp lý cụ thể hoặc hướng dẫn về chứng nhận? Đội ngũ tuân thủ của chúng tôi sẵn sàng hỗ trợ.",
     ctaEyebrow: "BẮT ĐẦU HỢP TÁC",
+    oemImageAlt: "Cơ sở sản xuất mỹ phẩm Hàn Quốc", sectionNavLabel: "Mục sản xuất",
   },
   products: {
     heroLabel: "SẢN PHẨM",

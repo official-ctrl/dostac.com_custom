@@ -137,7 +137,7 @@ function ProductionContent() {
         items={SUBMENU}
         activeId={activeSection}
         onSelect={scrollTo}
-        ariaLabel="Production sections"
+        ariaLabel={t("production.sectionNavLabel") as string}
       />
 
       {/* SECTION 1 — OEM / ODM */}
@@ -174,7 +174,7 @@ function ProductionContent() {
             >
               <img
                 src={data.oemImageUrl ?? dostacImage("hero-production.webp")}
-                alt="Korean cosmetics manufacturing"
+                alt={t("production.oemImageAlt") as string}
                 loading="lazy"
                 className="w-full aspect-[4/3] object-cover object-center"
               />
