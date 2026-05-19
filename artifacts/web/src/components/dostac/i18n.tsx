@@ -2328,6 +2328,11 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
   );
 }
 
+/** Translate a key for an explicit lang without needing the React context. */
+export function tFor(lang: Lang, key: string): any {
+  return resolve(translations[lang], key);
+}
+
 export function useT(): LangContextValue {
   const ctx = useContext(LanguageContext);
   if (!ctx) {

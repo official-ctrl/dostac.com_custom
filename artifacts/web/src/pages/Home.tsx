@@ -29,7 +29,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Layout, dostacImage } from "@/components/dostac/Layout";
-import { useT, useLang, type Lang } from "@/components/dostac/i18n";
+import { useT, useLang, tFor, type Lang } from "@/components/dostac/i18n";
 import {
   useListPublicBanners,
   useListPublicCategoryTranslations,
@@ -251,24 +251,25 @@ function HeroTextOverlay({
   slideKey: string | number;
   isActive?: boolean;
 }) {
-  const { t } = useT();
-
   // ── Language-switch cross-fade ────────────────────────────────────────────
-  // isFadedOut drives opacity 1→0→1 on the title+description wrapper.
-  // displayedTitle/Desc are frozen snapshots; they only update after the
+  // isFadedOut drives opacity 1→0→1 on the entire text block.
+  // displayedTitle/Desc/Lang are frozen snapshots; they only update after the
   // fade-out animation completes so old-language text is visible during exit
   // and new-language text appears on the fade-in.
-  // Because banner translations are bundled in a single query response (no
-  // per-language re-fetch), new data is always instantly available — we swap
-  // in handleFadeComplete rather than waiting for isPlaceholderData to clear.
+  // Using displayedLang (via tFor) for eyebrow + CTA labels ensures they stay
+  // in sync with the title/desc freeze rather than snapping on the render that
+  // triggers the lang useEffect (which runs post-paint, after t() already
+  // returns new-lang values).
   const [isFadedOut, setIsFadedOut] = useState(false);
   const isFadedOutRef = useRef(false);
   const [displayedTitle, setDisplayedTitle] = useState(title);
   const [displayedDesc, setDisplayedDesc] = useState(description);
+  const [displayedLang, setDisplayedLang] = useState<Lang>(lang);
   const latestTitleRef = useRef(title);
   const latestDescRef = useRef(description);
+  const latestLangRef = useRef(lang);
 
-  // Keep latest refs current so handleFadeComplete always reads fresh text.
+  // Keep latest refs current so handleFadeComplete always reads fresh values.
   // Also push to displayed state immediately when not mid-fade (covers
   // same-language data refreshes where no fade-out cycle is triggered).
   useEffect(() => {
@@ -285,15 +286,17 @@ function HeroTextOverlay({
   useEffect(() => {
     if (prevLangRef.current === lang) return;
     prevLangRef.current = lang;
+    latestLangRef.current = lang;
     isFadedOutRef.current = true;
     setIsFadedOut(true);
   }, [lang]);
 
-  // When fade-out animation completes, swap the displayed text and fade back in.
+  // When fade-out animation completes, swap all displayed content and fade back in.
   const handleFadeComplete = useCallback(() => {
     if (!isFadedOutRef.current) return;
     setDisplayedTitle(latestTitleRef.current);
     setDisplayedDesc(latestDescRef.current);
+    setDisplayedLang(latestLangRef.current);
     isFadedOutRef.current = false;
     setIsFadedOut(false);
   }, []);
@@ -311,20 +314,21 @@ function HeroTextOverlay({
               variants={heroStagger}
               className="max-w-3xl pointer-events-auto"
             >
-              {/* 1. Badge / Eyebrow */}
-              <motion.p
-                variants={fadeUp}
-                className="uppercase tracking-[0.2em] md:tracking-[0.3em] text-[10px] md:text-xs text-accent font-bold mb-4 md:mb-5 line-clamp-1"
-              >
-                {t("homeNew.heroEyebrow") as string}
-              </motion.p>
-
-              {/* 2. Headline + 3. Subheadline: fade out/in on language switch */}
+              {/* 1. Badge/Eyebrow + 2. Headline + 3. Subheadline + 4. CTAs: all fade out/in on language switch */}
               <motion.div
                 animate={{ opacity: isFadedOut ? 0 : 1 }}
                 transition={{ duration: 0.3, ease: [0.4, 0, 0.6, 1] }}
                 onAnimationComplete={handleFadeComplete}
               >
+                {/* 1. Badge / Eyebrow */}
+                <motion.p
+                  variants={fadeUp}
+                  className="uppercase tracking-[0.2em] md:tracking-[0.3em] text-[10px] md:text-xs text-accent font-bold mb-4 md:mb-5 line-clamp-1"
+                >
+                  {tFor(displayedLang, "homeNew.heroEyebrow") as string}
+                </motion.p>
+
+                {/* 2. Headline */}
                 <motion.h1
                   variants={fadeUp}
                   className="font-display text-4xl md:text-6xl lg:text-7xl font-bold text-white leading-[1.08] mb-6"
@@ -332,33 +336,34 @@ function HeroTextOverlay({
                   {displayedTitle}
                 </motion.h1>
 
+                {/* 3. Subheadline */}
                 <motion.p
                   variants={fadeUp}
                   className="text-lg md:text-xl text-white/75 leading-relaxed mb-10 max-w-2xl"
                 >
                   {displayedDesc}
                 </motion.p>
-              </motion.div>
 
-              {/* 4. CTA Buttons */}
-              <motion.div variants={fadeUp} className="flex flex-wrap gap-4">
-                <a href="#rfq">
-                  <Button
-                    size="lg"
-                    className="rounded-full bg-accent hover:bg-accent/90 text-white h-13 px-8 text-base font-semibold shadow-lg shadow-accent/30 hover:shadow-accent/50 transition-shadow"
-                  >
-                    {t("homeNew.heroCtaOem") as string} <ArrowRight className="ml-2 h-4 w-4" />
-                  </Button>
-                </a>
-                <Link href="/contact">
-                  <Button
-                    size="lg"
-                    variant="outline"
-                    className="rounded-full border-white/50 text-white bg-white/8 hover:bg-white/20 hover:text-white h-13 px-8 text-base font-semibold backdrop-blur-sm"
-                  >
-                    {t("homeNew.heroCtaContact") as string}
-                  </Button>
-                </Link>
+                {/* 4. CTA Buttons */}
+                <motion.div variants={fadeUp} className="flex flex-wrap gap-4">
+                  <a href="#rfq">
+                    <Button
+                      size="lg"
+                      className="rounded-full bg-accent hover:bg-accent/90 text-white h-13 px-8 text-base font-semibold shadow-lg shadow-accent/30 hover:shadow-accent/50 transition-shadow"
+                    >
+                      {tFor(displayedLang, "homeNew.heroCtaOem") as string} <ArrowRight className="ml-2 h-4 w-4" />
+                    </Button>
+                  </a>
+                  <Link href="/contact">
+                    <Button
+                      size="lg"
+                      variant="outline"
+                      className="rounded-full border-white/50 text-white bg-white/8 hover:bg-white/20 hover:text-white h-13 px-8 text-base font-semibold backdrop-blur-sm"
+                    >
+                      {tFor(displayedLang, "homeNew.heroCtaContact") as string}
+                    </Button>
+                  </Link>
+                </motion.div>
               </motion.div>
             </motion.div>
           )}
