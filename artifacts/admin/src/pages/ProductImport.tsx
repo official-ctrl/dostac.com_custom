@@ -65,7 +65,12 @@ type ParsedRow = {
   originallyInvalid?: boolean;
 };
 
-function validateRow(raw: RawRow, index: number, existingSlugs?: Set<string>): ParsedRow {
+function validateRow(
+  raw: RawRow,
+  index: number,
+  existingSlugs?: Set<string>,
+  batchSlugs?: Set<string>,
+): ParsedRow {
   const slug = (raw.slug ?? "").trim();
   const category = (raw.category ?? "").trim();
   const name_ko = (raw.name_ko ?? "").trim();
@@ -86,12 +91,13 @@ function validateRow(raw: RawRow, index: number, existingSlugs?: Set<string>): P
   if (!category) errors.push("category 필수");
   if (!name_ko) errors.push("name_ko 필수");
 
-  const isDuplicate =
-    existingSlugs != null && slug.length > 0 && SLUG_RE.test(slug)
-      ? existingSlugs.has(slug)
-      : false;
+  const slugValid = slug.length > 0 && SLUG_RE.test(slug);
+
+  const isDuplicate = slugValid && existingSlugs != null ? existingSlugs.has(slug) : false;
+  const isIntraFileDuplicate = slugValid && batchSlugs != null ? batchSlugs.has(slug) : false;
 
   if (isDuplicate) errors.push("slug 중복");
+  if (isIntraFileDuplicate) errors.push("slug 중복 (파일 내)");
 
   return {
     index,
@@ -104,7 +110,7 @@ function validateRow(raw: RawRow, index: number, existingSlugs?: Set<string>): P
     certs,
     errors,
     status: "pending",
-    isDuplicate,
+    isDuplicate: isDuplicate || isIntraFileDuplicate,
   };
 }
 
@@ -345,8 +351,18 @@ export default function ProductImport() {
         setExistingProductMap(new Map());
       }
 
+      // Build intra-file duplicate slug set: any slug that appears more than once in this batch
+      const slugFreq = new Map<string, number>();
+      for (const raw of rawRows) {
+        const s = (raw.slug ?? "").trim();
+        if (s) slugFreq.set(s, (slugFreq.get(s) ?? 0) + 1);
+      }
+      const intraBatchDupes = new Set(
+        [...slugFreq.entries()].filter(([, n]) => n > 1).map(([s]) => s),
+      );
+
       const parsed = rawRows.map((raw, i) => {
-        const row = validateRow(raw, i, slugSet);
+        const row = validateRow(raw, i, slugSet, intraBatchDupes);
         return { ...row, originallyInvalid: row.errors.length > 0 };
       });
       setRows(parsed);
@@ -407,23 +423,43 @@ export default function ProductImport() {
     field: "slug" | "category" | "name_ko" | "certs",
     value: string,
   ) => {
-    setRows((prev) =>
-      prev.map((r) => {
+    setRows((prev) => {
+      // Build the prospective row data with the edit applied
+      const prospective = prev.map((r) => {
         if (r.index !== rowIndex) return r;
-        const raw: RawRow = {
-          slug: field === "slug" ? value : r.slug,
+        return {
+          ...r,
+          slug: field === "slug" ? value.trim() : r.slug,
           category: field === "category" ? value : r.category,
           name_ko: field === "name_ko" ? value : r.name_ko,
+          certs: field === "certs" ? value.split(",").map((c) => c.trim()).filter(Boolean) : r.certs,
+        };
+      });
+
+      // Recompute intra-file duplicate slugs across the whole updated batch
+      const slugFreq = new Map<string, number>();
+      for (const r of prospective) {
+        if (r.slug) slugFreq.set(r.slug, (slugFreq.get(r.slug) ?? 0) + 1);
+      }
+      const intraBatchDupes = new Set(
+        [...slugFreq.entries()].filter(([, n]) => n > 1).map(([s]) => s),
+      );
+
+      // Re-validate every row so that both the edited row and any affected siblings update
+      return prospective.map((r) => {
+        const raw: RawRow = {
+          slug: r.slug,
+          category: r.category,
+          name_ko: r.name_ko,
           subCategory: r.subCategory,
           material: r.material,
           features_ko: r.features_ko,
-          certs: field === "certs" ? value : r.certs.join(","),
+          certs: r.certs.join(","),
         };
-        // Re-validate and re-check duplicate status against the cached slug set
-        const revalidated = validateRow(raw, rowIndex, existingSlugs);
+        const revalidated = validateRow(raw, r.index, existingSlugs, intraBatchDupes);
         return { ...revalidated, status: r.status, originallyInvalid: r.originallyInvalid };
-      }),
-    );
+      });
+    });
   };
 
   const runImport = async () => {
