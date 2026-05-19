@@ -126,15 +126,15 @@ function ProductDetailContent() {
     }).catch(() => {});
   };
 
-  const handleShare = () => {
+  const handleShare = async () => {
+    const url = window.location.href;
     if (navigator.share) {
-      navigator.share({
-        title: product?.name ?? "",
-        url: window.location.href,
-      }).catch((err: unknown) => {
+      try {
+        await navigator.share({ title: product?.name ?? "", url });
+      } catch (err) {
         if (err instanceof DOMException && err.name === "AbortError") return;
         fallbackCopyToClipboard();
-      });
+      }
     } else {
       fallbackCopyToClipboard();
     }
