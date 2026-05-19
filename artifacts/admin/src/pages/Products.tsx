@@ -57,9 +57,26 @@ export default function Products() {
 
   const [pendingDelete, setPendingDelete] = useState<{ id: number; name: string } | null>(null);
   const [catSort, setCatSort] = useState<"asc" | "desc" | null>(null);
+  const [nameSort, setNameSort] = useState<"asc" | "desc" | null>(null);
+  const [orderSort, setOrderSort] = useState<"asc" | "desc" | null>(null);
+  const [statusSort, setStatusSort] = useState<"asc" | "desc" | null>(null);
 
-  const toggleCatSort = () =>
+  const toggleCatSort = () => {
+    setNameSort(null); setOrderSort(null); setStatusSort(null);
     setCatSort((prev) => (prev === null ? "asc" : prev === "asc" ? "desc" : null));
+  };
+  const toggleNameSort = () => {
+    setCatSort(null); setOrderSort(null); setStatusSort(null);
+    setNameSort((prev) => (prev === null ? "asc" : prev === "asc" ? "desc" : null));
+  };
+  const toggleOrderSort = () => {
+    setCatSort(null); setNameSort(null); setStatusSort(null);
+    setOrderSort((prev) => (prev === null ? "asc" : prev === "asc" ? "desc" : null));
+  };
+  const toggleStatusSort = () => {
+    setCatSort(null); setNameSort(null); setOrderSort(null);
+    setStatusSort((prev) => (prev === null ? "asc" : prev === "asc" ? "desc" : null));
+  };
 
   const categories = useMemo(() => {
     const set = new Set<string>();
@@ -124,14 +141,36 @@ export default function Products() {
         (ko?.headline?.toLowerCase().includes(q) ?? false)
       );
     });
-    if (!catSort) return list;
-    const dir = catSort === "asc" ? 1 : -1;
-    return [...list].sort((a, b) => {
-      const catCmp = a.category.localeCompare(b.category, "ko") * dir;
-      if (catCmp !== 0) return catCmp;
-      return ((a.subCategory ?? "").localeCompare(b.subCategory ?? "", "ko")) * dir;
-    });
-  }, [products, activeCat, activeSubCat, search, catSort]);
+    if (catSort) {
+      const dir = catSort === "asc" ? 1 : -1;
+      return [...list].sort((a, b) => {
+        const catCmp = a.category.localeCompare(b.category, "ko") * dir;
+        if (catCmp !== 0) return catCmp;
+        return ((a.subCategory ?? "").localeCompare(b.subCategory ?? "", "ko")) * dir;
+      });
+    }
+    if (nameSort) {
+      const dir = nameSort === "asc" ? 1 : -1;
+      return [...list].sort((a, b) => {
+        const aName = getTr(a.translations, "ko")?.name ?? "";
+        const bName = getTr(b.translations, "ko")?.name ?? "";
+        return aName.localeCompare(bName, "ko") * dir;
+      });
+    }
+    if (orderSort) {
+      const dir = orderSort === "asc" ? 1 : -1;
+      return [...list].sort((a, b) => ((a.sortOrder ?? 0) - (b.sortOrder ?? 0)) * dir);
+    }
+    if (statusSort) {
+      const dir = statusSort === "asc" ? 1 : -1;
+      return [...list].sort((a, b) => {
+        const aVal = a.published ? 1 : 0;
+        const bVal = b.published ? 1 : 0;
+        return (aVal - bVal) * dir;
+      });
+    }
+    return list;
+  }, [products, activeCat, activeSubCat, search, catSort, nameSort, orderSort, statusSort]);
 
   const onDelete = async () => {
     if (!pendingDelete) return;
@@ -274,7 +313,18 @@ export default function Products() {
               <thead className="text-left text-xs uppercase tracking-wider text-muted-foreground border-b border-border">
                 <tr>
                   <th className="px-4 py-2 font-medium">이미지</th>
-                  <th className="px-4 py-2 font-medium">제품명 (KO)</th>
+                  <th className="px-4 py-2 font-medium">
+                    <button
+                      onClick={toggleNameSort}
+                      className="flex items-center gap-1 hover:text-foreground transition-colors"
+                      title="제품명 정렬"
+                    >
+                      제품명 (KO)
+                      {nameSort === null && <ArrowUpDown className="h-3 w-3 opacity-40" />}
+                      {nameSort === "asc" && <ArrowUp className="h-3 w-3" />}
+                      {nameSort === "desc" && <ArrowDown className="h-3 w-3" />}
+                    </button>
+                  </th>
                   <th className="px-4 py-2 font-medium">슬러그</th>
                   <th className="px-4 py-2 font-medium">
                     <button
@@ -288,9 +338,31 @@ export default function Products() {
                       {catSort === "desc" && <ArrowDown className="h-3 w-3" />}
                     </button>
                   </th>
-                  <th className="px-4 py-2 font-medium">정렬</th>
+                  <th className="px-4 py-2 font-medium">
+                    <button
+                      onClick={toggleOrderSort}
+                      className="flex items-center gap-1 hover:text-foreground transition-colors"
+                      title="정렬 순서 정렬"
+                    >
+                      정렬
+                      {orderSort === null && <ArrowUpDown className="h-3 w-3 opacity-40" />}
+                      {orderSort === "asc" && <ArrowUp className="h-3 w-3" />}
+                      {orderSort === "desc" && <ArrowDown className="h-3 w-3" />}
+                    </button>
+                  </th>
                   <th className="px-4 py-2 font-medium">언어</th>
-                  <th className="px-4 py-2 font-medium">상태</th>
+                  <th className="px-4 py-2 font-medium">
+                    <button
+                      onClick={toggleStatusSort}
+                      className="flex items-center gap-1 hover:text-foreground transition-colors"
+                      title="상태 정렬"
+                    >
+                      상태
+                      {statusSort === null && <ArrowUpDown className="h-3 w-3 opacity-40" />}
+                      {statusSort === "asc" && <ArrowUp className="h-3 w-3" />}
+                      {statusSort === "desc" && <ArrowDown className="h-3 w-3" />}
+                    </button>
+                  </th>
                   <th className="px-4 py-2 font-medium text-right">작업</th>
                 </tr>
               </thead>
