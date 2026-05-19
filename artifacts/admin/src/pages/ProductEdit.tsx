@@ -7,6 +7,8 @@ import {
   useAdminUpdateProduct,
   useAdminListCategoryTranslations,
   useAdminListSubCategoryTranslations,
+  useAdminListInquiries,
+  getAdminListInquiriesQueryKey,
   getAdminListProductsQueryKey,
   getAdminGetProductQueryKey,
   type AdminProductInput,
@@ -14,15 +16,22 @@ import {
   type Translation,
 } from "@workspace/api-client-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import { AlertTriangle, ArrowLeft, Loader2, Plus, Save, X } from "lucide-react";
+import { AlertTriangle, ArrowLeft, ArrowRight, Loader2, Plus, Save, X } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { TranslationFields } from "@/components/TranslationFields";
 import { ImageUploader } from "@/components/ImageUploader";
 import { LANGS } from "@/lib/langs";
+
+const STATUS_BADGE: Record<string, { label: string; variant: "default" | "secondary" | "outline" }> = {
+  new: { label: "신규", variant: "default" },
+  in_progress: { label: "진행", variant: "secondary" },
+  completed: { label: "완료", variant: "outline" },
+};
 
 const PRODUCT_FIELDS = [
   { key: "name" as const, label: "제품명", kind: "text" as const, context: "cosmetic product name" },
@@ -111,6 +120,20 @@ export default function ProductEdit() {
   });
 
   const [certInput, setCertInput] = useState("");
+
+  const inquirySlug = !isNew ? (form.slug || existing?.slug) : undefined;
+  const inquiryParams = inquirySlug
+    ? ({ productSlug: inquirySlug } as Parameters<typeof useAdminListInquiries>[0])
+    : undefined;
+  const { data: relatedInquiries, isLoading: isLoadingInquiries } = useAdminListInquiries(
+    inquiryParams,
+    {
+      query: {
+        queryKey: getAdminListInquiriesQueryKey(inquiryParams),
+        enabled: !isNew && !!inquirySlug,
+      },
+    },
+  );
 
   useEffect(() => {
     if (existing) {
@@ -461,6 +484,59 @@ export default function ProductEdit() {
         value={form.translations as Array<Translation>}
         onChange={(next) => update("translations", next as Translation[])}
       />
+
+      {!isNew && (
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-base">관련 문의</CardTitle>
+            {!isLoadingInquiries && relatedInquiries && relatedInquiries.length > 0 && (
+              <Link href={`/inquiries?productSlug=${form.slug || existing?.slug}`}>
+                <Button variant="ghost" size="sm" type="button" className="gap-1 text-xs text-muted-foreground">
+                  전체 보기
+                  <ArrowRight className="h-3.5 w-3.5" />
+                </Button>
+              </Link>
+            )}
+          </CardHeader>
+          <CardContent>
+            {isLoadingInquiries ? (
+              <div className="flex items-center gap-2 text-sm text-muted-foreground py-2">
+                <Loader2 className="h-4 w-4 animate-spin" />
+                <span>로딩 중…</span>
+              </div>
+            ) : !relatedInquiries || relatedInquiries.length === 0 ? (
+              <p className="text-sm text-muted-foreground py-2">이 제품에 연결된 문의가 없습니다.</p>
+            ) : (
+              <ul className="divide-y divide-border">
+                {relatedInquiries.slice(0, 5).map((inq) => {
+                  const badge = STATUS_BADGE[inq.status] ?? { label: inq.status, variant: "outline" as const };
+                  return (
+                    <li key={inq.id} className="flex items-center justify-between gap-3 py-2.5">
+                      <div className="min-w-0 flex-1">
+                        <p className="text-sm font-medium truncate">{inq.name}</p>
+                        <p className="text-xs text-muted-foreground truncate">
+                          {inq.email}
+                          {inq.company ? ` · ${inq.company}` : ""}
+                          {" · "}
+                          {new Date(inq.createdAt).toLocaleDateString("ko-KR")}
+                        </p>
+                      </div>
+                      <div className="flex items-center gap-2 shrink-0">
+                        <Badge variant={badge.variant}>{badge.label}</Badge>
+                        <Link href={`/inquiries/${inq.id}`}>
+                          <Button variant="ghost" size="icon" type="button" className="h-7 w-7">
+                            <ArrowRight className="h-3.5 w-3.5" />
+                          </Button>
+                        </Link>
+                      </div>
+                    </li>
+                  );
+                })}
+              </ul>
+            )}
+          </CardContent>
+        </Card>
+      )}
 
       <div className="flex justify-end">
         <Button type="submit" disabled={isSaving} className="gap-2">
