@@ -401,6 +401,8 @@ export const AdminListProductsResponseItem = zod.object({
       }),
     )
     .optional(),
+  createdAt: zod.coerce.date(),
+  updatedAt: zod.coerce.date(),
 });
 export const AdminListProductsResponse = zod.array(
   AdminListProductsResponseItem,
@@ -481,6 +483,8 @@ export const AdminUpsertProductsBySlugResponseItem = zod.object({
         }),
       )
       .optional(),
+    createdAt: zod.coerce.date(),
+    updatedAt: zod.coerce.date(),
   }),
 });
 export const AdminUpsertProductsBySlugResponse = zod.array(
@@ -519,6 +523,8 @@ export const AdminGetProductResponse = zod.object({
       }),
     )
     .optional(),
+  createdAt: zod.coerce.date(),
+  updatedAt: zod.coerce.date(),
 });
 
 export const AdminUpdateProductParams = zod.object({
@@ -574,6 +580,8 @@ export const AdminUpdateProductResponse = zod.object({
       }),
     )
     .optional(),
+  createdAt: zod.coerce.date(),
+  updatedAt: zod.coerce.date(),
 });
 
 export const AdminDeleteProductParams = zod.object({

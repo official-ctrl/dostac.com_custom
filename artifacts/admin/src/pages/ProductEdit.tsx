@@ -292,6 +292,13 @@ export default function ProductEdit() {
             <p className="text-xs text-muted-foreground mt-0.5">
               {isNew ? "5개 언어 콘텐츠와 이미지·카테고리를 입력하세요." : `ID #${id}`}
             </p>
+            {!isNew && existing && (
+              <p className="text-xs text-muted-foreground mt-0.5">
+                등록일: {new Date(existing.createdAt).toLocaleString("ko-KR")}
+                {" · "}
+                수정일: {new Date(existing.updatedAt).toLocaleString("ko-KR")}
+              </p>
+            )}
           </div>
         </div>
         <Button type="submit" disabled={isSaving} className="gap-2" data-testid="button-save">

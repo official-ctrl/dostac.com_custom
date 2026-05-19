@@ -813,7 +813,7 @@ components:
 
     AdminProduct:
       type: object
-      required: [id, slug, category, subCategory, sortOrder, published, certs, translations]
+      required: [id, slug, category, subCategory, sortOrder, published, certs, translations, createdAt, updatedAt]
       properties:
         id: { type: integer }
         slug: { type: string }
@@ -831,6 +831,8 @@ components:
         missingTranslations:
           type: array
           items: { $ref: "#/components/schemas/MissingTranslationInfo" }
+        createdAt: { type: string, format: date-time }
+        updatedAt: { type: string, format: date-time }
 
     MissingTranslationInfo:
       type: object

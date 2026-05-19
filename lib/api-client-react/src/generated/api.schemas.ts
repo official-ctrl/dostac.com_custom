@@ -111,6 +111,8 @@ export interface AdminProduct {
   certs: string[];
   translations: Translation[];
   missingTranslations?: MissingTranslationInfo[];
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface AdminProductInput {

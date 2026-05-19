@@ -20,4 +20,6 @@ export interface AdminProduct {
   certs: string[];
   translations: Translation[];
   missingTranslations?: MissingTranslationInfo[];
+  createdAt: Date;
+  updatedAt: Date;
 }

@@ -94,6 +94,8 @@ async function loadProductWithTranslations(id: number) {
     imageUrl: product.imageUrl,
     published: product.published,
     certs: product.certs ?? [],
+    createdAt: product.createdAt.toISOString(),
+    updatedAt: product.updatedAt.toISOString(),
     translations: translations.map((t) => ({
       lang: t.lang,
       name: t.name,
@@ -131,6 +133,8 @@ router.get("/admin/products", async (_req, res): Promise<void> => {
       imageUrl: p.imageUrl,
       published: p.published,
       certs: p.certs ?? [],
+      createdAt: p.createdAt.toISOString(),
+      updatedAt: p.updatedAt.toISOString(),
       translations: (byProduct.get(p.id) ?? []).map((t) => ({
         lang: t.lang,
         name: t.name,

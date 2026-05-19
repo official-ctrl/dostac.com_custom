@@ -367,6 +367,7 @@ export default function Products() {
                       {statusSort === "desc" && <ArrowDown className="h-3 w-3" />}
                     </button>
                   </th>
+                  <th className="px-4 py-2 font-medium">등록일</th>
                   <th className="px-4 py-2 font-medium text-right">작업</th>
                 </tr>
               </thead>
@@ -455,6 +456,9 @@ export default function Products() {
                             <EyeOff className="h-3 w-3" /> 비공개
                           </Badge>
                         )}
+                      </td>
+                      <td className="px-4 py-3 text-muted-foreground text-xs whitespace-nowrap">
+                        {new Date(p.createdAt).toLocaleDateString("ko-KR")}
                       </td>
                       <td className="px-4 py-3">
                         <div className="flex items-center justify-end gap-1">
