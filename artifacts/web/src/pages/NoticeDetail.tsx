@@ -10,7 +10,8 @@ import {
   ArrowRight,
   Loader2,
 } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { Layout, dostacImage } from "@/components/dostac/Layout";
 import { useT, useLang } from "@/components/dostac/i18n";
 import {
@@ -77,7 +78,27 @@ function NoticeDetailContent() {
   const { t } = useT();
   const { lang } = useLang();
   const [copied, setCopied] = useState(false);
+  const copyTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const isCopiedHoveredRef = useRef(false);
   const canNativeShare = typeof navigator !== "undefined" && !!navigator.share;
+
+  const dismissCopy = useCallback(() => {
+    if (copyTimerRef.current) clearTimeout(copyTimerRef.current);
+    setCopied(false);
+  }, []);
+
+  const startCopyTimer = useCallback(() => {
+    if (copyTimerRef.current) clearTimeout(copyTimerRef.current);
+    copyTimerRef.current = setTimeout(() => {
+      if (!isCopiedHoveredRef.current) dismissCopy();
+    }, 5000);
+  }, [dismissCopy]);
+
+  useEffect(() => {
+    if (!copied) return;
+    startCopyTimer();
+    return () => { if (copyTimerRef.current) clearTimeout(copyTimerRef.current); };
+  }, [copied, startCopyTimer]);
 
   const {
     data: article,
@@ -104,7 +125,6 @@ function NoticeDetailContent() {
     } else {
       navigator.clipboard.writeText(url).then(() => {
         setCopied(true);
-        setTimeout(() => setCopied(false), 2000);
       });
     }
   };
@@ -213,19 +233,35 @@ function NoticeDetailContent() {
                 type="button"
                 onClick={handleShare}
                 className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 transition"
+                onMouseEnter={() => {
+                  isCopiedHoveredRef.current = true;
+                  if (copyTimerRef.current) clearTimeout(copyTimerRef.current);
+                }}
+                onMouseLeave={() => {
+                  isCopiedHoveredRef.current = false;
+                  if (copied) startCopyTimer();
+                }}
               >
                 {canNativeShare ? (
-                  <Share2 className="h-4 w-4" />
-                ) : copied ? (
-                  <Check className="h-4 w-4 text-emerald-600" />
+                  <>
+                    <Share2 className="h-4 w-4" />
+                    {t("notice.share") as string}
+                  </>
                 ) : (
-                  <Copy className="h-4 w-4" />
+                  <AnimatePresence mode="wait" initial={false}>
+                    {copied ? (
+                      <motion.span key="copied" className="inline-flex items-center gap-2" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }}>
+                        <Check className="h-4 w-4 text-emerald-600" />
+                        <span aria-live="polite">{t("notice.copied") as string}</span>
+                      </motion.span>
+                    ) : (
+                      <motion.span key="copy" className="inline-flex items-center gap-2" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }}>
+                        <Copy className="h-4 w-4" />
+                        <span>{t("notice.copyLink") as string}</span>
+                      </motion.span>
+                    )}
+                  </AnimatePresence>
                 )}
-                {canNativeShare
-                  ? (t("notice.share") as string)
-                  : copied
-                    ? (t("notice.copied") as string)
-                    : (t("notice.copyLink") as string)}
               </button>
             </div>
           </div>

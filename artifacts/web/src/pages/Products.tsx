@@ -102,6 +102,8 @@ function ProductsContent() {
   const [selectedSubCategory, setSelectedSubCategory] = useState<string | null>(subCategoryFromUrl);
   const [activeSlug, setActiveSlug] = useState<string | null>(null);
   const [copiedCategory, setCopiedCategory] = useState(false);
+  const copiedCategoryTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const isCopiedCategoryHoveredRef = useRef(false);
   const [restoredFilter, setRestoredFilter] = useState<{ category: string; subCategory: string | null } | null>(null);
   const restoredFilterTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const isRestoredHoveredRef = useRef(false);
@@ -119,10 +121,27 @@ function ProductsContent() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const dismissCopiedCategory = useCallback(() => {
+    if (copiedCategoryTimerRef.current) clearTimeout(copiedCategoryTimerRef.current);
+    setCopiedCategory(false);
+  }, []);
+
+  const startCopiedCategoryTimer = useCallback(() => {
+    if (copiedCategoryTimerRef.current) clearTimeout(copiedCategoryTimerRef.current);
+    copiedCategoryTimerRef.current = setTimeout(() => {
+      if (!isCopiedCategoryHoveredRef.current) dismissCopiedCategory();
+    }, 5000);
+  }, [dismissCopiedCategory]);
+
+  useEffect(() => {
+    if (!copiedCategory) return;
+    startCopiedCategoryTimer();
+    return () => { if (copiedCategoryTimerRef.current) clearTimeout(copiedCategoryTimerRef.current); };
+  }, [copiedCategory, startCopiedCategoryTimer]);
+
   const handleCopyLink = () => {
     navigator.clipboard.writeText(window.location.href).then(() => {
       setCopiedCategory(true);
-      setTimeout(() => setCopiedCategory(false), 2000);
     }).catch(() => {
       // Fallback for browsers where clipboard API is unavailable
       const el = document.createElement("textarea");
@@ -134,7 +153,6 @@ function ProductsContent() {
       try {
         document.execCommand("copy");
         setCopiedCategory(true);
-        setTimeout(() => setCopiedCategory(false), 2000);
       } catch {
         // Silent — clipboard unavailable in this context
       } finally {
@@ -466,12 +484,26 @@ function ProductsContent() {
                         title={copiedCategory ? (t("products.copied") as string) : (t("products.copyLink") as string)}
                         aria-label={copiedCategory ? (t("products.copied") as string) : (t("products.copyLink") as string)}
                         className="flex items-center justify-center w-11 h-11 rounded-full bg-slate-100 text-slate-500 hover:bg-slate-200 hover:text-slate-700 transition-colors focus:outline-none active:scale-95"
+                        onMouseEnter={() => {
+                          isCopiedCategoryHoveredRef.current = true;
+                          if (copiedCategoryTimerRef.current) clearTimeout(copiedCategoryTimerRef.current);
+                        }}
+                        onMouseLeave={() => {
+                          isCopiedCategoryHoveredRef.current = false;
+                          if (copiedCategory) startCopiedCategoryTimer();
+                        }}
                       >
-                        {copiedCategory ? (
-                          <Check className="w-4 h-4 text-emerald-600" />
-                        ) : (
-                          <Copy className="w-4 h-4" />
-                        )}
+                        <AnimatePresence mode="wait" initial={false}>
+                          {copiedCategory ? (
+                            <motion.span key="copied" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }}>
+                              <Check className="w-4 h-4 text-emerald-600" />
+                            </motion.span>
+                          ) : (
+                            <motion.span key="copy" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }}>
+                              <Copy className="w-4 h-4" />
+                            </motion.span>
+                          )}
+                        </AnimatePresence>
                       </button>
                     )}
                   </div>

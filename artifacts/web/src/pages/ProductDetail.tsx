@@ -1,6 +1,6 @@
 import { Link, useParams } from "wouter";
-import { useState, useEffect, useRef } from "react";
-import { motion } from "framer-motion";
+import { useState, useEffect, useRef, useCallback } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   ArrowLeft,
   ArrowRight,
@@ -36,13 +36,29 @@ function ProductDetailContent() {
   const subLabel = useSubCategoryLabel();
   const [copied, setCopied] = useState(false);
   const copyTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const isCopiedHoveredRef = useRef(false);
 
-  useEffect(() => () => { if (copyTimerRef.current) clearTimeout(copyTimerRef.current); }, []);
+  const dismissCopy = useCallback(() => {
+    if (copyTimerRef.current) clearTimeout(copyTimerRef.current);
+    setCopied(false);
+  }, []);
+
+  const startCopyTimer = useCallback(() => {
+    if (copyTimerRef.current) clearTimeout(copyTimerRef.current);
+    copyTimerRef.current = setTimeout(() => {
+      if (!isCopiedHoveredRef.current) dismissCopy();
+    }, 5000);
+  }, [dismissCopy]);
+
+  useEffect(() => {
+    if (!copied) return;
+    startCopyTimer();
+    return () => { if (copyTimerRef.current) clearTimeout(copyTimerRef.current); };
+  }, [copied, startCopyTimer]);
 
   const fallbackCopyToClipboard = () => {
     navigator.clipboard.writeText(window.location.href).then(() => {
       setCopied(true);
-      copyTimerRef.current = setTimeout(() => setCopied(false), 2000);
     }).catch(() => {});
   };
 
@@ -133,15 +149,28 @@ function ProductDetailContent() {
               onClick={handleShare}
               aria-label={copied ? (t("products.copied") as string) : (t("products.copyLink") as string)}
               className="inline-flex items-center gap-1.5 rounded-full border border-white/25 bg-white/10 backdrop-blur px-3 py-1.5 text-xs font-semibold text-white/80 hover:bg-white/20 hover:text-white transition-all"
+              onMouseEnter={() => {
+                isCopiedHoveredRef.current = true;
+                if (copyTimerRef.current) clearTimeout(copyTimerRef.current);
+              }}
+              onMouseLeave={() => {
+                isCopiedHoveredRef.current = false;
+                if (copied) startCopyTimer();
+              }}
             >
-              {copied ? (
-                <Check className="h-3.5 w-3.5 text-emerald-400" />
-              ) : (
-                <Copy className="h-3.5 w-3.5" />
-              )}
-              <span aria-live="polite">
-                {copied ? (t("products.copied") as string) : (t("products.copyLink") as string)}
-              </span>
+              <AnimatePresence mode="wait" initial={false}>
+                {copied ? (
+                  <motion.span key="copied" className="inline-flex items-center gap-1.5" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }}>
+                    <Check className="h-3.5 w-3.5 text-emerald-400" />
+                    <span aria-live="polite">{t("products.copied") as string}</span>
+                  </motion.span>
+                ) : (
+                  <motion.span key="copy" className="inline-flex items-center gap-1.5" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }}>
+                    <Copy className="h-3.5 w-3.5" />
+                    <span>{t("products.copyLink") as string}</span>
+                  </motion.span>
+                )}
+              </AnimatePresence>
             </button>
           </nav>
 
