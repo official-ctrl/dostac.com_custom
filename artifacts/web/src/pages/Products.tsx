@@ -9,6 +9,7 @@ import {
   Copy,
   Check,
   X,
+  Share2,
 } from "lucide-react";
 import { Layout, dostacImage } from "@/components/dostac/Layout";
 import { SectionNav } from "@/components/dostac/SectionNav";
@@ -104,6 +105,7 @@ function ProductsContent() {
   const [copiedCategory, setCopiedCategory] = useState(false);
   const copiedCategoryTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const isCopiedCategoryHoveredRef = useRef(false);
+  const canNativeShare = typeof navigator !== "undefined" && !!navigator.share;
   const [restoredFilter, setRestoredFilter] = useState<{ category: string; subCategory: string | null } | null>(null);
   const restoredFilterTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const isRestoredHoveredRef = useRef(false);
@@ -139,26 +141,33 @@ function ProductsContent() {
     return () => { if (copiedCategoryTimerRef.current) clearTimeout(copiedCategoryTimerRef.current); };
   }, [copiedCategory, startCopiedCategoryTimer]);
 
-  const handleCopyLink = () => {
-    navigator.clipboard.writeText(window.location.href).then(() => {
-      setCopiedCategory(true);
-    }).catch(() => {
-      // Fallback for browsers where clipboard API is unavailable
-      const el = document.createElement("textarea");
-      el.value = window.location.href;
-      el.style.position = "fixed";
-      el.style.opacity = "0";
-      document.body.appendChild(el);
-      el.select();
+  const handleCopyLink = async () => {
+    if (navigator.share) {
       try {
-        document.execCommand("copy");
-        setCopiedCategory(true);
+        await navigator.share({ url: window.location.href });
       } catch {
-        // Silent — clipboard unavailable in this context
-      } finally {
-        document.body.removeChild(el);
+        // user dismissed or share failed — do nothing
       }
-    });
+    } else {
+      navigator.clipboard.writeText(window.location.href).then(() => {
+        setCopiedCategory(true);
+      }).catch(() => {
+        const el = document.createElement("textarea");
+        el.value = window.location.href;
+        el.style.position = "fixed";
+        el.style.opacity = "0";
+        document.body.appendChild(el);
+        el.select();
+        try {
+          document.execCommand("copy");
+          setCopiedCategory(true);
+        } catch {
+          // Silent — clipboard unavailable in this context
+        } finally {
+          document.body.removeChild(el);
+        }
+      });
+    }
   };
 
   const sectionRefs = useRef<Map<string, HTMLElement>>(new Map());
@@ -481,8 +490,8 @@ function ProductsContent() {
                       <button
                         type="button"
                         onClick={handleCopyLink}
-                        title={copiedCategory ? (t("products.copied") as string) : (t("products.copyLink") as string)}
-                        aria-label={copiedCategory ? (t("products.copied") as string) : (t("products.copyLink") as string)}
+                        title={copiedCategory ? (t("products.copied") as string) : canNativeShare ? (t("products.share") as string) : (t("products.copyLink") as string)}
+                        aria-label={copiedCategory ? (t("products.copied") as string) : canNativeShare ? (t("products.share") as string) : (t("products.copyLink") as string)}
                         className="flex items-center justify-center w-11 h-11 rounded-full bg-slate-100 text-slate-500 hover:bg-slate-200 hover:text-slate-700 transition-colors focus:outline-none active:scale-95"
                         onMouseEnter={() => {
                           isCopiedCategoryHoveredRef.current = true;
@@ -500,7 +509,7 @@ function ProductsContent() {
                             </motion.span>
                           ) : (
                             <motion.span key="copy" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }}>
-                              <Copy className="w-4 h-4" />
+                              {canNativeShare ? <Share2 className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
                             </motion.span>
                           )}
                         </AnimatePresence>

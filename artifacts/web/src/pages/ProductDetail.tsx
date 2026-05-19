@@ -9,6 +9,7 @@ import {
   Award,
   Copy,
   Check,
+  Share2,
 } from "lucide-react";
 import { Layout, dostacImage } from "@/components/dostac/Layout";
 import { useT, useLang, useCategoryLabel, useSubCategoryLabel } from "@/components/dostac/i18n";
@@ -37,6 +38,7 @@ function ProductDetailContent() {
   const [copied, setCopied] = useState(false);
   const copyTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const isCopiedHoveredRef = useRef(false);
+  const canNativeShare = typeof navigator !== "undefined" && !!navigator.share;
 
   const dismissCopy = useCallback(() => {
     if (copyTimerRef.current) clearTimeout(copyTimerRef.current);
@@ -147,7 +149,7 @@ function ProductDetailContent() {
             </div>
             <button
               onClick={handleShare}
-              aria-label={copied ? (t("products.copied") as string) : (t("products.copyLink") as string)}
+              aria-label={copied ? (t("products.copied") as string) : canNativeShare ? (t("products.share") as string) : (t("products.copyLink") as string)}
               className="inline-flex items-center gap-1.5 rounded-full border border-white/25 bg-white/10 backdrop-blur px-3 py-1.5 text-xs font-semibold text-white/80 hover:bg-white/20 hover:text-white transition-all"
               onMouseEnter={() => {
                 isCopiedHoveredRef.current = true;
@@ -166,8 +168,8 @@ function ProductDetailContent() {
                   </motion.span>
                 ) : (
                   <motion.span key="copy" className="inline-flex items-center gap-1.5" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }}>
-                    <Copy className="h-3.5 w-3.5" />
-                    <span>{t("products.copyLink") as string}</span>
+                    {canNativeShare ? <Share2 className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
+                    <span>{canNativeShare ? (t("products.share") as string) : (t("products.copyLink") as string)}</span>
                   </motion.span>
                 )}
               </AnimatePresence>
