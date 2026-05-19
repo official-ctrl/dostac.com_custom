@@ -78,6 +78,7 @@ function ContactContent() {
 
   const prefillInquiryType = parseInquiryType(search);
   const prefillProductSlug = new URLSearchParams(search).get("product") ?? "";
+  const prefillMaterial = new URLSearchParams(search).get("material") ?? "";
 
   const { data: prefillProduct } = useGetPublicProduct(
     prefillProductSlug || "_",
@@ -156,7 +157,7 @@ function ContactContent() {
     whatsapp: "",
     country: "",
     productInterest: "",
-    material: "",
+    material: prefillMaterial,
     quantity: "",
     customization: "",
     message: "",
