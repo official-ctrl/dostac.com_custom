@@ -123,7 +123,10 @@ function base64Body(input: string): string {
 function buildRfc822(inquiry: ContactInquiry): string {
   const safeName = safeHeaderText(inquiry.name);
   const safeCompany = safeHeaderText(inquiry.company ?? "");
-  const subject = `[DOSTAC] New inquiry from ${safeName}${safeCompany ? ` (${safeCompany})` : ""}`;
+  const safeProduct = inquiry.productInterest ? safeHeaderText(inquiry.productInterest.trim()) : "";
+  const subject = safeProduct
+    ? `[DOSTAC] New inquiry re: ${safeProduct} from ${safeName}`
+    : `[DOSTAC] New inquiry from ${safeName}${safeCompany ? ` (${safeCompany})` : ""}`;
   const boundary = `dostac_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 10)}`;
 
   const replyTo = safeHeaderEmail(inquiry.email);
