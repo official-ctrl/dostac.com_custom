@@ -58,6 +58,17 @@ function ProductDetailContent() {
     return () => { if (copyTimerRef.current) clearTimeout(copyTimerRef.current); };
   }, [copied, startCopyTimer]);
 
+  const { data: product, isLoading, isError } = useGetPublicProduct(slug, { lang });
+  const { data: allProducts } = useListPublicProducts({ lang });
+
+  useEffect(() => {
+    if (!product) return;
+    const categoryPart = product.category ? `${catLabel(product.category)} — ` : "";
+    const prev = document.title;
+    document.title = `${categoryPart}${product.name} | DOSTAC`;
+    return () => { document.title = prev; };
+  }, [product, catLabel]);
+
   const fallbackCopyToClipboard = () => {
     navigator.clipboard.writeText(window.location.href).then(() => {
       setCopied(true);
@@ -77,9 +88,6 @@ function ProductDetailContent() {
       fallbackCopyToClipboard();
     }
   };
-
-  const { data: product, isLoading, isError } = useGetPublicProduct(slug, { lang });
-  const { data: allProducts } = useListPublicProducts({ lang });
 
   const related = (allProducts ?? [])
     .filter((p) => p.slug !== slug && (product ? p.category === product.category : true))
