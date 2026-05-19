@@ -227,6 +227,39 @@ function downloadTemplate() {
   URL.revokeObjectURL(url);
 }
 
+function downloadImportResult(products: AdminProduct[]) {
+  const now = new Date();
+  const ts =
+    String(now.getFullYear()) +
+    String(now.getMonth() + 1).padStart(2, "0") +
+    String(now.getDate()).padStart(2, "0");
+
+  const csvRow = (values: string[]) =>
+    values.map((v) => `"${v.replace(/"/g, '""')}"`).join(",");
+
+  const dataRows = products.map((product) => {
+    const koTr = product.translations.find((t) => t.lang === "ko");
+    return csvRow([
+      product.slug,
+      product.category,
+      product.subCategory ?? "",
+      koTr?.material ?? "",
+      koTr?.name ?? "",
+      koTr?.features ?? "",
+      (product.certs ?? []).join(","),
+    ]);
+  });
+
+  const csv = [csvRow(TEMPLATE_HEADERS), ...dataRows].join("\r\n");
+  const blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `product_import_result_${ts}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
 function downloadCorrectedRows(correctedRows: ParsedRow[]) {
   const csvRow = (values: string[]) =>
     values.map((v) => `"${v.replace(/"/g, '""')}"`).join(",");
@@ -311,6 +344,7 @@ export default function ProductImport() {
   const [pendingConfirm, setPendingConfirm] = useState(false);
   const [correctedDownloaded, setCorrectedDownloaded] = useState(false);
   const [expandedDiffRows, setExpandedDiffRows] = useState<Set<number>>(new Set());
+  const [savedOverwriteProducts, setSavedOverwriteProducts] = useState<Map<string, AdminProduct>>(new Map());
 
   const toggleDiffRow = useCallback((rowIndex: number) => {
     setExpandedDiffRows((prev) => {
@@ -402,6 +436,7 @@ export default function ProductImport() {
     setRemovedRows([]);
     setImportResult(null);
     setCorrectedDownloaded(false);
+    setSavedOverwriteProducts(new Map());
 
     try {
       const isExcel = file.name.endsWith(".xlsx") || file.name.endsWith(".xls");
@@ -686,6 +721,7 @@ export default function ProductImport() {
     setHighlightedError(null);
     setFileName(`수정된 행 (${correctedRows.length}개)`);
     setCorrectedDownloaded(false);
+    setSavedOverwriteProducts(new Map());
   }, [correctedRows, existingSlugs, allowOverwrite]);
 
   const runImport = async () => {
@@ -693,6 +729,7 @@ export default function ProductImport() {
     setIsImporting(true);
     setPendingConfirm(false);
     setImportResult(null);
+    setSavedOverwriteProducts(new Map());
 
     // Re-fetch existing slugs immediately before processing to catch any
     // products created by another admin between file upload and import click.
@@ -926,6 +963,15 @@ export default function ProductImport() {
             };
           }),
         );
+
+        // Capture persisted product data from the upsert response for accurate CSV export.
+        setSavedOverwriteProducts((prev) => {
+          const next = new Map(prev);
+          for (const r of batchResults) {
+            if (!r.error && r.product) next.set(r.slug, r.product);
+          }
+          return next;
+        });
       } catch (err) {
         // Total batch failure (network error, 400, etc.) — mark all overwrite rows as error.
         const errMsg = err instanceof Error ? err.message : "저장 실패";
@@ -1153,6 +1199,15 @@ export default function ProductImport() {
             };
           }),
         );
+
+        // Accumulate persisted product data for accurate CSV export (merge with prior successes).
+        setSavedOverwriteProducts((prev) => {
+          const next = new Map(prev);
+          for (const r of batchResults) {
+            if (!r.error && r.product) next.set(r.slug, r.product);
+          }
+          return next;
+        });
       } catch (err) {
         // Total batch failure (network error, 400, etc.) — mark all overwrite rows as error.
         const errMsg = err instanceof Error ? err.message : "저장 실패";
@@ -1730,19 +1785,33 @@ export default function ProductImport() {
             {importResult !== null && (
               <div className="flex items-center justify-between gap-3">
                 <p className="text-sm text-green-600 font-medium">가져오기 완료!</p>
-                {(importResult.errors > 0 || importResult.skipped > 0) && (
-                  <Button
-                    type="button"
-                    size="sm"
-                    variant="outline"
-                    className="gap-2 border-destructive/40 text-destructive hover:bg-destructive/5 hover:text-destructive"
-                    onClick={() => void handleRetryErrors()}
-                    disabled={isImporting}
-                  >
-                    <RefreshCw className="h-4 w-4" />
-                    재시도 ({importResult.errors + importResult.skipped}개)
-                  </Button>
-                )}
+                <div className="flex items-center gap-2">
+                  {savedOverwriteProducts.size > 0 && (
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant="outline"
+                      className="gap-2"
+                      onClick={() => downloadImportResult(Array.from(savedOverwriteProducts.values()))}
+                    >
+                      <Download className="h-4 w-4" />
+                      결과 CSV 내보내기
+                    </Button>
+                  )}
+                  {(importResult.errors > 0 || importResult.skipped > 0) && (
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant="outline"
+                      className="gap-2 border-destructive/40 text-destructive hover:bg-destructive/5 hover:text-destructive"
+                      onClick={() => void handleRetryErrors()}
+                      disabled={isImporting}
+                    >
+                      <RefreshCw className="h-4 w-4" />
+                      재시도 ({importResult.errors + importResult.skipped}개)
+                    </Button>
+                  )}
+                </div>
               </div>
             )}
           </CardContent>
