@@ -5,6 +5,7 @@ import Papa from "papaparse";
 import * as XLSX from "xlsx";
 import {
   useAdminCreateProduct,
+  useAdminUpdateProduct,
   useAdminTranslate,
   adminListProducts,
   getAdminListProductsQueryKey,
@@ -15,6 +16,7 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
+import { Switch } from "@/components/ui/switch";
 import { ToastAction } from "@/components/ui/toast";
 import {
   ArrowLeft,
@@ -62,6 +64,7 @@ type ParsedRow = {
   status: RowStatus;
   errorMsg?: string;
   isDuplicate?: boolean;
+  isOverwrite?: boolean;
   originallyInvalid?: boolean;
 };
 
@@ -70,6 +73,7 @@ function validateRow(
   index: number,
   existingSlugs?: Set<string>,
   batchSlugs?: Set<string>,
+  allowOverwrite?: boolean,
 ): ParsedRow {
   const slug = (raw.slug ?? "").trim();
   const category = (raw.category ?? "").trim();
@@ -93,11 +97,13 @@ function validateRow(
 
   const slugValid = slug.length > 0 && SLUG_RE.test(slug);
 
-  const isDuplicate = slugValid && existingSlugs != null ? existingSlugs.has(slug) : false;
+  const isDbDuplicate = slugValid && existingSlugs != null ? existingSlugs.has(slug) : false;
   const isIntraFileDuplicate = slugValid && batchSlugs != null ? batchSlugs.has(slug) : false;
 
-  if (isDuplicate) errors.push("slug 중복");
+  if (isDbDuplicate && !allowOverwrite) errors.push("slug 중복");
   if (isIntraFileDuplicate) errors.push("slug 중복 (파일 내)");
+
+  const isOverwrite = isDbDuplicate && !!allowOverwrite && !isIntraFileDuplicate;
 
   return {
     index,
@@ -110,7 +116,8 @@ function validateRow(
     certs,
     errors,
     status: "pending",
-    isDuplicate: isDuplicate || isIntraFileDuplicate,
+    isDuplicate: (!allowOverwrite && isDbDuplicate) || isIntraFileDuplicate,
+    isOverwrite,
   };
 }
 
@@ -248,6 +255,7 @@ export default function ProductImport() {
   const { toast } = useToast();
 
   const createMut = useAdminCreateProduct();
+  const updateMut = useAdminUpdateProduct();
   const translateMut = useAdminTranslate();
 
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -264,10 +272,44 @@ export default function ProductImport() {
   } | null>(null);
   const [highlightedError, setHighlightedError] = useState<string | null>(null);
   const [removedRows, setRemovedRows] = useState<ParsedRow[]>([]);
+  const [allowOverwrite, setAllowOverwrite] = useState(false);
+  const [pendingConfirm, setPendingConfirm] = useState(false);
 
   const validRows = rows.filter((r) => r.errors.length === 0);
   const invalidRows = rows.filter((r) => r.errors.length > 0);
   const duplicateRows = invalidRows.filter((r) => r.isDuplicate);
+  const overwriteRows = validRows.filter((r) => r.isOverwrite);
+
+  const handleAllowOverwriteChange = useCallback(
+    (checked: boolean) => {
+      setAllowOverwrite(checked);
+      setPendingConfirm(false);
+      if (rows.length === 0) return;
+      const slugFreq = new Map<string, number>();
+      for (const r of rows) {
+        if (r.slug) slugFreq.set(r.slug, (slugFreq.get(r.slug) ?? 0) + 1);
+      }
+      const intraBatchDupes = new Set(
+        [...slugFreq.entries()].filter(([, n]) => n > 1).map(([s]) => s),
+      );
+      setRows((prev) =>
+        prev.map((r) => {
+          const raw: RawRow = {
+            slug: r.slug,
+            category: r.category,
+            name_ko: r.name_ko,
+            subCategory: r.subCategory,
+            material: r.material,
+            features_ko: r.features_ko,
+            certs: r.certs.join(","),
+          };
+          const revalidated = validateRow(raw, r.index, existingSlugs, intraBatchDupes, checked);
+          return { ...revalidated, status: r.status, originallyInvalid: r.originallyInvalid };
+        }),
+      );
+    },
+    [rows, existingSlugs],
+  );
 
   const errorCounts = invalidRows.reduce<Map<string, number>>((acc, row) => {
     for (const err of row.errors) {
@@ -362,7 +404,7 @@ export default function ProductImport() {
       );
 
       const parsed = rawRows.map((raw, i) => {
-        const row = validateRow(raw, i, slugSet, intraBatchDupes);
+        const row = validateRow(raw, i, slugSet, intraBatchDupes, allowOverwrite);
         return { ...row, originallyInvalid: row.errors.length > 0 };
       });
       setRows(parsed);
@@ -456,7 +498,7 @@ export default function ProductImport() {
           features_ko: r.features_ko,
           certs: r.certs.join(","),
         };
-        const revalidated = validateRow(raw, r.index, existingSlugs, intraBatchDupes);
+        const revalidated = validateRow(raw, r.index, existingSlugs, intraBatchDupes, allowOverwrite);
         return { ...revalidated, status: r.status, originallyInvalid: r.originallyInvalid };
       });
     });
@@ -465,6 +507,7 @@ export default function ProductImport() {
   const runImport = async () => {
     if (validRows.length === 0) return;
     setIsImporting(true);
+    setPendingConfirm(false);
     setImportResult(null);
 
     let localDone = 0;
@@ -559,7 +602,15 @@ export default function ProductImport() {
           certs: row.certs,
           translations,
         };
-        await createMut.mutateAsync({ data: payload });
+
+        if (row.isOverwrite) {
+          const existingId = existingProductMap.get(row.slug);
+          if (existingId == null) throw new Error("기존 제품 ID를 찾을 수 없습니다");
+          await updateMut.mutateAsync({ id: existingId, data: payload });
+        } else {
+          await createMut.mutateAsync({ data: payload });
+        }
+
         updateRowStatus(row.index, {
           status: "done",
           errorMsg: translateFailed ? "번역 실패 (한국어만 저장됨)" : undefined,
@@ -586,6 +637,15 @@ export default function ProductImport() {
       title: "가져오기 완료",
       description: parts.join(", "),
     });
+  };
+
+  const handleImportClick = () => {
+    if (!canImport) return;
+    if (overwriteRows.length > 0 && !pendingConfirm) {
+      setPendingConfirm(true);
+      return;
+    }
+    void runImport();
   };
 
   const canImport =
@@ -759,7 +819,16 @@ export default function ProductImport() {
                     </>
                   )}
                 </span>
-                <div className="flex items-center gap-2 shrink-0">
+                <div className="flex items-center gap-3 shrink-0">
+                  <label className="flex items-center gap-2 cursor-pointer select-none">
+                    <Switch
+                      checked={allowOverwrite}
+                      onCheckedChange={handleAllowOverwriteChange}
+                      disabled={isImporting}
+                      id="allow-overwrite-toggle"
+                    />
+                    <span className="text-xs font-medium text-muted-foreground">덮어쓰기 허용</span>
+                  </label>
                   {allCorrected && (
                     <Button
                       type="button"
@@ -786,7 +855,7 @@ export default function ProductImport() {
                   )}
 
                   <Button
-                    onClick={() => void runImport()}
+                    onClick={handleImportClick}
                     disabled={!canImport}
                     className="gap-2"
                   >
@@ -858,23 +927,33 @@ export default function ProductImport() {
                         슬러그 중복 — 가져오기를 진행할 수 없습니다
                       </p>
                     </div>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      disabled={isImporting}
-                      onClick={handleRemoveAllDuplicates}
-                      className="gap-1.5 border-amber-400/60 text-amber-800 hover:bg-amber-100 hover:text-amber-900 shrink-0 h-7 text-xs px-2.5"
-                    >
-                      <Trash2 className="h-3.5 w-3.5" />
-                      중복 행 전체 삭제
-                    </Button>
+                    <div className="flex items-center gap-2 shrink-0">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        disabled={isImporting}
+                        onClick={() => handleAllowOverwriteChange(true)}
+                        className="gap-1.5 border-amber-400/60 text-amber-800 hover:bg-amber-100 hover:text-amber-900 h-7 text-xs px-2.5"
+                      >
+                        덮어쓰기 허용
+                      </Button>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        disabled={isImporting}
+                        onClick={handleRemoveAllDuplicates}
+                        className="gap-1.5 border-amber-400/60 text-amber-800 hover:bg-amber-100 hover:text-amber-900 h-7 text-xs px-2.5"
+                      >
+                        <Trash2 className="h-3.5 w-3.5" />
+                        중복 행 전체 삭제
+                      </Button>
+                    </div>
                   </div>
                   <p className="text-xs text-amber-700 pl-6">
                     아래 {duplicateRows.length}개 슬러그가 이미 등록된 제품과 충돌합니다.
-                    일괄 가져오기는 기존 제품을 덮어쓰는 기능을 지원하지 않습니다.
-                    슬러그를 다른 값으로 변경하거나, 해당 행을 삭제한 뒤 진행하세요.
-                    기존 제품 내용을 수정하려면 각 제품의 편집 페이지를 이용하세요.
+                    슬러그를 다른 값으로 변경하거나, 해당 행을 삭제하거나, "덮어쓰기 허용"을 켜서 기존 제품을 교체하세요.
                   </p>
                   <ul className="pl-6 space-y-1.5">
                     {duplicateRows.map((row) => {
@@ -896,6 +975,72 @@ export default function ProductImport() {
                       );
                     })}
                   </ul>
+                </div>
+              )}
+
+              {overwriteRows.length > 0 && (
+                <div className="rounded-md border border-amber-300 bg-amber-50 px-4 py-3 space-y-2">
+                  <div className="flex items-start gap-2">
+                    <AlertTriangle className="h-4 w-4 text-amber-600 shrink-0 mt-0.5" />
+                    <p className="text-xs text-amber-800 font-medium">
+                      덮어쓰기 허용 — 아래 {overwriteRows.length}개 제품의 기존 데이터가 교체됩니다
+                    </p>
+                  </div>
+                  <ul className="pl-6 space-y-1.5">
+                    {overwriteRows.map((row) => {
+                      const productId = existingProductMap.get(row.slug);
+                      return (
+                        <li key={row.slug} className="flex items-center gap-2 text-xs">
+                          <code className="bg-amber-100 text-amber-800 border border-amber-200 rounded px-1.5 py-0.5 text-[11px] font-mono">
+                            {row.slug}
+                          </code>
+                          {productId != null && (
+                            <Link
+                              href={`/products/${productId}`}
+                              className="text-amber-700 underline underline-offset-2 hover:text-amber-900 font-medium"
+                            >
+                              현재 내용 보기 →
+                            </Link>
+                          )}
+                        </li>
+                      );
+                    })}
+                  </ul>
+                </div>
+              )}
+
+              {pendingConfirm && overwriteRows.length > 0 && (
+                <div className="rounded-md border-2 border-amber-400 bg-amber-50 px-4 py-4 space-y-3">
+                  <div className="flex items-start gap-3">
+                    <AlertTriangle className="h-5 w-5 text-amber-600 shrink-0 mt-0.5" />
+                    <div className="space-y-1">
+                      <p className="text-sm font-semibold text-amber-900">
+                        기존 제품 {overwriteRows.length}개를 교체합니다. 계속하시겠습니까?
+                      </p>
+                      <p className="text-xs text-amber-700">
+                        덮어쓰기는 되돌릴 수 없습니다. 이미지, 번역, 정렬 순서 등 기존 내용이 모두 파일의 데이터로 대체됩니다.
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2 pl-8">
+                    <Button
+                      size="sm"
+                      className="gap-2 bg-amber-600 hover:bg-amber-700 text-white"
+                      onClick={() => void runImport()}
+                    >
+                      <PlayCircle className="h-4 w-4" />
+                      교체 후 가져오기
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setPendingConfirm(false)}
+                      className="border-amber-400/60 text-amber-800 hover:bg-amber-100"
+                    >
+                      취소
+                    </Button>
+                  </div>
                 </div>
               )}
             </div>
@@ -996,13 +1141,15 @@ export default function ProductImport() {
                             ? "ring-2 ring-inset ring-destructive bg-destructive/10"
                             : hasValidationError
                               ? "bg-destructive/5"
-                              : row.status === "done"
-                                ? "bg-green-500/5"
-                                : row.status === "error"
-                                  ? "bg-destructive/5"
-                                  : row.status === "skipped"
-                                    ? "bg-amber-500/5"
-                                    : "",
+                              : row.isOverwrite && row.status === "pending"
+                                ? "bg-amber-500/5"
+                                : row.status === "done"
+                                  ? "bg-green-500/5"
+                                  : row.status === "error"
+                                    ? "bg-destructive/5"
+                                    : row.status === "skipped"
+                                      ? "bg-amber-500/5"
+                                      : "",
                         )}
                       >
                         <td className="px-4 py-2.5 text-muted-foreground text-xs">
@@ -1068,14 +1215,28 @@ export default function ProductImport() {
                               )}
                             </div>
                           ) : (
-                            <code
-                              className={cn(
-                                "text-xs rounded px-1 py-0.5",
-                                row.isDuplicate ? "bg-amber-100 text-amber-800" : "bg-muted",
+                            <div className="space-y-1">
+                              <code
+                                className={cn(
+                                  "text-xs rounded px-1 py-0.5",
+                                  row.isDuplicate
+                                    ? "bg-amber-100 text-amber-800"
+                                    : row.isOverwrite
+                                      ? "bg-amber-50 text-amber-800 border border-amber-200"
+                                      : "bg-muted",
+                                )}
+                              >
+                                {row.slug || <span className="text-muted-foreground italic">없음</span>}
+                              </code>
+                              {row.isOverwrite && row.status === "pending" && (
+                                <div>
+                                  <span className="inline-flex items-center gap-1 text-[10px] rounded px-1.5 py-0.5 bg-amber-100 text-amber-800 font-medium">
+                                    <AlertTriangle className="h-3 w-3" />
+                                    기존 제품 교체됨
+                                  </span>
+                                </div>
                               )}
-                            >
-                              {row.slug || <span className="text-muted-foreground italic">없음</span>}
-                            </code>
+                            </div>
                           )}
                         </td>
                         <td className="px-4 py-2.5 text-xs">
