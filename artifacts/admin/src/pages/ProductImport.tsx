@@ -375,6 +375,18 @@ export default function ProductImport() {
     });
   }, []);
 
+  const handleRemoveAllInvalid = useCallback(() => {
+    const toRemove = rows.filter((r) => r.errors.length > 0);
+    setRows((prev) => prev.filter((r) => r.errors.length === 0));
+    setRemovedRows((prev) => [...prev, ...toRemove]);
+  }, [rows]);
+
+  const handleRemoveAllDuplicates = useCallback(() => {
+    const toRemove = rows.filter((r) => r.isDuplicate);
+    setRows((prev) => prev.filter((r) => !r.isDuplicate));
+    setRemovedRows((prev) => [...prev, ...toRemove]);
+  }, [rows]);
+
   const handleRemoveRow = (rowIndex: number) => {
     const row = rows.find((r) => r.index === rowIndex);
     if (!row) return;
@@ -755,8 +767,21 @@ export default function ProductImport() {
               </div>
 
               {invalidRows.length > 0 && errorCounts.size > 0 && (
-                <div className="rounded-md border border-destructive/30 bg-destructive/5 px-4 py-3">
-                  <p className="text-xs font-medium text-destructive mb-2">오류 유형별 요약 — 클릭하면 해당 행으로 이동</p>
+                <div className="rounded-md border border-destructive/30 bg-destructive/5 px-4 py-3 space-y-2">
+                  <div className="flex items-center justify-between gap-2">
+                    <p className="text-xs font-medium text-destructive">오류 유형별 요약 — 클릭하면 해당 행으로 이동</p>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      disabled={isImporting}
+                      onClick={handleRemoveAllInvalid}
+                      className="gap-1.5 border-destructive/40 text-destructive hover:bg-destructive/5 hover:text-destructive shrink-0 h-7 text-xs px-2.5"
+                    >
+                      <Trash2 className="h-3.5 w-3.5" />
+                      오류 행 전체 삭제
+                    </Button>
+                  </div>
                   <div className="flex flex-wrap gap-2">
                     {Array.from(errorCounts.entries()).map(([errMsg, count]) => {
                       const isActive = highlightedError === errMsg;
@@ -790,11 +815,24 @@ export default function ProductImport() {
 
               {duplicateRows.length > 0 && (
                 <div className="rounded-md border border-amber-300 bg-amber-50 px-4 py-3 space-y-2">
-                  <div className="flex items-start gap-2">
-                    <AlertTriangle className="h-4 w-4 text-amber-600 shrink-0 mt-0.5" />
-                    <p className="text-xs text-amber-800 font-medium">
-                      슬러그 중복 — 가져오기를 진행할 수 없습니다
-                    </p>
+                  <div className="flex items-center justify-between gap-2">
+                    <div className="flex items-start gap-2">
+                      <AlertTriangle className="h-4 w-4 text-amber-600 shrink-0 mt-0.5" />
+                      <p className="text-xs text-amber-800 font-medium">
+                        슬러그 중복 — 가져오기를 진행할 수 없습니다
+                      </p>
+                    </div>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      disabled={isImporting}
+                      onClick={handleRemoveAllDuplicates}
+                      className="gap-1.5 border-amber-400/60 text-amber-800 hover:bg-amber-100 hover:text-amber-900 shrink-0 h-7 text-xs px-2.5"
+                    >
+                      <Trash2 className="h-3.5 w-3.5" />
+                      중복 행 전체 삭제
+                    </Button>
                   </div>
                   <p className="text-xs text-amber-700 pl-6">
                     아래 {duplicateRows.length}개 슬러그가 이미 등록된 제품과 충돌합니다.
