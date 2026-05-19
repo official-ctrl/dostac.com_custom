@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback, Fragment } from "react";
+import { useState, useRef, useCallback, useMemo, Fragment } from "react";
 import { Link, useLocation } from "wouter";
 import { useQueryClient } from "@tanstack/react-query";
 import Papa from "papaparse";
@@ -1018,6 +1018,19 @@ export default function ProductImport() {
   const canImport =
     rows.length > 0 && invalidRows.length === 0 && !isImporting && validRows.length > 0;
 
+  // Map from slug → sorted list of row indexes that share it (only for intra-batch dupes)
+  const intraBatchSlugMap = useMemo(() => {
+    const map = new Map<string, number[]>();
+    for (const r of rows) {
+      if (r.isIntraBatchDuplicate && r.slug) {
+        const arr = map.get(r.slug) ?? [];
+        arr.push(r.index);
+        map.set(r.slug, arr);
+      }
+    }
+    return map;
+  }, [rows]);
+
   return (
     <div className="px-8 py-8 space-y-6 max-w-5xl">
       <div className="flex items-center gap-3">
@@ -1651,6 +1664,22 @@ export default function ProductImport() {
                                     <AlertTriangle className="h-3 w-3" />
                                     {row.isIntraBatchDuplicate ? "파일 내 중복" : "중복 슬러그"}
                                   </span>
+                                  {row.isIntraBatchDuplicate &&
+                                    (intraBatchSlugMap.get(row.slug) ?? [])
+                                      .filter((idx) => idx !== row.index)
+                                      .map((idx) => (
+                                        <button
+                                          key={idx}
+                                          type="button"
+                                          onClick={() => {
+                                            const el = document.getElementById(`import-row-${idx}`);
+                                            if (el) el.scrollIntoView({ behavior: "smooth", block: "center" });
+                                          }}
+                                          className="text-[10px] text-amber-700 underline underline-offset-2 hover:text-amber-900 whitespace-nowrap cursor-pointer"
+                                        >
+                                          행 #{idx + 1}도 같은 슬러그 →
+                                        </button>
+                                      ))}
                                   {!row.isIntraBatchDuplicate && existingProductMap.get(row.slug)?.id != null && (
                                     <Link
                                       href={`/products/${existingProductMap.get(row.slug)?.id}`}
