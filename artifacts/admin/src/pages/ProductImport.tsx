@@ -895,15 +895,16 @@ export default function ProductImport() {
   };
 
   const handleRetryErrors = useCallback(async () => {
-    const errorRows = rows.filter((r) => r.status === "error");
-    if (errorRows.length === 0 || isImporting) return;
+    const retryRows = rows.filter((r) => r.status === "error" || r.status === "skipped");
+    if (retryRows.length === 0 || isImporting) return;
 
     const alreadyDone = rows.filter((r) => r.status === "done").length;
-    const alreadySkipped = rows.filter((r) => r.status === "skipped").length;
 
     setRows((prev) =>
       prev.map((r) =>
-        r.status === "error" ? { ...r, status: "pending" as RowStatus, errorMsg: undefined } : r,
+        r.status === "error" || r.status === "skipped"
+          ? { ...r, status: "pending" as RowStatus, errorMsg: undefined }
+          : r,
       ),
     );
     setIsImporting(true);
@@ -920,10 +921,22 @@ export default function ProductImport() {
     }
 
     const productMapForLoop = freshProductMap;
+    const freshSlugSet = new Set(freshProductMap.keys());
     let localDone = 0;
     let localErrors = 0;
+    let localSkipped = 0;
 
-    for (const row of errorRows) {
+    for (const row of retryRows) {
+      // Late-conflict rows: re-check if the slug is still taken.
+      // If it still conflicts (and overwrite is off), re-skip instead of trying.
+      if (row.status === "skipped" && !row.isOverwrite && freshSlugSet.has(row.slug)) {
+        updateRowStatus(row.index, {
+          status: "skipped",
+          errorMsg: "가져오는 사이 다른 관리자가 같은 슬러그로 제품을 등록했습니다.",
+        });
+        localSkipped++;
+        continue;
+      }
       updateRowStatus(row.index, { status: "translating" });
 
       let translations = emptyTranslations();
@@ -1040,16 +1053,17 @@ export default function ProductImport() {
     setIsImporting(false);
     setImportResult({
       done: alreadyDone + localDone,
-      skipped: alreadySkipped,
+      skipped: localSkipped,
       errors: localErrors,
     });
 
     const parts: string[] = [];
     if (localDone > 0) parts.push(`${localDone}개 재시도 성공`);
+    if (localSkipped > 0) parts.push(`${localSkipped}개 여전히 슬러그 충돌`);
     if (localErrors > 0) parts.push(`${localErrors}개 여전히 오류`);
     toast({
       title: "재시도 완료",
-      description: parts.join(", "),
+      description: parts.join(", ") || "변경 없음",
     });
   }, [
     rows,
@@ -1600,7 +1614,7 @@ export default function ProductImport() {
             {importResult !== null && (
               <div className="flex items-center justify-between gap-3">
                 <p className="text-sm text-green-600 font-medium">가져오기 완료!</p>
-                {importResult.errors > 0 && (
+                {(importResult.errors > 0 || importResult.skipped > 0) && (
                   <Button
                     type="button"
                     size="sm"
@@ -1610,7 +1624,7 @@ export default function ProductImport() {
                     disabled={isImporting}
                   >
                     <RefreshCw className="h-4 w-4" />
-                    오류 행만 재시도
+                    재시도 ({importResult.errors + importResult.skipped}개)
                   </Button>
                 )}
               </div>
