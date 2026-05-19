@@ -173,6 +173,14 @@ export default function Notices() {
                   const langCount = n.translations.filter((t) =>
                     (t.title?.trim() ?? "").length > 0,
                   ).length;
+                  const missingKoTitle = !ko?.title?.trim();
+                  const missingKoBody = !ko?.body?.trim();
+                  const showWarning = n.published && (missingKoTitle || missingKoBody);
+                  const warningMessage = missingKoTitle && missingKoBody
+                    ? "게시된 공지에 한국어 제목과 본문이 없습니다. 클릭하여 수정하세요."
+                    : missingKoTitle
+                      ? "게시된 공지에 한국어 제목이 없습니다. 클릭하여 수정하세요."
+                      : "게시된 공지에 한국어 본문이 없습니다. 클릭하여 수정하세요.";
                   return (
                     <tr
                       key={n.id}
@@ -184,7 +192,7 @@ export default function Notices() {
                           <span className="truncate">
                             {ko?.title ?? <span className="text-muted-foreground">(미입력)</span>}
                           </span>
-                          {!ko?.title?.trim() && n.published && (
+                          {showWarning && (
                             <TooltipProvider delayDuration={200}>
                               <Tooltip>
                                 <TooltipTrigger asChild>
@@ -195,7 +203,7 @@ export default function Notices() {
                                   </Link>
                                 </TooltipTrigger>
                                 <TooltipContent side="right">
-                                  <p>게시된 공지에 한국어 제목이 없습니다. 클릭하여 수정하세요.</p>
+                                  <p>{warningMessage}</p>
                                 </TooltipContent>
                               </Tooltip>
                             </TooltipProvider>
