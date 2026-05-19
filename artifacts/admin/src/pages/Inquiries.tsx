@@ -14,6 +14,14 @@ const STATUSES = [
   { value: "completed", label: "완료" },
 ];
 
+const INQUIRY_TYPES = [
+  { value: "all", label: "전체 유형" },
+  { value: "oem", label: "OEM" },
+  { value: "odm", label: "ODM" },
+  { value: "sample", label: "Sample" },
+  { value: "other", label: "기타" },
+];
+
 const STATUS_BADGE: Record<
   string,
   { label: string; variant: "default" | "secondary" | "outline" }
@@ -32,6 +40,7 @@ const INQUIRY_TYPE_LABEL: Record<string, string> = {
 
 export default function Inquiries() {
   const [status, setStatus] = useState<string>("all");
+  const [inquiryType, setInquiryType] = useState<string>("all");
   const [search, setSearch] = useState("");
   const { data: inquiries, isLoading } = useAdminListInquiries(
     status === "all"
@@ -41,17 +50,22 @@ export default function Inquiries() {
 
   const filtered = useMemo(() => {
     if (!inquiries) return [];
+    let result = inquiries;
+    if (inquiryType !== "all") {
+      result = result.filter((i) => i.inquiryType === inquiryType);
+    }
     const q = search.trim().toLowerCase();
-    if (!q) return inquiries;
-    return inquiries.filter(
+    if (!q) return result;
+    return result.filter(
       (i) =>
         i.name.toLowerCase().includes(q) ||
         i.email.toLowerCase().includes(q) ||
         i.message.toLowerCase().includes(q) ||
         i.company.toLowerCase().includes(q) ||
-        (i.productInterest ?? "").toLowerCase().includes(q),
+        (i.productInterest ?? "").toLowerCase().includes(q) ||
+        (i.inquiryType ?? "").toLowerCase().includes(q),
     );
-  }, [inquiries, search]);
+  }, [inquiries, search, inquiryType]);
 
   return (
     <div className="px-8 py-8 space-y-6 max-w-7xl">
@@ -68,7 +82,7 @@ export default function Inquiries() {
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
               type="search"
-              placeholder="이름·이메일·회사·제품·메시지 검색"
+              placeholder="이름·이메일·회사·제품·유형·메시지 검색"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="pl-9"
@@ -88,6 +102,20 @@ export default function Inquiries() {
               </Button>
             ))}
           </div>
+        </div>
+
+        <div className="flex flex-wrap gap-1">
+          {INQUIRY_TYPES.map((t) => (
+            <Button
+              key={t.value}
+              variant={inquiryType === t.value ? "secondary" : "outline"}
+              size="sm"
+              onClick={() => setInquiryType(t.value)}
+              data-testid={`filter-type-${t.value}`}
+            >
+              {t.label}
+            </Button>
+          ))}
         </div>
 
         {isLoading ? (
