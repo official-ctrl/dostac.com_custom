@@ -56,7 +56,10 @@ export default function Products() {
   }, []);
 
   const [pendingDelete, setPendingDelete] = useState<{ id: number; name: string } | null>(null);
-  const [catSort, setCatSort] = useState<"asc" | "desc" | null>(null);
+  const [catSort, setCatSort] = useState<"asc" | "desc" | null>(() => {
+    const v = initialParams.get("sort");
+    return v === "asc" || v === "desc" ? v : null;
+  });
   const [nameSort, setNameSort] = useState<"asc" | "desc" | null>(null);
   const [orderSort, setOrderSort] = useState<"asc" | "desc" | null>(null);
   const [statusSort, setStatusSort] = useState<"asc" | "desc" | null>(null);
@@ -98,9 +101,10 @@ export default function Products() {
       params.set("cat", activeCat);
       if (activeSubCat !== "all") params.set("subCat", activeSubCat);
     }
+    if (catSort) params.set("sort", catSort);
     const qs = params.toString();
     navigate(`/products${qs ? `?${qs}` : ""}`, { replace: true });
-  }, [search, activeCat, activeSubCat]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [search, activeCat, activeSubCat, catSort]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const subCategories = useMemo(() => {
     if (activeCat === "all" || !products) return [];
