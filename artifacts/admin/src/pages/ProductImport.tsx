@@ -514,11 +514,79 @@ export default function ProductImport() {
     setPendingConfirm(false);
     setImportResult(null);
 
+    // Re-fetch existing slugs immediately before processing to catch any
+    // products created by another admin between file upload and import click.
+    let freshSlugs = existingSlugs;
+    let freshProductMap = existingProductMap;
+    try {
+      const freshProducts = await adminListProducts();
+      freshProductMap = new Map(freshProducts.map((p) => [p.slug, p.id]));
+      freshSlugs = new Set(freshProductMap.keys());
+      setExistingSlugs(freshSlugs);
+      setExistingProductMap(freshProductMap);
+    } catch {
+      // Non-fatal: proceed with the cached slug set; the DB constraint will
+      // still catch true conflicts and surface them as row errors.
+      toast({
+        title: "슬러그 재확인 실패",
+        description: "최신 슬러그 목록을 불러오지 못했습니다. 기존 목록으로 진행합니다.",
+        variant: "destructive",
+      });
+    }
+
+    // Synchronously compute which valid rows now conflict with the fresh slug
+    // list (i.e. a product was created by another admin since file upload).
+    // We use the closure value of `validRows` (derived from render-time `rows`)
+    // so this is a deterministic, synchronous pass — no state-updater side
+    // effects needed here.
+    const lateConflictIndexes = new Set(
+      validRows
+        .filter((r) => freshSlugs.has(r.slug) && !r.isOverwrite)
+        .map((r) => r.index),
+    );
+
+    if (lateConflictIndexes.size > 0) {
+      // Mark conflicting rows in state for UI feedback.
+      setRows((prev) =>
+        prev.map((r) => {
+          if (!lateConflictIndexes.has(r.index)) return r;
+          return {
+            ...r,
+            isDuplicate: true,
+            errors: [...r.errors, "slug 중복 (가져오기 직전 추가됨)"],
+            status: "skipped" as RowStatus,
+            errorMsg: "가져오는 사이 다른 관리자가 같은 슬러그로 제품을 등록했습니다.",
+          };
+        }),
+      );
+      toast({
+        title: `슬러그 충돌 감지 — ${lateConflictIndexes.size}개 행 건너뜀`,
+        description: `가져오기 직전에 ${lateConflictIndexes.size}개 슬러그가 이미 등록되어 있어 해당 행을 건너뜁니다. 나머지 행은 계속 가져옵니다.`,
+        variant: "destructive",
+      });
+    }
+
+    // Use fresh product map for overwrite lookups throughout the loop.
+    const productMapForLoop = freshProductMap;
+
+    // Filter out late-conflict rows — process only the remaining valid rows.
+    const rowsToProcess = validRows.filter((r) => !lateConflictIndexes.has(r.index));
+
     let localDone = 0;
-    let localSkipped = 0;
+    let localSkipped = lateConflictIndexes.size;
     let localErrors = 0;
 
-    for (const row of validRows) {
+    if (rowsToProcess.length === 0) {
+      setIsImporting(false);
+      setImportResult({ done: localDone, skipped: localSkipped, errors: localErrors });
+      toast({
+        title: "가져오기 완료",
+        description: `${localSkipped}개 슬러그 충돌로 건너뜀`,
+      });
+      return;
+    }
+
+    for (const row of rowsToProcess) {
       updateRowStatus(row.index, { status: "translating" });
 
       let translations = emptyTranslations();
@@ -608,7 +676,7 @@ export default function ProductImport() {
         };
 
         if (row.isOverwrite) {
-          const existingId = existingProductMap.get(row.slug);
+          const existingId = productMapForLoop.get(row.slug);
           if (existingId == null) throw new Error("기존 제품 ID를 찾을 수 없습니다");
           await updateMut.mutateAsync({ id: existingId, data: payload });
         } else {
