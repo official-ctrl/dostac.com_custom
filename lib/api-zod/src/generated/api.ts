@@ -393,6 +393,14 @@ export const AdminListProductsResponseItem = zod.object({
       material: zod.string(),
     }),
   ),
+  missingTranslations: zod
+    .array(
+      zod.object({
+        type: zod.enum(["category", "subCategory"]),
+        slug: zod.string(),
+      }),
+    )
+    .optional(),
 });
 export const AdminListProductsResponse = zod.array(
   AdminListProductsResponseItem,
@@ -465,6 +473,14 @@ export const AdminUpsertProductsBySlugResponseItem = zod.object({
         material: zod.string(),
       }),
     ),
+    missingTranslations: zod
+      .array(
+        zod.object({
+          type: zod.enum(["category", "subCategory"]),
+          slug: zod.string(),
+        }),
+      )
+      .optional(),
   }),
 });
 export const AdminUpsertProductsBySlugResponse = zod.array(
@@ -495,6 +511,14 @@ export const AdminGetProductResponse = zod.object({
       material: zod.string(),
     }),
   ),
+  missingTranslations: zod
+    .array(
+      zod.object({
+        type: zod.enum(["category", "subCategory"]),
+        slug: zod.string(),
+      }),
+    )
+    .optional(),
 });
 
 export const AdminUpdateProductParams = zod.object({
@@ -542,6 +566,14 @@ export const AdminUpdateProductResponse = zod.object({
       material: zod.string(),
     }),
   ),
+  missingTranslations: zod
+    .array(
+      zod.object({
+        type: zod.enum(["category", "subCategory"]),
+        slug: zod.string(),
+      }),
+    )
+    .optional(),
 });
 
 export const AdminDeleteProductParams = zod.object({

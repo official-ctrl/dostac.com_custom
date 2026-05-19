@@ -1,6 +1,12 @@
 import { Router, type IRouter } from "express";
 import { asc, eq } from "drizzle-orm";
-import { db, productsTable, productTranslationsTable } from "@workspace/db";
+import {
+  db,
+  productsTable,
+  productTranslationsTable,
+  categoryTranslationsTable,
+  subCategoryTranslationsTable,
+} from "@workspace/db";
 import {
   AdminCreateProductBody,
   AdminUpdateProductBody,
@@ -12,6 +18,47 @@ import {
 import { requireAdmin } from "../middlewares/require-admin";
 
 const router: IRouter = Router();
+
+type MissingTranslationInfo = { type: "category" | "subCategory"; slug: string };
+
+async function ensureCategoryTranslations(
+  category: string,
+  subCategory: string,
+): Promise<MissingTranslationInfo[]> {
+  const missing: MissingTranslationInfo[] = [];
+
+  const catSlug = category.trim();
+  if (catSlug) {
+    const [existing] = await db
+      .select({ slug: categoryTranslationsTable.slug })
+      .from(categoryTranslationsTable)
+      .where(eq(categoryTranslationsTable.slug, catSlug));
+    if (!existing) {
+      await db
+        .insert(categoryTranslationsTable)
+        .values({ slug: catSlug })
+        .onConflictDoNothing();
+      missing.push({ type: "category", slug: catSlug });
+    }
+  }
+
+  const subSlug = subCategory.trim();
+  if (subSlug) {
+    const [existing] = await db
+      .select({ slug: subCategoryTranslationsTable.slug })
+      .from(subCategoryTranslationsTable)
+      .where(eq(subCategoryTranslationsTable.slug, subSlug));
+    if (!existing) {
+      await db
+        .insert(subCategoryTranslationsTable)
+        .values({ slug: subSlug })
+        .onConflictDoNothing();
+      missing.push({ type: "subCategory", slug: subSlug });
+    }
+  }
+
+  return missing;
+}
 
 async function loadProductWithTranslations(id: number) {
   const [product] = await db
@@ -102,8 +149,12 @@ router.post("/admin/products", async (req, res): Promise<void> => {
       .insert(productTranslationsTable)
       .values(translations.map((t) => ({ ...t, productId: product.id })));
   }
+  const missingTranslations = await ensureCategoryTranslations(
+    productData.category,
+    productData.subCategory ?? "",
+  );
   const result = await loadProductWithTranslations(product.id);
-  res.status(201).json(result);
+  res.status(201).json({ ...result, missingTranslations });
 });
 
 router.get("/admin/products/:id", async (req, res): Promise<void> => {
@@ -255,8 +306,12 @@ router.put("/admin/products/:id", async (req, res): Promise<void> => {
       .insert(productTranslationsTable)
       .values(translations.map((t) => ({ ...t, productId: id })));
   }
+  const missingTranslations = await ensureCategoryTranslations(
+    productData.category,
+    productData.subCategory ?? "",
+  );
   const result = await loadProductWithTranslations(id);
-  res.json(result);
+  res.json({ ...result, missingTranslations });
 });
 
 router.delete("/admin/products/:id", async (req, res): Promise<void> => {

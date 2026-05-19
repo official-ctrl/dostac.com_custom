@@ -5,6 +5,7 @@
  * DOSTAC website + admin API
  * OpenAPI spec version: 0.1.0
  */
+import type { MissingTranslationInfo } from "./missingTranslationInfo";
 import type { Translation } from "./translation";
 
 export interface AdminProduct {
@@ -18,4 +19,5 @@ export interface AdminProduct {
   published: boolean;
   certs: string[];
   translations: Translation[];
+  missingTranslations?: MissingTranslationInfo[];
 }

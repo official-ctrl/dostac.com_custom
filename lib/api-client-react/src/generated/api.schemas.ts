@@ -86,6 +86,19 @@ export interface AdminLoginInput {
   password: string;
 }
 
+export type MissingTranslationInfoType =
+  (typeof MissingTranslationInfoType)[keyof typeof MissingTranslationInfoType];
+
+export const MissingTranslationInfoType = {
+  category: "category",
+  subCategory: "subCategory",
+} as const;
+
+export interface MissingTranslationInfo {
+  type: MissingTranslationInfoType;
+  slug: string;
+}
+
 export interface AdminProduct {
   id: number;
   slug: string;
@@ -97,6 +110,7 @@ export interface AdminProduct {
   published: boolean;
   certs: string[];
   translations: Translation[];
+  missingTranslations?: MissingTranslationInfo[];
 }
 
 export interface AdminProductInput {

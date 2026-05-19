@@ -45,6 +45,8 @@ export * from "./inquiryUpdateStatus";
 export * from "./lang";
 export * from "./listPublicNoticesParams";
 export * from "./listPublicProductsParams";
+export * from "./missingTranslationInfo";
+export * from "./missingTranslationInfoType";
 export * from "./notFoundResponse";
 export * from "./noticeTranslation";
 export * from "./oemStep";

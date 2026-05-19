@@ -8,6 +8,7 @@ import {
   getAdminListProductsQueryKey,
   getAdminGetProductQueryKey,
   type AdminProductInput,
+  type AdminProduct,
   type Translation,
 } from "@workspace/api-client-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -148,6 +149,27 @@ export default function ProductEdit() {
     );
   };
 
+  const showMissingTranslationWarnings = (result: AdminProduct) => {
+    if (!result.missingTranslations || result.missingTranslations.length === 0) return;
+    const labels: Record<string, string> = { category: "카테고리", subCategory: "서브카테고리" };
+    for (const m of result.missingTranslations) {
+      toast({
+        title: `${labels[m.type] ?? m.type} 표시 이름 없음`,
+        description: (
+          <span>
+            <strong>{m.slug}</strong> 슬러그의 표시 이름이 없습니다.{" "}
+            <Link href="/category-translations" className="underline font-medium">
+              Category Names 페이지
+            </Link>
+            에서 이름을 입력하세요.
+          </span>
+        ),
+        variant: "default",
+        duration: 10000,
+      });
+    }
+  };
+
   const onSave = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!form.slug.trim()) {
@@ -170,9 +192,10 @@ export default function ProductEdit() {
             description: "제품 이미지가 없습니다 — 웹사이트에서 플레이스홀더 이미지가 표시됩니다.",
           });
         }
+        showMissingTranslationWarnings(created);
         navigate(`/products/${created.id}`);
       } else if (id !== null) {
-        await updateMut.mutateAsync({ id, data: form });
+        const updated = await updateMut.mutateAsync({ id, data: form });
         await qc.invalidateQueries({ queryKey: getAdminListProductsQueryKey() });
         await qc.invalidateQueries({ queryKey: getAdminGetProductQueryKey(id) });
         toast({ title: "저장 완료", description: ko.name });
@@ -182,6 +205,7 @@ export default function ProductEdit() {
             description: "제품 이미지가 없습니다 — 웹사이트에서 플레이스홀더 이미지가 표시됩니다.",
           });
         }
+        showMissingTranslationWarnings(updated);
       }
     } catch (err) {
       toast({

@@ -823,6 +823,18 @@ components:
         translations:
           type: array
           items: { $ref: "#/components/schemas/Translation" }
+        missingTranslations:
+          type: array
+          items: { $ref: "#/components/schemas/MissingTranslationInfo" }
+
+    MissingTranslationInfo:
+      type: object
+      required: [type, slug]
+      properties:
+        type:
+          type: string
+          enum: [category, subCategory]
+        slug: { type: string }
 
     AdminProductInput:
       type: object
