@@ -6,7 +6,7 @@ import {
   getAdminListProductsQueryKey,
 } from "@workspace/api-client-react";
 import { useQueryClient } from "@tanstack/react-query";
-import { Plus, Search, Pencil, Trash2, Eye, EyeOff, Upload, ImageOff, AlertTriangle, ArrowUpDown, ArrowUp, ArrowDown, Info, X } from "lucide-react";
+import { Plus, Search, Pencil, Trash2, Eye, EyeOff, Upload, ImageOff, AlertTriangle, ArrowUpDown, ArrowUp, ArrowDown, Info, X, CheckCircle2 } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -129,6 +129,18 @@ export default function Products() {
   }, [products]);
 
   const [gapBannerDismissed, setGapBannerDismissed] = useState(false);
+  const [showGapsResolvedFlash, setShowGapsResolvedFlash] = useState(false);
+  const prevContentGaps = useRef<typeof contentGaps>(undefined);
+
+  useEffect(() => {
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    if (prevContentGaps.current != null && contentGaps === null) {
+      setShowGapsResolvedFlash(true);
+      timer = setTimeout(() => setShowGapsResolvedFlash(false), 3000);
+    }
+    prevContentGaps.current = contentGaps;
+    return () => clearTimeout(timer);
+  }, [contentGaps]);
 
   const filtered = useMemo(() => {
     if (!products) return [];
@@ -239,6 +251,13 @@ export default function Products() {
             >
               <X className="h-4 w-4" />
             </button>
+          </div>
+        )}
+
+        {showGapsResolvedFlash && (
+          <div className="flex items-center gap-2 text-sm text-green-700 bg-green-50 border border-green-200 rounded-md px-3 py-2.5">
+            <CheckCircle2 className="h-4 w-4 shrink-0 text-green-500" />
+            모든 콘텐츠 누락이 해결되었습니다.
           </div>
         )}
 
