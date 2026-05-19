@@ -93,6 +93,8 @@ function ContactContent() {
   const [formHighlight, setFormHighlight] = useState(false);
 
   useEffect(() => {
+    let focusTimer: ReturnType<typeof setTimeout> | undefined;
+
     const scrollAndHighlight = (el: HTMLElement) => {
       const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
       el.scrollIntoView({ behavior: reduced ? "instant" : "smooth", block: "start" });
@@ -101,6 +103,14 @@ function ContactContent() {
         requestAnimationFrame(() => {
           requestAnimationFrame(() => setFormHighlight(true));
         });
+      }
+      const isTouch = navigator.maxTouchPoints > 0;
+      if (!isTouch) {
+        clearTimeout(focusTimer);
+        focusTimer = setTimeout(() => {
+          const nameInput = document.getElementById("name") as HTMLInputElement | null;
+          nameInput?.focus({ preventScroll: true });
+        }, reduced ? 0 : 700);
       }
     };
 
@@ -123,7 +133,10 @@ function ContactContent() {
     };
 
     window.addEventListener("hashchange", handleHashChange);
-    return () => window.removeEventListener("hashchange", handleHashChange);
+    return () => {
+      window.removeEventListener("hashchange", handleHashChange);
+      clearTimeout(focusTimer);
+    };
   }, [search]);
 
   const [form, setForm] = useState({
