@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useCallback, Fragment } from "react";
 import { Link, useLocation } from "wouter";
 import { useQueryClient } from "@tanstack/react-query";
 import Papa from "papaparse";
@@ -307,6 +307,16 @@ export default function ProductImport() {
   const [allowOverwrite, setAllowOverwrite] = useState(false);
   const [pendingConfirm, setPendingConfirm] = useState(false);
   const [correctedDownloaded, setCorrectedDownloaded] = useState(false);
+  const [expandedDiffRows, setExpandedDiffRows] = useState<Set<number>>(new Set());
+
+  const toggleDiffRow = useCallback((rowIndex: number) => {
+    setExpandedDiffRows((prev) => {
+      const next = new Set(prev);
+      if (next.has(rowIndex)) next.delete(rowIndex);
+      else next.add(rowIndex);
+      return next;
+    });
+  }, []);
 
   const validRows = rows.filter((r) => r.errors.length === 0);
   const invalidRows = rows.filter((r) => r.errors.length > 0);
@@ -1380,9 +1390,11 @@ export default function ProductImport() {
                     const hasValidationError = row.errors.length > 0;
                     const isHighlighted =
                       highlightedError !== null && row.errors.includes(highlightedError);
+                    const isDiffExpanded = expandedDiffRows.has(row.index);
+                    const existingForDiff = row.isOverwrite ? existingProductMap.get(row.slug) : undefined;
                     return (
+                      <Fragment key={row.index}>
                       <tr
-                        key={row.index}
                         id={`import-row-${row.index}`}
                         className={cn(
                           "border-b border-border last:border-0 transition-colors",
@@ -1478,11 +1490,24 @@ export default function ProductImport() {
                                 {row.slug || <span className="text-muted-foreground italic">없음</span>}
                               </code>
                               {row.isOverwrite && row.status === "pending" && (
-                                <div>
+                                <div className="flex items-center gap-1.5 flex-wrap">
                                   <span className="inline-flex items-center gap-1 text-[10px] rounded px-1.5 py-0.5 bg-amber-100 text-amber-800 font-medium">
                                     <AlertTriangle className="h-3 w-3" />
                                     기존 제품 교체됨
                                   </span>
+                                  <button
+                                    type="button"
+                                    onClick={() => toggleDiffRow(row.index)}
+                                    className="inline-flex items-center gap-0.5 text-[10px] rounded px-1.5 py-0.5 bg-amber-50 border border-amber-300 text-amber-700 hover:bg-amber-100 font-medium transition-colors"
+                                  >
+                                    변경 내용 보기
+                                    <ChevronDown
+                                      className={cn(
+                                        "h-3 w-3 transition-transform duration-150",
+                                        isDiffExpanded && "rotate-180",
+                                      )}
+                                    />
+                                  </button>
                                 </div>
                               )}
                             </div>
@@ -1608,6 +1633,78 @@ export default function ProductImport() {
                           </button>
                         </td>
                       </tr>
+                      {row.isOverwrite && row.status === "pending" && isDiffExpanded && existingForDiff != null && (() => {
+                        const koTr = existingForDiff.translations.find((t) => t.lang === "ko");
+                        const diffFields: Array<{ label: string; current: string; incoming: string; multiline?: boolean }> = [
+                          { label: "slug", current: existingForDiff.slug, incoming: row.slug },
+                          { label: "category", current: existingForDiff.category, incoming: row.category },
+                          { label: "name_ko", current: koTr?.name ?? "", incoming: row.name_ko },
+                          { label: "material", current: koTr?.material ?? "", incoming: row.material },
+                          { label: "features_ko", current: koTr?.features ?? "", incoming: row.features_ko, multiline: true },
+                          { label: "certs", current: (existingForDiff.certs ?? []).join(", "), incoming: row.certs.join(", ") },
+                        ];
+                        const changedCount = diffFields.filter((f) => f.current !== f.incoming).length;
+                        return (
+                          <tr className="border-b border-border">
+                            <td colSpan={8} className="px-4 pb-4 pt-0 bg-amber-50/40">
+                              <div className="rounded-md border border-amber-200 overflow-hidden">
+                                <div className="flex items-center justify-between px-3 py-1.5 bg-amber-100/60 border-b border-amber-200">
+                                  <span className="text-[11px] font-semibold text-amber-900">
+                                    변경 내용 비교
+                                  </span>
+                                  <span className="text-[10px] text-amber-700">
+                                    {changedCount > 0
+                                      ? `${changedCount}개 필드 변경됨`
+                                      : "변경 없음"}
+                                  </span>
+                                </div>
+                                <div className="grid grid-cols-[110px_1fr_1fr] text-[11px] bg-amber-50/80 border-b border-amber-200">
+                                  <div className="px-3 py-1.5 font-medium text-amber-900/70">필드</div>
+                                  <div className="px-3 py-1.5 font-medium text-amber-900/70 border-l border-amber-200">현재 저장된 값</div>
+                                  <div className="px-3 py-1.5 font-medium text-amber-900/70 border-l border-amber-200">가져올 값</div>
+                                </div>
+                                {diffFields.map(({ label, current, incoming, multiline }) => {
+                                  const changed = current !== incoming;
+                                  return (
+                                    <div
+                                      key={label}
+                                      className={cn(
+                                        "grid grid-cols-[110px_1fr_1fr] text-[11px] border-b border-amber-100 last:border-0",
+                                        changed ? "bg-white" : "opacity-40",
+                                      )}
+                                    >
+                                      <div className="px-3 py-2 font-mono text-amber-800 flex items-start">
+                                        {label}
+                                      </div>
+                                      <div className={cn(
+                                        "px-3 py-2 border-l border-amber-100 text-muted-foreground",
+                                        changed && "line-through decoration-destructive/50",
+                                      )}>
+                                        {multiline ? (
+                                          <pre className="whitespace-pre-wrap font-sans text-[11px]">{current || "—"}</pre>
+                                        ) : (
+                                          <span>{current || "—"}</span>
+                                        )}
+                                      </div>
+                                      <div className={cn(
+                                        "px-3 py-2 border-l border-amber-100",
+                                        changed ? "text-amber-900 font-medium" : "text-muted-foreground",
+                                      )}>
+                                        {multiline ? (
+                                          <pre className="whitespace-pre-wrap font-sans text-[11px]">{incoming || "—"}</pre>
+                                        ) : (
+                                          <span>{incoming || "—"}</span>
+                                        )}
+                                      </div>
+                                    </div>
+                                  );
+                                })}
+                              </div>
+                            </td>
+                          </tr>
+                        );
+                      })()}
+                      </Fragment>
                     );
                   })}
                 </tbody>
