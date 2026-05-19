@@ -1028,6 +1028,20 @@ export default function ProductImport() {
                 </div>
               </div>
 
+              {originallyInvalidRows.length > 0 && !allCorrected && (
+                <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                  <span className="inline-flex items-center gap-1.5 rounded-full bg-amber-500/10 border border-amber-500/30 px-3 py-1 font-medium text-amber-700">
+                    <AlertTriangle className="h-3.5 w-3.5 shrink-0" />
+                    {correctedRows.length} / {originallyInvalidRows.length} 오류 수정됨
+                  </span>
+                  {originallyInvalidRows.length - correctedRows.length > 0 && (
+                    <span className="text-muted-foreground">
+                      — {originallyInvalidRows.length - correctedRows.length}개 남음
+                    </span>
+                  )}
+                </div>
+              )}
+
               {invalidRows.length > 0 && errorCounts.size > 0 && (
                 <div className="rounded-md border border-destructive/30 bg-destructive/5 px-4 py-3 space-y-2">
                   <div className="flex items-center justify-between gap-2">
