@@ -201,109 +201,113 @@ router.put("/admin/products/upsert-by-slug", async (req, res): Promise<void> => 
     res.status(400).json({ error: parsed.error.message });
     return;
   }
-  for (const item of parsed.data) {
-    const slugError = validateCategorySlugs(item.category, item.subCategory);
-    if (slugError) {
-      res.status(400).json({ error: `Row "${item.slug}": ${slugError}` });
-      return;
-    }
-  }
 
-  const results: Array<{ action: "created" | "updated"; product: unknown }> = [];
+  const results: Array<{
+    slug: string;
+    action?: "created" | "updated";
+    product?: unknown;
+    error?: string;
+  }> = [];
 
   for (const item of parsed.data) {
     const { translations, ...productData } = item;
 
-    const [existing] = await db
-      .select({ id: productsTable.id })
-      .from(productsTable)
-      .where(eq(productsTable.slug, productData.slug));
+    const slugError = validateCategorySlugs(item.category, item.subCategory);
+    if (slugError) {
+      results.push({ slug: item.slug, error: slugError });
+      continue;
+    }
 
-    let productId: number;
-    let action: "created" | "updated";
+    try {
+      const [existing] = await db
+        .select({ id: productsTable.id })
+        .from(productsTable)
+        .where(eq(productsTable.slug, productData.slug));
 
-    if (existing) {
-      // Load existing translations before updating so we can merge fields
-      const existingTranslations = await db
-        .select()
-        .from(productTranslationsTable)
-        .where(eq(productTranslationsTable.productId, existing.id));
+      let productId: number;
+      let action: "created" | "updated";
 
-      const existingByLang = new Map(existingTranslations.map((t) => [t.lang, t]));
+      if (existing) {
+        // Load existing translations before updating so we can merge fields
+        const existingTranslations = await db
+          .select()
+          .from(productTranslationsTable)
+          .where(eq(productTranslationsTable.productId, existing.id));
 
-      // Merge incoming with existing: incoming name/features/material overwrite;
-      // existing headline/valueProp/body are preserved unless the incoming value is non-empty.
-      const mergedTranslations = translations.map((incoming) => {
-        const ex = existingByLang.get(incoming.lang);
-        if (!ex) return incoming;
-        return {
-          lang: incoming.lang,
-          name: incoming.name || ex.name,
-          features: incoming.features || ex.features,
-          material: incoming.material || ex.material,
-          headline: incoming.headline || ex.headline,
-          valueProp: incoming.valueProp || ex.valueProp,
-          body: incoming.body || ex.body,
-        };
-      });
+        const existingByLang = new Map(existingTranslations.map((t) => [t.lang, t]));
 
-      // Keep any languages that exist in DB but were not in the incoming payload
-      for (const [lang, ex] of existingByLang) {
-        if (!mergedTranslations.some((t) => t.lang === lang)) {
-          mergedTranslations.push({
-            lang: ex.lang as "ko" | "en" | "ja" | "zh" | "vi",
-            name: ex.name,
-            headline: ex.headline,
-            valueProp: ex.valueProp,
-            body: ex.body,
-            features: ex.features,
-            material: ex.material,
-          });
+        // Merge incoming with existing: incoming name/features/material overwrite;
+        // existing headline/valueProp/body are preserved unless the incoming value is non-empty.
+        const mergedTranslations = translations.map((incoming) => {
+          const ex = existingByLang.get(incoming.lang);
+          if (!ex) return incoming;
+          return {
+            lang: incoming.lang,
+            name: incoming.name || ex.name,
+            features: incoming.features || ex.features,
+            material: incoming.material || ex.material,
+            headline: incoming.headline || ex.headline,
+            valueProp: incoming.valueProp || ex.valueProp,
+            body: incoming.body || ex.body,
+          };
+        });
+
+        // Keep any languages that exist in DB but were not in the incoming payload
+        for (const [lang, ex] of existingByLang) {
+          if (!mergedTranslations.some((t) => t.lang === lang)) {
+            mergedTranslations.push({
+              lang: ex.lang as "ko" | "en" | "ja" | "zh" | "vi",
+              name: ex.name,
+              headline: ex.headline,
+              valueProp: ex.valueProp,
+              body: ex.body,
+              features: ex.features,
+              material: ex.material,
+            });
+          }
+        }
+
+        const [updated] = await db
+          .update(productsTable)
+          .set(productData)
+          .where(eq(productsTable.id, existing.id))
+          .returning({ id: productsTable.id });
+        if (!updated) throw new Error(`Failed to update product: ${productData.slug}`);
+        productId = updated.id;
+        action = "updated";
+
+        await db
+          .delete(productTranslationsTable)
+          .where(eq(productTranslationsTable.productId, productId));
+
+        if (mergedTranslations.length > 0) {
+          await db
+            .insert(productTranslationsTable)
+            .values(mergedTranslations.map((t) => ({ ...t, productId })));
+        }
+      } else {
+        const [created] = await db
+          .insert(productsTable)
+          .values(productData)
+          .returning({ id: productsTable.id });
+        if (!created) throw new Error(`Failed to create product: ${productData.slug}`);
+        productId = created.id;
+        action = "created";
+
+        if (translations.length > 0) {
+          await db
+            .insert(productTranslationsTable)
+            .values(translations.map((t) => ({ ...t, productId })));
         }
       }
 
-      const [updated] = await db
-        .update(productsTable)
-        .set(productData)
-        .where(eq(productsTable.id, existing.id))
-        .returning({ id: productsTable.id });
-      if (!updated) {
-        res.status(500).json({ error: `Failed to update product: ${productData.slug}` });
-        return;
-      }
-      productId = updated.id;
-      action = "updated";
-
-      await db
-        .delete(productTranslationsTable)
-        .where(eq(productTranslationsTable.productId, productId));
-
-      if (mergedTranslations.length > 0) {
-        await db
-          .insert(productTranslationsTable)
-          .values(mergedTranslations.map((t) => ({ ...t, productId })));
-      }
-    } else {
-      const [created] = await db
-        .insert(productsTable)
-        .values(productData)
-        .returning({ id: productsTable.id });
-      if (!created) {
-        res.status(500).json({ error: `Failed to create product: ${productData.slug}` });
-        return;
-      }
-      productId = created.id;
-      action = "created";
-
-      if (translations.length > 0) {
-        await db
-          .insert(productTranslationsTable)
-          .values(translations.map((t) => ({ ...t, productId })));
-      }
+      const product = await loadProductWithTranslations(productId);
+      results.push({ slug: item.slug, action, product });
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err);
+      req.log.error({ slug: item.slug, err }, "upsert-by-slug item failed");
+      results.push({ slug: item.slug, error: message });
     }
-
-    const product = await loadProductWithTranslations(productId);
-    results.push({ action, product });
   }
 
   res.json(results);

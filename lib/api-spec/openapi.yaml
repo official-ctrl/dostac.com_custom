@@ -866,12 +866,14 @@ components:
 
     AdminUpsertProductResult:
       type: object
-      required: [action, product]
+      required: [slug]
       properties:
+        slug: { type: string }
         action:
           type: string
           enum: [created, updated]
         product: { $ref: "#/components/schemas/AdminProduct" }
+        error: { type: string }
 
     AdminNotice:
       type: object

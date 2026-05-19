@@ -9,6 +9,8 @@ import type { AdminProduct } from "./adminProduct";
 import type { AdminUpsertProductResultAction } from "./adminUpsertProductResultAction";
 
 export interface AdminUpsertProductResult {
-  action: AdminUpsertProductResultAction;
-  product: AdminProduct;
+  slug: string;
+  action?: AdminUpsertProductResultAction;
+  product?: AdminProduct;
+  error?: string;
 }

@@ -766,6 +766,16 @@ export default function ProductImport() {
       return;
     }
 
+    // Overwrite rows are translated per-row (showing progress) then saved in one
+    // batch call to reduce network round trips.
+    type OverwriteEntry = {
+      row: ParsedRow;
+      payload: AdminProductInput;
+      diffSummary: string[] | undefined;
+      translateFailed: boolean;
+    };
+    const overwriteBatch: OverwriteEntry[] = [];
+
     for (const row of rowsToProcess) {
       updateRowStatus(row.index, { status: "translating" });
 
@@ -841,42 +851,90 @@ export default function ProductImport() {
         });
       }
 
-      updateRowStatus(row.index, { status: "creating" });
+      const payload: AdminProductInput = {
+        slug: row.slug,
+        category: row.category,
+        subCategory: row.subCategory,
+        sortOrder: 100,
+        imageUrl: null,
+        published: true,
+        certs: row.certs,
+        translations,
+      };
+
+      if (row.isOverwrite) {
+        // Collect for the single batch upsert call below.
+        const existingProduct = productMapForLoop.get(row.slug);
+        const diffSummary = existingProduct ? computeDiff(row, existingProduct) : undefined;
+        overwriteBatch.push({ row, payload, diffSummary, translateFailed });
+        // Row stays in current status (translating or error) until the batch fires.
+      } else {
+        updateRowStatus(row.index, { status: "creating" });
+        try {
+          await createMut.mutateAsync({ data: payload });
+          updateRowStatus(row.index, {
+            status: "done",
+            errorMsg: translateFailed ? "번역 실패 (한국어만 저장됨)" : undefined,
+          });
+          localDone++;
+        } catch (err) {
+          updateRowStatus(row.index, {
+            status: "error",
+            errorMsg: err instanceof Error ? err.message : "저장 실패",
+          });
+          localErrors++;
+        }
+      }
+    }
+
+    // Send all overwrite rows in a single batch upsert call.
+    if (overwriteBatch.length > 0) {
+      const overwriteIndexes = new Set(overwriteBatch.map((e) => e.row.index));
+
+      // Mark every overwrite row as "creating" before the call.
+      setRows((prev) =>
+        prev.map((r) => (overwriteIndexes.has(r.index) ? { ...r, status: "creating" as RowStatus } : r)),
+      );
 
       try {
-        const payload: AdminProductInput = {
-          slug: row.slug,
-          category: row.category,
-          subCategory: row.subCategory,
-          sortOrder: 100,
-          imageUrl: null,
-          published: true,
-          certs: row.certs,
-          translations,
-        };
+        const batchResults = await upsertMut.mutateAsync({ data: overwriteBatch.map((e) => e.payload) });
 
-        let diffSummary: string[] | undefined;
-        if (row.isOverwrite) {
-          const existingProduct = productMapForLoop.get(row.slug);
-          if (existingProduct == null) throw new Error("기존 제품을 찾을 수 없습니다");
-          diffSummary = computeDiff(row, existingProduct);
-          await upsertMut.mutateAsync({ data: [payload] });
-        } else {
-          await createMut.mutateAsync({ data: payload });
+        // Build lookup maps.
+        const resultBySlug = new Map(batchResults.map((r) => [r.slug, r]));
+        const entryMap = new Map(overwriteBatch.map((e) => [e.row.index, e]));
+
+        // Count per-item outcomes before setRows to avoid strict-mode double-count.
+        for (const entry of overwriteBatch) {
+          if (resultBySlug.get(entry.row.slug)?.error) localErrors++;
+          else localDone++;
         }
 
-        updateRowStatus(row.index, {
-          status: "done",
-          errorMsg: translateFailed ? "번역 실패 (한국어만 저장됨)" : undefined,
-          diffSummary,
-        });
-        localDone++;
+        // Apply per-row status based on individual result.
+        setRows((prev) =>
+          prev.map((r) => {
+            const entry = entryMap.get(r.index);
+            if (!entry) return r;
+            const result = resultBySlug.get(entry.row.slug);
+            if (result?.error) {
+              return { ...r, status: "error" as RowStatus, errorMsg: result.error };
+            }
+            return {
+              ...r,
+              status: "done" as RowStatus,
+              errorMsg: entry.translateFailed ? "번역 실패 (한국어만 저장됨)" : undefined,
+              diffSummary: entry.diffSummary,
+            };
+          }),
+        );
       } catch (err) {
-        updateRowStatus(row.index, {
-          status: "error",
-          errorMsg: err instanceof Error ? err.message : "저장 실패",
-        });
-        localErrors++;
+        // Total batch failure (network error, 400, etc.) — mark all overwrite rows as error.
+        const errMsg = err instanceof Error ? err.message : "저장 실패";
+        setRows((prev) =>
+          prev.map((r) =>
+            overwriteIndexes.has(r.index) ? { ...r, status: "error" as RowStatus, errorMsg: errMsg } : r,
+          ),
+        );
+        localErrors += overwriteBatch.length;
       }
     }
 
@@ -925,6 +983,16 @@ export default function ProductImport() {
     let localDone = 0;
     let localErrors = 0;
     let localSkipped = 0;
+
+    // Overwrite rows are translated per-row (showing progress) then saved in one
+    // batch call to reduce network round trips.
+    type RetryOverwriteEntry = {
+      row: ParsedRow;
+      payload: AdminProductInput;
+      diffSummary: string[] | undefined;
+      translateFailed: boolean;
+    };
+    const retryOverwriteBatch: RetryOverwriteEntry[] = [];
 
     for (const row of retryRows) {
       // Late-conflict rows: re-check if the slug is still taken.
@@ -1010,42 +1078,90 @@ export default function ProductImport() {
         });
       }
 
-      updateRowStatus(row.index, { status: "creating" });
+      const payload: AdminProductInput = {
+        slug: row.slug,
+        category: row.category,
+        subCategory: row.subCategory,
+        sortOrder: 100,
+        imageUrl: null,
+        published: true,
+        certs: row.certs,
+        translations,
+      };
+
+      if (row.isOverwrite) {
+        // Collect for the single batch upsert call below.
+        const existingProduct = productMapForLoop.get(row.slug);
+        const diffSummary = existingProduct ? computeDiff(row, existingProduct) : undefined;
+        retryOverwriteBatch.push({ row, payload, diffSummary, translateFailed });
+        // Row stays in current status (translating or error) until the batch fires.
+      } else {
+        updateRowStatus(row.index, { status: "creating" });
+        try {
+          await createMut.mutateAsync({ data: payload });
+          updateRowStatus(row.index, {
+            status: "done",
+            errorMsg: translateFailed ? "번역 실패 (한국어만 저장됨)" : undefined,
+          });
+          localDone++;
+        } catch (err) {
+          updateRowStatus(row.index, {
+            status: "error",
+            errorMsg: err instanceof Error ? err.message : "저장 실패",
+          });
+          localErrors++;
+        }
+      }
+    }
+
+    // Send all overwrite rows in a single batch upsert call.
+    if (retryOverwriteBatch.length > 0) {
+      const overwriteIndexes = new Set(retryOverwriteBatch.map((e) => e.row.index));
+
+      // Mark every overwrite row as "creating" before the call.
+      setRows((prev) =>
+        prev.map((r) => (overwriteIndexes.has(r.index) ? { ...r, status: "creating" as RowStatus } : r)),
+      );
 
       try {
-        const payload: AdminProductInput = {
-          slug: row.slug,
-          category: row.category,
-          subCategory: row.subCategory,
-          sortOrder: 100,
-          imageUrl: null,
-          published: true,
-          certs: row.certs,
-          translations,
-        };
+        const batchResults = await upsertMut.mutateAsync({ data: retryOverwriteBatch.map((e) => e.payload) });
 
-        let diffSummary: string[] | undefined;
-        if (row.isOverwrite) {
-          const existingProduct = productMapForLoop.get(row.slug);
-          if (existingProduct == null) throw new Error("기존 제품을 찾을 수 없습니다");
-          diffSummary = computeDiff(row, existingProduct);
-          await upsertMut.mutateAsync({ data: [payload] });
-        } else {
-          await createMut.mutateAsync({ data: payload });
+        // Build lookup maps.
+        const resultBySlug = new Map(batchResults.map((r) => [r.slug, r]));
+        const entryMap = new Map(retryOverwriteBatch.map((e) => [e.row.index, e]));
+
+        // Count per-item outcomes before setRows to avoid strict-mode double-count.
+        for (const entry of retryOverwriteBatch) {
+          if (resultBySlug.get(entry.row.slug)?.error) localErrors++;
+          else localDone++;
         }
 
-        updateRowStatus(row.index, {
-          status: "done",
-          errorMsg: translateFailed ? "번역 실패 (한국어만 저장됨)" : undefined,
-          diffSummary,
-        });
-        localDone++;
+        // Apply per-row status based on individual result.
+        setRows((prev) =>
+          prev.map((r) => {
+            const entry = entryMap.get(r.index);
+            if (!entry) return r;
+            const result = resultBySlug.get(entry.row.slug);
+            if (result?.error) {
+              return { ...r, status: "error" as RowStatus, errorMsg: result.error };
+            }
+            return {
+              ...r,
+              status: "done" as RowStatus,
+              errorMsg: entry.translateFailed ? "번역 실패 (한국어만 저장됨)" : undefined,
+              diffSummary: entry.diffSummary,
+            };
+          }),
+        );
       } catch (err) {
-        updateRowStatus(row.index, {
-          status: "error",
-          errorMsg: err instanceof Error ? err.message : "저장 실패",
-        });
-        localErrors++;
+        // Total batch failure (network error, 400, etc.) — mark all overwrite rows as error.
+        const errMsg = err instanceof Error ? err.message : "저장 실패";
+        setRows((prev) =>
+          prev.map((r) =>
+            overwriteIndexes.has(r.index) ? { ...r, status: "error" as RowStatus, errorMsg: errMsg } : r,
+          ),
+        );
+        localErrors += retryOverwriteBatch.length;
       }
     }
 

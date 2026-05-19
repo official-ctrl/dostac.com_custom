@@ -454,38 +454,42 @@ export const AdminUpsertProductsBySlugBody = zod.array(
 );
 
 export const AdminUpsertProductsBySlugResponseItem = zod.object({
-  action: zod.enum(["created", "updated"]),
-  product: zod.object({
-    id: zod.number(),
-    slug: zod.string(),
-    category: zod.string(),
-    subCategory: zod.string(),
-    sortOrder: zod.number(),
-    imageUrl: zod.string().nullish(),
-    published: zod.boolean(),
-    certs: zod.array(zod.string()),
-    translations: zod.array(
-      zod.object({
-        lang: zod.enum(["ko", "en", "ja", "zh", "vi"]),
-        name: zod.string(),
-        headline: zod.string(),
-        valueProp: zod.string(),
-        body: zod.string(),
-        features: zod.string(),
-        material: zod.string(),
-      }),
-    ),
-    missingTranslations: zod
-      .array(
+  slug: zod.string(),
+  action: zod.enum(["created", "updated"]).optional(),
+  product: zod
+    .object({
+      id: zod.number(),
+      slug: zod.string(),
+      category: zod.string(),
+      subCategory: zod.string(),
+      sortOrder: zod.number(),
+      imageUrl: zod.string().nullish(),
+      published: zod.boolean(),
+      certs: zod.array(zod.string()),
+      translations: zod.array(
         zod.object({
-          type: zod.enum(["category", "subCategory"]),
-          slug: zod.string(),
+          lang: zod.enum(["ko", "en", "ja", "zh", "vi"]),
+          name: zod.string(),
+          headline: zod.string(),
+          valueProp: zod.string(),
+          body: zod.string(),
+          features: zod.string(),
+          material: zod.string(),
         }),
-      )
-      .optional(),
-    createdAt: zod.coerce.date(),
-    updatedAt: zod.coerce.date(),
-  }),
+      ),
+      missingTranslations: zod
+        .array(
+          zod.object({
+            type: zod.enum(["category", "subCategory"]),
+            slug: zod.string(),
+          }),
+        )
+        .optional(),
+      createdAt: zod.coerce.date(),
+      updatedAt: zod.coerce.date(),
+    })
+    .optional(),
+  error: zod.string().optional(),
 });
 export const AdminUpsertProductsBySlugResponse = zod.array(
   AdminUpsertProductsBySlugResponseItem,

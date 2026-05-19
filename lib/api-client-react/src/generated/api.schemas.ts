@@ -138,8 +138,10 @@ export const AdminUpsertProductResultAction = {
 } as const;
 
 export interface AdminUpsertProductResult {
-  action: AdminUpsertProductResultAction;
-  product: AdminProduct;
+  slug: string;
+  action?: AdminUpsertProductResultAction;
+  product?: AdminProduct;
+  error?: string;
 }
 
 export interface AdminNotice {
