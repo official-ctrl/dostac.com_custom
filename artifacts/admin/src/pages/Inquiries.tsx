@@ -63,7 +63,8 @@ export default function Inquiries() {
         i.message.toLowerCase().includes(q) ||
         i.company.toLowerCase().includes(q) ||
         (i.productInterest ?? "").toLowerCase().includes(q) ||
-        (i.inquiryType ?? "").toLowerCase().includes(q),
+        (i.inquiryType ?? "").toLowerCase().includes(q) ||
+        (i.material ?? "").toLowerCase().includes(q),
     );
   }, [inquiries, search, inquiryType]);
 
@@ -130,7 +131,7 @@ export default function Inquiries() {
                   <th className="px-4 py-2 font-medium">상태</th>
                   <th className="px-4 py-2 font-medium">담당자 / 이메일</th>
                   <th className="px-4 py-2 font-medium">회사</th>
-                  <th className="px-4 py-2 font-medium">유형 / 제품</th>
+                  <th className="px-4 py-2 font-medium">유형 / 제품 / 소재</th>
                   <th className="px-4 py-2 font-medium">메시지</th>
                   <th className="px-4 py-2 font-medium">접수일</th>
                   <th className="px-4 py-2 font-medium text-right">상세</th>
@@ -165,6 +166,14 @@ export default function Inquiries() {
                             title={i.productInterest}
                           >
                             {i.productInterest}
+                          </div>
+                        )}
+                        {i.material && (
+                          <div
+                            className="text-foreground/50 mt-0.5 max-w-[140px] truncate"
+                            title={i.material}
+                          >
+                            {i.material}
                           </div>
                         )}
                       </td>
