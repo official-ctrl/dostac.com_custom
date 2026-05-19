@@ -1,5 +1,5 @@
 import { useMemo, useState, useEffect, useRef } from "react";
-import { Link, useSearch } from "wouter";
+import { Link, useSearch, useLocation } from "wouter";
 import { useAdminListInquiries, useAdminListProducts } from "@workspace/api-client-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -49,6 +49,7 @@ const ALL_PRODUCTS_VALUE = "__all__";
 
 export default function Inquiries() {
   const searchString = useSearch();
+  const [, navigate] = useLocation();
 
   const initialParams = new URLSearchParams(searchString);
   const [status, setStatus] = useState<string>(
@@ -77,6 +78,16 @@ export default function Inquiries() {
     const timer = setTimeout(() => setShowFilterNotice(false), 3000);
     return () => clearTimeout(timer);
   }, []);
+
+  useEffect(() => {
+    const params = new URLSearchParams();
+    if (status !== "all") params.set("status", status);
+    if (inquiryType !== "all") params.set("type", inquiryType);
+    if (productSlug !== ALL_PRODUCTS_VALUE) params.set("product", productSlug);
+    if (search.trim()) params.set("q", search.trim());
+    const qs = params.toString();
+    navigate(qs ? `/inquiries?${qs}` : "/inquiries", { replace: true });
+  }, [status, inquiryType, productSlug, search, navigate]);
 
   const { data: products } = useAdminListProducts();
 

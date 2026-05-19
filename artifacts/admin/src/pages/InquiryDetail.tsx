@@ -110,11 +110,14 @@ export default function InquiryDetail() {
   return (
     <div className="px-8 py-8 space-y-6 max-w-4xl">
       <div className="flex items-center gap-3">
-        <Link href="/inquiries">
-          <Button variant="ghost" size="icon" data-testid="button-back">
-            <ArrowLeft className="h-4 w-4" />
-          </Button>
-        </Link>
+        <Button
+          variant="ghost"
+          size="icon"
+          data-testid="button-back"
+          onClick={() => window.history.back()}
+        >
+          <ArrowLeft className="h-4 w-4" />
+        </Button>
         <div>
           <h1 className="text-2xl font-bold tracking-tight">{inquiry.name}</h1>
           <p className="text-xs text-muted-foreground mt-0.5">
