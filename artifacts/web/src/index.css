@@ -422,3 +422,8 @@ html {
     animation: field-shake 0.45s ease-out;
   }
 }
+
+.field-error {
+  border-color: #ef4444 !important;
+  box-shadow: 0 0 0 1px #ef4444 !important;
+}
