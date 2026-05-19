@@ -540,6 +540,62 @@ export default function ProductImport() {
     });
   }, [rows, handleRestoreBatch, toast]);
 
+  const handleFixIntraBatchDuplicates = useCallback(() => {
+    setRows((prev) => {
+      // Build a set of all slugs already taken (existing DB slugs + slugs we'll keep)
+      const taken = new Set<string>(existingSlugs);
+      const seenInBatch = new Map<string, number>(); // slug -> count seen so far
+
+      // First pass: assign new slugs for later-occurring duplicates
+      const updated = prev.map((r) => {
+        const originalSlug = r.slug;
+        const count = seenInBatch.get(originalSlug) ?? 0;
+        seenInBatch.set(originalSlug, count + 1);
+
+        if (count === 0) {
+          // First occurrence: keep slug, mark it taken
+          taken.add(originalSlug);
+          return r;
+        }
+
+        // Subsequent occurrence: find first available -N suffix
+        let n = count + 1;
+        let candidate = `${originalSlug}-${n}`;
+        while (taken.has(candidate)) {
+          n++;
+          candidate = `${originalSlug}-${n}`;
+        }
+        taken.add(candidate);
+        return { ...r, slug: candidate };
+      });
+
+      // Recompute intra-batch duplicates (should be empty now) and re-validate all rows
+      const slugFreq = new Map<string, number>();
+      for (const r of updated) {
+        if (r.slug) slugFreq.set(r.slug, (slugFreq.get(r.slug) ?? 0) + 1);
+      }
+      const intraBatchDupes = new Set(
+        [...slugFreq.entries()].filter(([, n]) => n > 1).map(([s]) => s),
+      );
+
+      return updated.map((r) => {
+        const raw: RawRow = {
+          slug: r.slug,
+          category: r.category,
+          name_ko: r.name_ko,
+          subCategory: r.subCategory,
+          material: r.material,
+          features_ko: r.features_ko,
+          certs: r.certs.join(","),
+        };
+        const revalidated = validateRow(raw, r.index, existingSlugs, intraBatchDupes, allowOverwrite);
+        return { ...revalidated, status: r.status, originallyInvalid: r.originallyInvalid };
+      });
+    });
+
+    toast({ description: "중복 슬러그가 자동으로 수정되었습니다." });
+  }, [existingSlugs, allowOverwrite, toast]);
+
   const handleRemoveRow = (rowIndex: number) => {
     const row = rows.find((r) => r.index === rowIndex);
     if (!row) return;
@@ -1373,6 +1429,18 @@ export default function ProductImport() {
                           className="gap-1.5 border-amber-400/60 text-amber-800 hover:bg-amber-100 hover:text-amber-900 h-7 text-xs px-2.5"
                         >
                           덮어쓰기 허용
+                        </Button>
+                      )}
+                      {intraBatchDuplicateRows.length > 0 && (
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          disabled={isImporting}
+                          onClick={handleFixIntraBatchDuplicates}
+                          className="gap-1.5 border-amber-400/60 text-amber-800 hover:bg-amber-100 hover:text-amber-900 h-7 text-xs px-2.5"
+                        >
+                          중복 슬러그 자동 수정
                         </Button>
                       )}
                       <Button
