@@ -86,9 +86,9 @@ function buildHtmlBody(inquiry: ContactInquiry, productNameKo?: string): string 
       ${inquiry.productSlug ? highlightRow("문의 제품", productNameKo ? `${productNameKo} (${inquiry.productSlug})` : inquiry.productSlug) : ""}
       ${inquiry.productInterest ? highlightRow("Product of Interest", inquiry.productInterest) : ""}
       ${inquiry.material ? highlightRow("Material", inquiry.material) : ""}
-      ${inquiry.whatsapp ? row("WhatsApp", inquiry.whatsapp) : ""}
+      ${inquiry.whatsapp ? highlightRow("WhatsApp", inquiry.whatsapp) : ""}
       ${inquiry.country ? row("Country", inquiry.country) : ""}
-      ${inquiry.quantity ? row("Desired Quantity", inquiry.quantity) : ""}
+      ${inquiry.quantity ? highlightRow("Desired Quantity", inquiry.quantity) : ""}
       ${inquiry.customization ? row("Customization", inquiry.customization) : ""}
       ${row("Inquiry ID", String(inquiry.id))}
     </table>
