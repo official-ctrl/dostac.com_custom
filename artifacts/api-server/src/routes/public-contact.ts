@@ -1,6 +1,7 @@
 import { Router, type IRouter } from "express";
 import { z } from "zod";
-import { db, contactInquiriesTable } from "@workspace/db";
+import { eq, and } from "drizzle-orm";
+import { db, contactInquiriesTable, productsTable, productTranslationsTable } from "@workspace/db";
 import { CreateContactInquiryBody } from "@workspace/api-zod";
 import { sendInquiryAlert } from "../lib/email";
 
@@ -50,7 +51,24 @@ router.post("/public/contact-inquiries", async (req, res): Promise<void> => {
     .returning();
 
   if (inquiry) {
-    sendInquiryAlert(inquiry).catch((err) => {
+    (async () => {
+      let productNameKo: string | undefined;
+      if (inquiry.productSlug) {
+        const [row] = await db
+          .select({ name: productTranslationsTable.name })
+          .from(productTranslationsTable)
+          .innerJoin(productsTable, eq(productsTable.id, productTranslationsTable.productId))
+          .where(
+            and(
+              eq(productsTable.slug, inquiry.productSlug),
+              eq(productTranslationsTable.lang, "ko"),
+            ),
+          )
+          .limit(1);
+        productNameKo = row?.name;
+      }
+      await sendInquiryAlert(inquiry, productNameKo);
+    })().catch((err) => {
       req.log.error({ err }, "Failed to send inquiry alert email");
     });
   }

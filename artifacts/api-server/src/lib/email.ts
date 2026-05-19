@@ -23,7 +23,7 @@ function inquiryTypeLabel(value: string): string {
   return INQUIRY_TYPE_LABELS[value] ?? value;
 }
 
-function buildPlainBody(inquiry: ContactInquiry): string {
+function buildPlainBody(inquiry: ContactInquiry, productNameKo?: string): string {
   const lines = [
     `New inquiry received from the DOSTAC website.`,
     ``,
@@ -32,6 +32,12 @@ function buildPlainBody(inquiry: ContactInquiry): string {
     `Company:     ${fmt(inquiry.company)}`,
     `Type:        ${inquiryTypeLabel(inquiry.inquiryType)}`,
   ];
+  if (inquiry.productSlug) {
+    const display = productNameKo
+      ? `${productNameKo} (${inquiry.productSlug})`
+      : inquiry.productSlug;
+    lines.push(`문의 제품:   ${display}`);
+  }
   if (inquiry.productInterest) lines.push(`Product:     ${inquiry.productInterest}`);
   if (inquiry.material) lines.push(`Material:    ${inquiry.material}`);
   if (inquiry.whatsapp) lines.push(`WhatsApp:    ${inquiry.whatsapp}`);
@@ -59,7 +65,7 @@ function escapeHtml(s: string): string {
     .replace(/"/g, "&quot;");
 }
 
-function buildHtmlBody(inquiry: ContactInquiry): string {
+function buildHtmlBody(inquiry: ContactInquiry, productNameKo?: string): string {
   const row = (label: string, value: string | null | undefined) =>
     `<tr><td style="padding:6px 12px;color:#64748b;font-weight:600;white-space:nowrap;">${label}</td><td style="padding:6px 12px;color:#0f172a;">${escapeHtml(fmt(value))}</td></tr>`;
   const highlightRow = (label: string, value: string | null | undefined) =>
@@ -77,6 +83,7 @@ function buildHtmlBody(inquiry: ContactInquiry): string {
       ${row("Email", inquiry.email)}
       ${row("Company", inquiry.company)}
       ${row("Type", inquiryTypeLabel(inquiry.inquiryType))}
+      ${inquiry.productSlug ? highlightRow("문의 제품", productNameKo ? `${productNameKo} (${inquiry.productSlug})` : inquiry.productSlug) : ""}
       ${inquiry.productInterest ? highlightRow("Product of Interest", inquiry.productInterest) : ""}
       ${inquiry.material ? highlightRow("Material", inquiry.material) : ""}
       ${inquiry.whatsapp ? row("WhatsApp", inquiry.whatsapp) : ""}
@@ -120,7 +127,7 @@ function base64Body(input: string): string {
   return b64.replace(/(.{76})/g, "$1\r\n");
 }
 
-function buildRfc822(inquiry: ContactInquiry): string {
+function buildRfc822(inquiry: ContactInquiry, productNameKo?: string): string {
   const safeName = safeHeaderText(inquiry.name);
   const safeCompany = safeHeaderText(inquiry.company ?? "");
   const safeProduct = inquiry.productInterest ? safeHeaderText(inquiry.productInterest.trim()) : "";
@@ -146,7 +153,7 @@ function buildRfc822(inquiry: ContactInquiry): string {
     `Content-Type: text/plain; charset="UTF-8"`,
     `Content-Transfer-Encoding: base64`,
     ``,
-    base64Body(buildPlainBody(inquiry)),
+    base64Body(buildPlainBody(inquiry, productNameKo)),
   ].join("\r\n");
 
   const htmlPart = [
@@ -154,7 +161,7 @@ function buildRfc822(inquiry: ContactInquiry): string {
     `Content-Type: text/html; charset="UTF-8"`,
     `Content-Transfer-Encoding: base64`,
     ``,
-    base64Body(buildHtmlBody(inquiry)),
+    base64Body(buildHtmlBody(inquiry, productNameKo)),
   ].join("\r\n");
 
   return `${headers}\r\n\r\n${plainPart}\r\n${htmlPart}\r\n--${boundary}--\r\n`;
@@ -175,7 +182,7 @@ function toBase64Url(input: string): string {
  * Failures are logged but never thrown — the public contact endpoint must
  * always succeed for the visitor even if the alert delivery is degraded.
  */
-export async function sendInquiryAlert(inquiry: ContactInquiry): Promise<void> {
+export async function sendInquiryAlert(inquiry: ContactInquiry, productNameKo?: string): Promise<void> {
   logger.info(
     {
       inquiryId: inquiry.id,
@@ -187,7 +194,7 @@ export async function sendInquiryAlert(inquiry: ContactInquiry): Promise<void> {
   );
 
   try {
-    const raw = toBase64Url(buildRfc822(inquiry));
+    const raw = toBase64Url(buildRfc822(inquiry, productNameKo));
     const response = await connectors.proxy(
       "google-mail",
       "/gmail/v1/users/me/messages/send",
