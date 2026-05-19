@@ -305,6 +305,7 @@ export default function ProductImport() {
   const [removedRows, setRemovedRows] = useState<ParsedRow[]>([]);
   const [allowOverwrite, setAllowOverwrite] = useState(false);
   const [pendingConfirm, setPendingConfirm] = useState(false);
+  const [correctedDownloaded, setCorrectedDownloaded] = useState(false);
 
   const validRows = rows.filter((r) => r.errors.length === 0);
   const invalidRows = rows.filter((r) => r.errors.length > 0);
@@ -385,6 +386,7 @@ export default function ProductImport() {
     setRows([]);
     setRemovedRows([]);
     setImportResult(null);
+    setCorrectedDownloaded(false);
 
     try {
       const isExcel = file.name.endsWith(".xlsx") || file.name.endsWith(".xls");
@@ -536,6 +538,39 @@ export default function ProductImport() {
       });
     });
   };
+
+  const handleReimportCorrected = useCallback(() => {
+    if (correctedRows.length === 0) return;
+
+    const slugFreq = new Map<string, number>();
+    for (const r of correctedRows) {
+      if (r.slug) slugFreq.set(r.slug, (slugFreq.get(r.slug) ?? 0) + 1);
+    }
+    const intraBatchDupes = new Set(
+      [...slugFreq.entries()].filter(([, n]) => n > 1).map(([s]) => s),
+    );
+
+    const fresh = correctedRows.map((r, i) => {
+      const raw: RawRow = {
+        slug: r.slug,
+        category: r.category,
+        subCategory: r.subCategory,
+        material: r.material,
+        name_ko: r.name_ko,
+        features_ko: r.features_ko,
+        certs: r.certs.join(","),
+      };
+      const validated = validateRow(raw, i, existingSlugs, intraBatchDupes, allowOverwrite);
+      return { ...validated, originallyInvalid: validated.errors.length > 0 };
+    });
+
+    setRows(fresh);
+    setRemovedRows([]);
+    setImportResult(null);
+    setHighlightedError(null);
+    setFileName(`수정된 행 (${correctedRows.length}개)`);
+    setCorrectedDownloaded(false);
+  }, [correctedRows, existingSlugs, allowOverwrite]);
 
   const runImport = async () => {
     if (validRows.length === 0) return;
@@ -934,16 +969,34 @@ export default function ProductImport() {
                     <span className="text-xs font-medium text-muted-foreground">덮어쓰기 허용</span>
                   </label>
                   {allCorrected && (
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      className="gap-2 border-green-500/50 text-green-700 hover:bg-green-500/5 hover:text-green-800"
-                      onClick={() => downloadCorrectedRows(correctedRows)}
-                    >
-                      <Download className="h-4 w-4" />
-                      수정된 파일 다운로드
-                    </Button>
+                    <>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        className="gap-2 border-green-500/50 text-green-700 hover:bg-green-500/5 hover:text-green-800"
+                        onClick={() => {
+                          downloadCorrectedRows(correctedRows);
+                          setCorrectedDownloaded(true);
+                        }}
+                      >
+                        <Download className="h-4 w-4" />
+                        수정된 파일 다운로드
+                      </Button>
+                      {correctedDownloaded && (
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          className="gap-2 border-blue-500/50 text-blue-700 hover:bg-blue-500/5 hover:text-blue-800"
+                          onClick={handleReimportCorrected}
+                          disabled={isImporting}
+                        >
+                          <Upload className="h-4 w-4" />
+                          수정된 행 바로 가져오기
+                        </Button>
+                      )}
+                    </>
                   )}
                   {invalidRows.length > 0 && (
                     <Button
