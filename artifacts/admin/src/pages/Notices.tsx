@@ -6,7 +6,7 @@ import {
   getAdminListNoticesQueryKey,
 } from "@workspace/api-client-react";
 import { useQueryClient } from "@tanstack/react-query";
-import { Plus, Search, Pencil, Trash2, Eye, EyeOff } from "lucide-react";
+import { Plus, Search, Pencil, Trash2, Eye, EyeOff, AlertTriangle } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -21,6 +21,12 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { useToast } from "@/hooks/use-toast";
 import { getTr } from "@/lib/langs";
 
@@ -145,8 +151,28 @@ export default function Notices() {
                       className="border-b border-border last:border-0 hover:bg-muted/40"
                       data-testid={`notice-row-${n.id}`}
                     >
-                      <td className="px-4 py-3 font-medium text-foreground max-w-[320px] truncate">
-                        {ko?.title ?? <span className="text-muted-foreground">(미입력)</span>}
+                      <td className="px-4 py-3 font-medium text-foreground max-w-[320px]">
+                        <div className="flex items-center gap-2 truncate">
+                          <span className="truncate">
+                            {ko?.title ?? <span className="text-muted-foreground">(미입력)</span>}
+                          </span>
+                          {!ko?.title?.trim() && n.published && (
+                            <TooltipProvider delayDuration={200}>
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <Link href={`/notices/${n.id}`}>
+                                    <span className="flex items-center justify-center h-7 w-7 rounded-full bg-yellow-100 text-yellow-600 hover:bg-yellow-200 transition-colors cursor-pointer flex-shrink-0">
+                                      <AlertTriangle className="h-4 w-4" />
+                                    </span>
+                                  </Link>
+                                </TooltipTrigger>
+                                <TooltipContent side="right">
+                                  <p>게시된 공지에 한국어 제목이 없습니다. 클릭하여 수정하세요.</p>
+                                </TooltipContent>
+                              </Tooltip>
+                            </TooltipProvider>
+                          )}
+                        </div>
                       </td>
                       <td className="px-4 py-3 text-muted-foreground font-mono text-xs">
                         {n.slug}
