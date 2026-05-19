@@ -7,6 +7,7 @@ import {
   AdminGetProductParams,
   AdminUpdateProductParams,
   AdminDeleteProductParams,
+  AdminUpsertProductsBySlugBody,
 } from "@workspace/api-zod";
 import { requireAdmin } from "../middlewares/require-admin";
 
@@ -117,6 +118,113 @@ router.get("/admin/products/:id", async (req, res): Promise<void> => {
     return;
   }
   res.json(result);
+});
+
+router.put("/admin/products/upsert-by-slug", async (req, res): Promise<void> => {
+  const parsed = AdminUpsertProductsBySlugBody.safeParse(req.body);
+  if (!parsed.success) {
+    res.status(400).json({ error: parsed.error.message });
+    return;
+  }
+
+  const results: Array<{ action: "created" | "updated"; product: unknown }> = [];
+
+  for (const item of parsed.data) {
+    const { translations, ...productData } = item;
+
+    const [existing] = await db
+      .select({ id: productsTable.id })
+      .from(productsTable)
+      .where(eq(productsTable.slug, productData.slug));
+
+    let productId: number;
+    let action: "created" | "updated";
+
+    if (existing) {
+      // Load existing translations before updating so we can merge fields
+      const existingTranslations = await db
+        .select()
+        .from(productTranslationsTable)
+        .where(eq(productTranslationsTable.productId, existing.id));
+
+      const existingByLang = new Map(existingTranslations.map((t) => [t.lang, t]));
+
+      // Merge incoming with existing: incoming name/features/material overwrite;
+      // existing headline/valueProp/body are preserved unless the incoming value is non-empty.
+      const mergedTranslations = translations.map((incoming) => {
+        const ex = existingByLang.get(incoming.lang);
+        if (!ex) return incoming;
+        return {
+          lang: incoming.lang,
+          name: incoming.name || ex.name,
+          features: incoming.features || ex.features,
+          material: incoming.material || ex.material,
+          headline: incoming.headline || ex.headline,
+          valueProp: incoming.valueProp || ex.valueProp,
+          body: incoming.body || ex.body,
+        };
+      });
+
+      // Keep any languages that exist in DB but were not in the incoming payload
+      for (const [lang, ex] of existingByLang) {
+        if (!mergedTranslations.some((t) => t.lang === lang)) {
+          mergedTranslations.push({
+            lang: ex.lang as "ko" | "en" | "ja" | "zh" | "vi",
+            name: ex.name,
+            headline: ex.headline,
+            valueProp: ex.valueProp,
+            body: ex.body,
+            features: ex.features,
+            material: ex.material,
+          });
+        }
+      }
+
+      const [updated] = await db
+        .update(productsTable)
+        .set(productData)
+        .where(eq(productsTable.id, existing.id))
+        .returning({ id: productsTable.id });
+      if (!updated) {
+        res.status(500).json({ error: `Failed to update product: ${productData.slug}` });
+        return;
+      }
+      productId = updated.id;
+      action = "updated";
+
+      await db
+        .delete(productTranslationsTable)
+        .where(eq(productTranslationsTable.productId, productId));
+
+      if (mergedTranslations.length > 0) {
+        await db
+          .insert(productTranslationsTable)
+          .values(mergedTranslations.map((t) => ({ ...t, productId })));
+      }
+    } else {
+      const [created] = await db
+        .insert(productsTable)
+        .values(productData)
+        .returning({ id: productsTable.id });
+      if (!created) {
+        res.status(500).json({ error: `Failed to create product: ${productData.slug}` });
+        return;
+      }
+      productId = created.id;
+      action = "created";
+
+      if (translations.length > 0) {
+        await db
+          .insert(productTranslationsTable)
+          .values(translations.map((t) => ({ ...t, productId })));
+      }
+    }
+
+    const product = await loadProductWithTranslations(productId);
+    results.push({ action, product });
+  }
+
+  res.json(results);
 });
 
 router.put("/admin/products/:id", async (req, res): Promise<void> => {

@@ -111,6 +111,21 @@ export interface AdminProductInput {
   translations: Translation[];
 }
 
+export type AdminUpsertProductsBySlugBody = AdminProductInput[];
+
+export type AdminUpsertProductResultAction =
+  (typeof AdminUpsertProductResultAction)[keyof typeof AdminUpsertProductResultAction];
+
+export const AdminUpsertProductResultAction = {
+  created: "created",
+  updated: "updated",
+} as const;
+
+export interface AdminUpsertProductResult {
+  action: AdminUpsertProductResultAction;
+  product: AdminProduct;
+}
+
 export interface AdminNotice {
   id: number;
   slug: string;

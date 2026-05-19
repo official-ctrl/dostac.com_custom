@@ -255,6 +255,25 @@ paths:
           content:
             application/json:
               schema: { $ref: "#/components/schemas/AdminProduct" }
+  /admin/products/upsert-by-slug:
+    put:
+      operationId: adminUpsertProductsBySlug
+      tags: [admin-products]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AdminUpsertProductsBySlugBody"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/AdminUpsertProductResult" }
+
   /admin/products/{id}:
     get:
       operationId: adminGetProduct
@@ -821,6 +840,19 @@ components:
         translations:
           type: array
           items: { $ref: "#/components/schemas/Translation" }
+
+    AdminUpsertProductsBySlugBody:
+      type: array
+      items: { $ref: "#/components/schemas/AdminProductInput" }
+
+    AdminUpsertProductResult:
+      type: object
+      required: [action, product]
+      properties:
+        action:
+          type: string
+          enum: [created, updated]
+        product: { $ref: "#/components/schemas/AdminProduct" }
 
     AdminNotice:
       type: object

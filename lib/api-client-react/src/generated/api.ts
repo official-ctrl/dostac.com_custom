@@ -26,6 +26,8 @@ import type {
   AdminNoticeInput,
   AdminProduct,
   AdminProductInput,
+  AdminUpsertProductResult,
+  AdminUpsertProductsBySlugBody,
   AdminUser,
   BadRequestResponse,
   BannerReorderInput,
@@ -1361,6 +1363,90 @@ export const useAdminCreateProduct = <
   TContext
 > => {
   return useMutation(getAdminCreateProductMutationOptions(options));
+};
+
+export const getAdminUpsertProductsBySlugUrl = () => {
+  return `/api/admin/products/upsert-by-slug`;
+};
+
+export const adminUpsertProductsBySlug = async (
+  adminUpsertProductsBySlugBody: AdminUpsertProductsBySlugBody,
+  options?: RequestInit,
+): Promise<AdminUpsertProductResult[]> => {
+  return customFetch<AdminUpsertProductResult[]>(
+    getAdminUpsertProductsBySlugUrl(),
+    {
+      ...options,
+      method: "PUT",
+      headers: { "Content-Type": "application/json", ...options?.headers },
+      body: JSON.stringify(adminUpsertProductsBySlugBody),
+    },
+  );
+};
+
+export const getAdminUpsertProductsBySlugMutationOptions = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof adminUpsertProductsBySlug>>,
+    TError,
+    { data: BodyType<AdminUpsertProductsBySlugBody> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof adminUpsertProductsBySlug>>,
+  TError,
+  { data: BodyType<AdminUpsertProductsBySlugBody> },
+  TContext
+> => {
+  const mutationKey = ["adminUpsertProductsBySlug"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof adminUpsertProductsBySlug>>,
+    { data: BodyType<AdminUpsertProductsBySlugBody> }
+  > = (props) => {
+    const { data } = props ?? {};
+
+    return adminUpsertProductsBySlug(data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type AdminUpsertProductsBySlugMutationResult = NonNullable<
+  Awaited<ReturnType<typeof adminUpsertProductsBySlug>>
+>;
+export type AdminUpsertProductsBySlugMutationBody =
+  BodyType<AdminUpsertProductsBySlugBody>;
+export type AdminUpsertProductsBySlugMutationError = ErrorType<unknown>;
+
+export const useAdminUpsertProductsBySlug = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof adminUpsertProductsBySlug>>,
+    TError,
+    { data: BodyType<AdminUpsertProductsBySlugBody> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof adminUpsertProductsBySlug>>,
+  TError,
+  { data: BodyType<AdminUpsertProductsBySlugBody> },
+  TContext
+> => {
+  return useMutation(getAdminUpsertProductsBySlugMutationOptions(options));
 };
 
 export const getAdminGetProductUrl = (id: number) => {

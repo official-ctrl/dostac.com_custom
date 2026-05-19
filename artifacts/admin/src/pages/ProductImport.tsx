@@ -5,10 +5,11 @@ import Papa from "papaparse";
 import * as XLSX from "xlsx";
 import {
   useAdminCreateProduct,
-  useAdminUpdateProduct,
+  useAdminUpsertProductsBySlug,
   useAdminTranslate,
   adminListProducts,
   getAdminListProductsQueryKey,
+  type AdminProduct,
   type AdminProductInput,
   type Translation,
   type Lang,
@@ -67,7 +68,35 @@ type ParsedRow = {
   isIntraBatchDuplicate?: boolean;
   isOverwrite?: boolean;
   originallyInvalid?: boolean;
+  diffSummary?: string[];
 };
+
+function computeDiff(row: ParsedRow, existing: AdminProduct): string[] {
+  const changed: string[] = [];
+  const koTr = existing.translations.find((t) => t.lang === "ko");
+
+  if (row.category !== existing.category) {
+    changed.push(`category: ${existing.category} → ${row.category}`);
+  }
+  const existingSubCat = existing.subCategory ?? "";
+  if (row.subCategory !== existingSubCat) {
+    changed.push(`subCategory: ${existingSubCat || "(없음)"} → ${row.subCategory || "(없음)"}`);
+  }
+
+  const existingCerts = [...(existing.certs ?? [])].sort().join(",");
+  const newCerts = [...row.certs].sort().join(",");
+  if (existingCerts !== newCerts) {
+    changed.push("certs 변경");
+  }
+
+  if (koTr) {
+    if (row.name_ko !== (koTr.name ?? "")) changed.push("name_ko 변경");
+    if (row.features_ko !== (koTr.features ?? "")) changed.push("features_ko 변경");
+    if (row.material !== (koTr.material ?? "")) changed.push("material 변경");
+  }
+
+  return changed;
+}
 
 function validateRow(
   raw: RawRow,
@@ -257,7 +286,7 @@ export default function ProductImport() {
   const { toast } = useToast();
 
   const createMut = useAdminCreateProduct();
-  const updateMut = useAdminUpdateProduct();
+  const upsertMut = useAdminUpsertProductsBySlug();
   const translateMut = useAdminTranslate();
 
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -265,7 +294,7 @@ export default function ProductImport() {
   const [rows, setRows] = useState<ParsedRow[]>([]);
   const [showExample, setShowExample] = useState(false);
   const [existingSlugs, setExistingSlugs] = useState<Set<string>>(new Set());
-  const [existingProductMap, setExistingProductMap] = useState<Map<string, number>>(new Map());
+  const [existingProductMap, setExistingProductMap] = useState<Map<string, AdminProduct>>(new Map());
   const [isImporting, setIsImporting] = useState(false);
   const [importResult, setImportResult] = useState<{
     done: number;
@@ -380,10 +409,10 @@ export default function ProductImport() {
 
       // Fetch existing slugs first so we can mark duplicates during validation
       let slugSet = new Set<string>();
-      let productMap = new Map<string, number>();
+      let productMap = new Map<string, AdminProduct>();
       try {
         const existing = await adminListProducts();
-        productMap = new Map(existing.map((p) => [p.slug, p.id]));
+        productMap = new Map(existing.map((p) => [p.slug, p]));
         slugSet = new Set(productMap.keys());
         setExistingSlugs(slugSet);
         setExistingProductMap(productMap);
@@ -520,7 +549,7 @@ export default function ProductImport() {
     let freshProductMap = existingProductMap;
     try {
       const freshProducts = await adminListProducts();
-      freshProductMap = new Map(freshProducts.map((p) => [p.slug, p.id]));
+      freshProductMap = new Map(freshProducts.map((p) => [p.slug, p]));
       freshSlugs = new Set(freshProductMap.keys());
       setExistingSlugs(freshSlugs);
       setExistingProductMap(freshProductMap);
@@ -675,10 +704,12 @@ export default function ProductImport() {
           translations,
         };
 
+        let diffSummary: string[] | undefined;
         if (row.isOverwrite) {
-          const existingId = productMapForLoop.get(row.slug);
-          if (existingId == null) throw new Error("기존 제품 ID를 찾을 수 없습니다");
-          await updateMut.mutateAsync({ id: existingId, data: payload });
+          const existingProduct = productMapForLoop.get(row.slug);
+          if (existingProduct == null) throw new Error("기존 제품을 찾을 수 없습니다");
+          diffSummary = computeDiff(row, existingProduct);
+          await upsertMut.mutateAsync({ data: [payload] });
         } else {
           await createMut.mutateAsync({ data: payload });
         }
@@ -686,6 +717,7 @@ export default function ProductImport() {
         updateRowStatus(row.index, {
           status: "done",
           errorMsg: translateFailed ? "번역 실패 (한국어만 저장됨)" : undefined,
+          diffSummary,
         });
         localDone++;
       } catch (err) {
@@ -1036,7 +1068,7 @@ export default function ProductImport() {
                   </p>
                   <ul className="pl-6 space-y-1.5">
                     {duplicateRows.map((row) => {
-                      const productId = row.isIntraBatchDuplicate ? undefined : existingProductMap.get(row.slug);
+                      const productId = row.isIntraBatchDuplicate ? undefined : existingProductMap.get(row.slug)?.id;
                       return (
                         <li key={`${row.slug}-${row.index}`} className="flex items-center gap-2 text-xs">
                           <code className="bg-amber-100 text-amber-800 border border-amber-200 rounded px-1.5 py-0.5 text-[11px] font-mono">
@@ -1069,7 +1101,7 @@ export default function ProductImport() {
                   </div>
                   <ul className="pl-6 space-y-1.5">
                     {overwriteRows.map((row) => {
-                      const productId = existingProductMap.get(row.slug);
+                      const productId = existingProductMap.get(row.slug)?.id;
                       return (
                         <li key={row.slug} className="flex items-center gap-2 text-xs">
                           <code className="bg-amber-100 text-amber-800 border border-amber-200 rounded px-1.5 py-0.5 text-[11px] font-mono">
@@ -1284,9 +1316,9 @@ export default function ProductImport() {
                                     <AlertTriangle className="h-3 w-3" />
                                     {row.isIntraBatchDuplicate ? "파일 내 중복" : "중복 슬러그"}
                                   </span>
-                                  {!row.isIntraBatchDuplicate && existingProductMap.get(row.slug) != null && (
+                                  {!row.isIntraBatchDuplicate && existingProductMap.get(row.slug)?.id != null && (
                                     <Link
-                                      href={`/products/${existingProductMap.get(row.slug)}`}
+                                      href={`/products/${existingProductMap.get(row.slug)?.id}`}
                                       className="text-[10px] text-amber-700 underline underline-offset-2 hover:text-amber-900 whitespace-nowrap"
                                     >
                                       편집하기 →
@@ -1405,6 +1437,24 @@ export default function ProductImport() {
                             <div className="flex items-start gap-1.5">
                               <SkipForward className="h-3.5 w-3.5 text-amber-500 shrink-0 mt-0.5" />
                               <span className="text-xs text-amber-600">{row.errorMsg ?? "건너뜀"}</span>
+                            </div>
+                          ) : row.status === "done" && row.isOverwrite && row.diffSummary ? (
+                            <div className="space-y-1">
+                              <span className="text-xs text-green-600 font-medium">✓ 교체됨</span>
+                              {row.diffSummary.length > 0 ? (
+                                <div className="flex flex-wrap gap-1">
+                                  {row.diffSummary.map((d) => (
+                                    <span
+                                      key={d}
+                                      className="text-[10px] bg-amber-50 text-amber-700 border border-amber-200 rounded px-1.5 py-0.5"
+                                    >
+                                      {d}
+                                    </span>
+                                  ))}
+                                </div>
+                              ) : (
+                                <span className="text-[10px] text-muted-foreground">변경 없음</span>
+                              )}
                             </div>
                           ) : (
                             <span className="text-xs text-green-600">✓</span>

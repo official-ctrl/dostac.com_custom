@@ -419,6 +419,58 @@ export const AdminCreateProductBody = zod.object({
   ),
 });
 
+export const AdminUpsertProductsBySlugBodyItem = zod.object({
+  slug: zod.string(),
+  category: zod.string(),
+  subCategory: zod.string(),
+  sortOrder: zod.number(),
+  imageUrl: zod.string().nullish(),
+  published: zod.boolean(),
+  certs: zod.array(zod.string()),
+  translations: zod.array(
+    zod.object({
+      lang: zod.enum(["ko", "en", "ja", "zh", "vi"]),
+      name: zod.string(),
+      headline: zod.string(),
+      valueProp: zod.string(),
+      body: zod.string(),
+      features: zod.string(),
+      material: zod.string(),
+    }),
+  ),
+});
+export const AdminUpsertProductsBySlugBody = zod.array(
+  AdminUpsertProductsBySlugBodyItem,
+);
+
+export const AdminUpsertProductsBySlugResponseItem = zod.object({
+  action: zod.enum(["created", "updated"]),
+  product: zod.object({
+    id: zod.number(),
+    slug: zod.string(),
+    category: zod.string(),
+    subCategory: zod.string(),
+    sortOrder: zod.number(),
+    imageUrl: zod.string().nullish(),
+    published: zod.boolean(),
+    certs: zod.array(zod.string()),
+    translations: zod.array(
+      zod.object({
+        lang: zod.enum(["ko", "en", "ja", "zh", "vi"]),
+        name: zod.string(),
+        headline: zod.string(),
+        valueProp: zod.string(),
+        body: zod.string(),
+        features: zod.string(),
+        material: zod.string(),
+      }),
+    ),
+  }),
+});
+export const AdminUpsertProductsBySlugResponse = zod.array(
+  AdminUpsertProductsBySlugResponseItem,
+);
+
 export const AdminGetProductParams = zod.object({
   id: zod.coerce.number(),
 });
