@@ -116,19 +116,28 @@ function ContactContent() {
 
     const params = new URLSearchParams(search);
     const source = params.get("source");
+    const hasContactHash = window.location.hash === "#contact-form";
     const shouldScroll =
-      window.location.hash === "#contact-form" ||
+      hasContactHash ||
       source === "about" ||
       source === "production";
     if (shouldScroll) {
       const el = document.getElementById("contact-form");
-      if (el) scrollAndHighlight(el);
+      if (el) {
+        scrollAndHighlight(el);
+        if (hasContactHash) {
+          history.replaceState(null, "", window.location.pathname + window.location.search);
+        }
+      }
     }
 
     const handleHashChange = () => {
       if (window.location.hash === "#contact-form") {
         const el = document.getElementById("contact-form");
-        if (el) scrollAndHighlight(el);
+        if (el) {
+          scrollAndHighlight(el);
+          history.replaceState(null, "", window.location.pathname + window.location.search);
+        }
       }
     };
 
