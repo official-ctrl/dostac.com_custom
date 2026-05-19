@@ -78,7 +78,7 @@ function buildHtmlBody(inquiry: ContactInquiry): string {
       ${row("Company", inquiry.company)}
       ${row("Type", inquiryTypeLabel(inquiry.inquiryType))}
       ${inquiry.productInterest ? highlightRow("Product of Interest", inquiry.productInterest) : ""}
-      ${inquiry.material ? row("Material", inquiry.material) : ""}
+      ${inquiry.material ? highlightRow("Material", inquiry.material) : ""}
       ${inquiry.whatsapp ? row("WhatsApp", inquiry.whatsapp) : ""}
       ${inquiry.country ? row("Country", inquiry.country) : ""}
       ${inquiry.quantity ? row("Desired Quantity", inquiry.quantity) : ""}
