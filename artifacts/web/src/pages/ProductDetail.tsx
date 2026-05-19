@@ -1,6 +1,7 @@
 import { Link, useParams } from "wouter";
 import { useState, useEffect, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import {
   ArrowLeft,
   ArrowRight,
@@ -14,7 +15,7 @@ import {
 import { Layout, dostacImage } from "@/components/dostac/Layout";
 import { useT, useLang, useCategoryLabel, useSubCategoryLabel } from "@/components/dostac/i18n";
 import {
-  useGetPublicProduct,
+  getGetPublicProductQueryOptions,
   useListPublicProducts,
 } from "@workspace/api-client-react";
 
@@ -58,16 +59,66 @@ function ProductDetailContent() {
     return () => { if (copyTimerRef.current) clearTimeout(copyTimerRef.current); };
   }, [copied, startCopyTimer]);
 
-  const { data: product, isLoading, isError } = useGetPublicProduct(slug, { lang });
+  const {
+    data: product,
+    isLoading,
+    isError,
+    isPlaceholderData,
+  } = useQuery({
+    ...getGetPublicProductQueryOptions(slug, { lang }),
+    placeholderData: keepPreviousData,
+  });
+
+  // ── Language-switch cross-fade ───────────────────────────────────────────
+  const [isFadedOut, setIsFadedOut] = useState(false);
+  const isFadedOutRef = useRef(false);
+  const isPlaceholderDataRef = useRef(isPlaceholderData);
+  isPlaceholderDataRef.current = isPlaceholderData;
+
+  const [displayedProduct, setDisplayedProduct] = useState(product);
+  const latestProductRef = useRef(product);
+
   const { data: allProducts } = useListPublicProducts({ lang });
 
   useEffect(() => {
-    if (!product) return;
-    const categoryPart = product.category ? `${catLabel(product.category)} — ` : "";
+    if (isPlaceholderData) return;
+    latestProductRef.current = product;
+    if (!isFadedOutRef.current) {
+      setDisplayedProduct(product);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [product, isPlaceholderData]);
+
+  const prevLangRef = useRef(lang);
+  useEffect(() => {
+    if (prevLangRef.current === lang) return;
+    prevLangRef.current = lang;
+    isFadedOutRef.current = true;
+    setIsFadedOut(true);
+  }, [lang]);
+
+  useEffect(() => {
+    if (!isFadedOut || isPlaceholderData) return;
+    setDisplayedProduct(latestProductRef.current);
+    isFadedOutRef.current = false;
+    setIsFadedOut(false);
+  }, [isFadedOut, isPlaceholderData]);
+
+  const handleFadeComplete = useCallback(() => {
+    if (!isFadedOutRef.current) return;
+    if (isPlaceholderDataRef.current) return;
+    setDisplayedProduct(latestProductRef.current);
+    isFadedOutRef.current = false;
+    setIsFadedOut(false);
+  }, []);
+
+  useEffect(() => {
+    if (!displayedProduct) return;
+    const categoryPart = displayedProduct.category ? `${catLabel(displayedProduct.category)} — ` : "";
     const prev = document.title;
-    document.title = `${categoryPart}${product.name} | DOSTAC`;
+    document.title = `${categoryPart}${displayedProduct.name} | DOSTAC`;
     return () => { document.title = prev; };
-  }, [product, catLabel]);
+  }, [displayedProduct, catLabel]);
 
   const fallbackCopyToClipboard = () => {
     navigator.clipboard.writeText(window.location.href).then(() => {
@@ -90,10 +141,10 @@ function ProductDetailContent() {
   };
 
   const related = (allProducts ?? [])
-    .filter((p) => p.slug !== slug && (product ? p.category === product.category : true))
+    .filter((p) => p.slug !== slug && (displayedProduct ? p.category === displayedProduct.category : true))
     .slice(0, 3);
 
-  if (isLoading) {
+  if (isLoading && !displayedProduct) {
     return (
       <div className="min-h-[60vh] flex items-center justify-center">
         <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
@@ -101,7 +152,7 @@ function ProductDetailContent() {
     );
   }
 
-  if (isError || !product) {
+  if (isError || !displayedProduct) {
     return (
       <div className="min-h-[60vh] flex flex-col items-center justify-center gap-6 text-center px-6">
         <h1 className="font-display text-3xl font-bold text-primary">
@@ -122,17 +173,21 @@ function ProductDetailContent() {
   }
 
   const fallbackImg = dostacImage(
-    `product-${String(((product.id - 1) % 10) + 1).padStart(2, "0")}.webp`,
+    `product-${String(((displayedProduct.id - 1) % 10) + 1).padStart(2, "0")}.webp`,
   );
 
   return (
-    <>
+    <motion.div
+      animate={{ opacity: isFadedOut ? 0 : 1 }}
+      transition={{ duration: 0.2, ease: "easeInOut" }}
+      onAnimationComplete={handleFadeComplete}
+    >
       {/* HERO */}
       <section className="relative w-full min-h-[480px] flex flex-col justify-end overflow-hidden">
         <div className="absolute inset-0 z-0">
           <img
-            src={product.imageUrl ?? fallbackImg}
-            alt={product.name}
+            src={displayedProduct.imageUrl ?? fallbackImg}
+            alt={displayedProduct.name}
             className="w-full h-full object-cover object-center scale-105"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-primary/92 via-primary/60 to-primary/20" />
@@ -148,10 +203,10 @@ function ProductDetailContent() {
                 <ArrowLeft className="h-4 w-4" />
                 {t("products.backToProducts") as string}
               </Link>
-              {product.category && (
+              {displayedProduct.category && (
                 <>
                   <span className="text-white/30">/</span>
-                  <span className="text-white/60">{catLabel(product.category)}</span>
+                  <span className="text-white/60">{catLabel(displayedProduct.category)}</span>
                 </>
               )}
             </div>
@@ -185,31 +240,31 @@ function ProductDetailContent() {
           </nav>
 
           <div className="flex flex-wrap items-center gap-2 mb-5">
-            {product.category && (
+            {displayedProduct.category && (
               <span className="inline-flex items-center rounded-full bg-white/15 backdrop-blur border border-white/20 px-3 py-1 text-xs font-semibold text-white">
-                {catLabel(product.category)}
+                {catLabel(displayedProduct.category)}
               </span>
             )}
-            {product.subCategory && (
+            {displayedProduct.subCategory && (
               <span className="inline-flex items-center rounded-full bg-accent/80 backdrop-blur border border-accent/40 px-3 py-1 text-xs font-semibold text-white">
-                {subLabel(product.subCategory)}
+                {subLabel(displayedProduct.subCategory)}
               </span>
             )}
           </div>
 
-          {product.valueProp && (
+          {displayedProduct.valueProp && (
             <p className="text-xs uppercase tracking-[0.35em] text-accent font-semibold mb-4">
-              {product.valueProp}
+              {displayedProduct.valueProp}
             </p>
           )}
 
           <h1 className="font-display text-3xl md:text-4xl lg:text-5xl font-bold leading-tight max-w-3xl mb-4">
-            {product.name}
+            {displayedProduct.name}
           </h1>
 
-          {product.headline && (
+          {displayedProduct.headline && (
             <p className="text-lg md:text-xl text-white/80 max-w-2xl leading-relaxed">
-              {product.headline}
+              {displayedProduct.headline}
             </p>
           )}
         </div>
@@ -228,15 +283,15 @@ function ProductDetailContent() {
             <motion.div variants={fadeUp} className="lg:col-span-2 flex flex-col gap-6">
               <div className="relative rounded-2xl overflow-hidden shadow-lg">
                 <img
-                  src={product.imageUrl ?? fallbackImg}
-                  alt={product.name}
+                  src={displayedProduct.imageUrl ?? fallbackImg}
+                  alt={displayedProduct.name}
                   className="w-full aspect-[4/3] object-cover object-center"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-primary/10 to-transparent" />
               </div>
 
               {/* CERT BADGES */}
-              {product.certs.length > 0 && (
+              {displayedProduct.certs.length > 0 && (
                 <div className="rounded-xl border border-slate-200 bg-slate-50 p-5">
                   <div className="flex items-center gap-2 mb-4">
                     <Award className="h-4 w-4 text-accent" />
@@ -245,7 +300,7 @@ function ProductDetailContent() {
                     </span>
                   </div>
                   <div className="flex flex-wrap gap-2">
-                    {product.certs.map((c, i) => (
+                    {displayedProduct.certs.map((c, i) => (
                       <span
                         key={i}
                         className="inline-flex items-center rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 shadow-sm"
@@ -263,14 +318,14 @@ function ProductDetailContent() {
                   {t("products.bottomCtaHeading") as string}
                 </p>
                 <Link
-                  href={`/contact?product=${encodeURIComponent(product.slug)}&inquiryType=oem${product.material ? `&material=${encodeURIComponent(product.material)}` : ""}#contact-form`}
+                  href={`/contact?product=${encodeURIComponent(displayedProduct.slug)}&inquiryType=oem${displayedProduct.material ? `&material=${encodeURIComponent(displayedProduct.material)}` : ""}#contact-form`}
                   className="inline-flex h-10 items-center justify-center rounded-full bg-accent px-5 text-sm font-semibold text-white shadow-sm hover:bg-accent/90 transition-colors"
                 >
                   {t("products.oemInquiry") as string}
                   <ArrowRight className="ml-2 h-3.5 w-3.5" />
                 </Link>
                 <Link
-                  href={`/contact?product=${encodeURIComponent(product.slug)}${product.material ? `&material=${encodeURIComponent(product.material)}` : ""}#contact-form`}
+                  href={`/contact?product=${encodeURIComponent(displayedProduct.slug)}${displayedProduct.material ? `&material=${encodeURIComponent(displayedProduct.material)}` : ""}#contact-form`}
                   className="inline-flex h-10 items-center justify-center rounded-full border border-slate-300 bg-white px-5 text-sm font-semibold text-[#0F172A] hover:bg-slate-50 transition-colors"
                 >
                   {t("products.contactUs") as string}
@@ -281,21 +336,21 @@ function ProductDetailContent() {
             {/* RIGHT — BODY + FEATURES */}
             <motion.div variants={fadeUp} className="lg:col-span-3">
               {/* Rich body */}
-              {product.body && (
+              {displayedProduct.body && (
                 <div
                   className="rich-html text-slate-600 text-base leading-relaxed mb-10 pb-10 border-b border-slate-100"
-                  dangerouslySetInnerHTML={{ __html: product.body }}
+                  dangerouslySetInnerHTML={{ __html: displayedProduct.body }}
                 />
               )}
 
               {/* FEATURES */}
-              {product.features.length > 0 && (
+              {displayedProduct.features.length > 0 && (
                 <div>
                   <p className="text-xs uppercase tracking-[0.25em] font-semibold text-accent mb-5">
                     {t("products.featuresLabel") as string}
                   </p>
                   <motion.ul variants={stagger} className="flex flex-col gap-3">
-                    {product.features.map((feat, i) => (
+                    {displayedProduct.features.map((feat, i) => (
                       <motion.li
                         key={i}
                         variants={fadeUp}
@@ -312,27 +367,27 @@ function ProductDetailContent() {
               )}
 
               {/* SPEC PANEL — material + sub-category */}
-              {(product.material || product.subCategory) && (
-                <div className={`rounded-xl border border-slate-200 bg-slate-50 overflow-hidden ${product.features.length > 0 ? "mt-8" : ""}`}>
+              {(displayedProduct.material || displayedProduct.subCategory) && (
+                <div className={`rounded-xl border border-slate-200 bg-slate-50 overflow-hidden ${displayedProduct.features.length > 0 ? "mt-8" : ""}`}>
                   <table className="w-full text-sm">
                     <tbody>
-                      {product.subCategory && (
+                      {displayedProduct.subCategory && (
                         <tr className="border-b border-slate-200 last:border-0">
                           <td className="py-3 px-4 w-36 text-xs font-semibold uppercase tracking-[0.15em] text-slate-500 whitespace-nowrap">
                             {t("products.subCategoryLabel") as string}
                           </td>
                           <td className="py-3 px-4 text-slate-700 font-medium">
-                            {subLabel(product.subCategory)}
+                            {subLabel(displayedProduct.subCategory)}
                           </td>
                         </tr>
                       )}
-                      {product.material && (
+                      {displayedProduct.material && (
                         <tr className="border-b border-slate-200 last:border-0">
                           <td className="py-3 px-4 w-36 text-xs font-semibold uppercase tracking-[0.15em] text-slate-500 whitespace-nowrap">
                             {t("products.materialLabel") as string}
                           </td>
                           <td className="py-3 px-4 text-slate-700 font-medium">
-                            {product.material}
+                            {displayedProduct.material}
                           </td>
                         </tr>
                       )}
@@ -448,7 +503,7 @@ function ProductDetailContent() {
           </motion.div>
         </div>
       </section>
-    </>
+    </motion.div>
   );
 }
 
