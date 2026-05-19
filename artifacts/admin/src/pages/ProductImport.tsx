@@ -486,17 +486,45 @@ export default function ProductImport() {
     setRemovedRows([]);
   }, [removedRows]);
 
+  const handleRestoreBatch = useCallback((batch: ParsedRow[]) => {
+    const batchIndexes = new Set(batch.map((r) => r.index));
+    setRemovedRows((prev) => prev.filter((r) => !batchIndexes.has(r.index)));
+    setRows((prev) => {
+      const restored = [...prev, ...batch];
+      restored.sort((a, b) => a.index - b.index);
+      return restored;
+    });
+  }, []);
+
   const handleRemoveAllInvalid = useCallback(() => {
     const toRemove = rows.filter((r) => r.errors.length > 0);
+    if (toRemove.length === 0) return;
     setRows((prev) => prev.filter((r) => r.errors.length === 0));
     setRemovedRows((prev) => [...prev, ...toRemove]);
-  }, [rows]);
+    toast({
+      description: `오류 행 ${toRemove.length}개 삭제됨`,
+      action: (
+        <ToastAction altText="되돌리기" onClick={() => handleRestoreBatch(toRemove)}>
+          되돌리기
+        </ToastAction>
+      ),
+    });
+  }, [rows, handleRestoreBatch, toast]);
 
   const handleRemoveAllDuplicates = useCallback(() => {
     const toRemove = rows.filter((r) => r.isDuplicate);
+    if (toRemove.length === 0) return;
     setRows((prev) => prev.filter((r) => !r.isDuplicate));
     setRemovedRows((prev) => [...prev, ...toRemove]);
-  }, [rows]);
+    toast({
+      description: `중복 행 ${toRemove.length}개 삭제됨`,
+      action: (
+        <ToastAction altText="되돌리기" onClick={() => handleRestoreBatch(toRemove)}>
+          되돌리기
+        </ToastAction>
+      ),
+    });
+  }, [rows, handleRestoreBatch, toast]);
 
   const handleRemoveRow = (rowIndex: number) => {
     const row = rows.find((r) => r.index === rowIndex);
