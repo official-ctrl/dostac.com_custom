@@ -477,6 +477,15 @@ export default function ProductImport() {
     });
   }, []);
 
+  const handleRestoreAll = useCallback(() => {
+    setRows((prev) => {
+      const restored = [...prev, ...removedRows];
+      restored.sort((a, b) => a.index - b.index);
+      return restored;
+    });
+    setRemovedRows([]);
+  }, [removedRows]);
+
   const handleRemoveAllInvalid = useCallback(() => {
     const toRemove = rows.filter((r) => r.errors.length > 0);
     setRows((prev) => prev.filter((r) => r.errors.length === 0));
@@ -1037,16 +1046,29 @@ export default function ProductImport() {
                 </div>
               </div>
 
-              {originallyInvalidRows.length > 0 && !allCorrected && (
-                <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                  <span className="inline-flex items-center gap-1.5 rounded-full bg-amber-500/10 border border-amber-500/30 px-3 py-1 font-medium text-amber-700">
-                    <AlertTriangle className="h-3.5 w-3.5 shrink-0" />
-                    {correctedRows.length} / {originallyInvalidRows.length} 오류 수정됨
-                  </span>
-                  {originallyInvalidRows.length - correctedRows.length > 0 && (
-                    <span className="text-muted-foreground">
-                      — {originallyInvalidRows.length - correctedRows.length}개 남음
-                    </span>
+              {(removedRows.length > 0 || (originallyInvalidRows.length > 0 && !allCorrected)) && (
+                <div className="flex items-center gap-2 text-xs text-muted-foreground flex-wrap">
+                  {originallyInvalidRows.length > 0 && !allCorrected && (
+                    <>
+                      <span className="inline-flex items-center gap-1.5 rounded-full bg-amber-500/10 border border-amber-500/30 px-3 py-1 font-medium text-amber-700">
+                        <AlertTriangle className="h-3.5 w-3.5 shrink-0" />
+                        {correctedRows.length} / {originallyInvalidRows.length} 오류 수정됨
+                      </span>
+                      {originallyInvalidRows.length - correctedRows.length > 0 && (
+                        <span className="text-muted-foreground">
+                          — {originallyInvalidRows.length - correctedRows.length}개 남음
+                        </span>
+                      )}
+                    </>
+                  )}
+                  {removedRows.length > 0 && (
+                    <button
+                      type="button"
+                      onClick={handleRestoreAll}
+                      className="inline-flex items-center gap-1.5 rounded-full bg-muted border border-border px-3 py-1 font-medium text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-colors cursor-pointer"
+                    >
+                      {removedRows.length}개 숨김 — 모두 복원
+                    </button>
                   )}
                 </div>
               )}
