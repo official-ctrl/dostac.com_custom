@@ -93,22 +93,17 @@ export default function Inquiries() {
 
   const apiParams = useMemo(() => {
     const p: { status?: "new" | "in_progress" | "completed"; productSlug?: string } = {};
-    if (status !== "all") p.status = status as "new" | "in_progress" | "completed";
     if (productSlug !== ALL_PRODUCTS_VALUE) p.productSlug = productSlug;
     return Object.keys(p).length > 0 ? p : undefined;
-  }, [status, productSlug]);
+  }, [productSlug]);
 
   const { data: inquiries, isLoading } = useAdminListInquiries(apiParams);
 
-  const filtered = useMemo(() => {
+  const baseFiltered = useMemo(() => {
     if (!inquiries) return [];
-    let result = inquiries;
-    if (inquiryType !== "all") {
-      result = result.filter((i) => i.inquiryType === inquiryType);
-    }
     const q = search.trim().toLowerCase();
-    if (!q) return result;
-    return result.filter(
+    if (!q) return inquiries;
+    return inquiries.filter(
       (i) =>
         i.name.toLowerCase().includes(q) ||
         i.email.toLowerCase().includes(q) ||
@@ -118,7 +113,44 @@ export default function Inquiries() {
         (i.inquiryType ?? "").toLowerCase().includes(q) ||
         (i.material ?? "").toLowerCase().includes(q),
     );
-  }, [inquiries, search, inquiryType]);
+  }, [inquiries, search]);
+
+  const statusCounts = useMemo(() => {
+    const counts: Record<string, number> = {};
+    const typeBase =
+      inquiryType === "all"
+        ? baseFiltered
+        : baseFiltered.filter((i) => i.inquiryType === inquiryType);
+    for (const s of STATUSES) {
+      counts[s.value] =
+        s.value === "all"
+          ? typeBase.length
+          : typeBase.filter((i) => i.status === s.value).length;
+    }
+    return counts;
+  }, [baseFiltered, inquiryType]);
+
+  const typeCounts = useMemo(() => {
+    const counts: Record<string, number> = {};
+    const statusBase =
+      status === "all"
+        ? baseFiltered
+        : baseFiltered.filter((i) => i.status === status);
+    for (const t of INQUIRY_TYPES) {
+      counts[t.value] =
+        t.value === "all"
+          ? statusBase.length
+          : statusBase.filter((i) => i.inquiryType === t.value).length;
+    }
+    return counts;
+  }, [baseFiltered, status]);
+
+  const filtered = useMemo(() => {
+    let result = baseFiltered;
+    if (status !== "all") result = result.filter((i) => i.status === status);
+    if (inquiryType !== "all") result = result.filter((i) => i.inquiryType === inquiryType);
+    return result;
+  }, [baseFiltered, status, inquiryType]);
 
   return (
     <div className="px-8 py-8 space-y-6 max-w-7xl">
@@ -157,8 +189,20 @@ export default function Inquiries() {
                 size="sm"
                 onClick={() => setStatus(s.value)}
                 data-testid={`filter-status-${s.value}`}
+                className="gap-1.5"
               >
                 {s.label}
+                {!isLoading && (
+                  <span
+                    className={`inline-flex items-center justify-center rounded-full px-1.5 py-0.5 text-[10px] font-semibold leading-none tabular-nums min-w-[18px] ${
+                      status === s.value
+                        ? "bg-white/20 text-white"
+                        : "bg-muted text-muted-foreground"
+                    }`}
+                  >
+                    {statusCounts[s.value] ?? 0}
+                  </span>
+                )}
               </Button>
             ))}
           </div>
@@ -173,8 +217,20 @@ export default function Inquiries() {
                 size="sm"
                 onClick={() => setInquiryType(t.value)}
                 data-testid={`filter-type-${t.value}`}
+                className="gap-1.5"
               >
                 {t.label}
+                {!isLoading && (
+                  <span
+                    className={`inline-flex items-center justify-center rounded-full px-1.5 py-0.5 text-[10px] font-semibold leading-none tabular-nums min-w-[18px] ${
+                      inquiryType === t.value
+                        ? "bg-foreground/15 text-foreground"
+                        : "bg-muted text-muted-foreground"
+                    }`}
+                  >
+                    {typeCounts[t.value] ?? 0}
+                  </span>
+                )}
               </Button>
             ))}
           </div>
