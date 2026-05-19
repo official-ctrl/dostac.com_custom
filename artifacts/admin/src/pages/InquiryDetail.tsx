@@ -98,6 +98,15 @@ export default function InquiryDetail() {
     ? products.find((p) => p.slug === inquiry.productSlug) ?? null
     : null;
 
+  const linkedProductInterest = (() => {
+    if (!inquiry.productInterest || !products) return null;
+    const query = inquiry.productInterest.trim().toLowerCase();
+    const matches = products.filter((p) =>
+      p.translations.some((t) => t.name.trim().toLowerCase() === query)
+    );
+    return matches.length === 1 ? matches[0] : null;
+  })();
+
   return (
     <div className="px-8 py-8 space-y-6 max-w-4xl">
       <div className="flex items-center gap-3">
@@ -150,7 +159,11 @@ export default function InquiryDetail() {
                 {inquiry.productInterest && (
                   <InfoRow icon={Package} label="관심 제품">
                     <Link
-                      href={`/products?q=${encodeURIComponent(inquiry.productInterest)}`}
+                      href={
+                        linkedProductInterest
+                          ? `/products/${linkedProductInterest.id}`
+                          : `/products?q=${encodeURIComponent(inquiry.productInterest)}`
+                      }
                       className="text-accent hover:underline"
                       data-testid="link-product-interest"
                     >
