@@ -128,6 +128,8 @@ export default function Products() {
     return { missingImage, missingKoName };
   }, [products]);
 
+  const [gapFilter, setGapFilter] = useState<"missingImage" | "missingKoName" | null>(null);
+
   const [gapBannerDismissed, setGapBannerDismissed] = useState(false);
   const [showGapsResolvedFlash, setShowGapsResolvedFlash] = useState(false);
   const prevContentGaps = useRef<typeof contentGaps>(undefined);
@@ -148,6 +150,13 @@ export default function Products() {
     const list = products.filter((p) => {
       if (activeCat !== "all" && p.category !== activeCat) return false;
       if (activeSubCat !== "all" && p.subCategory !== activeSubCat) return false;
+      if (gapFilter === "missingImage") {
+        if (!p.published || !!p.imageUrl) return false;
+      }
+      if (gapFilter === "missingKoName") {
+        const ko = getTr(p.translations, "ko");
+        if (!p.published || !!ko?.name?.trim()) return false;
+      }
       if (!q) return true;
       const ko = getTr(p.translations, "ko");
       return (
@@ -186,7 +195,7 @@ export default function Products() {
       });
     }
     return list;
-  }, [products, activeCat, activeSubCat, search, catSort, nameSort, orderSort, statusSort]);
+  }, [products, activeCat, activeSubCat, search, gapFilter, catSort, nameSort, orderSort, statusSort]);
 
   const onDelete = async () => {
     if (!pendingDelete) return;
@@ -232,16 +241,27 @@ export default function Products() {
           <div className="flex items-start justify-between gap-3 text-sm bg-amber-50 border border-amber-200 rounded-md px-3 py-2.5">
             <div className="flex items-start gap-2 text-amber-800">
               <AlertTriangle className="h-4 w-4 shrink-0 mt-0.5 text-amber-500" />
-              <span>
-                게시된 제품 중 콘텐츠 누락이 있습니다:{" "}
-                {[
-                  contentGaps.missingImage > 0 &&
-                    `이미지 없음 ${contentGaps.missingImage}건`,
-                  contentGaps.missingKoName > 0 &&
-                    `한국어 이름 없음 ${contentGaps.missingKoName}건`,
-                ]
-                  .filter(Boolean)
-                  .join(" · ")}
+              <span className="flex flex-wrap items-center gap-x-1.5 gap-y-1">
+                게시된 제품 중 콘텐츠 누락이 있습니다:
+                {contentGaps.missingImage > 0 && (
+                  <button
+                    onClick={() => setGapFilter((f) => f === "missingImage" ? null : "missingImage")}
+                    className={`underline underline-offset-2 decoration-dotted font-medium transition-colors hover:text-amber-900 ${gapFilter === "missingImage" ? "text-amber-900" : "text-amber-700"}`}
+                  >
+                    이미지 없음 {contentGaps.missingImage}건
+                  </button>
+                )}
+                {contentGaps.missingImage > 0 && contentGaps.missingKoName > 0 && (
+                  <span className="text-amber-500">·</span>
+                )}
+                {contentGaps.missingKoName > 0 && (
+                  <button
+                    onClick={() => setGapFilter((f) => f === "missingKoName" ? null : "missingKoName")}
+                    className={`underline underline-offset-2 decoration-dotted font-medium transition-colors hover:text-amber-900 ${gapFilter === "missingKoName" ? "text-amber-900" : "text-amber-700"}`}
+                  >
+                    한국어 이름 없음 {contentGaps.missingKoName}건
+                  </button>
+                )}
               </span>
             </div>
             <button
@@ -296,6 +316,16 @@ export default function Products() {
               </Button>
             ))}
           </div>
+          {gapFilter && (
+            <button
+              onClick={() => setGapFilter(null)}
+              className="flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-full bg-amber-100 text-amber-800 border border-amber-300 hover:bg-amber-200 transition-colors"
+              data-testid="gap-filter-chip"
+            >
+              {gapFilter === "missingImage" ? "이미지 없음" : "한국어 이름 없음"}
+              <X className="h-3 w-3" />
+            </button>
+          )}
         </div>
 
         {subCategories.length > 0 && (
