@@ -15,7 +15,7 @@ import NoticeDetail from "@/pages/NoticeDetail";
 import Contact from "@/pages/Contact";
 import NotFound from "@/pages/not-found";
 
-const queryClient = new QueryClient({
+export const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       refetchOnWindowFocus: false,
