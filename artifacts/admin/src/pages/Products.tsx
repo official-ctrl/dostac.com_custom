@@ -6,7 +6,7 @@ import {
   getAdminListProductsQueryKey,
 } from "@workspace/api-client-react";
 import { useQueryClient } from "@tanstack/react-query";
-import { Plus, Search, Pencil, Trash2, Eye, EyeOff, Upload, ImageOff, AlertTriangle, ArrowUpDown, ArrowUp, ArrowDown, Info } from "lucide-react";
+import { Plus, Search, Pencil, Trash2, Eye, EyeOff, Upload, ImageOff, AlertTriangle, ArrowUpDown, ArrowUp, ArrowDown, Info, X } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -94,6 +94,21 @@ export default function Products() {
     return Array.from(set).sort();
   }, [products, activeCat]);
 
+  const contentGaps = useMemo(() => {
+    if (!products) return null;
+    const published = products.filter((p) => p.published);
+    if (published.length === 0) return null;
+    const missingImage = published.filter((p) => !p.imageUrl).length;
+    const missingKoName = published.filter((p) => {
+      const ko = getTr(p.translations, "ko");
+      return !ko?.name?.trim();
+    }).length;
+    if (missingImage === 0 && missingKoName === 0) return null;
+    return { missingImage, missingKoName };
+  }, [products]);
+
+  const [gapBannerDismissed, setGapBannerDismissed] = useState(false);
+
   const filtered = useMemo(() => {
     if (!products) return [];
     const q = search.trim().toLowerCase();
@@ -158,6 +173,32 @@ export default function Products() {
       </header>
 
       <Card className="p-4 space-y-4">
+        {contentGaps && !gapBannerDismissed && (
+          <div className="flex items-start justify-between gap-3 text-sm bg-amber-50 border border-amber-200 rounded-md px-3 py-2.5">
+            <div className="flex items-start gap-2 text-amber-800">
+              <AlertTriangle className="h-4 w-4 shrink-0 mt-0.5 text-amber-500" />
+              <span>
+                게시된 제품 중 콘텐츠 누락이 있습니다:{" "}
+                {[
+                  contentGaps.missingImage > 0 &&
+                    `이미지 없음 ${contentGaps.missingImage}건`,
+                  contentGaps.missingKoName > 0 &&
+                    `한국어 이름 없음 ${contentGaps.missingKoName}건`,
+                ]
+                  .filter(Boolean)
+                  .join(" · ")}
+              </span>
+            </div>
+            <button
+              onClick={() => setGapBannerDismissed(true)}
+              className="shrink-0 text-amber-500 hover:text-amber-700 transition-colors"
+              aria-label="닫기"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          </div>
+        )}
+
         {showFilterNotice && (
           <div className="flex items-center gap-2 text-sm text-blue-700 bg-blue-50 border border-blue-200 rounded-md px-3 py-2 transition-opacity duration-300">
             <Info className="h-4 w-4 shrink-0" />
