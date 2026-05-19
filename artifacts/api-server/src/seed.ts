@@ -10,6 +10,7 @@ import {
   aboutContentTable,
   processContentTable,
   categoryTranslationsTable,
+  subCategoryTranslationsTable,
 } from "@workspace/db";
 import { hashPassword } from "./lib/auth";
 import { logger } from "./lib/logger";
@@ -1017,6 +1018,35 @@ async function seed(): Promise<void> {
       .onConflictDoNothing();
   }
   logger.info("Category translations seeded");
+
+  // Seed sub-category translations (skip rows that already exist so admin edits are preserved)
+  const SUB_CATEGORY_TRANSLATIONS = [
+    { slug: "serum", nameKo: "세럼", nameEn: "Serum", nameJa: "セラム", nameZh: "精华液", nameVi: "Serum" },
+    { slug: "toner", nameKo: "토너", nameEn: "Toner", nameJa: "トナー", nameZh: "化妆水", nameVi: "Toner" },
+    { slug: "cream", nameKo: "크림", nameEn: "Cream", nameJa: "クリーム", nameZh: "面霜", nameVi: "Kem dưỡng" },
+    { slug: "lotion", nameKo: "로션", nameEn: "Lotion", nameJa: "ローション", nameZh: "乳液", nameVi: "Lotion" },
+    { slug: "sheet-mask", nameKo: "시트 마스크", nameEn: "Sheet Mask", nameJa: "シートマスク", nameZh: "片状面膜", nameVi: "Mặt nạ giấy" },
+    { slug: "sleeping-mask", nameKo: "슬리핑 마스크", nameEn: "Sleeping Mask", nameJa: "スリーピングマスク", nameZh: "睡眠面膜", nameVi: "Mặt nạ ngủ" },
+    { slug: "clay-mask", nameKo: "클레이 마스크", nameEn: "Clay Mask", nameJa: "クレイマスク", nameZh: "泥膜", nameVi: "Mặt nạ đất sét" },
+    { slug: "pore-strip", nameKo: "코팩", nameEn: "Pore Strip", nameJa: "毛穴ストリップ", nameZh: "鼻贴", nameVi: "Miếng lột mụn" },
+    { slug: "spot-patch", nameKo: "스팟 패치", nameEn: "Spot Patch", nameJa: "スポットパッチ", nameZh: "祛痘贴", nameVi: "Miếng dán mụn" },
+    { slug: "micro-needle", nameKo: "마이크로 니들", nameEn: "Micro Needle", nameJa: "マイクロニードル", nameZh: "微针贴", nameVi: "Vi kim" },
+    { slug: "cleansing-foam", nameKo: "클렌징 폼", nameEn: "Cleansing Foam", nameJa: "クレンジングフォーム", nameZh: "洁面泡沫", nameVi: "Sữa rửa mặt" },
+    { slug: "cleansing-oil", nameKo: "클렌징 오일", nameEn: "Cleansing Oil", nameJa: "クレンジングオイル", nameZh: "卸妆油", nameVi: "Tẩy trang dầu" },
+    { slug: "baby", nameKo: "베이비", nameEn: "Baby", nameJa: "ベビー", nameZh: "婴儿护理", nameVi: "Cho bé" },
+    { slug: "feminine", nameKo: "여성 위생", nameEn: "Feminine Care", nameJa: "フェミニンケア", nameZh: "女性护理", nameVi: "Chăm sóc phụ nữ" },
+    { slug: "scrub", nameKo: "스크럽", nameEn: "Scrub", nameJa: "スクラブ", nameZh: "磨砂膏", nameVi: "Tẩy tế bào chết" },
+    { slug: "body-lotion", nameKo: "바디 로션", nameEn: "Body Lotion", nameJa: "ボディローション", nameZh: "身体乳", nameVi: "Dưỡng thể" },
+    { slug: "cooling-wipe", nameKo: "쿨링 티슈", nameEn: "Cooling Wipe", nameJa: "クールウェットティッシュ", nameZh: "清凉湿巾", nameVi: "Khăn ướt làm mát" },
+    { slug: "deodorant-wipe", nameKo: "데오드란트 티슈", nameEn: "Deodorant Wipe", nameJa: "デオドラントティッシュ", nameZh: "除臭湿巾", nameVi: "Khăn ướt khử mùi" },
+  ];
+  for (const row of SUB_CATEGORY_TRANSLATIONS) {
+    await db
+      .insert(subCategoryTranslationsTable)
+      .values(row)
+      .onConflictDoNothing();
+  }
+  logger.info("Sub-category translations seeded");
 
   logger.info("Seed complete");
 }
