@@ -185,12 +185,39 @@ function ContactContent() {
     },
   });
 
+  const shakeField = (id: string) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    el.scrollIntoView({ behavior: reducedMotion ? "auto" : "smooth", block: "center" });
+    if (reducedMotion) return;
+    el.classList.remove("field-shake");
+    void el.offsetWidth;
+    el.classList.add("field-shake");
+    const cleanup = () => {
+      el.classList.remove("field-shake");
+      el.removeEventListener("animationend", cleanup);
+    };
+    el.addEventListener("animationend", cleanup);
+  };
+
   const onSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setSuccess(false);
     setError(null);
-    if (!form.name.trim() || !form.email.trim() || !form.message.trim()) {
+    if (!form.name.trim()) {
       setError(t("contact.validationRequired") as string);
+      shakeField("name");
+      return;
+    }
+    if (!form.email.trim()) {
+      setError(t("contact.validationRequired") as string);
+      shakeField("email");
+      return;
+    }
+    if (!form.message.trim()) {
+      setError(t("contact.validationRequired") as string);
+      shakeField("desc");
       return;
     }
     createInquiry.mutate({
