@@ -290,6 +290,7 @@ export default function ProductImport() {
   const translateMut = useAdminTranslate();
 
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const errorSummaryRef = useRef<HTMLDivElement>(null);
   const [fileName, setFileName] = useState<string | null>(null);
   const [rows, setRows] = useState<ParsedRow[]>([]);
   const [showExample, setShowExample] = useState(false);
@@ -443,6 +444,14 @@ export default function ProductImport() {
         return { ...row, originallyInvalid: row.errors.length > 0 };
       });
       setRows(parsed);
+      const hasInvalid = parsed.some((r) => r.errors.length > 0);
+      if (hasInvalid) {
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            errorSummaryRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+          });
+        });
+      }
     } catch (err) {
       toast({
         title: "파일 파싱 실패",
@@ -1043,7 +1052,7 @@ export default function ProductImport() {
               )}
 
               {invalidRows.length > 0 && errorCounts.size > 0 && (
-                <div className="rounded-md border border-destructive/30 bg-destructive/5 px-4 py-3 space-y-2">
+                <div ref={errorSummaryRef} className="rounded-md border border-destructive/30 bg-destructive/5 px-4 py-3 space-y-2">
                   <div className="flex items-center justify-between gap-2">
                     <p className="text-xs font-medium text-destructive">오류 유형별 요약 — 클릭하면 해당 행으로 이동</p>
                     <Button
