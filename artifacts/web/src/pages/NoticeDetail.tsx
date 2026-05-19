@@ -160,18 +160,23 @@ function NoticeDetailContent() {
     setIsFadedOut(false);
   }, []);
 
+  const fallbackCopyToClipboard = () => {
+    navigator.clipboard.writeText(window.location.href).then(() => {
+      setCopied(true);
+    }).catch(() => {});
+  };
+
   const handleShare = async () => {
     const url = window.location.href;
     if (navigator.share) {
       try {
         await navigator.share({ title: displayedArticle?.title ?? "", url });
-      } catch {
-        // user dismissed or share failed — do nothing
+      } catch (err) {
+        if (err instanceof DOMException && err.name === "AbortError") return;
+        fallbackCopyToClipboard();
       }
     } else {
-      navigator.clipboard.writeText(url).then(() => {
-        setCopied(true);
-      });
+      fallbackCopyToClipboard();
     }
   };
 
@@ -294,26 +299,24 @@ function NoticeDetailContent() {
                   if (copied) startCopyTimer();
                 }}
               >
-                {canNativeShare ? (
-                  <>
-                    <Share2 className="h-4 w-4" />
-                    {t("notice.share") as string}
-                  </>
-                ) : (
-                  <AnimatePresence mode="wait" initial={false}>
-                    {copied ? (
-                      <motion.span key="copied" className="inline-flex items-center gap-2" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }}>
-                        <Check className="h-4 w-4 text-emerald-600" />
-                        <span aria-live="polite">{t("notice.copied") as string}</span>
-                      </motion.span>
-                    ) : (
-                      <motion.span key="copy" className="inline-flex items-center gap-2" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }}>
-                        <Copy className="h-4 w-4" />
-                        <span>{t("notice.copyLink") as string}</span>
-                      </motion.span>
-                    )}
-                  </AnimatePresence>
-                )}
+                <AnimatePresence mode="wait" initial={false}>
+                  {copied ? (
+                    <motion.span key="copied" className="inline-flex items-center gap-2" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }}>
+                      <Check className="h-4 w-4 text-emerald-600" />
+                      <span aria-live="polite">{t("notice.copied") as string}</span>
+                    </motion.span>
+                  ) : canNativeShare ? (
+                    <motion.span key="share" className="inline-flex items-center gap-2" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }}>
+                      <Share2 className="h-4 w-4" />
+                      <span>{t("notice.share") as string}</span>
+                    </motion.span>
+                  ) : (
+                    <motion.span key="copy" className="inline-flex items-center gap-2" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }}>
+                      <Copy className="h-4 w-4" />
+                      <span>{t("notice.copyLink") as string}</span>
+                    </motion.span>
+                  )}
+                </AnimatePresence>
               </button>
             </div>
           </div>
