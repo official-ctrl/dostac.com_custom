@@ -13,6 +13,13 @@ const INQUIRY_TYPE_LABELS: Record<string, string> = {
   other: "Other",
 };
 
+const INQUIRY_TYPE_SUBJECT_LABELS: Record<string, string> = {
+  oem: "OEM",
+  odm: "ODM",
+  sample: "Sample",
+  other: "Other",
+};
+
 function fmt(value: string | null | undefined): string {
   if (value == null) return "-";
   return value.length ? value : "-";
@@ -131,9 +138,12 @@ function buildRfc822(inquiry: ContactInquiry, productNameKo?: string): string {
   const safeName = safeHeaderText(inquiry.name);
   const safeCompany = safeHeaderText(inquiry.company ?? "");
   const safeProduct = inquiry.productInterest ? safeHeaderText(inquiry.productInterest.trim()) : "";
+  const rawType = inquiry.inquiryType ?? "";
+  const typeLabel = rawType ? safeHeaderText(INQUIRY_TYPE_SUBJECT_LABELS[rawType] ?? rawType) : "";
+  const inquiryWord = typeLabel ? `${typeLabel} inquiry` : "inquiry";
   const subject = safeProduct
-    ? `[DOSTAC] New inquiry re: ${safeProduct} from ${safeName}`
-    : `[DOSTAC] New inquiry from ${safeName}${safeCompany ? ` (${safeCompany})` : ""}`;
+    ? `[DOSTAC] New ${inquiryWord} re: ${safeProduct} from ${safeName}`
+    : `[DOSTAC] New ${inquiryWord} from ${safeName}${safeCompany ? ` (${safeCompany})` : ""}`;
   const boundary = `dostac_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 10)}`;
 
   const replyTo = safeHeaderEmail(inquiry.email);
