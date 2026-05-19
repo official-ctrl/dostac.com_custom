@@ -64,6 +64,7 @@ type ParsedRow = {
   status: RowStatus;
   errorMsg?: string;
   isDuplicate?: boolean;
+  isIntraBatchDuplicate?: boolean;
   isOverwrite?: boolean;
   originallyInvalid?: boolean;
 };
@@ -117,6 +118,7 @@ function validateRow(
     errors,
     status: "pending",
     isDuplicate: (!allowOverwrite && isDbDuplicate) || isIntraFileDuplicate,
+    isIntraBatchDuplicate: isIntraFileDuplicate,
     isOverwrite,
   };
 }
@@ -278,6 +280,8 @@ export default function ProductImport() {
   const validRows = rows.filter((r) => r.errors.length === 0);
   const invalidRows = rows.filter((r) => r.errors.length > 0);
   const duplicateRows = invalidRows.filter((r) => r.isDuplicate);
+  const intraBatchDuplicateRows = duplicateRows.filter((r) => r.isIntraBatchDuplicate);
+  const dbDuplicateRows = duplicateRows.filter((r) => !r.isIntraBatchDuplicate);
   const overwriteRows = validRows.filter((r) => r.isOverwrite);
 
   const handleAllowOverwriteChange = useCallback(
@@ -928,16 +932,18 @@ export default function ProductImport() {
                       </p>
                     </div>
                     <div className="flex items-center gap-2 shrink-0">
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="sm"
-                        disabled={isImporting}
-                        onClick={() => handleAllowOverwriteChange(true)}
-                        className="gap-1.5 border-amber-400/60 text-amber-800 hover:bg-amber-100 hover:text-amber-900 h-7 text-xs px-2.5"
-                      >
-                        덮어쓰기 허용
-                      </Button>
+                      {dbDuplicateRows.length > 0 && (
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          disabled={isImporting}
+                          onClick={() => handleAllowOverwriteChange(true)}
+                          className="gap-1.5 border-amber-400/60 text-amber-800 hover:bg-amber-100 hover:text-amber-900 h-7 text-xs px-2.5"
+                        >
+                          덮어쓰기 허용
+                        </Button>
+                      )}
                       <Button
                         type="button"
                         variant="outline"
@@ -952,25 +958,32 @@ export default function ProductImport() {
                     </div>
                   </div>
                   <p className="text-xs text-amber-700 pl-6">
-                    아래 {duplicateRows.length}개 슬러그가 이미 등록된 제품과 충돌합니다.
-                    슬러그를 다른 값으로 변경하거나, 해당 행을 삭제하거나, "덮어쓰기 허용"을 켜서 기존 제품을 교체하세요.
+                    {intraBatchDuplicateRows.length > 0 && dbDuplicateRows.length > 0
+                      ? `아래 ${duplicateRows.length}개 슬러그 중 ${intraBatchDuplicateRows.length}개는 파일 내에서, ${dbDuplicateRows.length}개는 이미 등록된 제품과 충돌합니다.`
+                      : intraBatchDuplicateRows.length > 0
+                        ? `아래 ${intraBatchDuplicateRows.length}개 슬러그가 이 파일 안에서 중복됩니다.`
+                        : `아래 ${dbDuplicateRows.length}개 슬러그가 이미 등록된 제품과 충돌합니다.`}
+                    {" "}슬러그를 다른 값으로 변경하거나 해당 행을 삭제하세요.
+                    {dbDuplicateRows.length > 0 && " 또는 \"덮어쓰기 허용\"을 켜서 기존 제품을 교체할 수 있습니다."}
                   </p>
                   <ul className="pl-6 space-y-1.5">
                     {duplicateRows.map((row) => {
-                      const productId = existingProductMap.get(row.slug);
+                      const productId = row.isIntraBatchDuplicate ? undefined : existingProductMap.get(row.slug);
                       return (
-                        <li key={row.slug} className="flex items-center gap-2 text-xs">
+                        <li key={`${row.slug}-${row.index}`} className="flex items-center gap-2 text-xs">
                           <code className="bg-amber-100 text-amber-800 border border-amber-200 rounded px-1.5 py-0.5 text-[11px] font-mono">
                             {row.slug}
                           </code>
-                          {productId != null && (
+                          {row.isIntraBatchDuplicate ? (
+                            <span className="text-amber-700">파일 내 중복 (행 #{row.index + 1})</span>
+                          ) : productId != null ? (
                             <Link
                               href={`/products/${productId}`}
                               className="text-amber-700 underline underline-offset-2 hover:text-amber-900 font-medium"
                             >
                               기존 제품 편집하기 →
                             </Link>
-                          )}
+                          ) : null}
                         </li>
                       );
                     })}
@@ -1201,9 +1214,9 @@ export default function ProductImport() {
                                 <div className="flex items-center gap-1.5 flex-wrap">
                                   <span className="inline-flex items-center gap-1 text-[10px] rounded px-1.5 py-0.5 bg-amber-100 text-amber-800 font-medium">
                                     <AlertTriangle className="h-3 w-3" />
-                                    중복 슬러그
+                                    {row.isIntraBatchDuplicate ? "파일 내 중복" : "중복 슬러그"}
                                   </span>
-                                  {existingProductMap.get(row.slug) != null && (
+                                  {!row.isIntraBatchDuplicate && existingProductMap.get(row.slug) != null && (
                                     <Link
                                       href={`/products/${existingProductMap.get(row.slug)}`}
                                       className="text-[10px] text-amber-700 underline underline-offset-2 hover:text-amber-900 whitespace-nowrap"
