@@ -43,7 +43,7 @@ const NAV_ITEMS: Array<{ href: string; key: NavKey }> = [
   { href: "/about", key: "about" },
   { href: "/production", key: "production" },
   { href: "/products", key: "product" },
-  { href: "/notice", key: "notice" },
+  { href: "/insights", key: "notice" },
   { href: "/contact", key: "contact" },
 ];
 
@@ -973,7 +973,7 @@ function Footer() {
             <Link href="/products" className="text-sm text-slate-400 hover:text-accent transition-colors">
               {t("nav.product") as string}
             </Link>
-            <Link href="/notice" className="text-sm text-slate-400 hover:text-accent transition-colors">
+            <Link href="/insights" className="text-sm text-slate-400 hover:text-accent transition-colors">
               {t("nav.notice") as string}
             </Link>
             <Link href="/contact" className="text-sm text-slate-400 hover:text-accent transition-colors">

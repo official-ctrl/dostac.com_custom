@@ -261,7 +261,7 @@ function NoticeContent() {
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
                 {/* Image */}
                 <Link
-                  href={`/notice/${displayedFeatured.slug}`}
+                  href={`/insights/${displayedFeatured.slug}`}
                   className="group relative block rounded-2xl overflow-hidden shadow-lg aspect-[16/10] bg-slate-200"
                 >
                   <img
@@ -303,7 +303,7 @@ function NoticeContent() {
                     </p>
                   )}
                   <Link
-                    href={`/notice/${displayedFeatured.slug}`}
+                    href={`/insights/${displayedFeatured.slug}`}
                     className="inline-flex h-12 items-center justify-center rounded-full bg-primary px-8 text-sm font-semibold text-white shadow-sm hover:bg-primary/90 transition-colors"
                   >
                     {t("notice.featuredButton") as string}
@@ -342,7 +342,7 @@ function NoticeContent() {
                 {(activeCategory || search ? displayedNotices : displayedVisible).map((item) => (
                   <Link
                     key={item.id}
-                    href={`/notice/${item.slug}`}
+                    href={`/insights/${item.slug}`}
                     className="group block"
                     data-testid={`notice-card-${item.slug}`}
                   >

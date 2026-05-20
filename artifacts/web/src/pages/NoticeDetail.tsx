@@ -198,7 +198,7 @@ function NoticeDetailContent() {
           This article may have been removed or is unavailable.
         </p>
         <Link
-          href="/notice"
+          href="/insights"
           className="inline-flex items-center gap-2 text-sm font-semibold text-accent hover:underline"
         >
           <ArrowLeft className="h-4 w-4" />
@@ -230,7 +230,7 @@ function NoticeDetailContent() {
         </div>
         <div className="container relative z-10 mx-auto px-6 pb-16 pt-32 text-white">
           <Link
-            href="/notice"
+            href="/insights"
             className="inline-flex items-center gap-2 text-sm font-medium text-white/70 hover:text-white transition mb-8"
           >
             <ArrowLeft className="h-4 w-4" />
@@ -280,7 +280,7 @@ function NoticeDetailContent() {
             {/* Actions */}
             <div className="mt-12 pt-8 border-t border-slate-200 flex flex-wrap items-center justify-between gap-4">
               <Link
-                href="/notice"
+                href="/insights"
                 className="inline-flex items-center gap-2 text-sm font-semibold text-primary hover:text-accent transition"
               >
                 <ArrowLeft className="h-4 w-4" />
@@ -337,7 +337,7 @@ function NoticeDetailContent() {
               {related.map((item) => (
                 <Link
                   key={item.id}
-                  href={`/notice/${item.slug}`}
+                  href={`/insights/${item.slug}`}
                   className="group block"
                 >
                   <article className="h-full flex flex-col rounded-xl bg-white border border-slate-200 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 overflow-hidden">
