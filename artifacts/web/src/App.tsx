@@ -3,6 +3,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { LanguageProvider } from "@/components/dostac/i18n";
+import { useGoogleAnalytics } from "@/hooks/use-google-analytics";
 import "@/components/dostac/dostac.css";
 
 import Home from "@/pages/Home";
@@ -25,6 +26,7 @@ export const queryClient = new QueryClient({
 });
 
 function Router() {
+  useGoogleAnalytics();
   return (
     <Switch>
       <Route path="/" component={Home} />
