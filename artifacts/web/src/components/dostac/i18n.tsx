@@ -18,7 +18,7 @@ export const LANGUAGES: { code: Lang; label: string; flag: string }[] = [
 type Dict = { [key: string]: any };
 
 const ko: Dict = {
-  nav: { about: "Dostac 소개", production: "생산", product: "제품", notice: "공지", contact: "문의하기", cta: "견적 요청", aboutSub: { greeting: "인사말", history: "회사 연혁", philosophy: "기업 철학", directions: "오시는 길" }, processSub: { oem: "OEM/ODM", cert: "글로벌 인증" } },
+  nav: { about: "Dostac 소개", production: "생산", product: "제품", notice: "Insights", contact: "문의하기", cta: "견적 요청", aboutSub: { greeting: "인사말", history: "회사 연혁", philosophy: "기업 철학", directions: "오시는 길" }, processSub: { oem: "OEM/ODM", cert: "글로벌 인증" } },
   footer: {
     tagline: "신뢰를 바탕으로 자신 있게 함께하는 글로벌 제조 파트너. Beauty & Health Innovation을 위한 최고의 OEM/ODM 파트너.",
     secure: "귀하의 정보는 안전하게 보호됩니다. 글로벌 세일즈팀이 영업일 기준 24-48시간 이내에 답변드리기 위해 노력하고 있습니다.",
@@ -471,7 +471,7 @@ const ko: Dict = {
 };
 
 const en: Dict = {
-  nav: { about: "About Dostac", production: "PRODUCTION", product: "PRODUCT", notice: "NOTICE", contact: "CONTACT US", cta: "Request a Quote", aboutSub: { greeting: "Greeting", history: "Our Story", philosophy: "Company Philosophy", directions: "Directions" }, processSub: { oem: "OEM/ODM", cert: "Global Certifications" } },
+  nav: { about: "About Dostac", production: "PRODUCTION", product: "PRODUCT", notice: "INSIGHTS", contact: "CONTACT US", cta: "Request a Quote", aboutSub: { greeting: "Greeting", history: "Our Story", philosophy: "Company Philosophy", directions: "Directions" }, processSub: { oem: "OEM/ODM", cert: "Global Certifications" } },
   footer: {
     tagline: "A confident, trust-building global manufacturing partner. Your Premier OEM/ODM Partner for Beauty & Health Innovation.",
     secure: "Your information is secure. Our global sales team aims to respond within 24-48 business hours.",
@@ -924,7 +924,7 @@ const en: Dict = {
 };
 
 const ja: Dict = {
-  nav: { about: "Dostacについて", production: "生産", product: "製品", notice: "お知らせ", contact: "お問い合わせ", cta: "見積もりを依頼", aboutSub: { greeting: "ご挨拶", history: "企業の歩み", philosophy: "企業理念", directions: "アクセス" }, processSub: { oem: "OEM/ODM", cert: "グローバル認証" } },
+  nav: { about: "Dostacについて", production: "生産", product: "製品", notice: "Insights", contact: "お問い合わせ", cta: "見積もりを依頼", aboutSub: { greeting: "ご挨拶", history: "企業の歩み", philosophy: "企業理念", directions: "アクセス" }, processSub: { oem: "OEM/ODM", cert: "グローバル認証" } },
   footer: {
     tagline: "信頼を築く、確かなグローバル製造パートナー。美容と健康の革新を支える、最高のOEM/ODMパートナーです。",
     secure: "お客様の情報は安全に保護されます。弊社のグローバル営業チームは、24〜48営業時間以内の返信を目指しています。",
@@ -1377,7 +1377,7 @@ const ja: Dict = {
 };
 
 const zh: Dict = {
-  nav: { about: "关于 Dostac", production: "生产", product: "产品", notice: "公告", contact: "联系我们", cta: "申请报价", aboutSub: { greeting: "致辞", history: "公司历程", philosophy: "企业理念", directions: "交通指南" }, processSub: { oem: "OEM/ODM", cert: "全球认证" } },
+  nav: { about: "关于 Dostac", production: "生产", product: "产品", notice: "Insights", contact: "联系我们", cta: "申请报价", aboutSub: { greeting: "致辞", history: "公司历程", philosophy: "企业理念", directions: "交通指南" }, processSub: { oem: "OEM/ODM", cert: "全球认证" } },
   footer: {
     tagline: "值得信赖、建立信心的全球制造合作伙伴。您在美容与健康创新领域的首选 OEM/ODM 合作伙伴。",
     secure: "您的信息是安全的。我们的全球销售团队力争在 24-48 个工作小时内回复。",
@@ -1830,7 +1830,7 @@ const zh: Dict = {
 };
 
 const vi: Dict = {
-  nav: { about: "Giới thiệu về Dostac", production: "SẢN XUẤT", product: "SẢN PHẨM", notice: "THÔNG BÁO", contact: "LIÊN HỆ", cta: "Yêu cầu báo giá", aboutSub: { greeting: "Lời chào", history: "Câu chuyện của chúng tôi", philosophy: "Triết lý kinh doanh", directions: "Chỉ đường" }, processSub: { oem: "OEM/ODM", cert: "Chứng nhận toàn cầu" } },
+  nav: { about: "Giới thiệu về Dostac", production: "SẢN XUẤT", product: "SẢN PHẨM", notice: "INSIGHTS", contact: "LIÊN HỆ", cta: "Yêu cầu báo giá", aboutSub: { greeting: "Lời chào", history: "Câu chuyện của chúng tôi", philosophy: "Triết lý kinh doanh", directions: "Chỉ đường" }, processSub: { oem: "OEM/ODM", cert: "Chứng nhận toàn cầu" } },
   footer: {
     tagline: "Đối tác sản xuất toàn cầu đáng tin cậy, tạo dựng niềm tin vững chắc. Đối tác OEM/ODM hàng đầu của bạn cho đổi mới Beauty & Health.",
     secure: "Thông tin của bạn được bảo mật an toàn. Đội ngũ kinh doanh toàn cầu của chúng tôi sẽ phản hồi trong vòng 24-48 giờ làm việc.",
