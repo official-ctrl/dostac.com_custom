@@ -1551,14 +1551,3 @@ export const AdminTranslateResponse = zod.object({
     }),
   ),
 });
-
-export const AdminSignUploadBody = zod.object({
-  filename: zod.string(),
-  contentType: zod.string(),
-});
-
-export const AdminSignUploadResponse = zod.object({
-  uploadUrl: zod.string(),
-  publicUrl: zod.string(),
-  key: zod.string(),
-});

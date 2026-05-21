@@ -285,11 +285,6 @@ export interface TranslateResult {
   translations: TranslateResultTranslationsItem[];
 }
 
-export interface UploadSignInput {
-  filename: string;
-  contentType: string;
-}
-
 export interface BannerTranslations {
   titleKo: string;
   titleEn: string;
@@ -513,12 +508,6 @@ export interface ProcessContent {
 }
 
 export type ProcessContentInput = ProcessContent;
-
-export interface UploadSignResult {
-  uploadUrl: string;
-  publicUrl: string;
-  key: string;
-}
 
 export interface CategoryTranslationRow {
   slug: string;

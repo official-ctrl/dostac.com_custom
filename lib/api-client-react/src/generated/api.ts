@@ -52,8 +52,6 @@ import type {
   TranslateInput,
   TranslateResult,
   UnauthorizedResponse,
-  UploadSignInput,
-  UploadSignResult,
 } from "./api.schemas";
 
 import { customFetch } from "../custom-fetch";
@@ -3658,84 +3656,4 @@ export const useAdminTranslate = <
   TContext
 > => {
   return useMutation(getAdminTranslateMutationOptions(options));
-};
-
-export const getAdminSignUploadUrl = () => {
-  return `/api/admin/uploads/sign`;
-};
-
-export const adminSignUpload = async (
-  uploadSignInput: UploadSignInput,
-  options?: RequestInit,
-): Promise<UploadSignResult> => {
-  return customFetch<UploadSignResult>(getAdminSignUploadUrl(), {
-    ...options,
-    method: "POST",
-    headers: { "Content-Type": "application/json", ...options?.headers },
-    body: JSON.stringify(uploadSignInput),
-  });
-};
-
-export const getAdminSignUploadMutationOptions = <
-  TError = ErrorType<unknown>,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof adminSignUpload>>,
-    TError,
-    { data: BodyType<UploadSignInput> },
-    TContext
-  >;
-  request?: SecondParameter<typeof customFetch>;
-}): UseMutationOptions<
-  Awaited<ReturnType<typeof adminSignUpload>>,
-  TError,
-  { data: BodyType<UploadSignInput> },
-  TContext
-> => {
-  const mutationKey = ["adminSignUpload"];
-  const { mutation: mutationOptions, request: requestOptions } = options
-    ? options.mutation &&
-      "mutationKey" in options.mutation &&
-      options.mutation.mutationKey
-      ? options
-      : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey }, request: undefined };
-
-  const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof adminSignUpload>>,
-    { data: BodyType<UploadSignInput> }
-  > = (props) => {
-    const { data } = props ?? {};
-
-    return adminSignUpload(data, requestOptions);
-  };
-
-  return { mutationFn, ...mutationOptions };
-};
-
-export type AdminSignUploadMutationResult = NonNullable<
-  Awaited<ReturnType<typeof adminSignUpload>>
->;
-export type AdminSignUploadMutationBody = BodyType<UploadSignInput>;
-export type AdminSignUploadMutationError = ErrorType<unknown>;
-
-export const useAdminSignUpload = <
-  TError = ErrorType<unknown>,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof adminSignUpload>>,
-    TError,
-    { data: BodyType<UploadSignInput> },
-    TContext
-  >;
-  request?: SecondParameter<typeof customFetch>;
-}): UseMutationResult<
-  Awaited<ReturnType<typeof adminSignUpload>>,
-  TError,
-  { data: BodyType<UploadSignInput> },
-  TContext
-> => {
-  return useMutation(getAdminSignUploadMutationOptions(options));
 };

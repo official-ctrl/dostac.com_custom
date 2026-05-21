@@ -17,7 +17,6 @@ tags:
   - name: admin-notices
   - name: admin-inquiries
   - name: admin-translate
-  - name: admin-uploads
   - name: public-banners
   - name: admin-banners
   - name: public-about
@@ -681,23 +680,6 @@ paths:
             application/json:
               schema: { $ref: "#/components/schemas/TranslateResult" }
 
-  # ───────────────────── ADMIN UPLOADS ─────────────────────
-  /admin/uploads/sign:
-    post:
-      operationId: adminSignUpload
-      tags: [admin-uploads]
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema: { $ref: "#/components/schemas/UploadSignInput" }
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json:
-              schema: { $ref: "#/components/schemas/UploadSignResult" }
-
 components:
   responses:
     NotFound:
@@ -1021,13 +1003,6 @@ components:
               lang: { $ref: "#/components/schemas/Lang" }
               text: { type: string }
 
-    UploadSignInput:
-      type: object
-      required: [filename, contentType]
-      properties:
-        filename: { type: string }
-        contentType: { type: string }
-
     BannerTranslations:
       type: object
       required: [titleKo, titleEn, titleJa, titleZh, titleVi, descriptionKo, descriptionEn, descriptionJa, descriptionZh, descriptionVi]
@@ -1313,14 +1288,6 @@ components:
 
     ProcessContentInput:
       $ref: "#/components/schemas/ProcessContent"
-
-    UploadSignResult:
-      type: object
-      required: [uploadUrl, publicUrl, key]
-      properties:
-        uploadUrl: { type: string }
-        publicUrl: { type: string }
-        key: { type: string }
 
     CategoryTranslationRow:
       type: object
