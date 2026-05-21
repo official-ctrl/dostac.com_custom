@@ -5,3 +5,4 @@ export * from "./contact-inquiries";
 export * from "./banners";
 export * from "./about";
 export * from "./process";
+export * from "./media-uploads";

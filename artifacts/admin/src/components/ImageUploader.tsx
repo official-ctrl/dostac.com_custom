@@ -1,7 +1,6 @@
 import { useRef, useState } from "react";
 import { Loader2, Upload, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useAdminSignUpload } from "@workspace/api-client-react";
 
 interface ImageUploaderProps {
   value: string | null | undefined;
@@ -19,7 +18,6 @@ export function ImageUploader({
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [error, setError] = useState<string | null>(null);
   const [uploadingProgress, setUploadingProgress] = useState<number | null>(null);
-  const sign = useAdminSignUpload();
 
   const handlePick = () => {
     setError(null);
@@ -39,28 +37,30 @@ export function ImageUploader({
 
     try {
       setUploadingProgress(0);
-      const signed = await sign.mutateAsync({
-        data: { filename: file.name, contentType: file.type || "application/octet-stream" },
-      });
+      const formData = new FormData();
+      formData.append("file", file);
 
       await new Promise<void>((resolve, reject) => {
         const xhr = new XMLHttpRequest();
-        xhr.open("PUT", signed.uploadUrl);
-        xhr.setRequestHeader("Content-Type", file.type || "application/octet-stream");
+        xhr.open("POST", "/api/admin/uploads");
         xhr.upload.onprogress = (ev) => {
           if (ev.lengthComputable) {
             setUploadingProgress(Math.round((ev.loaded / ev.total) * 100));
           }
         };
         xhr.onload = () => {
-          if (xhr.status >= 200 && xhr.status < 300) resolve();
-          else reject(new Error(`Upload failed: ${xhr.status}`));
+          if (xhr.status >= 200 && xhr.status < 300) {
+            const result = JSON.parse(xhr.responseText) as { publicUrl: string };
+            onChange(result.publicUrl);
+            resolve();
+          } else {
+            const msg = (() => { try { return (JSON.parse(xhr.responseText) as { error: string }).error; } catch { return `업로드 실패 (${xhr.status})`; } })();
+            reject(new Error(msg));
+          }
         };
-        xhr.onerror = () => reject(new Error("Network error during upload"));
-        xhr.send(file);
+        xhr.onerror = () => reject(new Error("네트워크 오류"));
+        xhr.send(formData);
       });
-
-      onChange(signed.publicUrl);
     } catch (err) {
       setError(err instanceof Error ? err.message : "업로드 실패");
     } finally {

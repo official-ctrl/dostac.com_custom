@@ -1,22 +1,13 @@
 import { Router, type IRouter, type Request, type Response } from "express";
-import { Readable } from "stream";
-import { AdminSignUploadBody } from "@workspace/api-zod";
+import multer from "multer";
+import { randomUUID } from "crypto";
 import { requireAdmin } from "../middlewares/require-admin";
-import {
-  ObjectStorageService,
-  ObjectNotFoundError,
-} from "../lib/objectStorage";
+import { db, mediaUploadsTable } from "@workspace/db";
+import { eq } from "drizzle-orm";
 
 const router: IRouter = Router();
-const objectStorageService = new ObjectStorageService();
+const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 10 * 1024 * 1024 } });
 
-router.use("/admin/uploads/sign", requireAdmin);
-
-/**
- * Image upload signing — returns a Replit Object Storage presigned PUT URL
- * for direct browser → GCS upload. The admin then stores the public serving
- * URL (key) in the database.
- */
 const ALLOWED_IMAGE_TYPES = new Set([
   "image/jpeg",
   "image/jpg",
@@ -27,98 +18,49 @@ const ALLOWED_IMAGE_TYPES = new Set([
   "image/avif",
 ]);
 
-router.post("/admin/uploads/sign", async (req: Request, res: Response): Promise<void> => {
-  const parsed = AdminSignUploadBody.safeParse(req.body);
-  if (!parsed.success) {
-    res.status(400).json({ error: parsed.error.message });
-    return;
-  }
-  const { contentType, filename } = parsed.data;
-  if (!ALLOWED_IMAGE_TYPES.has(contentType.toLowerCase())) {
-    res.status(400).json({
-      error: `Unsupported content type: ${contentType}. Allowed: ${Array.from(ALLOWED_IMAGE_TYPES).join(", ")}`,
-    });
-    return;
-  }
-  if (!filename || filename.length > 256) {
-    res.status(400).json({ error: "Invalid filename" });
-    return;
-  }
-
-  try {
-    const uploadUrl = await objectStorageService.getObjectEntityUploadURL();
-    const key = objectStorageService.normalizeObjectEntityPath(uploadUrl);
-    const publicUrl = `/api/storage${key}`;
-    res.json({ uploadUrl, publicUrl, key });
-  } catch (err) {
-    req.log.error({ err }, "Failed to sign upload URL");
-    res.status(500).json({ error: "Failed to sign upload URL" });
-  }
-});
-
-/**
- * GET /api/storage/objects/* — serve uploaded objects from PRIVATE_OBJECT_DIR.
- * No auth/ACL: stored URLs are opaque UUIDs and must be publicly fetchable
- * because both the admin UI and the public site need to render them.
- */
-router.get("/storage/objects/*objectPath", async (req: Request, res: Response): Promise<void> => {
-  try {
-    const raw = req.params.objectPath;
-    const wildcardPath = Array.isArray(raw) ? raw.join("/") : raw;
-    const objectPath = `/objects/${wildcardPath}`;
-    const objectFile = await objectStorageService.getObjectEntityFile(objectPath);
-    const response = await objectStorageService.downloadObject(objectFile);
-
-    res.status(response.status);
-    response.headers.forEach((value, key) => res.setHeader(key, value));
-
-    if (response.body) {
-      const nodeStream = Readable.fromWeb(
-        response.body as ReadableStream<Uint8Array>,
-      );
-      nodeStream.pipe(res);
-    } else {
-      res.end();
-    }
-  } catch (err) {
-    if (err instanceof ObjectNotFoundError) {
-      res.status(404).json({ error: "Object not found" });
-      return;
-    }
-    req.log.error({ err }, "Error serving object");
-    res.status(500).json({ error: "Failed to serve object" });
-  }
-});
-
-/**
- * GET /api/storage/public-objects/* — serve files placed by an operator
- * directly in the bucket via the Replit Object Storage UI.
- */
-router.get("/storage/public-objects/*filePath", async (req: Request, res: Response): Promise<void> => {
-  try {
-    const raw = req.params.filePath;
-    const filePath = Array.isArray(raw) ? raw.join("/") : raw;
-    const file = await objectStorageService.searchPublicObject(filePath);
+router.post(
+  "/admin/uploads",
+  requireAdmin,
+  upload.single("file"),
+  async (req: Request, res: Response): Promise<void> => {
+    const file = req.file;
     if (!file) {
-      res.status(404).json({ error: "File not found" });
+      res.status(400).json({ error: "파일이 없습니다." });
       return;
     }
-    const response = await objectStorageService.downloadObject(file);
-
-    res.status(response.status);
-    response.headers.forEach((value, key) => res.setHeader(key, value));
-
-    if (response.body) {
-      const nodeStream = Readable.fromWeb(
-        response.body as ReadableStream<Uint8Array>,
-      );
-      nodeStream.pipe(res);
-    } else {
-      res.end();
+    const contentType = file.mimetype || "application/octet-stream";
+    if (!ALLOWED_IMAGE_TYPES.has(contentType.toLowerCase())) {
+      res.status(400).json({ error: `지원하지 않는 파일 형식: ${contentType}` });
+      return;
     }
+    try {
+      const id = randomUUID();
+      const data = file.buffer.toString("base64");
+      await db.insert(mediaUploadsTable).values({ id, contentType, data, size: file.size });
+      const publicUrl = `/api/storage/uploads/${id}`;
+      res.json({ publicUrl, key: publicUrl });
+    } catch (err) {
+      req.log.error({ err }, "Failed to store upload");
+      res.status(500).json({ error: "업로드 저장 실패" });
+    }
+  }
+);
+
+router.get("/storage/uploads/:id", async (req: Request, res: Response): Promise<void> => {
+  try {
+    const [row] = await db.select().from(mediaUploadsTable).where(eq(mediaUploadsTable.id, req.params.id));
+    if (!row) {
+      res.status(404).json({ error: "파일을 찾을 수 없습니다." });
+      return;
+    }
+    const buf = Buffer.from(row.data, "base64");
+    res.setHeader("Content-Type", row.contentType);
+    res.setHeader("Cache-Control", "public, max-age=31536000, immutable");
+    res.setHeader("Content-Length", String(buf.length));
+    res.end(buf);
   } catch (err) {
-    req.log.error({ err }, "Error serving public object");
-    res.status(500).json({ error: "Failed to serve public object" });
+    req.log.error({ err }, "Failed to serve upload");
+    res.status(500).json({ error: "파일 서빙 실패" });
   }
 });
 
