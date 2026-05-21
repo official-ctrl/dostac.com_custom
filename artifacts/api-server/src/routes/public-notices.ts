@@ -20,6 +20,18 @@ function pickTranslation<T extends { lang: string }>(
   );
 }
 
+function pickField(
+  translations: Array<{ lang: string; title: string; excerpt: string; body: string }>,
+  preferred: string,
+  field: "title" | "excerpt" | "body",
+): string {
+  const preferred_row = translations.find((r) => r.lang === preferred);
+  if (preferred_row?.[field]) return preferred_row[field];
+  const ko_row = translations.find((r) => r.lang === "ko");
+  if (ko_row?.[field]) return ko_row[field];
+  return translations[0]?.[field] ?? "";
+}
+
 router.get("/public/notices", async (req, res): Promise<void> => {
   const q = ListPublicNoticesQueryParams.safeParse(req.query);
   if (!q.success) {
@@ -51,7 +63,7 @@ router.get("/public/notices", async (req, res): Promise<void> => {
   }
 
   let result = notices.map((n) => {
-    const t = pickTranslation(grouped.get(n.id) ?? [], lang);
+    const rows = grouped.get(n.id) ?? [];
     return {
       id: n.id,
       slug: n.slug,
@@ -59,9 +71,9 @@ router.get("/public/notices", async (req, res): Promise<void> => {
       region: n.region,
       publishedAt: n.publishedAt.toISOString(),
       thumbnailUrl: n.thumbnailUrl,
-      title: t?.title ?? n.slug,
-      excerpt: t?.excerpt ?? "",
-      body: t?.body ?? "",
+      title: pickField(rows, lang, "title") || n.slug,
+      excerpt: pickField(rows, lang, "excerpt"),
+      body: pickField(rows, lang, "body"),
     };
   });
 
@@ -97,7 +109,6 @@ router.get("/public/notices/:slug", async (req, res): Promise<void> => {
     .select()
     .from(noticeTranslationsTable)
     .where(eq(noticeTranslationsTable.noticeId, notice.id));
-  const t = pickTranslation(translations, q.data.lang);
   res.json({
     id: notice.id,
     slug: notice.slug,
@@ -105,9 +116,9 @@ router.get("/public/notices/:slug", async (req, res): Promise<void> => {
     region: notice.region,
     publishedAt: notice.publishedAt.toISOString(),
     thumbnailUrl: notice.thumbnailUrl,
-    title: t?.title ?? notice.slug,
-    excerpt: t?.excerpt ?? "",
-    body: t?.body ?? "",
+    title: pickField(translations, q.data.lang, "title") || notice.slug,
+    excerpt: pickField(translations, q.data.lang, "excerpt"),
+    body: pickField(translations, q.data.lang, "body"),
   });
 });
 
