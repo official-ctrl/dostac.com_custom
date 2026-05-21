@@ -311,7 +311,7 @@ const ko: Dict = {
     heroTitle: "글로벌 뷰티 산업 뉴스 및 비즈니스 인사이트",
     heroBody: "Dostac의 최신 소식, 수출 정보, K-Beauty 트렌드, OEM 인사이트, 글로벌 비즈니스 뉴스를 확인해보세요.",
     searchPlaceholder: "뉴스 및 공지 검색",
-    allCategories: "전체", backToNotice: "공지로 돌아가기", relatedPosts: "관련 기사",
+    allCategories: "전체", backToNotice: "인사이트로 돌아가기", relatedPosts: "관련 기사",
     categories: [
       { name: "전체", count: 24 }, { name: "회사 소식", count: 8 }, { name: "신제품", count: 7 }, { name: "전시회", count: 5 }, { name: "인증", count: 4 },
     ],
@@ -764,7 +764,7 @@ const en: Dict = {
     heroTitle: "Global Beauty Industry News & Business Insights",
     heroBody: "Explore the latest updates, export information, K-beauty trends, OEM insights, and global business news from Dostac.",
     searchPlaceholder: "Search news & notices",
-    allCategories: "All", backToNotice: "Back to Notice", relatedPosts: "Related Articles",
+    allCategories: "All", backToNotice: "Back to Insights", relatedPosts: "Related Articles",
     categories: [
       { name: "All", count: 24 }, { name: "Company News", count: 8 }, { name: "New Products", count: 7 }, { name: "Exhibitions", count: 5 }, { name: "Certifications", count: 4 },
     ],
@@ -1217,7 +1217,7 @@ const ja: Dict = {
     heroTitle: "グローバルビューティー業界ニュース＆ビジネスインサイト",
     heroBody: "Dostacから、最新情報、輸出情報、K-Beautyトレンド、OEMインサイト、グローバルビジネスニュースをご覧ください。",
     searchPlaceholder: "ニュース・お知らせを検索",
-    allCategories: "すべて", backToNotice: "お知らせ一覧へ戻る", relatedPosts: "関連記事",
+    allCategories: "すべて", backToNotice: "インサイト一覧へ戻る", relatedPosts: "関連記事",
     categories: [
       { name: "すべて", count: 24 }, { name: "企業ニュース", count: 8 }, { name: "新製品", count: 7 }, { name: "展示会", count: 5 }, { name: "認証", count: 4 },
     ],
@@ -1670,7 +1670,7 @@ const zh: Dict = {
     heroTitle: "全球美妆行业新闻与商业洞察",
     heroBody: "探索来自 Dostac 的最新动态、出口信息、K-Beauty 趋势、OEM 洞察及全球商业新闻。",
     searchPlaceholder: "搜索新闻与公告",
-    allCategories: "全部", backToNotice: "返回公告", relatedPosts: "相关文章",
+    allCategories: "全部", backToNotice: "返回洞察", relatedPosts: "相关文章",
     categories: [
       { name: "全部", count: 24 }, { name: "公司新闻", count: 8 }, { name: "新品发布", count: 7 }, { name: "展会", count: 5 }, { name: "认证", count: 4 },
     ],
@@ -2123,7 +2123,7 @@ const vi: Dict = {
     heroTitle: "Tin tức ngành làm đẹp toàn cầu & thông tin kinh doanh chuyên sâu",
     heroBody: "Khám phá các cập nhật mới nhất, thông tin xuất khẩu, xu hướng K-Beauty, thông tin chuyên sâu về OEM, và tin tức kinh doanh toàn cầu từ Dostac.",
     searchPlaceholder: "Tìm kiếm tin tức & thông báo",
-    allCategories: "Tất cả", backToNotice: "Quay lại Thông báo", relatedPosts: "Bài viết liên quan",
+    allCategories: "Tất cả", backToNotice: "Quay lại Insights", relatedPosts: "Bài viết liên quan",
     categories: [
       { name: "Tất cả", count: 24 }, { name: "Tin công ty", count: 8 }, { name: "Sản phẩm mới", count: 7 }, { name: "Triển lãm", count: 5 }, { name: "Chứng nhận", count: 4 },
     ],
