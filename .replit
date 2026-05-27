@@ -42,3 +42,8 @@ externalPort = 3002
 
 [nix]
 channel = "stable-25_05"
+
+[userenv]
+
+[userenv.shared]
+IMPORT_API_KEY = "dstc_e92c7bb35ef3e5f64c700e8e17013d23bb92fb17b5c70f7a56e749c7c02f211f"
