@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { LanguageProvider } from "@/components/dostac/i18n";
 import { useGoogleAnalytics } from "@/hooks/use-google-analytics";
+import { useCanonical } from "@/hooks/use-canonical";
 import "@/components/dostac/dostac.css";
 
 import Home from "@/pages/Home";
@@ -26,8 +27,9 @@ export const queryClient = new QueryClient({
   },
 });
 
-function LowercaseRedirect() {
+function UrlNormalizer() {
   const [location, navigate] = useLocation();
+  useCanonical();
   useEffect(() => {
     const lower = location.toLowerCase();
     if (lower !== location) {
@@ -41,7 +43,7 @@ function Router() {
   useGoogleAnalytics();
   return (
     <>
-      <LowercaseRedirect />
+      <UrlNormalizer />
       <Switch>
       <Route path="/" component={Home} />
       <Route path="/about" component={About} />
