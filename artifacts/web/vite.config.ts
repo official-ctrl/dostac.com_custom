@@ -26,9 +26,44 @@ if (!basePath) {
   );
 }
 
+function lowercaseRedirectPlugin() {
+  return {
+    name: "lowercase-redirect",
+    configureServer(server: import("vite").ViteDevServer) {
+      server.middlewares.use((req, res, next) => {
+        const url = req.url ?? "/";
+        const [pathname, search] = url.split("?") as [string, string | undefined];
+        const lower = pathname.toLowerCase();
+        if (lower !== pathname) {
+          const location = lower + (search != null ? `?${search}` : "");
+          res.writeHead(301, { Location: location });
+          res.end();
+          return;
+        }
+        next();
+      });
+    },
+    configurePreviewServer(server: import("vite").PreviewServer) {
+      server.middlewares.use((req, res, next) => {
+        const url = req.url ?? "/";
+        const [pathname, search] = url.split("?") as [string, string | undefined];
+        const lower = pathname.toLowerCase();
+        if (lower !== pathname) {
+          const location = lower + (search != null ? `?${search}` : "");
+          res.writeHead(301, { Location: location });
+          res.end();
+          return;
+        }
+        next();
+      });
+    },
+  };
+}
+
 export default defineConfig({
   base: basePath,
   plugins: [
+    lowercaseRedirectPlugin(),
     react(),
     tailwindcss(),
     runtimeErrorOverlay(),

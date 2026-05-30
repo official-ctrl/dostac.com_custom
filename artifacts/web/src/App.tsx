@@ -1,4 +1,5 @@
-import { Switch, Route, Router as WouterRouter, Redirect } from "wouter";
+import { Switch, Route, Router as WouterRouter, Redirect, useLocation } from "wouter";
+import { useEffect } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -25,10 +26,23 @@ export const queryClient = new QueryClient({
   },
 });
 
+function LowercaseRedirect() {
+  const [location, navigate] = useLocation();
+  useEffect(() => {
+    const lower = location.toLowerCase();
+    if (lower !== location) {
+      navigate(lower, { replace: true });
+    }
+  }, [location, navigate]);
+  return null;
+}
+
 function Router() {
   useGoogleAnalytics();
   return (
-    <Switch>
+    <>
+      <LowercaseRedirect />
+      <Switch>
       <Route path="/" component={Home} />
       <Route path="/about" component={About} />
       <Route path="/production" component={Production} />
@@ -40,7 +54,8 @@ function Router() {
       <Route path="/notice/:slug">{({ slug }: { slug: string }) => <Redirect to={`/insights/${slug}`} />}</Route>
       <Route path="/contact" component={Contact} />
       <Route component={NotFound} />
-    </Switch>
+      </Switch>
+    </>
   );
 }
 
