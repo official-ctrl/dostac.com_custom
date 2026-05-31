@@ -3,7 +3,7 @@ import { z } from "zod";
 import { eq, and } from "drizzle-orm";
 import { db, contactInquiriesTable, productsTable, productTranslationsTable } from "@workspace/db";
 import { CreateContactInquiryBody } from "@workspace/api-zod";
-import { sendInquiryAlert } from "../lib/email";
+import { sendInquiryAlert, sendAutoReply } from "../lib/email";
 
 const router: IRouter = Router();
 
@@ -67,9 +67,12 @@ router.post("/public/contact-inquiries", async (req, res): Promise<void> => {
           .limit(1);
         productNameKo = row?.name;
       }
-      await sendInquiryAlert(inquiry, productNameKo);
+      await Promise.all([
+        sendInquiryAlert(inquiry, productNameKo),
+        sendAutoReply(inquiry),
+      ]);
     })().catch((err) => {
-      req.log.error({ err }, "Failed to send inquiry alert email");
+      req.log.error({ err }, "Failed to send inquiry email");
     });
   }
 

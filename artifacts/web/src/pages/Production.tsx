@@ -10,6 +10,8 @@ import { Layout, dostacImage } from "@/components/dostac/Layout";
 import { useT, useLang } from "@/components/dostac/i18n";
 import { SectionNav } from "@/components/dostac/SectionNav";
 import { useGetPublicProcess } from "@workspace/api-client-react";
+import { usePageMeta } from "@/hooks/use-page-meta";
+import { PRODUCTION_META } from "@/hooks/page-meta-config";
 import type { Lang } from "@/components/dostac/i18n";
 
 const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
@@ -347,6 +349,8 @@ function ProductionContent() {
 }
 
 export default function Production() {
+  const { lang } = useLang();
+  usePageMeta({ ...PRODUCTION_META[lang], path: "/production" });
   return (
     <Layout>
       <ProductionContent />

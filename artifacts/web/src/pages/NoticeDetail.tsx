@@ -15,6 +15,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import { Layout, dostacImage } from "@/components/dostac/Layout";
 import { useT, useLang } from "@/components/dostac/i18n";
+import { usePageMeta } from "@/hooks/use-page-meta";
 import {
   getGetPublicNoticeQueryOptions,
   useListPublicNotices,
@@ -117,6 +118,12 @@ function NoticeDetailContent() {
   isPlaceholderDataRef.current = isPlaceholderData;
 
   const [displayedArticle, setDisplayedArticle] = useState(article);
+  usePageMeta({
+    title: displayedArticle?.title ?? "Insights",
+    description: displayedArticle?.excerpt ?? undefined,
+    path: `/insights/${slug}`,
+    type: "article",
+  });
   const latestArticleRef = useRef(article);
 
   const { data: allNotices } = useListPublicNotices({

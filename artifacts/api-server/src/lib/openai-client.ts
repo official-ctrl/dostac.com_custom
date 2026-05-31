@@ -1,12 +1,11 @@
 import OpenAI from "openai";
 
-const baseURL = process.env["AI_INTEGRATIONS_OPENAI_BASE_URL"];
-const apiKey = process.env["AI_INTEGRATIONS_OPENAI_API_KEY"];
+const apiKey = process.env["OPENAI_API_KEY"];
 
-if (!baseURL || !apiKey) {
-  throw new Error(
-    "Replit AI Integrations env vars are missing (AI_INTEGRATIONS_OPENAI_*).",
-  );
+if (!apiKey) {
+  throw new Error("OPENAI_API_KEY environment variable is required but was not provided.");
 }
 
-export const openai = new OpenAI({ baseURL, apiKey });
+const baseURL = process.env["OPENAI_BASE_URL"];
+
+export const openai = new OpenAI({ apiKey, ...(baseURL ? { baseURL } : {}) });

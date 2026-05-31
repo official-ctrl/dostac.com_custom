@@ -5,6 +5,8 @@ import { Layout, dostacImage } from "@/components/dostac/Layout";
 import { useT, useLang, type Lang } from "@/components/dostac/i18n";
 import { SectionNav } from "@/components/dostac/SectionNav";
 import { useGetPublicAbout } from "@workspace/api-client-react";
+import { usePageMeta } from "@/hooks/use-page-meta";
+import { ABOUT_META } from "@/hooks/page-meta-config";
 import {
   MapPin,
   ShoppingBag,
@@ -779,6 +781,8 @@ function AboutContent() {
 }
 
 export default function About() {
+  const { lang } = useLang();
+  usePageMeta({ ...ABOUT_META[lang], path: "/about" });
   return (
     <Layout>
       <AboutContent />

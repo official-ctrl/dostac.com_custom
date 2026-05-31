@@ -15,6 +15,8 @@ import { Input } from "@/components/ui/input";
 import { Layout, dostacImage } from "@/components/dostac/Layout";
 import { useT, useLang } from "@/components/dostac/i18n";
 import { getListPublicNoticesQueryOptions } from "@workspace/api-client-react";
+import { usePageMeta } from "@/hooks/use-page-meta";
+import { NOTICES_META } from "@/hooks/page-meta-config";
 
 const PAGE_SIZE = 9;
 
@@ -451,6 +453,8 @@ function NoticeContent() {
 }
 
 export default function Notice() {
+  const { lang } = useLang();
+  usePageMeta({ ...NOTICES_META[lang], path: "/insights" });
   return (
     <Layout>
       <NoticeContent />

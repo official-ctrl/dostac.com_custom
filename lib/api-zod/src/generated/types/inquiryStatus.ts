@@ -11,5 +11,7 @@ export type InquiryStatus = (typeof InquiryStatus)[keyof typeof InquiryStatus];
 export const InquiryStatus = {
   new: "new",
   in_progress: "in_progress",
+  quoted: "quoted",
+  contracted: "contracted",
   completed: "completed",
 } as const;

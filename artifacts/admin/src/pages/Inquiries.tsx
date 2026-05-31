@@ -18,6 +18,8 @@ const STATUSES = [
   { value: "all", label: "전체" },
   { value: "new", label: "신규" },
   { value: "in_progress", label: "진행 중" },
+  { value: "quoted", label: "견적 발송" },
+  { value: "contracted", label: "계약 완료" },
   { value: "completed", label: "완료" },
 ];
 
@@ -34,7 +36,9 @@ const STATUS_BADGE: Record<
   { label: string; variant: "default" | "secondary" | "outline" }
 > = {
   new: { label: "신규", variant: "default" },
-  in_progress: { label: "진행", variant: "secondary" },
+  in_progress: { label: "진행중", variant: "secondary" },
+  quoted: { label: "견적발송", variant: "secondary" },
+  contracted: { label: "계약완료", variant: "default" },
   completed: { label: "완료", variant: "outline" },
 };
 

@@ -15,6 +15,8 @@ import { Layout, dostacImage } from "@/components/dostac/Layout";
 import { SectionNav } from "@/components/dostac/SectionNav";
 import { useT, useLang, LANGUAGES, useCategoryLabel, useSubCategoryLabel, normalizeCategory, normalizeSubCategory } from "@/components/dostac/i18n";
 import { getListPublicProductsQueryOptions } from "@workspace/api-client-react";
+import { usePageMeta } from "@/hooks/use-page-meta";
+import { PRODUCTS_META } from "@/hooks/page-meta-config";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 32 },
@@ -866,6 +868,8 @@ function ProductsContent() {
 }
 
 export default function Products() {
+  const { lang } = useLang();
+  usePageMeta({ ...PRODUCTS_META[lang], path: "/products" });
   return (
     <Layout>
       <ProductsContent />

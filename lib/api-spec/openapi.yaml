@@ -393,7 +393,7 @@ paths:
           required: false
           schema:
             type: string
-            enum: [new, in_progress, completed]
+            enum: [new, in_progress, quoted, contracted, completed]
         - name: productSlug
           in: query
           required: false
@@ -924,7 +924,7 @@ components:
         productSlug: { type: ["string", "null"] }
         status:
           type: string
-          enum: [new, in_progress, completed]
+          enum: [new, in_progress, quoted, contracted, completed]
         adminNote: { type: string }
         source: { type: string }
         createdAt: { type: string, format: date-time }
@@ -950,7 +950,7 @@ components:
       properties:
         status:
           type: string
-          enum: [new, in_progress, completed]
+          enum: [new, in_progress, quoted, contracted, completed]
         adminNote: { type: string }
 
     ContactInquiryInput:

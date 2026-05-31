@@ -20,6 +20,7 @@ import adminCategoryTranslationsRouter from "./admin-category-translations";
 import publicSubCategoryTranslationsRouter from "./public-sub-category-translations";
 import adminSubCategoryTranslationsRouter from "./admin-sub-category-translations";
 import adminCategoryDiscoverRouter from "./admin-category-discover";
+import publicSitemapRouter from "./public-sitemap";
 
 const router: IRouter = Router();
 
@@ -44,5 +45,6 @@ router.use(adminCategoryTranslationsRouter);
 router.use(publicSubCategoryTranslationsRouter);
 router.use(adminSubCategoryTranslationsRouter);
 router.use(adminCategoryDiscoverRouter);
+router.use(publicSitemapRouter);
 
 export default router;

@@ -13,9 +13,11 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Layout, dostacImage } from "@/components/dostac/Layout";
-import { useT } from "@/components/dostac/i18n";
+import { useT, useLang } from "@/components/dostac/i18n";
 import { useSearch } from "wouter";
 import { useCreateContactInquiry, useGetPublicProduct, getGetPublicProductQueryKey } from "@workspace/api-client-react";
+import { usePageMeta } from "@/hooks/use-page-meta";
+import { CONTACT_META } from "@/hooks/page-meta-config";
 
 const VALID_INQUIRY_TYPES = ["oem", "odm", "sample", "other"] as const;
 type InquiryType = (typeof VALID_INQUIRY_TYPES)[number];
@@ -664,6 +666,8 @@ function ContactContent() {
 }
 
 export default function Contact() {
+  const { lang } = useLang();
+  usePageMeta({ ...CONTACT_META[lang], path: "/contact" });
   return (
     <Layout>
       <ContactContent />

@@ -48,7 +48,8 @@ router.post(
 
 router.get("/storage/uploads/:id", async (req: Request, res: Response): Promise<void> => {
   try {
-    const [row] = await db.select().from(mediaUploadsTable).where(eq(mediaUploadsTable.id, req.params.id));
+    const id = String(req.params["id"]);
+    const [row] = await db.select().from(mediaUploadsTable).where(eq(mediaUploadsTable.id, id));
     if (!row) {
       res.status(404).json({ error: "파일을 찾을 수 없습니다." });
       return;

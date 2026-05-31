@@ -25,9 +25,11 @@ import { ArrowLeft, Loader2, Save, Mail, Building2, Tag, MessageSquare, Globe, P
 import { useToast } from "@/hooks/use-toast";
 
 const STATUS_OPTIONS = [
-  { value: "new", label: "신규 (New)" },
-  { value: "in_progress", label: "진행 중 (In Progress)" },
-  { value: "completed", label: "완료 (Completed)" },
+  { value: "new", label: "🔵 신규 (New)" },
+  { value: "in_progress", label: "🟡 진행 중 (In Progress)" },
+  { value: "quoted", label: "🟠 견적 발송 (Quoted)" },
+  { value: "contracted", label: "🟢 계약 완료 (Contracted)" },
+  { value: "completed", label: "⚫ 완료 (Completed)" },
 ];
 
 const INQUIRY_TYPE_LABEL: Record<string, string> = {
@@ -63,7 +65,7 @@ export default function InquiryDetail() {
       await updateMut.mutateAsync({
         id,
         data: {
-          status: status as "new" | "in_progress" | "completed",
+          status: status as "new" | "in_progress" | "quoted" | "contracted" | "completed",
           adminNote,
         },
       });
