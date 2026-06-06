@@ -1,0 +1,2 @@
+- [Read-Only Boundary](read_only_boundary.md) — Architect must refuse Write/Edit tasks; route to executor instead
+- [Next.js Migration Findings](nextjs_migration_findings.md) — Pre-flight risks for Vite-to-Next App Router migration in artifacts/web

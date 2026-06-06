@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { MapPin, Phone, Mail, Clock, Send, ShieldCheck, CheckCircle2, Package } from "lucide-react";
@@ -14,9 +16,8 @@ import {
 } from "@/components/ui/select";
 import { Layout, dostacImage } from "@/components/dostac/Layout";
 import { useT, useLang } from "@/components/dostac/i18n";
-import { useSearch } from "wouter";
+import { usePathname } from "next/navigation";
 import { useCreateContactInquiry, useGetPublicProduct, getGetPublicProductQueryKey } from "@workspace/api-client-react";
-import { usePageMeta } from "@/hooks/use-page-meta";
 import { CONTACT_META } from "@/hooks/page-meta-config";
 
 const VALID_INQUIRY_TYPES = ["oem", "odm", "sample", "other"] as const;
@@ -69,7 +70,8 @@ const NONE_VALUE = "__none__";
 
 function ContactContent() {
   const { t, lang } = useT();
-  const search = useSearch();
+  const pathname = usePathname();
+  const search = typeof window !== "undefined" ? window.location.search : "";
   const successRef = useRef<HTMLDivElement>(null);
   const inquiryTypeOptions = t("contact.inquiryTypeOptions") as {
     oem: string;
@@ -666,8 +668,6 @@ function ContactContent() {
 }
 
 export default function Contact() {
-  const { lang } = useLang();
-  usePageMeta({ ...CONTACT_META[lang], path: "/contact" });
   return (
     <Layout>
       <ContactContent />

@@ -1,4 +1,7 @@
-import { Link, useParams } from "wouter";
+"use client";
+
+import Link from "next/link";
+import { useParams } from "next/navigation";
 import { useState, useEffect, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
@@ -30,8 +33,7 @@ const stagger = {
 };
 
 function ProductDetailContent() {
-  const params = useParams<{ slug: string }>();
-  const slug = params.slug ?? "";
+  const rawParams = useParams(); const slug = (rawParams?.slug as string) ?? "";
   const { t } = useT();
   const { lang } = useLang();
   const catLabel = useCategoryLabel();

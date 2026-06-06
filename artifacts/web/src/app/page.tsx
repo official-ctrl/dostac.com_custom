@@ -1,5 +1,7 @@
+"use client";
+
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { Link } from "wouter";
+import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   ChevronLeft,
@@ -30,7 +32,6 @@ import {
 } from "@/components/ui/select";
 import { Layout, dostacImage } from "@/components/dostac/Layout";
 import { useT, useLang, tFor, type Lang } from "@/components/dostac/i18n";
-import { usePageMeta } from "@/hooks/use-page-meta";
 import { HOME_META } from "@/hooks/page-meta-config";
 import {
   useListPublicBanners,
@@ -1318,8 +1319,6 @@ function ContactRFQSection() {
    PAGE ASSEMBLY
 ───────────────────────────────────────────── */
 export default function Home() {
-  const { lang } = useLang();
-  usePageMeta({ ...HOME_META[lang], path: "/" });
   return (
     <Layout>
       <HeroSection />

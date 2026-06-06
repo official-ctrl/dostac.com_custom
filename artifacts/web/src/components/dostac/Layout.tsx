@@ -1,5 +1,8 @@
+"use client";
+
 import React, { useEffect, useRef, useState } from "react";
-import { Link, useLocation } from "wouter";
+import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
 import {
   Menu,
   X,
@@ -115,7 +118,7 @@ function LanguageSwitcher({ onDark }: { onDark?: boolean }) {
 
 function AboutDropdown({ active, scrolled }: { active: boolean; scrolled: boolean }) {
   const { t } = useT();
-  const [, navigate] = useLocation();
+  const router = useRouter();
   const [open, setOpen] = useState(false);
   const wrapRef = React.useRef<HTMLDivElement | null>(null);
   const triggerRef = React.useRef<HTMLButtonElement | null>(null);
@@ -182,7 +185,7 @@ function AboutDropdown({ active, scrolled }: { active: boolean; scrolled: boolea
         ref={triggerRef}
         type="button"
         onClick={() => {
-          if (open) navigate("/about");
+          if (open) router.push("/about");
           else setOpen(true);
         }}
         aria-haspopup="menu"
@@ -227,7 +230,7 @@ function AboutDropdown({ active, scrolled }: { active: boolean; scrolled: boolea
 
 function ProcessDropdown({ active, scrolled }: { active: boolean; scrolled: boolean }) {
   const { t } = useT();
-  const [, navigate] = useLocation();
+  const router = useRouter();
   const [open, setOpen] = useState(false);
   const wrapRef = React.useRef<HTMLDivElement | null>(null);
   const triggerRef = React.useRef<HTMLButtonElement | null>(null);
@@ -292,7 +295,7 @@ function ProcessDropdown({ active, scrolled }: { active: boolean; scrolled: bool
         ref={triggerRef}
         type="button"
         onClick={() => {
-          if (open) navigate("/production");
+          if (open) router.push("/production");
           else setOpen(true);
         }}
         aria-haspopup="menu"
@@ -340,7 +343,7 @@ function ProductsDropdown({ active }: { active: boolean }) {
   const { lang } = useLang();
   const catLabel = useCategoryLabel();
   const subCatLabel = useSubCategoryLabel();
-  const [, navigate] = useLocation();
+  const router = useRouter();
   const [open, setOpen] = useState(false);
   const [hoveredCategory, setHoveredCategory] = useState<string | null>(null);
   const wrapRef = useRef<HTMLDivElement | null>(null);
@@ -455,7 +458,7 @@ function ProductsDropdown({ active }: { active: boolean }) {
         ref={triggerRef}
         type="button"
         onClick={() => {
-          if (open) navigate("/products");
+          if (open) router.push("/products");
           else setOpen(true);
         }}
         aria-haspopup="menu"
@@ -520,7 +523,7 @@ function ProductsDropdown({ active }: { active: boolean }) {
                     aria-expanded={hasSubs ? isHovered : undefined}
                     onMouseEnter={() => setHoveredCategory(slug)}
                     onFocus={() => setHoveredCategory(slug)}
-                    onClick={() => { navigate(`/products?category=${encodeURIComponent(slug)}`); close(); }}
+                    onClick={() => { router.push(`/products?category=${encodeURIComponent(slug)}`); close(); }}
                     onKeyDown={(e) => {
                       if (e.key === "ArrowRight" && hasSubs) {
                         e.preventDefault();
@@ -713,7 +716,7 @@ function MobileProductsAccordion({
 
 function Header() {
   const { t } = useT();
-  const [location] = useLocation();
+  const location = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [mobileAboutOpen, setMobileAboutOpen] = useState(false);
   const [mobileProcessOpen, setMobileProcessOpen] = useState(false);
@@ -1010,4 +1013,4 @@ export function Layout({ children }: { children: React.ReactNode }) {
 }
 
 export const dostacImage = (file: string) =>
-  `${import.meta.env.BASE_URL}images/dostac/${file}`;
+  `/images/dostac/${file}`;

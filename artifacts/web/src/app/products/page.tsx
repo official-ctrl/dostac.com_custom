@@ -1,5 +1,8 @@
+"use client";
+
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { Link, useSearch, useLocation } from "wouter";
+import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { useQuery, useQueryClient, keepPreviousData } from "@tanstack/react-query";
 import {
@@ -15,7 +18,6 @@ import { Layout, dostacImage } from "@/components/dostac/Layout";
 import { SectionNav } from "@/components/dostac/SectionNav";
 import { useT, useLang, LANGUAGES, useCategoryLabel, useSubCategoryLabel, normalizeCategory, normalizeSubCategory } from "@/components/dostac/i18n";
 import { getListPublicProductsQueryOptions } from "@workspace/api-client-react";
-import { usePageMeta } from "@/hooks/use-page-meta";
 import { PRODUCTS_META } from "@/hooks/page-meta-config";
 
 const fadeUp = {
@@ -78,6 +80,8 @@ function ProductsContent() {
   const catLabel = useCategoryLabel();
   const subLabel = useSubCategoryLabel();
   const queryClient = useQueryClient();
+  const router = useRouter();
+  const pathname = usePathname();
 
   useEffect(() => {
     for (const { code } of LANGUAGES) {
@@ -94,8 +98,7 @@ function ProductsContent() {
   });
   const products = productsQuery.data ?? [];
 
-  const search = useSearch();
-  const [, navigate] = useLocation();
+  const search = typeof window !== "undefined" ? window.location.search : "";
 
   const params = new URLSearchParams(search);
   const categoryFromUrl = params.get("category") ? normalizeCategory(params.get("category")!) : null;
@@ -111,6 +114,14 @@ function ProductsContent() {
   const [restoredFilter, setRestoredFilter] = useState<{ category: string; subCategory: string | null } | null>(null);
   const restoredFilterTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const isRestoredHoveredRef = useRef(false);
+
+  const navigate = (url: string, options?: { replace?: boolean }) => {
+    if (options?.replace) {
+      router.replace(url);
+    } else {
+      router.push(url);
+    }
+  };
 
   const didRestoreRef = useRef(false);
   useEffect(() => {
@@ -227,7 +238,7 @@ function ProductsContent() {
       navigate("/products", { replace: true });
       saveStoredFilter(null, null);
     }
-  }, [categories, selectedCategory, navigate]);
+  }, [categories, selectedCategory]);
 
   const categoryFilteredProducts =
     selectedCategory === null
@@ -261,7 +272,7 @@ function ProductsContent() {
       navigate(buildUrl(selectedCategory, null), { replace: true });
       saveStoredFilter(selectedCategory, null);
     }
-  }, [subCategories, selectedSubCategory, selectedCategory, navigate]);
+  }, [subCategories, selectedSubCategory, selectedCategory]);
 
   useEffect(() => {
     if (selectedCategory !== null) {
@@ -868,8 +879,6 @@ function ProductsContent() {
 }
 
 export default function Products() {
-  const { lang } = useLang();
-  usePageMeta({ ...PRODUCTS_META[lang], path: "/products" });
   return (
     <Layout>
       <ProductsContent />

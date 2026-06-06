@@ -1,4 +1,7 @@
-import { Link, useParams } from "wouter";
+"use client";
+
+import Link from "next/link";
+import { useParams } from "next/navigation";
 import {
   ArrowLeft,
   Calendar,
@@ -15,7 +18,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import { Layout, dostacImage } from "@/components/dostac/Layout";
 import { useT, useLang } from "@/components/dostac/i18n";
-import { usePageMeta } from "@/hooks/use-page-meta";
 import {
   getGetPublicNoticeQueryOptions,
   useListPublicNotices,
@@ -75,8 +77,7 @@ function categoryColor(c: string) {
 }
 
 function NoticeDetailContent() {
-  const params = useParams<{ slug: string }>();
-  const slug = params.slug ?? "";
+  const rawParams = useParams(); const slug = (rawParams?.slug as string) ?? "";
   const { t } = useT();
   const { lang } = useLang();
   const [copied, setCopied] = useState(false);
@@ -118,12 +119,6 @@ function NoticeDetailContent() {
   isPlaceholderDataRef.current = isPlaceholderData;
 
   const [displayedArticle, setDisplayedArticle] = useState(article);
-  usePageMeta({
-    title: displayedArticle?.title ?? "Insights",
-    description: displayedArticle?.excerpt ?? undefined,
-    path: `/insights/${slug}`,
-    type: "article",
-  });
   const latestArticleRef = useRef(article);
 
   const { data: allNotices } = useListPublicNotices({
