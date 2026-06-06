@@ -380,39 +380,115 @@ function HeroTextOverlay({
 ───────────────────────────────────────────── */
 const TRUST_ICONS = [Award, Shield, CheckCircle2, Globe2, FlaskConical];
 
+/* Partner brand names shown as text logos until real assets are supplied */
+const PARTNER_LOGOS = [
+  { name: "OLIVEYOUNG", sub: "Korea" },
+  { name: "COSMAX", sub: "Certified" },
+  { name: "KOLMAR", sub: "Partner" },
+  { name: "AMOREPACIFIC", sub: "Supply Chain" },
+  { name: "CJ OLIVE", sub: "Distribution" },
+  { name: "INTERCOS", sub: "Global" },
+];
+
+const MOQ_ITEMS = [
+  { qty: "500", unit: "units", label: "Skincare MOQ" },
+  { qty: "1,000", unit: "units", label: "Hair & Body MOQ" },
+  { qty: "3,000", unit: "units", label: "Mask Sheet MOQ" },
+];
+
 function TrustSection() {
   const { t } = useT();
   const badges = t("homeNew.trustBadges") as Array<{ label: string; sub: string }>;
 
   return (
-    <section className="py-10 bg-white border-b border-slate-100">
-      <div className="container mx-auto px-6">
-        <motion.div
-          initial="hidden"
-          whileInView="show"
-          viewport={{ once: true, amount: 0.3 }}
-          variants={stagger}
-          className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4"
-        >
-          {badges.map((badge, idx) => {
-            const Icon = TRUST_ICONS[idx] ?? Award;
-            return (
-              <motion.div
-                key={idx}
-                variants={fadeUp}
-                className="flex flex-col items-center text-center gap-2 p-4 rounded-xl hover:bg-slate-50 transition-colors"
-              >
-                <div className="w-11 h-11 rounded-full bg-accent/10 flex items-center justify-center mb-1">
-                  <Icon className="h-5 w-5 text-accent" />
-                </div>
-                <span className="text-sm font-bold text-[#0F172A]">{badge.label}</span>
-                <span className="text-xs text-slate-500">{badge.sub}</span>
+    <>
+      {/* ── Trust badges ── */}
+      <section className="py-10 bg-white border-b border-slate-100">
+        <div className="container mx-auto px-6">
+          <motion.div
+            initial="hidden"
+            whileInView="show"
+            viewport={{ once: true, amount: 0.3 }}
+            variants={stagger}
+            className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4"
+          >
+            {badges.map((badge, idx) => {
+              const Icon = TRUST_ICONS[idx] ?? Award;
+              return (
+                <motion.div
+                  key={idx}
+                  variants={fadeUp}
+                  className="flex flex-col items-center text-center gap-2 p-4 rounded-xl hover:bg-slate-50 transition-colors"
+                >
+                  <div className="w-11 h-11 rounded-full bg-accent/10 flex items-center justify-center mb-1">
+                    <Icon className="h-5 w-5 text-accent" />
+                  </div>
+                  <span className="text-sm font-bold text-[#0F172A]">{badge.label}</span>
+                  <span className="text-xs text-slate-500">{badge.sub}</span>
+                </motion.div>
+              );
+            })}
+          </motion.div>
+        </div>
+      </section>
+
+      {/* ── MOQ callout bar ── */}
+      <section className="py-6 bg-[#0F172A]">
+        <div className="container mx-auto px-6">
+          <motion.div
+            initial="hidden"
+            whileInView="show"
+            viewport={{ once: true, amount: 0.5 }}
+            variants={stagger}
+            className="flex flex-col sm:flex-row items-center justify-center gap-6 sm:gap-12"
+          >
+            <motion.p variants={fadeUp} className="text-xs uppercase tracking-[0.2em] text-slate-400 font-semibold shrink-0">
+              Minimum Order
+            </motion.p>
+            {MOQ_ITEMS.map((item) => (
+              <motion.div key={item.label} variants={fadeUp} className="flex items-baseline gap-2">
+                <span className="font-display text-2xl font-semibold text-white">{item.qty}</span>
+                <span className="text-xs text-slate-400">{item.unit}</span>
+                <span className="text-xs text-accent font-semibold">/ {item.label}</span>
               </motion.div>
-            );
-          })}
-        </motion.div>
-      </div>
-    </section>
+            ))}
+          </motion.div>
+        </div>
+      </section>
+
+      {/* ── Partner logo strip ── */}
+      <section className="py-8 bg-slate-50 border-b border-slate-100">
+        <div className="container mx-auto px-6">
+          <motion.p
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="text-center text-[10px] uppercase tracking-[0.25em] text-slate-400 font-semibold mb-6"
+          >
+            Trusted by &amp; aligned with industry leaders
+          </motion.p>
+          <motion.div
+            initial="hidden"
+            whileInView="show"
+            viewport={{ once: true, amount: 0.3 }}
+            variants={stagger}
+            className="flex flex-wrap items-center justify-center gap-x-10 gap-y-4"
+          >
+            {PARTNER_LOGOS.map((p) => (
+              <motion.div
+                key={p.name}
+                variants={fadeUp}
+                className="flex flex-col items-center gap-0.5 opacity-50 hover:opacity-80 transition-opacity"
+              >
+                <span className="text-xs font-bold tracking-widest text-[#0F172A]">{p.name}</span>
+                <span className="text-[9px] text-slate-400 uppercase tracking-wider">{p.sub}</span>
+              </motion.div>
+            ))}
+          </motion.div>
+        </div>
+      </section>
+    </>
   );
 }
 

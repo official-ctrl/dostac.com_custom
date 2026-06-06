@@ -1,18 +1,19 @@
 /* DOSTAC brand tokens */
 
 .dostac-root {
-  font-family: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  font-family: "DM Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  font-feature-settings: "cv02", "cv03", "cv04", "cv11";
-  letter-spacing: -0.011em;
+  font-feature-settings: "ss01", "ss02";
+  letter-spacing: -0.008em;
   color: #111827;
   background: #fff;
 }
 
 .dostac-root .font-display {
-  font-family: "Space Grotesk", "Inter", system-ui, sans-serif;
-  letter-spacing: -0.02em;
+  font-family: "Cormorant Garamond", Georgia, serif;
+  letter-spacing: -0.01em;
+  font-feature-settings: "liga", "kern";
 }
 
 .dostac-root {
@@ -51,12 +52,12 @@
 .dostac-root .rich-html h1,
 .dostac-root .rich-html h2,
 .dostac-root .rich-html h3 {
-  font-family: "Space Grotesk", "Inter", sans-serif;
-  font-weight: 700;
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-weight: 600;
   color: hsl(var(--primary));
   margin-top: 1.5em;
   margin-bottom: 0.5em;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.01em;
 }
 .dostac-root .rich-html h1 { font-size: 1.75rem; }
 .dostac-root .rich-html h2 { font-size: 1.5rem; }
