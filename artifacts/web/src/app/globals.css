@@ -354,3 +354,16 @@ html {
     animation: field-shake 0.45s ease-out;
   }
 }
+
+/* ── Kinetic marquee animations ── */
+@keyframes dostac-marquee-left {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+@keyframes dostac-marquee-right {
+  from { transform: translateX(-50%); }
+  to   { transform: translateX(0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .dostac-marquee-inner { animation-play-state: paused !important; }
+}

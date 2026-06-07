@@ -1,11 +1,9 @@
 "use client";
 
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useState } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  ChevronLeft,
-  ChevronRight,
   ArrowRight,
   CheckCircle2,
   Shield,
@@ -31,16 +29,16 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Layout, dostacImage } from "@/components/dostac/Layout";
-import { useT, useLang, tFor, type Lang } from "@/components/dostac/i18n";
+import { useT, useLang, type Lang } from "@/components/dostac/i18n";
 import { HOME_META } from "@/hooks/page-meta-config";
 import { trackCtaClick, trackFormSubmit, trackFormSuccess, trackFormError } from "@/lib/analytics";
 import {
-  useListPublicBanners,
   useListPublicCategoryTranslations,
   useCreateContactInquiry,
-  type PublicBanner,
-  type CategoryTranslationRow,
 } from "@workspace/api-client-react";
+import { MarqueeHero } from "@/components/dostac/home/MarqueeHero";
+import { StatsBar } from "@/components/dostac/home/StatsBar";
+import { TerraCta } from "@/components/dostac/home/TerraCta";
 
 /* ── Premium easing curve (Apple/Linear-style deceleration) ── */
 const EASE_OUT_EXPO = [0.16, 1, 0.3, 1] as const;
@@ -52,12 +50,6 @@ const fadeUp = {
     y: 0,
     transition: { duration: 0.65, ease: EASE_OUT_EXPO },
   },
-};
-
-/* Hero: fires after a short delay so the page renders first */
-const heroStagger = {
-  hidden: {},
-  show: { transition: { staggerChildren: 0.12, delayChildren: 0.15 } },
 };
 
 /* Sections: subtle initial delay so cards don't all pop at once */
@@ -72,315 +64,8 @@ const sectionHeaderStagger = {
   show: { transition: { staggerChildren: 0.1 } },
 };
 
-const LANG_FIELD: Record<
-  Lang,
-  { title: keyof PublicBanner["translations"]; desc: keyof PublicBanner["translations"] }
-> = {
-  ko: { title: "titleKo", desc: "descriptionKo" },
-  en: { title: "titleEn", desc: "descriptionEn" },
-  ja: { title: "titleJa", desc: "descriptionJa" },
-  zh: { title: "titleZh", desc: "descriptionZh" },
-  vi: { title: "titleVi", desc: "descriptionVi" },
-};
-
-function pickBannerText(b: PublicBanner, lang: Lang) {
-  const fields = LANG_FIELD[lang];
-  const title =
-    (b.translations[fields.title] as string | null | undefined) ??
-    b.translations.titleKo ??
-    "";
-  const description =
-    (b.translations[fields.desc] as string | null | undefined) ??
-    b.translations.descriptionKo ??
-    "";
-  return { title, description };
-}
-
 /* ─────────────────────────────────────────────
-   1. HERO SECTION (banner slider)
-───────────────────────────────────────────── */
-function HeroSection() {
-  const { lang } = useLang();
-  const { t } = useT();
-  const { data, isLoading } = useListPublicBanners();
-  const banners = data ?? [];
-  const [active, setActive] = useState(0);
-
-  useEffect(() => {
-    if (banners.length <= 1) return;
-    const id = window.setInterval(() => {
-      setActive((i) => (i + 1) % banners.length);
-    }, 6000);
-    return () => window.clearInterval(id);
-  }, [banners.length]);
-
-  useEffect(() => {
-    if (active >= banners.length) setActive(0);
-  }, [banners.length, active]);
-
-  const go = (next: number) =>
-    setActive(((next % banners.length) + banners.length) % banners.length);
-
-  if (isLoading || banners.length === 0) {
-    return (
-      <section className="relative w-full min-h-[92vh] [min-height:92svh] overflow-hidden bg-[#0F172A]">
-        <img
-          src={dostacImage("hero-home.webp")}
-          alt=""
-          width={1408}
-          height={768}
-          fetchPriority="high"
-          loading="eager"
-          className="absolute inset-0 w-full h-full object-cover opacity-30"
-        />
-        <div className="absolute inset-0 bg-gradient-to-b from-[#0F172A]/90 via-[#0F172A]/60 to-white/80" />
-        <HeroTextOverlay
-          title={t("homeNew.heroFallbackTitle") as string}
-          description={t("homeNew.heroFallbackDesc") as string}
-          lang={lang}
-          slideKey="fallback"
-        />
-      </section>
-    );
-  }
-
-  return (
-    <section
-      className="relative w-full min-h-[92vh] [min-height:92svh] overflow-hidden bg-[#0F172A]"
-      data-testid="home-slider"
-    >
-      {banners.map((b, i) => {
-        const text = pickBannerText(b, lang);
-        const isActive = i === active;
-        return (
-          <div
-            key={b.id}
-            className={`absolute inset-0 transition-opacity duration-700 ease-out ${
-              isActive ? "opacity-100" : "opacity-0 pointer-events-none"
-            }`}
-            aria-hidden={!isActive}
-          >
-            {/* Background: optional link wraps only the image/overlay */}
-            {b.linkUrl ? (
-              <a href={b.linkUrl} className="absolute inset-0 block z-0" tabIndex={-1} aria-hidden="true">
-                <img
-                  src={b.imageUrl ?? ""}
-                  alt=""
-                  fetchPriority={isActive ? "high" : "low"}
-                  loading="eager"
-                  className="absolute inset-0 w-full h-full object-cover object-center opacity-35"
-                  onError={(e) => {
-                    (e.target as HTMLImageElement).src = dostacImage("hero-home.webp");
-                  }}
-                />
-                <div className="absolute inset-0 bg-gradient-to-b from-[#0F172A]/85 via-[#0F172A]/55 to-white/75" />
-              </a>
-            ) : (
-              <>
-                {b.imageUrl && (
-                  <img
-                    src={b.imageUrl}
-                    alt=""
-                    fetchPriority={isActive ? "high" : "low"}
-                    loading="eager"
-                    className="absolute inset-0 w-full h-full object-cover object-center opacity-35"
-                    onError={(e) => {
-                      (e.target as HTMLImageElement).src = dostacImage("hero-home.webp");
-                    }}
-                  />
-                )}
-                <div className="absolute inset-0 bg-gradient-to-b from-[#0F172A]/85 via-[#0F172A]/55 to-white/75" />
-              </>
-            )}
-            {/* Text + CTAs: always outside the banner link */}
-            <HeroTextOverlay
-              title={text.title || (t("homeNew.heroFallbackTitle") as string)}
-              description={text.description || (t("homeNew.heroFallbackDesc") as string)}
-              lang={lang}
-              slideKey={b.id}
-              isActive={isActive}
-            />
-          </div>
-        );
-      })}
-
-      {banners.length > 1 && (
-        <>
-          <button
-            type="button"
-            onClick={() => go(active - 1)}
-            className="hidden md:inline-flex absolute left-8 top-1/2 -translate-y-1/2 z-20 h-11 w-11 items-center justify-center rounded-full bg-white/15 hover:bg-white/30 text-white backdrop-blur transition"
-            aria-label="Previous slide"
-            data-testid="banner-prev"
-          >
-            <ChevronLeft className="h-5 w-5" />
-          </button>
-          <button
-            type="button"
-            onClick={() => go(active + 1)}
-            className="hidden md:inline-flex absolute right-8 top-1/2 -translate-y-1/2 z-20 h-11 w-11 items-center justify-center rounded-full bg-white/15 hover:bg-white/30 text-white backdrop-blur transition"
-            aria-label="Next slide"
-            data-testid="banner-next"
-          >
-            <ChevronRight className="h-5 w-5" />
-          </button>
-          <div className="absolute bottom-10 left-0 right-0 z-20 flex items-center justify-center gap-2">
-            {banners.map((b, i) => (
-              <button
-                key={b.id}
-                type="button"
-                onClick={() => go(i)}
-                aria-label={`Go to slide ${i + 1}`}
-                data-testid={`banner-dot-${i}`}
-                className={`h-1.5 rounded-full transition-all ${
-                  i === active ? "w-8 bg-accent" : "w-2 bg-white/40 hover:bg-white/70"
-                }`}
-              />
-            ))}
-          </div>
-        </>
-      )}
-    </section>
-  );
-}
-
-function HeroTextOverlay({
-  title,
-  description,
-  lang,
-  slideKey,
-  isActive = true,
-}: {
-  title: string;
-  description: string;
-  lang: Lang;
-  slideKey: string | number;
-  isActive?: boolean;
-}) {
-  // ── Language-switch cross-fade ────────────────────────────────────────────
-  // isFadedOut drives opacity 1→0→1 on the entire text block.
-  // displayedTitle/Desc/Lang are frozen snapshots; they only update after the
-  // fade-out animation completes so old-language text is visible during exit
-  // and new-language text appears on the fade-in.
-  // Using displayedLang (via tFor) for eyebrow + CTA labels ensures they stay
-  // in sync with the title/desc freeze rather than snapping on the render that
-  // triggers the lang useEffect (which runs post-paint, after t() already
-  // returns new-lang values).
-  const [isFadedOut, setIsFadedOut] = useState(false);
-  const isFadedOutRef = useRef(false);
-  const [displayedTitle, setDisplayedTitle] = useState(title);
-  const [displayedDesc, setDisplayedDesc] = useState(description);
-  const [displayedLang, setDisplayedLang] = useState<Lang>(lang);
-  const latestTitleRef = useRef(title);
-  const latestDescRef = useRef(description);
-  const latestLangRef = useRef(lang);
-
-  // Keep latest refs current so handleFadeComplete always reads fresh values.
-  // Also push to displayed state immediately when not mid-fade (covers
-  // same-language data refreshes where no fade-out cycle is triggered).
-  useEffect(() => {
-    latestTitleRef.current = title;
-    latestDescRef.current = description;
-    if (!isFadedOutRef.current) {
-      setDisplayedTitle(title);
-      setDisplayedDesc(description);
-    }
-  }, [title, description]);
-
-  // Trigger fade-out on lang change.
-  const prevLangRef = useRef(lang);
-  useEffect(() => {
-    if (prevLangRef.current === lang) return;
-    prevLangRef.current = lang;
-    latestLangRef.current = lang;
-    isFadedOutRef.current = true;
-    setIsFadedOut(true);
-  }, [lang]);
-
-  // When fade-out animation completes, swap all displayed content and fade back in.
-  const handleFadeComplete = useCallback(() => {
-    if (!isFadedOutRef.current) return;
-    setDisplayedTitle(latestTitleRef.current);
-    setDisplayedDesc(latestDescRef.current);
-    setDisplayedLang(latestLangRef.current);
-    isFadedOutRef.current = false;
-    setIsFadedOut(false);
-  }, []);
-
-  return (
-    <div className="relative z-10 flex items-center min-h-[92vh] [min-height:92svh] w-full pointer-events-none">
-      <div className="container mx-auto px-6 py-24 max-w-5xl">
-        <AnimatePresence mode="sync">
-          {isActive && (
-            <motion.div
-              key={slideKey}
-              initial="hidden"
-              animate="show"
-              exit="hidden"
-              variants={heroStagger}
-              className="max-w-3xl pointer-events-auto"
-            >
-              {/* 1. Badge/Eyebrow + 2. Headline + 3. Subheadline + 4. CTAs: all fade out/in on language switch */}
-              <motion.div
-                animate={{ opacity: isFadedOut ? 0 : 1 }}
-                transition={{ duration: 0.3, ease: [0.4, 0, 0.6, 1] }}
-                onAnimationComplete={handleFadeComplete}
-              >
-                {/* 1. Badge / Eyebrow */}
-                <motion.p
-                  variants={fadeUp}
-                  className="uppercase tracking-[0.2em] md:tracking-[0.3em] text-[10px] md:text-xs text-accent font-bold mb-4 md:mb-5 line-clamp-1"
-                >
-                  {tFor(displayedLang, "homeNew.heroEyebrow") as string}
-                </motion.p>
-
-                {/* 2. Headline */}
-                <motion.h1
-                  variants={fadeUp}
-                  className="font-display text-4xl md:text-6xl lg:text-7xl font-bold text-white leading-[1.08] mb-6"
-                >
-                  {displayedTitle}
-                </motion.h1>
-
-                {/* 3. Subheadline */}
-                <motion.p
-                  variants={fadeUp}
-                  className="text-lg md:text-xl text-white/75 leading-relaxed mb-10 max-w-2xl"
-                >
-                  {displayedDesc}
-                </motion.p>
-
-                {/* 4. CTA Buttons */}
-                <motion.div variants={fadeUp} className="flex flex-wrap gap-4">
-                  <a href="#rfq" onClick={() => trackCtaClick("Get OEM Quote", "hero")}>
-                    <Button
-                      size="lg"
-                      className="rounded-full bg-accent hover:bg-accent/90 text-white h-13 px-8 text-base font-semibold shadow-lg shadow-accent/30 hover:shadow-accent/50 transition-shadow"
-                    >
-                      {tFor(displayedLang, "homeNew.heroCtaOem") as string} <ArrowRight className="ml-2 h-4 w-4" />
-                    </Button>
-                  </a>
-                  <Link href="/contact" onClick={() => trackCtaClick("Contact Us", "hero")}>
-                    <Button
-                      size="lg"
-                      variant="outline"
-                      className="rounded-full border-white/50 text-white bg-white/8 hover:bg-white/20 hover:text-white h-13 px-8 text-base font-semibold backdrop-blur-sm"
-                    >
-                      {tFor(displayedLang, "homeNew.heroCtaContact") as string}
-                    </Button>
-                  </Link>
-                </motion.div>
-              </motion.div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </div>
-    </div>
-  );
-}
-
-/* ─────────────────────────────────────────────
-   2. TRUST BADGES
+   1. TRUST BADGES
 ───────────────────────────────────────────── */
 const TRUST_ICONS = [Award, Shield, CheckCircle2, Globe2, FlaskConical];
 
@@ -497,7 +182,7 @@ function TrustSection() {
 }
 
 /* ─────────────────────────────────────────────
-   3. PRODUCTION FLOW
+   2. PRODUCTION FLOW (horizontal scroll timeline)
 ───────────────────────────────────────────── */
 function ProductionFlowSection() {
   const { t } = useT();
@@ -521,20 +206,19 @@ function ProductionFlowSection() {
           </motion.h2>
         </motion.div>
 
-        <div className="relative">
-          <div className="hidden lg:block absolute top-[2.2rem] left-[10%] right-[10%] h-px bg-slate-300 z-0" />
-          <motion.div
-            initial="hidden"
-            whileInView="show"
-            viewport={{ once: true, amount: 0.2 }}
-            variants={stagger}
-            className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-5 gap-y-10 gap-x-4"
-          >
+        {/* Horizontal scroll timeline */}
+        <div className="overflow-x-auto -mx-6 px-6 no-scrollbar pb-4">
+          <div className="relative flex gap-6 md:gap-10 min-w-max">
+            {/* Connecting line spans full row */}
+            <div className="absolute top-[2.25rem] left-8 right-8 h-px bg-slate-300 pointer-events-none" />
             {flowSteps.map((s, idx) => (
               <motion.div
                 key={idx}
-                variants={fadeUp}
-                className="relative flex flex-col items-center text-center group"
+                initial={{ opacity: 0, y: 12 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0.3 }}
+                transition={{ duration: 0.5, delay: idx * 0.1 }}
+                className="relative flex flex-col items-center text-center w-40 md:w-48 flex-shrink-0 group"
               >
                 <div className="relative z-10 w-[4.5rem] h-[4.5rem] rounded-full bg-white border-2 border-slate-200 flex items-center justify-center mb-5 shadow-sm group-hover:border-accent group-hover:shadow-accent/20 group-hover:shadow-md transition-all">
                   <span className="font-display font-bold text-accent text-sm">{s.step}</span>
@@ -543,7 +227,7 @@ function ProductionFlowSection() {
                 <p className="text-slate-500 text-xs leading-relaxed">{s.desc}</p>
               </motion.div>
             ))}
-          </motion.div>
+          </div>
         </div>
       </div>
     </section>
@@ -551,7 +235,7 @@ function ProductionFlowSection() {
 }
 
 /* ─────────────────────────────────────────────
-   4. PRODUCT SHOWCASE
+   3. PRODUCT SHOWCASE (masonry grid)
 ───────────────────────────────────────────── */
 const PRODUCT_IMAGES = [
   "product-baby-wipes.webp",
@@ -570,6 +254,9 @@ const CAT_LANG_KEY: Record<Lang, CatNameKey> = {
   zh: "nameZh",
   vi: "nameVi",
 };
+
+/* Alternating aspect ratios create masonry height variation */
+const MASONRY_ASPECTS = ["aspect-[4/3]", "aspect-[3/4]", "aspect-[4/3]", "aspect-[3/4]", "aspect-[4/3]", "aspect-[3/4]"];
 
 function ProductShowcaseSection() {
   const { t } = useT();
@@ -611,22 +298,25 @@ function ProductShowcaseSection() {
           <motion.p variants={fadeUp} className="text-slate-500 text-base">{t("homeNew.showcaseSub") as string}</motion.p>
         </motion.div>
 
-        <motion.div
-          initial="hidden"
-          whileInView="show"
-          viewport={{ once: true, amount: 0.15 }}
-          variants={stagger}
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-12"
-        >
+        {/* Masonry grid — CSS columns for column-major flow with varying heights */}
+        <div className="columns-1 sm:columns-2 lg:columns-3 gap-x-6 mb-12">
           {displayItems.map((item, idx) => {
             const href = item.category
               ? `/products?category=${encodeURIComponent(item.category)}`
               : "/products";
+            const aspectClass = MASONRY_ASPECTS[idx % MASONRY_ASPECTS.length];
             return (
-              <motion.div key={idx} variants={fadeUp}>
+              <motion.div
+                key={idx}
+                initial={{ opacity: 0, y: 16 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: (idx % 3) * 0.1 }}
+                className="break-inside-avoid mb-6"
+              >
                 <div className="group rounded-2xl overflow-hidden border border-slate-100 hover:border-accent/30 hover:shadow-xl transition-all bg-white">
                   <Link href={href} className="block">
-                    <div className="aspect-[4/3] overflow-hidden bg-[#F5F7FA]">
+                    <div className={`${aspectClass} overflow-hidden bg-[#F5F7FA]`}>
                       <img
                         src={dostacImage(item.imageKey)}
                         alt={item.name}
@@ -655,7 +345,7 @@ function ProductShowcaseSection() {
               </motion.div>
             );
           })}
-        </motion.div>
+        </div>
 
         <div className="text-center">
           <Link href="/products">
@@ -814,7 +504,7 @@ function WorldMapSVG() {
           y1={KOREA_DOT.y}
           x2={dot.x}
           y2={dot.y}
-          stroke="#FF6A1A"
+          stroke="#8B5E3C"
           strokeWidth="0.6"
           strokeOpacity="0.25"
           strokeDasharray="3 4"
@@ -824,14 +514,14 @@ function WorldMapSVG() {
       {/* Export country dots */}
       {EXPORT_DOTS.map((dot) => (
         <g key={`dot-${dot.id}`}>
-          <circle cx={dot.x} cy={dot.y} r="5" fill="#FF6A1A" opacity="0.25" />
-          <circle cx={dot.x} cy={dot.y} r="3" fill="#FF6A1A" opacity="0.7" />
+          <circle cx={dot.x} cy={dot.y} r="5" fill="#8B5E3C" opacity="0.25" />
+          <circle cx={dot.x} cy={dot.y} r="3" fill="#8B5E3C" opacity="0.7" />
         </g>
       ))}
 
       {/* Korea HQ dot (larger, white) */}
-      <circle cx={KOREA_DOT.x} cy={KOREA_DOT.y} r="8" fill="#FF6A1A" opacity="0.2" />
-      <circle cx={KOREA_DOT.x} cy={KOREA_DOT.y} r="5" fill="#FF6A1A" opacity="0.9" />
+      <circle cx={KOREA_DOT.x} cy={KOREA_DOT.y} r="8" fill="#8B5E3C" opacity="0.2" />
+      <circle cx={KOREA_DOT.x} cy={KOREA_DOT.y} r="5" fill="#8B5E3C" opacity="0.9" />
       <circle cx={KOREA_DOT.x} cy={KOREA_DOT.y} r="2.5" fill="#ffffff" />
     </svg>
   );
@@ -1331,13 +1021,15 @@ function ContactRFQSection() {
 export default function Home() {
   return (
     <Layout>
-      <HeroSection />
+      <MarqueeHero />
+      <StatsBar />
       <TrustSection />
-      <ProductionFlowSection />
       <ProductShowcaseSection />
+      <ProductionFlowSection />
       <FactoryQualitySection />
       <GlobalDistributionSection />
       <OEMServicesSection />
+      <TerraCta />
       <ContactRFQSection />
     </Layout>
   );

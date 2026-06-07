@@ -13,6 +13,8 @@ function gtag(...args: unknown[]) {
 
 export type CtaLocation =
   | "hero"
+  | "hero_marquee"
+  | "terra_cta"
   | "nav"
   | "product_card"
   | "insights_article"
