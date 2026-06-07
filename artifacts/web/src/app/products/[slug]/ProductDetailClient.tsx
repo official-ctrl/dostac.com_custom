@@ -19,7 +19,7 @@ import { Layout, dostacImage } from "@/components/dostac/Layout";
 import { useT, useLang, useCategoryLabel, useSubCategoryLabel } from "@/components/dostac/i18n";
 import {
   getGetPublicProductQueryOptions,
-  useListPublicProducts,
+  getListPublicProductsQueryOptions,
 } from "@workspace/api-client-react";
 
 const fadeUp = {
@@ -80,7 +80,10 @@ function ProductDetailContent() {
   const [displayedProduct, setDisplayedProduct] = useState(product);
   const latestProductRef = useRef(product);
 
-  const { data: allProducts } = useListPublicProducts({ lang });
+  const { data: allProducts } = useQuery({
+    ...getListPublicProductsQueryOptions({ lang }),
+    staleTime: 5 * 60 * 1000,
+  });
 
   useEffect(() => {
     if (isPlaceholderData) return;

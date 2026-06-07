@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { Layout, dostacImage } from "@/components/dostac/Layout";
@@ -94,6 +94,7 @@ function pickItem(item: unknown, base: string, lang: Lang): string {
 
 function useScrollSpy(): SectionId {
   const [active, setActive] = useState<SectionId>("greeting");
+  const activeRef = useRef<SectionId>("greeting");
   useEffect(() => {
     const onScroll = () => {
       const offset = 160;
@@ -104,7 +105,11 @@ function useScrollSpy(): SectionId {
         const top = el.getBoundingClientRect().top;
         if (top - offset <= 0) current = s.id;
       }
-      setActive(current);
+      // 값이 실제로 변경됐을 때만 setState → 매 스크롤 리렌더 방지
+      if (current !== activeRef.current) {
+        activeRef.current = current;
+        setActive(current);
+      }
     };
     window.addEventListener("scroll", onScroll, { passive: true });
     onScroll();
@@ -476,6 +481,11 @@ function AboutContent() {
   const active = useScrollSpy();
   const { data } = useGetPublicAbout();
 
+  const scrollTo = (id: string) => {
+    const el = document.getElementById(id);
+    if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
+
   const greetingHtml = useMemo(
     () => pickByLang(data, "greetingMessage", lang),
     [data, lang],
@@ -551,6 +561,7 @@ function AboutContent() {
       <SectionNav
         items={SECTIONS.map((s) => ({ id: s.id, label: t(`about.sections.${s.id}`) as string }))}
         activeId={active}
+        onSelect={scrollTo}
         ariaLabel={t("about.sectionNavLabel") as string}
         testIdPrefix="about-tab-"
       />

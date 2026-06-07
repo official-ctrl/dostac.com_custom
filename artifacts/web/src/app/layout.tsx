@@ -26,7 +26,6 @@ import { getQueryClient } from "@/lib/get-query-client";
 import {
   getListPublicCategoryTranslationsQueryOptions,
   getListPublicSubCategoryTranslationsQueryOptions,
-  getListPublicBannersQueryOptions,
 } from "@workspace/api-client-react";
 import { Providers } from "./providers";
 import { GoogleAnalytics } from "./google-analytics";
@@ -116,7 +115,6 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
     Promise.all([
       queryClient.prefetchQuery(getListPublicCategoryTranslationsQueryOptions()),
       queryClient.prefetchQuery(getListPublicSubCategoryTranslationsQueryOptions()),
-      queryClient.prefetchQuery(getListPublicBannersQueryOptions()),
     ]),
     new Promise<void>((resolve) => setTimeout(resolve, 3000)),
   ]);

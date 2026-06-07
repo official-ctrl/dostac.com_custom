@@ -3,8 +3,6 @@ import { ArrowRight } from "lucide-react";
 import { Layout } from "@/components/dostac/Layout";
 import { getPosts, getCategories, stripHtml, formatDate } from "@/lib/wordpress";
 
-export const revalidate = 3600;
-
 export default async function InsightsPage() {
   const [posts, categories] = await Promise.all([getPosts(20), getCategories()]);
 

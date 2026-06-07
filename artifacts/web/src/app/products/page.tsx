@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React, { Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { useQuery, useQueryClient, keepPreviousData } from "@tanstack/react-query";
 import {
@@ -92,17 +92,15 @@ function ProductsContent() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const searchParams = useSearchParams();
   const productsQuery = useQuery({
     ...getListPublicProductsQueryOptions({ lang }),
     placeholderData: keepPreviousData,
   });
   const products = productsQuery.data ?? [];
 
-  const search = typeof window !== "undefined" ? window.location.search : "";
-
-  const params = new URLSearchParams(search);
-  const categoryFromUrl = params.get("category") ? normalizeCategory(params.get("category")!) : null;
-  const subCategoryFromUrl = params.get("subCategory") ? normalizeSubCategory(params.get("subCategory")!) : null;
+  const categoryFromUrl = searchParams.get("category") ? normalizeCategory(searchParams.get("category")!) : null;
+  const subCategoryFromUrl = searchParams.get("subCategory") ? normalizeSubCategory(searchParams.get("subCategory")!) : null;
 
   const [selectedCategory, setSelectedCategory] = useState<string | null>(categoryFromUrl);
   const [selectedSubCategory, setSelectedSubCategory] = useState<string | null>(subCategoryFromUrl);
@@ -233,10 +231,10 @@ function ProductsContent() {
 
   useEffect(() => {
     if (selectedCategory !== null && categories.length > 0 && !categories.includes(selectedCategory)) {
+      // State만 초기화 — navigate() 호출 금지 (데이터 변경 시 navigate는 페이지 이탈과 race condition 발생)
       setSelectedCategory(null);
       setSelectedSubCategory(null);
       setRestoredFilter(null);
-      navigate("/products", { replace: true });
       saveStoredFilter(null, null);
     }
   }, [categories, selectedCategory]);
@@ -272,8 +270,8 @@ function ProductsContent() {
       subCategories.length > 0 &&
       !subCategories.includes(selectedSubCategory)
     ) {
+      // State만 초기화 — navigate() 호출 금지 (race condition 방지)
       setSelectedSubCategory(null);
-      navigate(buildUrl(selectedCategory, null), { replace: true });
       saveStoredFilter(selectedCategory, null);
     }
   }, [subCategories, selectedSubCategory, selectedCategory]);
@@ -877,7 +875,15 @@ function ProductsContent() {
 export default function Products() {
   return (
     <Layout>
-      <ProductsContent />
+      <Suspense
+        fallback={
+          <div className="py-32 flex justify-center">
+            <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+          </div>
+        }
+      >
+        <ProductsContent />
+      </Suspense>
     </Layout>
   );
 }

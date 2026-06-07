@@ -761,6 +761,8 @@ function Header() {
         초기 딥링크 스크롤은 각 페이지 컴포넌트가 직접 처리. ── */
   useEffect(() => {
     const onHashScroll = () => {
+      // /contact 페이지는 자체 hashchange 핸들러가 있으므로 스킵
+      if (window.location.pathname === "/contact") return;
       const hash = window.location.hash.replace("#", "");
       if (!hash) return;
       const el = document.getElementById(hash);
@@ -1002,7 +1004,7 @@ function Footer() {
         </div>
         <div className="border-t border-white/10 pt-5 flex flex-col sm:flex-row items-center justify-between gap-3">
           <p className="text-xs text-slate-500">
-            dostac Co., Ltd. &copy; 2026 — All Rights Reserved.
+            dostac Co., Ltd. &copy; {new Date().getFullYear()} — All Rights Reserved.
           </p>
           <Link href="/contact">
             <Button

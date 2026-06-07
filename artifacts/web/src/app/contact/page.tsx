@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
+import React, { Suspense, useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { MapPin, Phone, Mail, Clock, Send, ShieldCheck, CheckCircle2, Package } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/select";
 import { Layout, dostacImage } from "@/components/dostac/Layout";
 import { useT, useLang } from "@/components/dostac/i18n";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import { useCreateContactInquiry, useGetPublicProduct, getGetPublicProductQueryKey } from "@workspace/api-client-react";
 import { CONTACT_META } from "@/hooks/page-meta-config";
 import { trackFormSubmit, trackFormSuccess, trackFormError, trackCtaClick } from "@/lib/analytics";
@@ -72,7 +72,7 @@ const NONE_VALUE = "__none__";
 function ContactContent() {
   const { t, lang } = useT();
   const pathname = usePathname();
-  const search = typeof window !== "undefined" ? window.location.search : "";
+  const searchParams = useSearchParams();
   const successRef = useRef<HTMLDivElement>(null);
   const inquiryTypeOptions = t("contact.inquiryTypeOptions") as {
     oem: string;
@@ -81,9 +81,9 @@ function ContactContent() {
     other: string;
   };
 
-  const prefillInquiryType = parseInquiryType(search);
-  const prefillProductSlug = new URLSearchParams(search).get("product") ?? "";
-  const prefillMaterial = new URLSearchParams(search).get("material") ?? "";
+  const prefillInquiryType = parseInquiryType(searchParams.toString());
+  const prefillProductSlug = searchParams.get("product") ?? "";
+  const prefillMaterial = searchParams.get("material") ?? "";
 
   const { data: prefillProduct } = useGetPublicProduct(
     prefillProductSlug || "_",
@@ -120,8 +120,7 @@ function ContactContent() {
       }
     };
 
-    const params = new URLSearchParams(search);
-    const source = params.get("source");
+    const source = searchParams.get("source");
     const hasContactHash = window.location.hash === "#contact-form";
     const shouldScroll =
       hasContactHash ||
@@ -152,7 +151,7 @@ function ContactContent() {
       window.removeEventListener("hashchange", handleHashChange);
       clearTimeout(focusTimer);
     };
-  }, [search]);
+  }, [searchParams]);
 
   const [form, setForm] = useState({
     name: "",
@@ -674,7 +673,9 @@ function ContactContent() {
 export default function Contact() {
   return (
     <Layout>
-      <ContactContent />
+      <Suspense fallback={null}>
+        <ContactContent />
+      </Suspense>
     </Layout>
   );
 }
