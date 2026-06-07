@@ -114,13 +114,6 @@ function ProductDetailContent() {
     setIsFadedOut(false);
   }, []);
 
-  useEffect(() => {
-    if (!displayedProduct) return;
-    const categoryPart = displayedProduct.category ? `${catLabel(displayedProduct.category)} — ` : "";
-    const prev = document.title;
-    document.title = `${categoryPart}${displayedProduct.name} | DOSTAC`;
-    return () => { document.title = prev; };
-  }, [displayedProduct, catLabel]);
 
   const fallbackCopyToClipboard = () => {
     navigator.clipboard.writeText(window.location.href).then(() => {

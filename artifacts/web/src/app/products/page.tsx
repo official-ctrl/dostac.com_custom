@@ -280,16 +280,6 @@ function ProductsContent() {
     }
   }, [selectedCategory, selectedSubCategory]);
 
-  useEffect(() => {
-    const pageLabel = t("nav.product") as string;
-    const prev = document.title;
-    if (selectedCategory) {
-      document.title = `${catLabel(selectedCategory)} | ${pageLabel} | DOSTAC`;
-    } else {
-      document.title = `${pageLabel} | DOSTAC`;
-    }
-    return () => { document.title = prev; };
-  }, [selectedCategory, catLabel, t]);
 
   const filteredProducts =
     selectedSubCategory === null || selectedSubCategory === undefined
