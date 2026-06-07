@@ -1,0 +1,20 @@
+name: Keep API Alive
+
+on:
+  schedule:
+    - cron: "*/5 * * * *"   # 5분마다
+  workflow_dispatch:
+
+jobs:
+  ping:
+    name: Ping Render API
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - name: Health check
+        run: |
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" --max-time 30 https://dostac-api.onrender.com/api/health)
+          echo "Response: $STATUS"
+          if [ "$STATUS" != "200" ]; then
+            echo "Warning: API returned $STATUS"
+          fi
