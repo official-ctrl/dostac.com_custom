@@ -13,8 +13,6 @@ import {
   transformWpContent,
 } from "@/lib/wordpress";
 
-export const revalidate = 3600;
-
 export async function generateStaticParams() {
   const slugs = await getAllSlugs();
   return slugs.map((slug) => ({ slug }));
