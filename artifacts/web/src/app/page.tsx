@@ -1,5 +1,7 @@
+"use client";
+
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { Link } from "wouter";
+import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   ChevronLeft,
@@ -30,8 +32,8 @@ import {
 } from "@/components/ui/select";
 import { Layout, dostacImage } from "@/components/dostac/Layout";
 import { useT, useLang, tFor, type Lang } from "@/components/dostac/i18n";
-import { usePageMeta } from "@/hooks/use-page-meta";
 import { HOME_META } from "@/hooks/page-meta-config";
+import { trackCtaClick, trackFormSubmit, trackFormSuccess, trackFormError } from "@/lib/analytics";
 import {
   useListPublicBanners,
   useListPublicCategoryTranslations,
@@ -125,6 +127,8 @@ function HeroSection() {
         <img
           src={dostacImage("hero-home.webp")}
           alt=""
+          width={1408}
+          height={768}
           fetchPriority="high"
           loading="eager"
           className="absolute inset-0 w-full h-full object-cover opacity-30"
@@ -162,8 +166,8 @@ function HeroSection() {
                 <img
                   src={b.imageUrl ?? ""}
                   alt=""
-                  fetchPriority={isActive ? "high" : "auto"}
-                  loading={isActive ? "eager" : "lazy"}
+                  fetchPriority={isActive ? "high" : "low"}
+                  loading="eager"
                   className="absolute inset-0 w-full h-full object-cover object-center opacity-35"
                   onError={(e) => {
                     (e.target as HTMLImageElement).src = dostacImage("hero-home.webp");
@@ -177,8 +181,8 @@ function HeroSection() {
                   <img
                     src={b.imageUrl}
                     alt=""
-                    fetchPriority={isActive ? "high" : "auto"}
-                    loading={isActive ? "eager" : "lazy"}
+                    fetchPriority={isActive ? "high" : "low"}
+                    loading="eager"
                     className="absolute inset-0 w-full h-full object-cover object-center opacity-35"
                     onError={(e) => {
                       (e.target as HTMLImageElement).src = dostacImage("hero-home.webp");
@@ -348,7 +352,7 @@ function HeroTextOverlay({
 
                 {/* 4. CTA Buttons */}
                 <motion.div variants={fadeUp} className="flex flex-wrap gap-4">
-                  <a href="#rfq">
+                  <a href="#rfq" onClick={() => trackCtaClick("Get OEM Quote", "hero")}>
                     <Button
                       size="lg"
                       className="rounded-full bg-accent hover:bg-accent/90 text-white h-13 px-8 text-base font-semibold shadow-lg shadow-accent/30 hover:shadow-accent/50 transition-shadow"
@@ -356,7 +360,7 @@ function HeroTextOverlay({
                       {tFor(displayedLang, "homeNew.heroCtaOem") as string} <ArrowRight className="ml-2 h-4 w-4" />
                     </Button>
                   </a>
-                  <Link href="/contact">
+                  <Link href="/contact" onClick={() => trackCtaClick("Contact Us", "hero")}>
                     <Button
                       size="lg"
                       variant="outline"
@@ -626,6 +630,8 @@ function ProductShowcaseSection() {
                       <img
                         src={dostacImage(item.imageKey)}
                         alt={item.name}
+                        width={800}
+                        height={600}
                         loading="lazy"
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                       />
@@ -698,6 +704,8 @@ function FactoryQualitySection() {
               <img
                 src={dostacImage("hero-production.webp")}
                 alt="Factory"
+                width={1408}
+                height={768}
                 loading="lazy"
                 className="w-full h-full object-cover"
               />
@@ -990,7 +998,7 @@ function OEMServicesSection() {
                 {t("homeNew.servicesCtaDesc") as string}
               </p>
             </div>
-            <Link href="/contact">
+            <Link href="/contact" onClick={() => trackCtaClick("Get OEM Quote", "rfq_section")}>
               <Button
                 size="sm"
                 className="rounded-full bg-white text-accent hover:bg-white/90 font-semibold w-full"
@@ -1033,6 +1041,7 @@ function ContactRFQSection() {
       onSuccess: () => {
         setSuccess(true);
         setError(null);
+        trackFormSuccess("rfq_homepage", form.inquiryType || undefined);
         setForm({
           name: "", email: "", company: "", inquiryType: "",
           moq: "", packagingType: "", targetCountry: "", productCategory: "", message: "",
@@ -1041,6 +1050,7 @@ function ContactRFQSection() {
       onError: (err: unknown) => {
         const msg = err instanceof Error ? err.message : (t("homeNew.rfqErrorFallback") as string);
         setError(msg);
+        trackFormError("rfq_homepage", msg);
       },
     },
   });
@@ -1062,6 +1072,7 @@ function ContactRFQSection() {
       ? `${form.message}\n\n--- RFQ Details ---\n${extras.join("\n")}`
       : form.message;
 
+    trackFormSubmit("rfq_homepage", form.inquiryType || undefined);
     createInquiry.mutate({
       data: {
         name: form.name,
@@ -1202,7 +1213,7 @@ function ContactRFQSection() {
                           }))
                         }
                       >
-                        <SelectTrigger className="h-10 text-sm">
+                        <SelectTrigger className="h-10 text-sm" aria-label={t("homeNew.rfqInquiryType") as string}>
                           <SelectValue placeholder={t("homeNew.rfqInquiryType") as string} />
                         </SelectTrigger>
                         <SelectContent>
@@ -1318,8 +1329,6 @@ function ContactRFQSection() {
    PAGE ASSEMBLY
 ───────────────────────────────────────────── */
 export default function Home() {
-  const { lang } = useLang();
-  usePageMeta({ ...HOME_META[lang], path: "/" });
   return (
     <Layout>
       <HeroSection />

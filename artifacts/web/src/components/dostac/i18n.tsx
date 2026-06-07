@@ -2303,19 +2303,21 @@ interface LangContextValue {
 const LanguageContext = createContext<LangContextValue | null>(null);
 
 export function LanguageProvider({ children }: { children: React.ReactNode }) {
-  const [lang, setLangState] = useState<Lang>(() => {
-    if (typeof window === "undefined") return "en";
-    const saved = window.localStorage.getItem("dostac-lang-v2") as Lang | null;
-    return saved && (["ko", "en", "ja", "zh", "vi"] as Lang[]).includes(saved) ? saved : "en";
-  });
+  // Always start with "en" on both server and client — prevents hydration mismatch.
+  // After mount, useEffect reads localStorage and switches to the saved language.
+  const [lang, setLangState] = useState<Lang>("en");
 
   useEffect(() => {
-    if (typeof document !== "undefined") {
-      document.documentElement.lang = lang;
+    const VALID: Lang[] = ["ko", "en", "ja", "zh", "vi"];
+    const saved = window.localStorage.getItem("dostac-lang-v2") as Lang | null;
+    if (saved && VALID.includes(saved) && saved !== "en") {
+      setLangState(saved);
     }
-    if (typeof window !== "undefined") {
-      window.localStorage.setItem("dostac-lang-v2", lang);
-    }
+  }, []);
+
+  useEffect(() => {
+    document.documentElement.lang = lang;
+    window.localStorage.setItem("dostac-lang-v2", lang);
   }, [lang]);
 
   const setLang = (l: Lang) => setLangState(l);

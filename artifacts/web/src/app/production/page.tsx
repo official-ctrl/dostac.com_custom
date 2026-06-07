@@ -1,6 +1,8 @@
+"use client";
+
 import React, { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
-import { Link } from "wouter";
+import Link from "next/link";
 import {
   Package, Tag, Box, Calculator, FileText, Globe,
   MessageCircle, Users, FlaskConical, Factory as FactoryIcon,
@@ -10,7 +12,6 @@ import { Layout, dostacImage } from "@/components/dostac/Layout";
 import { useT, useLang } from "@/components/dostac/i18n";
 import { SectionNav } from "@/components/dostac/SectionNav";
 import { useGetPublicProcess } from "@workspace/api-client-react";
-import { usePageMeta } from "@/hooks/use-page-meta";
 import { PRODUCTION_META } from "@/hooks/page-meta-config";
 import type { Lang } from "@/components/dostac/i18n";
 
@@ -349,8 +350,6 @@ function ProductionContent() {
 }
 
 export default function Production() {
-  const { lang } = useLang();
-  usePageMeta({ ...PRODUCTION_META[lang], path: "/production" });
   return (
     <Layout>
       <ProductionContent />
