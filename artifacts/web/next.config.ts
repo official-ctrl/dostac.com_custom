@@ -23,26 +23,15 @@ const nextConfig: NextConfig = {
   },
   async redirects() {
     return [
-      // /notice → blog (단일 홉으로 단축)
+      // 구 /notice URL → /insights (내부 헤드리스 블로그 페이지)
       {
         source: "/notice",
-        destination: "https://blog.dostac.com",
+        destination: "/insights",
         permanent: true,
       },
       {
         source: "/notice/:slug",
-        destination: "https://blog.dostac.com/:slug",
-        permanent: true,
-      },
-      // /insights → blog (슬러그 구조 동일: blog.dostac.com/[slug])
-      {
-        source: "/insights",
-        destination: "https://blog.dostac.com",
-        permanent: true,
-      },
-      {
-        source: "/insights/:slug",
-        destination: "https://blog.dostac.com/:slug",
+        destination: "/insights/:slug",
         permanent: true,
       },
     ];
