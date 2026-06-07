@@ -10,6 +10,7 @@ import {
   ChevronDown,
   ChevronRight,
   ArrowRight,
+  ExternalLink,
 } from "lucide-react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
@@ -42,11 +43,11 @@ const PROCESS_SUB: ProcessSubItem[] = [
 
 type NavKey = "about" | "production" | "product" | "notice" | "contact";
 
-const NAV_ITEMS: Array<{ href: string; key: NavKey }> = [
+const NAV_ITEMS: Array<{ href: string; key: NavKey; external?: boolean }> = [
   { href: "/about", key: "about" },
   { href: "/production", key: "production" },
   { href: "/products", key: "product" },
-  { href: "/insights", key: "notice" },
+  { href: "https://blog.dostac.com", key: "notice", external: true },
   { href: "/contact", key: "contact" },
 ];
 
@@ -782,6 +783,21 @@ function Header() {
             if (item.key === "product") {
               return <ProductsDropdown key={item.href} active={active} />;
             }
+            if (item.external) {
+              return (
+                <a
+                  key={item.href}
+                  href={item.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={`${t(`nav.${item.key}`) as string} (새 탭에서 열림)`}
+                  className="inline-flex items-center gap-1 text-sm font-medium text-slate-700 hover:text-primary transition-colors"
+                >
+                  {t(`nav.${item.key}`) as string}
+                  <ExternalLink className="h-3 w-3 opacity-50" />
+                </a>
+              );
+            }
             return (
               <Link
                 key={item.href}
@@ -917,6 +933,22 @@ function Header() {
                   </div>
                 );
               }
+              if (item.external) {
+                return (
+                  <a
+                    key={item.href}
+                    href={item.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={`${t(`nav.${item.key}`) as string} (새 탭에서 열림)`}
+                    className="px-3 py-2 rounded-md text-sm font-medium text-slate-700 hover:bg-slate-100 inline-flex items-center gap-1.5"
+                    onClick={() => setMobileOpen(false)}
+                  >
+                    {t(`nav.${item.key}`) as string}
+                    <ExternalLink className="h-3 w-3 opacity-40" />
+                  </a>
+                );
+              }
               return (
                 <Link
                   key={item.href}
@@ -976,9 +1008,9 @@ function Footer() {
             <Link href="/products" className="text-sm text-slate-400 hover:text-accent transition-colors">
               {t("nav.product") as string}
             </Link>
-            <Link href="/insights" className="text-sm text-slate-400 hover:text-accent transition-colors">
+            <a href="https://blog.dostac.com" target="_blank" rel="noopener noreferrer" className="text-sm text-slate-400 hover:text-accent transition-colors inline-flex items-center gap-1">
               {t("nav.notice") as string}
-            </Link>
+            </a>
             <Link href="/contact" className="text-sm text-slate-400 hover:text-accent transition-colors">
               {t("nav.contact") as string}
             </Link>

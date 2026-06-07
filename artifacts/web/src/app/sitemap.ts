@@ -29,12 +29,6 @@ const STATIC_ROUTES: MetadataRoute.Sitemap = [
     priority: 0.9,
   },
   {
-    url: `${BASE_URL}/insights`,
-    lastModified: new Date(),
-    changeFrequency: "weekly",
-    priority: 0.8,
-  },
-  {
     url: `${BASE_URL}/contact`,
     lastModified: new Date(),
     changeFrequency: "yearly",
@@ -46,11 +40,8 @@ async function fetchDynamicRoutes(): Promise<MetadataRoute.Sitemap> {
   const internalApiUrl = process.env.INTERNAL_API_URL ?? "http://localhost:4000";
 
   try {
-    const [productsRes, noticesRes] = await Promise.allSettled([
+    const [productsRes] = await Promise.allSettled([
       fetch(`${internalApiUrl}/api/public/product-translations?lang=en&limit=200`, {
-        next: { revalidate: 3600 },
-      }),
-      fetch(`${internalApiUrl}/api/public/notices?limit=200`, {
         next: { revalidate: 3600 },
       }),
     ]);
@@ -71,23 +62,9 @@ async function fetchDynamicRoutes(): Promise<MetadataRoute.Sitemap> {
       }
     }
 
-    const noticeRoutes: MetadataRoute.Sitemap = [];
-    if (noticesRes.status === "fulfilled" && noticesRes.value.ok) {
-      const data = await noticesRes.value.json();
-      const items: { slug?: string; updatedAt?: string }[] = data?.data ?? data ?? [];
-      for (const item of items) {
-        if (item.slug) {
-          noticeRoutes.push({
-            url: `${BASE_URL}/insights/${item.slug}`,
-            lastModified: item.updatedAt ? new Date(item.updatedAt) : new Date(),
-            changeFrequency: "weekly",
-            priority: 0.6,
-          });
-        }
-      }
-    }
+    // insights/notice 페이지는 blog.dostac.com으로 이전 — sitemap에서 제외
 
-    return [...productRoutes, ...noticeRoutes];
+    return [...productRoutes];
   } catch {
     // If API is unreachable at build time, return empty (static routes still included)
     return [];
