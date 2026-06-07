@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
@@ -116,7 +116,7 @@ function LanguageSwitcher({ onDark }: { onDark?: boolean }) {
   );
 }
 
-function AboutDropdown({ active, scrolled }: { active: boolean; scrolled: boolean }) {
+function AboutDropdown({ active }: { active: boolean }) {
   const { t } = useT();
   const router = useRouter();
   const [open, setOpen] = useState(false);
@@ -228,7 +228,7 @@ function AboutDropdown({ active, scrolled }: { active: boolean; scrolled: boolea
   );
 }
 
-function ProcessDropdown({ active, scrolled }: { active: boolean; scrolled: boolean }) {
+function ProcessDropdown({ active }: { active: boolean }) {
   const { t } = useT();
   const router = useRouter();
   const [open, setOpen] = useState(false);
@@ -359,31 +359,38 @@ function ProductsDropdown({ active }: { active: boolean }) {
   });
   const products = productsQuery.data ?? [];
 
-  const rawCategories = Array.from(
-    new Set(products.map((p) => p.category).filter((c): c is string => !!c))
+  const rawCategories = useMemo(
+    () => Array.from(new Set(products.map((p) => p.category).filter((c): c is string => !!c))),
+    [products]
   );
-  const localizedCategories = rawCategories.map((slug) => ({
-    slug,
-    label: catLabel(slug),
-  }));
+  const localizedCategories = useMemo(
+    () => rawCategories.map((slug) => ({ slug, label: catLabel(slug) })),
+    [rawCategories, catLabel]
+  );
 
   // Build a map of category → sorted list of unique sub-categories.
-  const subCatMap = products.reduce<Record<string, string[]>>((acc, p) => {
-    if (p.category && p.subCategory) {
-      if (!acc[p.category]) acc[p.category] = [];
-      if (!acc[p.category].includes(p.subCategory)) acc[p.category].push(p.subCategory);
-    }
-    return acc;
-  }, {});
+  const subCatMap = useMemo(
+    () => products.reduce<Record<string, string[]>>((acc, p) => {
+      if (p.category && p.subCategory) {
+        if (!acc[p.category]) acc[p.category] = [];
+        if (!acc[p.category].includes(p.subCategory)) acc[p.category].push(p.subCategory);
+      }
+      return acc;
+    }, {}),
+    [products]
+  );
 
   // Build a count map: category → subCategory → product count
-  const subCatCountMap = products.reduce<Record<string, Record<string, number>>>((acc, p) => {
-    if (p.category && p.subCategory) {
-      if (!acc[p.category]) acc[p.category] = {};
-      acc[p.category][p.subCategory] = (acc[p.category][p.subCategory] ?? 0) + 1;
-    }
-    return acc;
-  }, {});
+  const subCatCountMap = useMemo(
+    () => products.reduce<Record<string, Record<string, number>>>((acc, p) => {
+      if (p.category && p.subCategory) {
+        if (!acc[p.category]) acc[p.category] = {};
+        acc[p.category][p.subCategory] = (acc[p.category][p.subCategory] ?? 0) + 1;
+      }
+      return acc;
+    }, {}),
+    [products]
+  );
 
   const activeSubs = hoveredCategory ? (subCatMap[hoveredCategory] ?? []) : [];
 
@@ -614,21 +621,25 @@ function MobileProductsAccordion({
   });
   const products = productsQuery.data ?? [];
 
-  const rawCategories = Array.from(
-    new Set(products.map((p) => p.category).filter((c): c is string => !!c))
+  const rawCategories = useMemo(
+    () => Array.from(new Set(products.map((p) => p.category).filter((c): c is string => !!c))),
+    [products]
   );
-  const localizedCategories = rawCategories.map((slug) => ({
-    slug,
-    label: catLabel(slug),
-  }));
+  const localizedCategories = useMemo(
+    () => rawCategories.map((slug) => ({ slug, label: catLabel(slug) })),
+    [rawCategories, catLabel]
+  );
 
-  const subCatMap = products.reduce<Record<string, string[]>>((acc, p) => {
-    if (p.category && p.subCategory) {
-      if (!acc[p.category]) acc[p.category] = [];
-      if (!acc[p.category].includes(p.subCategory)) acc[p.category].push(p.subCategory);
-    }
-    return acc;
-  }, {});
+  const subCatMap = useMemo(
+    () => products.reduce<Record<string, string[]>>((acc, p) => {
+      if (p.category && p.subCategory) {
+        if (!acc[p.category]) acc[p.category] = [];
+        if (!acc[p.category].includes(p.subCategory)) acc[p.category].push(p.subCategory);
+      }
+      return acc;
+    }, {}),
+    [products]
+  );
 
   return (
     <div>
@@ -721,17 +732,26 @@ function Header() {
   const [mobileAboutOpen, setMobileAboutOpen] = useState(false);
   const [mobileProcessOpen, setMobileProcessOpen] = useState(false);
   const [mobileProductsOpen, setMobileProductsOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
+  const headerRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
     setMobileOpen(false);
   }, [location]);
 
+  /* ── Fix 1: DOM 직접 조작으로 스크롤 시 React 리렌더 완전 제거 ── */
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 10);
-    window.addEventListener("scroll", onScroll, { passive: true });
-    onScroll();
-    return () => window.removeEventListener("scroll", onScroll);
+    const el = headerRef.current;
+    if (!el) return;
+    const update = () => {
+      if (window.scrollY > 10) {
+        el.dataset.scrolled = "1";
+      } else {
+        delete el.dataset.scrolled;
+      }
+    };
+    window.addEventListener("scroll", update, { passive: true });
+    update();
+    return () => window.removeEventListener("scroll", update);
   }, []);
 
   useEffect(() => {
@@ -754,17 +774,14 @@ function Header() {
   return (
     <>
     <header
-      className={`sticky top-0 z-50 transition-all duration-200 ${
-        scrolled
-          ? "bg-white/95 backdrop-blur-md border-b border-slate-200/70 shadow-sm"
-          : "bg-white border-b border-slate-200/70"
-      }`}
+      ref={headerRef}
+      className="sticky top-0 z-50 bg-white border-b border-slate-200/70 transition-[background-color,box-shadow] duration-200 data-[scrolled]:bg-white/95 data-[scrolled]:backdrop-blur-md data-[scrolled]:shadow-sm"
     >
       <div className="container mx-auto px-6 h-[4.5rem] flex items-center justify-between">
         <Link href="/" className="flex items-center" aria-label="Dostac home">
           <span
             className="font-black tracking-[-0.05em] text-[#0F172A] leading-none select-none"
-            style={{ fontFamily: "'Space Grotesk', 'Outfit', sans-serif", fontSize: "42px" }}
+            style={{ fontFamily: "var(--font-dm-sans, system-ui, sans-serif)", fontSize: "42px" }}
           >
             dostac
           </span>
@@ -774,10 +791,10 @@ function Header() {
           {NAV_ITEMS.map((item) => {
             const active = location === item.href || location.startsWith(`${item.href}/`);
             if (item.key === "about") {
-              return <AboutDropdown key={item.href} active={active} scrolled={scrolled} />;
+              return <AboutDropdown key={item.href} active={active} />;
             }
             if (item.key === "production") {
-              return <ProcessDropdown key={item.href} active={active} scrolled={scrolled} />;
+              return <ProcessDropdown key={item.href} active={active} />;
             }
             if (item.key === "product") {
               return <ProductsDropdown key={item.href} active={active} />;
@@ -958,7 +975,7 @@ function Footer() {
           <div>
             <span
               className="font-black tracking-[-0.05em] text-white leading-none select-none block mb-1"
-              style={{ fontFamily: "'Space Grotesk', sans-serif", fontSize: "28px" }}
+              style={{ fontFamily: "var(--font-dm-sans, system-ui, sans-serif)", fontSize: "28px" }}
             >
               dostac
             </span>

@@ -23,6 +23,7 @@ export function MarqueeHero() {
               fontSize: "clamp(4rem, 10vw, 9rem)",
               letterSpacing: "-0.02em",
               animation: "dostac-marquee-left 35s linear infinite",
+              willChange: "transform",
             }}
           >
             <span>{LINE1}</span>
@@ -38,6 +39,7 @@ export function MarqueeHero() {
               fontSize: "clamp(0.75rem, 1.8vw, 1.05rem)",
               letterSpacing: "0.3em",
               animation: "dostac-marquee-right 20s linear infinite",
+              willChange: "transform",
             }}
           >
             <span>{LINE2}</span>
