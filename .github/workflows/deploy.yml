@@ -36,7 +36,7 @@ jobs:
           CF_PAGES: "1"
           INTERNAL_API_URL: ${{ secrets.INTERNAL_API_URL }}
           NEXT_PUBLIC_SITE_URL: "https://dostac.com"
-        run: npx @cloudflare/next-on-pages
+        run: pnpm exec next-on-pages
 
       - name: Deploy to Cloudflare Pages
         uses: cloudflare/wrangler-action@v3
