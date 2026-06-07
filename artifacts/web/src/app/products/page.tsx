@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
@@ -218,8 +218,9 @@ function ProductsContent() {
   //   7. With a category active, hard-reload the page — chip must be restored
   //      from the URL without being cleared on the first render.
 
-  const categories = Array.from(
-    new Set(products.map((p) => p.category).filter((c): c is string => !!c).map(normalizeCategory))
+  const categories = useMemo(
+    () => Array.from(new Set(products.map((p) => p.category).filter((c): c is string => !!c).map(normalizeCategory))),
+    [products]
   );
 
   const categoryCounts = products.reduce<Record<string, number>>((acc, p) => {
@@ -240,18 +241,21 @@ function ProductsContent() {
     }
   }, [categories, selectedCategory]);
 
-  const categoryFilteredProducts =
-    selectedCategory === null
+  const categoryFilteredProducts = useMemo(
+    () => selectedCategory === null
       ? products
-      : products.filter((p) => p.category != null && normalizeCategory(p.category) === selectedCategory);
+      : products.filter((p) => p.category != null && normalizeCategory(p.category) === selectedCategory),
+    [products, selectedCategory]
+  );
 
-  const subCategories = Array.from(
-    new Set(
+  const subCategories = useMemo(
+    () => Array.from(new Set(
       categoryFilteredProducts
         .map((p) => p.subCategory)
         .filter((s): s is string => !!s)
         .map(normalizeSubCategory)
-    )
+    )),
+    [categoryFilteredProducts]
   );
 
   const subCategoryCounts = categoryFilteredProducts.reduce<Record<string, number>>((acc, p) => {
@@ -281,10 +285,12 @@ function ProductsContent() {
   }, [selectedCategory, selectedSubCategory]);
 
 
-  const filteredProducts =
-    selectedSubCategory === null || selectedSubCategory === undefined
+  const filteredProducts = useMemo(
+    () => selectedSubCategory === null || selectedSubCategory === undefined
       ? categoryFilteredProducts
-      : categoryFilteredProducts.filter((p) => p.subCategory != null && normalizeSubCategory(p.subCategory) === selectedSubCategory);
+      : categoryFilteredProducts.filter((p) => p.subCategory != null && normalizeSubCategory(p.subCategory) === selectedSubCategory),
+    [categoryFilteredProducts, selectedSubCategory]
+  );
 
   // ── Language-switch cross-fade ─────────────────────────────────────────────
   // isFadedOut drives opacity 1→0→1 on the content+nav wrappers.
