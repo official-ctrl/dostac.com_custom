@@ -33,6 +33,7 @@ import {
 import { Layout, dostacImage } from "@/components/dostac/Layout";
 import { useT, useLang, tFor, type Lang } from "@/components/dostac/i18n";
 import { HOME_META } from "@/hooks/page-meta-config";
+import { trackCtaClick, trackFormSubmit, trackFormSuccess, trackFormError } from "@/lib/analytics";
 import {
   useListPublicBanners,
   useListPublicCategoryTranslations,
@@ -351,7 +352,7 @@ function HeroTextOverlay({
 
                 {/* 4. CTA Buttons */}
                 <motion.div variants={fadeUp} className="flex flex-wrap gap-4">
-                  <a href="#rfq">
+                  <a href="#rfq" onClick={() => trackCtaClick("Get OEM Quote", "hero")}>
                     <Button
                       size="lg"
                       className="rounded-full bg-accent hover:bg-accent/90 text-white h-13 px-8 text-base font-semibold shadow-lg shadow-accent/30 hover:shadow-accent/50 transition-shadow"
@@ -359,7 +360,7 @@ function HeroTextOverlay({
                       {tFor(displayedLang, "homeNew.heroCtaOem") as string} <ArrowRight className="ml-2 h-4 w-4" />
                     </Button>
                   </a>
-                  <Link href="/contact">
+                  <Link href="/contact" onClick={() => trackCtaClick("Contact Us", "hero")}>
                     <Button
                       size="lg"
                       variant="outline"
@@ -997,7 +998,7 @@ function OEMServicesSection() {
                 {t("homeNew.servicesCtaDesc") as string}
               </p>
             </div>
-            <Link href="/contact">
+            <Link href="/contact" onClick={() => trackCtaClick("Get OEM Quote", "rfq_section")}>
               <Button
                 size="sm"
                 className="rounded-full bg-white text-accent hover:bg-white/90 font-semibold w-full"
@@ -1040,6 +1041,7 @@ function ContactRFQSection() {
       onSuccess: () => {
         setSuccess(true);
         setError(null);
+        trackFormSuccess("rfq_homepage", form.inquiryType || undefined);
         setForm({
           name: "", email: "", company: "", inquiryType: "",
           moq: "", packagingType: "", targetCountry: "", productCategory: "", message: "",
@@ -1048,6 +1050,7 @@ function ContactRFQSection() {
       onError: (err: unknown) => {
         const msg = err instanceof Error ? err.message : (t("homeNew.rfqErrorFallback") as string);
         setError(msg);
+        trackFormError("rfq_homepage", msg);
       },
     },
   });
@@ -1069,6 +1072,7 @@ function ContactRFQSection() {
       ? `${form.message}\n\n--- RFQ Details ---\n${extras.join("\n")}`
       : form.message;
 
+    trackFormSubmit("rfq_homepage", form.inquiryType || undefined);
     createInquiry.mutate({
       data: {
         name: form.name,

@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import { Layout } from "@/components/dostac/Layout";
+import { InsightsCtaButton } from "./cta-button";
 import {
   getPostBySlug,
   getAllSlugs,
@@ -105,12 +106,7 @@ export default async function InsightDetailPage({
             <ArrowLeft className="h-4 w-4" />
             Back to Insights
           </Link>
-          <Link
-            href="/contact"
-            className="inline-flex items-center gap-1.5 text-sm font-semibold bg-accent text-white px-4 py-2 rounded-full hover:bg-accent/90 transition-colors"
-          >
-            Get OEM Quote
-          </Link>
+          <InsightsCtaButton />
         </div>
       </article>
     </main>

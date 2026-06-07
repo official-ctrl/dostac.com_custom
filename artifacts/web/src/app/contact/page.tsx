@@ -19,6 +19,7 @@ import { useT, useLang } from "@/components/dostac/i18n";
 import { usePathname } from "next/navigation";
 import { useCreateContactInquiry, useGetPublicProduct, getGetPublicProductQueryKey } from "@workspace/api-client-react";
 import { CONTACT_META } from "@/hooks/page-meta-config";
+import { trackFormSubmit, trackFormSuccess, trackFormError, trackCtaClick } from "@/lib/analytics";
 
 const VALID_INQUIRY_TYPES = ["oem", "odm", "sample", "other"] as const;
 type InquiryType = (typeof VALID_INQUIRY_TYPES)[number];
@@ -186,6 +187,7 @@ function ContactContent() {
       onSuccess: () => {
         setSuccess(true);
         setError(null);
+        trackFormSuccess("contact", form.inquiryType || undefined);
         setForm({ name: "", email: "", company: "", inquiryType: "", whatsapp: "", country: "", productInterest: "", material: "", quantity: "", customization: "", message: "" });
         setTimeout(() => {
           successRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
@@ -195,6 +197,7 @@ function ContactContent() {
         const msg = err instanceof Error ? err.message : "Submission failed. Please try again.";
         setError(msg);
         setSuccess(false);
+        trackFormError("contact", msg);
       },
     },
   });
@@ -234,6 +237,7 @@ function ContactContent() {
       shakeField("desc");
       return;
     }
+    trackFormSubmit("contact", form.inquiryType || undefined);
     createInquiry.mutate({
       data: {
         name: form.name,
