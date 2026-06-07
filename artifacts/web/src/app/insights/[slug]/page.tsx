@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
+import { Layout } from "@/components/dostac/Layout";
 import {
   getPostBySlug,
   getAllSlugs,
@@ -60,6 +61,7 @@ export default async function InsightDetailPage({
   const content = transformWpContent(post.content?.rendered ?? "");
 
   return (
+    <Layout>
     <main className="min-h-screen bg-white">
       {/* ── Article header ── */}
       <div className="bg-[#0F172A] pt-28 pb-16 px-6">
@@ -112,5 +114,6 @@ export default async function InsightDetailPage({
         </div>
       </article>
     </main>
+    </Layout>
   );
 }

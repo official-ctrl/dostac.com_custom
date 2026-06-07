@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
+import { Layout } from "@/components/dostac/Layout";
 import { getPosts, getCategories, stripHtml, formatDate } from "@/lib/wordpress";
 
 export const revalidate = 3600;
@@ -11,6 +12,7 @@ export default async function InsightsPage() {
   const displayCats = categories.filter((c) => c.slug !== "uncategorized");
 
   return (
+    <Layout>
     <main className="min-h-screen bg-white">
       {/* ── Hero ── */}
       <section className="bg-[#0F172A] pt-32 pb-20 px-6">
@@ -109,5 +111,6 @@ export default async function InsightsPage() {
         )}
       </section>
     </main>
+    </Layout>
   );
 }
