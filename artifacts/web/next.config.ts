@@ -1,7 +1,10 @@
 import type { NextConfig } from "next";
 
+const isCloudflarePages = process.env.CF_PAGES === "1";
+
 const nextConfig: NextConfig = {
-  output: "standalone",
+  // standalone: Docker/Replit용. Cloudflare Pages는 output 없음
+  ...(isCloudflarePages ? {} : { output: "standalone" }),
   transpilePackages: [
     "@workspace/api-client-react",
     "@workspace/api-zod",
