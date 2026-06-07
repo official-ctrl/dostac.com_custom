@@ -356,6 +356,7 @@ function ProductsDropdown({ active }: { active: boolean }) {
   const productsQuery = useQuery({
     ...getListPublicProductsQueryOptions({ lang }),
     staleTime: 5 * 60 * 1000,
+    enabled: open, // 드롭다운 열릴 때만 fetch — 닫혀있을 때 API 호출 없음
   });
   const products = productsQuery.data ?? [];
 
@@ -618,6 +619,7 @@ function MobileProductsAccordion({
   const productsQuery = useQuery({
     ...getListPublicProductsQueryOptions({ lang }),
     staleTime: 5 * 60 * 1000,
+    enabled: open, // 아코디언 열릴 때만 fetch
   });
   const products = productsQuery.data ?? [];
 
@@ -754,22 +756,19 @@ function Header() {
     return () => window.removeEventListener("scroll", update);
   }, []);
 
+  /* ── 동일 페이지 내 해시 변경만 처리: 페이지 이동과 충돌하지 않도록
+        의존성 [] — 한 번만 등록, location 변경 시 재등록 없음.
+        초기 딥링크 스크롤은 각 페이지 컴포넌트가 직접 처리. ── */
   useEffect(() => {
-    if (typeof window === "undefined") return;
     const onHashScroll = () => {
       const hash = window.location.hash.replace("#", "");
       if (!hash) return;
       const el = document.getElementById(hash);
-      if (el) {
-        setTimeout(() => {
-          el.scrollIntoView({ behavior: "smooth", block: "start" });
-        }, 60);
-      }
+      if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
     };
     window.addEventListener("hashchange", onHashScroll);
-    onHashScroll();
     return () => window.removeEventListener("hashchange", onHashScroll);
-  }, [location]);
+  }, []);
 
   return (
     <>

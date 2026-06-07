@@ -75,6 +75,20 @@ function ProductionContent() {
     if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
+  /* ── 딥링크 처리: 헤더 드롭다운에서 /production#section 진입 시
+        데이터 로드 완료 후 한 번만 실행 ── */
+  useEffect(() => {
+    if (isLoading || !data) return;
+    const hash = window.location.hash.replace("#", "");
+    if (!hash) return;
+    // rAF + 100ms: 페인트 완료 후 스크롤
+    requestAnimationFrame(() => {
+      setTimeout(() => scrollTo(hash), 100);
+    });
+  // data 로드 완료 시 한 번만 실행
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isLoading, data]);
+
   const oemFeatures = t("production.oemFeatures") as { title: string; desc: string }[];
   const processSteps = t("production.processSteps") as string[];
 
