@@ -126,6 +126,8 @@ function HeroSection() {
         <img
           src={dostacImage("hero-home.webp")}
           alt=""
+          width={1408}
+          height={768}
           fetchPriority="high"
           loading="eager"
           className="absolute inset-0 w-full h-full object-cover opacity-30"
@@ -163,8 +165,8 @@ function HeroSection() {
                 <img
                   src={b.imageUrl ?? ""}
                   alt=""
-                  fetchPriority={isActive ? "high" : "auto"}
-                  loading={isActive ? "eager" : "lazy"}
+                  fetchPriority={isActive ? "high" : "low"}
+                  loading="eager"
                   className="absolute inset-0 w-full h-full object-cover object-center opacity-35"
                   onError={(e) => {
                     (e.target as HTMLImageElement).src = dostacImage("hero-home.webp");
@@ -178,8 +180,8 @@ function HeroSection() {
                   <img
                     src={b.imageUrl}
                     alt=""
-                    fetchPriority={isActive ? "high" : "auto"}
-                    loading={isActive ? "eager" : "lazy"}
+                    fetchPriority={isActive ? "high" : "low"}
+                    loading="eager"
                     className="absolute inset-0 w-full h-full object-cover object-center opacity-35"
                     onError={(e) => {
                       (e.target as HTMLImageElement).src = dostacImage("hero-home.webp");
@@ -627,6 +629,8 @@ function ProductShowcaseSection() {
                       <img
                         src={dostacImage(item.imageKey)}
                         alt={item.name}
+                        width={800}
+                        height={600}
                         loading="lazy"
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                       />
@@ -699,6 +703,8 @@ function FactoryQualitySection() {
               <img
                 src={dostacImage("hero-production.webp")}
                 alt="Factory"
+                width={1408}
+                height={768}
                 loading="lazy"
                 className="w-full h-full object-cover"
               />
@@ -1203,7 +1209,7 @@ function ContactRFQSection() {
                           }))
                         }
                       >
-                        <SelectTrigger className="h-10 text-sm">
+                        <SelectTrigger className="h-10 text-sm" aria-label={t("homeNew.rfqInquiryType") as string}>
                           <SelectValue placeholder={t("homeNew.rfqInquiryType") as string} />
                         </SelectTrigger>
                         <SelectContent>

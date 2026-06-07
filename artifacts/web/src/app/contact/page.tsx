@@ -451,7 +451,7 @@ function ContactContent() {
                             })
                           }
                         >
-                          <SelectTrigger id="inquiry-type" className="h-10 text-sm" data-testid="select-inquiry-type">
+                          <SelectTrigger id="inquiry-type" className="h-10 text-sm" data-testid="select-inquiry-type" aria-label={t("contact.inquiryTypePh") as string}>
                             <SelectValue placeholder={t("contact.inquiryTypePh") as string} />
                           </SelectTrigger>
                           <SelectContent>

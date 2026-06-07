@@ -2,11 +2,29 @@ import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import { Suspense } from "react";
 import Script from "next/script";
+import { Cormorant_Garamond, DM_Sans } from "next/font/google";
+
+const dmSans = DM_Sans({
+  subsets: ["latin"],
+  variable: "--font-dm-sans",
+  weight: ["300", "400", "500", "600", "700"],
+  style: ["normal", "italic"],
+  display: "swap",
+});
+
+const cormorantGaramond = Cormorant_Garamond({
+  subsets: ["latin"],
+  variable: "--font-cormorant",
+  weight: ["400", "500", "600", "700"],
+  style: ["normal", "italic"],
+  display: "swap",
+});
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 import { getQueryClient } from "@/lib/get-query-client";
 import {
   getListPublicCategoryTranslationsQueryOptions,
   getListPublicSubCategoryTranslationsQueryOptions,
+  getListPublicBannersQueryOptions,
 } from "@workspace/api-client-react";
 import { Providers } from "./providers";
 import { GoogleAnalytics } from "./google-analytics";
@@ -55,6 +73,14 @@ export const metadata: Metadata = {
       "max-video-preview": -1,
     },
   },
+  icons: {
+    icon: [
+      { url: "/favicon.svg", type: "image/svg+xml" },
+      { url: "/favicon-32.png", sizes: "32x32", type: "image/png" },
+      { url: "/favicon-16.png", sizes: "16x16", type: "image/png" },
+    ],
+    apple: [{ url: "/apple-touch-icon.png" }],
+  },
 };
 
 const jsonLd = {
@@ -88,20 +114,15 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
     Promise.all([
       queryClient.prefetchQuery(getListPublicCategoryTranslationsQueryOptions()),
       queryClient.prefetchQuery(getListPublicSubCategoryTranslationsQueryOptions()),
+      queryClient.prefetchQuery(getListPublicBannersQueryOptions()),
     ]),
     new Promise<void>((resolve) => setTimeout(resolve, 3000)),
   ]);
   const dehydratedState = dehydrate(queryClient);
 
   return (
-    <html lang="en" className="scroll-smooth">
+    <html lang="en" className={`scroll-smooth ${dmSans.variable} ${cormorantGaramond.variable}`}>
       <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=DM+Sans:ital,opsz,wght@0,9..40,300..700;1,9..40,300..500&display=swap"
-          rel="stylesheet"
-        />
         <link rel="manifest" href="/site.webmanifest" />
         <meta name="theme-color" content="#0F172A" />
         <script
@@ -112,9 +133,9 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
       <body>
         <Script
           src="https://www.googletagmanager.com/gtag/js?id=G-2NJPJZLCY2"
-          strategy="afterInteractive"
+          strategy="lazyOnload"
         />
-        <Script id="ga4-init" strategy="afterInteractive">
+        <Script id="ga4-init" strategy="lazyOnload">
           {`
             window.dataLayer = window.dataLayer || [];
             function gtag(){dataLayer.push(arguments);}

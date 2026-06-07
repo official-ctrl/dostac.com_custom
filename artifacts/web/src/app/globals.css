@@ -114,8 +114,8 @@ html {
   --chart-4: red; /*replace with H S L */
   --chart-5: red; /*replace with H S L */
 
-  --app-font-sans: 'DM Sans', system-ui, sans-serif;
-  --app-font-serif: 'Cormorant Garamond', Georgia, serif;
+  --app-font-sans: var(--font-dm-sans, 'DM Sans'), system-ui, sans-serif;
+  --app-font-serif: var(--font-cormorant, 'Cormorant Garamond'), Georgia, serif;
   --app-font-mono: Menlo, monospace;
   --radius: .5rem;
   --shadow-2xs: 0px 2px 0px 0px hsl(202.8169 89.1213% 53.1373% / 0.00);
@@ -268,14 +268,14 @@ html {
 
 /* ── WordPress 콘텐츠 prose 스타일 ── */
 .wp-content {
-  font-family: 'DM Sans', system-ui, sans-serif;
+  font-family: var(--font-dm-sans, 'DM Sans'), system-ui, sans-serif;
   font-size: 1.0625rem;
   line-height: 1.8;
   color: #334155;
 }
 .wp-content p { margin-bottom: 1.5rem; }
 .wp-content h2 {
-  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-family: var(--font-cormorant, 'Cormorant Garamond'), Georgia, serif;
   font-size: 2rem;
   font-weight: 600;
   color: #0F172A;
@@ -284,7 +284,7 @@ html {
   margin-bottom: 1rem;
 }
 .wp-content h3 {
-  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-family: var(--font-cormorant, 'Cormorant Garamond'), Georgia, serif;
   font-size: 1.5rem;
   font-weight: 600;
   color: #0F172A;

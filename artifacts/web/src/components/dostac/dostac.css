@@ -1,7 +1,7 @@
 /* DOSTAC brand tokens */
 
 .dostac-root {
-  font-family: "DM Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  font-family: var(--font-dm-sans, "DM Sans"), system-ui, -apple-system, "Segoe UI", sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   font-feature-settings: "ss01", "ss02";
@@ -11,7 +11,7 @@
 }
 
 .dostac-root .font-display {
-  font-family: "Cormorant Garamond", Georgia, serif;
+  font-family: var(--font-cormorant, "Cormorant Garamond"), Georgia, serif;
   letter-spacing: -0.01em;
   font-feature-settings: "liga", "kern";
 }
