@@ -81,11 +81,15 @@ const jsonLd = {
 };
 
 export default async function RootLayout({ children }: { children: ReactNode }) {
-  // Server-side bootstrap: prefetch navigation data used by Layout component
+  // Server-side bootstrap: prefetch navigation data (categories) used by Layout.
+  // Wrapped in Promise.race with a 3s timeout so a slow API never blocks SSR.
   const queryClient = getQueryClient();
-  await Promise.all([
-    queryClient.prefetchQuery(getListPublicCategoryTranslationsQueryOptions()),
-    queryClient.prefetchQuery(getListPublicSubCategoryTranslationsQueryOptions()),
+  await Promise.race([
+    Promise.all([
+      queryClient.prefetchQuery(getListPublicCategoryTranslationsQueryOptions()),
+      queryClient.prefetchQuery(getListPublicSubCategoryTranslationsQueryOptions()),
+    ]),
+    new Promise<void>((resolve) => setTimeout(resolve, 3000)),
   ]);
   const dehydratedState = dehydrate(queryClient);
 
