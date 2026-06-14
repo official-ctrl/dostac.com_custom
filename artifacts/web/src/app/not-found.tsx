@@ -1,4 +1,4 @@
-"use client";
+export const runtime = "edge";
 
 import { Card, CardContent } from "@/components/ui/card";
 import { AlertCircle } from "lucide-react";
