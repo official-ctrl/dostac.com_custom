@@ -2,7 +2,8 @@
 
 import React, { Suspense, useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { MapPin, Phone, Mail, Clock, Send, ShieldCheck, CheckCircle2, Package } from "lucide-react";
+import { MapPin, Phone, Mail, Clock, Send, ShieldCheck, CheckCircle2, Package, HelpCircle } from "lucide-react";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -16,6 +17,7 @@ import {
 } from "@/components/ui/select";
 import { Layout, dostacImage } from "@/components/dostac/Layout";
 import { useT, useLang } from "@/components/dostac/i18n";
+import Image from "next/image";
 import { usePathname, useSearchParams } from "next/navigation";
 import { useCreateContactInquiry, useGetPublicProduct, getGetPublicProductQueryKey } from "@workspace/api-client-react";
 import { CONTACT_META } from "@/hooks/page-meta-config";
@@ -257,36 +259,221 @@ function ContactContent() {
 
   return (
     <>
-      {/* HERO */}
-      <section className="relative w-full h-[400px] flex items-center">
+      {/* ════════════════ PREMIUM HERO ════════════════ */}
+      <section className="relative w-full overflow-hidden" style={{ backgroundColor: "#0D1117" }}>
         <div className="absolute inset-0 z-0">
-          <img
+          <Image
             src={dostacImage("hero-contact.webp")}
-            alt=""
-            fetchPriority="high"
-            loading="eager"
-            className="w-full h-full object-cover object-center"
+            alt="Contact Dostac — Korean K-Beauty OEM/ODM sourcing concierge in Gwangju, Gyeonggi-do"
+            fill
+            sizes="100vw"
+            priority
+            quality={75}
+            className="object-cover object-center"
+            style={{ transform: "scale(1.04)" }}
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-primary/55 via-primary/45 to-primary/65" />
+          {/* Cinematic dark overlay */}
+          <div className="absolute inset-0 bg-gradient-to-b from-[#0D1117]/86 via-[#0D1117]/72 to-[#0D1117]/90" />
+          <div
+            className="absolute inset-0 pointer-events-none"
+            style={{
+              background:
+                "radial-gradient(ellipse 60% 50% at 70% 50%, rgba(139,94,60,0.20) 0%, transparent 65%)",
+            }}
+          />
         </div>
-        <div className="container relative z-10 mx-auto px-6 text-center text-white">
-          <motion.h1
-            initial={{ opacity: 0, y: 20 }}
+
+        {/* Corner marks */}
+        <div aria-hidden="true" className="absolute top-24 left-6 w-5 h-5 border-l border-t border-[#8B5E3C]/45 z-10 hidden sm:block" />
+        <div aria-hidden="true" className="absolute top-24 right-6 w-5 h-5 border-r border-t border-[#8B5E3C]/45 z-10 hidden sm:block" />
+        <div aria-hidden="true" className="absolute bottom-6 left-6 w-5 h-5 border-l border-b border-[#8B5E3C]/45 z-10 hidden sm:block" />
+        <div aria-hidden="true" className="absolute bottom-6 right-6 w-5 h-5 border-r border-b border-[#8B5E3C]/45 z-10 hidden sm:block" />
+
+        <div className="container relative z-10 mx-auto px-5 sm:px-6 py-20 sm:py-24 md:py-32 min-h-[400px] sm:min-h-[460px] md:min-h-[520px] flex flex-col justify-center text-white max-w-5xl">
+          {/* Eyebrow with live pulse */}
+          <motion.div
+            initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="font-display text-4xl md:text-5xl font-bold leading-tight mb-6"
+            transition={{ duration: 0.5 }}
+            className="flex items-center gap-3 mb-6"
           >
-            {t("contact.heroTitle") as string}
+            <span className="relative flex items-center justify-center">
+              <span className="absolute inline-flex h-2 w-2 rounded-full bg-[#E9A052] opacity-70 animate-ping" />
+              <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-[#E9A052]" />
+            </span>
+            <p className="text-[10.5px] uppercase tracking-[0.32em] text-[#E9A052] font-semibold">
+              {t("contact.heroEyebrow") as string}
+            </p>
+          </motion.div>
+
+          {/* Premium headline */}
+          <motion.h1
+            initial={{ opacity: 0, y: 22 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.65, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
+            className="font-display font-bold leading-[1.04] mb-6 tracking-tight"
+            style={{ fontSize: "clamp(2.4rem, 5vw, 4.25rem)" }}
+          >
+            {t("contact.heroTitleLead") as string}
+            <br />
+            <span className="text-[#E9A052]/90 italic">
+              {t("contact.heroTitleAccent") as string}
+            </span>
           </motion.h1>
+
+          {/* Sub */}
           <motion.p
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.1 }}
-            className="text-lg text-white/80 max-w-3xl mx-auto leading-relaxed"
+            transition={{ duration: 0.65, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
+            className="text-[#F5F0E8]/70 leading-relaxed max-w-2xl mb-10"
+            style={{ fontSize: "clamp(1rem, 1.35vw, 1.125rem)" }}
           >
             {t("contact.heroBody") as string}
           </motion.p>
+
+          {/* Trust strip */}
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
+            className="flex flex-wrap items-center gap-x-6 gap-y-2 pt-6 border-t border-[#F5F0E8]/15 max-w-2xl"
+          >
+            {((t("contact.heroTrust") as unknown as string[]) ?? []).map((trust, i) => (
+              <div
+                key={i}
+                className="flex items-center gap-2 text-[11px] uppercase tracking-[0.2em] text-[#F5F0E8]/55 font-semibold"
+              >
+                <span className="text-[#E9A052]">✓</span>
+                {trust}
+              </div>
+            ))}
+          </motion.div>
         </div>
+      </section>
+
+      {/* ════════════════ MULTI-CHANNEL CONTACT ════════════════ */}
+      <section className="relative bg-[#F5F0E8] py-14 md:py-18 overflow-hidden">
+        <div
+          aria-hidden="true"
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            background:
+              "radial-gradient(ellipse 70% 50% at 50% 30%, rgba(139,94,60,0.07) 0%, transparent 65%)",
+          }}
+        />
+
+        <div className="container mx-auto px-6 max-w-6xl relative z-10">
+          {/* Header */}
+          <motion.div
+            initial="hidden"
+            whileInView="show"
+            viewport={{ once: true, amount: 0.3 }}
+            variants={stagger}
+            className="max-w-2xl mx-auto text-center mb-10"
+          >
+            <motion.p
+              variants={fadeUp}
+              className="text-[#8B5E3C] text-[10.5px] font-bold tracking-[0.3em] uppercase mb-3 inline-flex items-center gap-2.5"
+            >
+              <span className="w-5 h-px bg-[#8B5E3C]/60" />
+              {t("contact.channelsEyebrow") as string}
+              <span className="w-5 h-px bg-[#8B5E3C]/60" />
+            </motion.p>
+            <motion.h2
+              variants={fadeUp}
+              className="font-display text-2xl md:text-[32px] font-bold text-[#2D2D2D] leading-[1.08] tracking-tight mb-3"
+            >
+              {t("contact.channelsHeading") as string}
+            </motion.h2>
+            <motion.p
+              variants={fadeUp}
+              className="text-[#2D2D2D]/55 text-[13.5px] leading-relaxed"
+            >
+              {t("contact.channelsSub") as string}
+            </motion.p>
+          </motion.div>
+
+          {/* 4-channel grid — option A: each card is a clickable action.
+              Sidebar (#contact-form-info) holds the authoritative details. */}
+          {(() => {
+            const channels = (t("contact.channels") as unknown as Array<{ type: string; value: string; note: string }>) ?? [];
+            const ICONS = [Mail, Phone, MapPin, Send];
+            /* href targets — mailto/tel for direct actions, in-page anchors for
+               head-office details and the RFQ form. Maps URL points to the
+               actual headquarters coordinates (37.4116, 127.2954). */
+            const HREFS = [
+              "mailto:official@dostac.com",
+              "tel:+82-70-4334-7333",
+              "https://www.google.com/maps/search/?api=1&query=37.4116,127.2954",
+              "#contact-form",
+            ];
+            const TARGETS: Array<"_self" | "_blank"> = ["_self", "_self", "_blank", "_self"];
+            const ARIA_LABELS = ["Send email to official@dostac.com", "Call 070-4334-7333", "Open head office on Google Maps", "Jump to RFQ form"];
+
+            return (
+              <motion.div
+                initial="hidden"
+                whileInView="show"
+                viewport={{ once: true, amount: 0.15 }}
+                variants={stagger}
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 220px), 1fr))",
+                  gap: "16px",
+                }}
+              >
+                {channels.map((c, i) => {
+                  const Icon = ICONS[i] ?? Mail;
+                  const href = HREFS[i] ?? "#";
+                  const target = TARGETS[i] ?? "_self";
+                  return (
+                    <motion.a
+                      key={i}
+                      href={href}
+                      target={target}
+                      rel={target === "_blank" ? "noopener noreferrer" : undefined}
+                      aria-label={ARIA_LABELS[i]}
+                      onClick={() => trackCtaClick(`channel_${c.type.toLowerCase().replace(/\s+/g, "_")}`, "contact_hero")}
+                      variants={fadeUp}
+                      whileHover={{ y: -3 }}
+                      transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+                      className="relative rounded-2xl border bg-white p-5 contact-channel-shadow block cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#8B5E3C]/40 focus-visible:ring-offset-2"
+                      style={{ borderColor: "rgba(139,94,60,0.12)", textDecoration: "none" }}
+                    >
+                      <div className="w-10 h-10 rounded-xl bg-[#8B5E3C]/10 border border-[#8B5E3C]/15 flex items-center justify-center mb-3">
+                        <Icon className="w-4 h-4 text-[#8B5E3C]" strokeWidth={1.7} />
+                      </div>
+                      <p className="text-[9.5px] uppercase tracking-[0.22em] text-[#8B5E3C] font-bold mb-1.5">
+                        {c.type}
+                      </p>
+                      <p className="font-display text-[15px] font-bold text-[#2D2D2D] leading-tight mb-1.5 break-words">
+                        {c.value}
+                      </p>
+                      <p className="text-[10.5px] text-[#2D2D2D]/45 leading-snug">
+                        {c.note}
+                      </p>
+                    </motion.a>
+                  );
+                })}
+              </motion.div>
+            );
+          })()}
+        </div>
+
+        <style jsx>{`
+          .contact-channel-shadow {
+            box-shadow:
+              0 1px 2px rgba(139, 94, 60, 0.04),
+              0 8px 24px -8px rgba(139, 94, 60, 0.10);
+            transition: box-shadow 0.3s ease-out;
+          }
+          .contact-channel-shadow:hover {
+            box-shadow:
+              0 4px 12px rgba(139, 94, 60, 0.06),
+              0 16px 40px -10px rgba(139, 94, 60, 0.18);
+          }
+        `}</style>
       </section>
 
       {/* MAIN FORM SECTION */}
@@ -634,10 +821,12 @@ function ContactContent() {
 
               {/* MAP PLACEHOLDER */}
               <div className="bg-white rounded-2xl overflow-hidden border border-slate-200 aspect-video relative shadow-sm">
-                <img
+                <Image
                   src={dostacImage("hero-about.webp")}
-                  className="w-full h-full object-cover opacity-50"
-                  alt=""
+                  fill
+                  sizes="(max-width: 1024px) 100vw, 360px"
+                  className="object-cover opacity-50"
+                  alt="Dostac headquarters location — Gwangju, Gyeonggi-do, South Korea"
                   loading="lazy"
                 />
                 <div className="absolute inset-0 flex items-center justify-center flex-col text-[#0F172A]">
@@ -665,6 +854,235 @@ function ContactContent() {
             </motion.div>
           </motion.div>
         </div>
+      </section>
+
+      {/* ════════════════ AFTER-SUBMISSION PROMISE TIMELINE ════════════════ */}
+      <section className="relative bg-white py-16 md:py-20 border-t border-[#8B5E3C]/8 overflow-hidden">
+        <div
+          aria-hidden="true"
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            background:
+              "radial-gradient(ellipse 60% 50% at 50% 50%, rgba(139,94,60,0.05) 0%, transparent 70%)",
+          }}
+        />
+
+        <div className="container mx-auto px-6 max-w-5xl relative z-10">
+          {/* Header */}
+          <motion.div
+            initial="hidden"
+            whileInView="show"
+            viewport={{ once: true, amount: 0.3 }}
+            variants={stagger}
+            className="max-w-2xl mx-auto text-center mb-12"
+          >
+            <motion.p
+              variants={fadeUp}
+              className="text-[#8B5E3C] text-[10.5px] font-bold tracking-[0.3em] uppercase mb-3 inline-flex items-center gap-2.5"
+            >
+              <span className="w-5 h-px bg-[#8B5E3C]/60" />
+              {t("contact.promiseEyebrow") as string}
+              <span className="w-5 h-px bg-[#8B5E3C]/60" />
+            </motion.p>
+            <motion.h2
+              variants={fadeUp}
+              className="font-display text-2xl md:text-[32px] font-bold text-[#2D2D2D] leading-[1.08] tracking-tight"
+            >
+              {t("contact.promiseHeading") as string}
+            </motion.h2>
+          </motion.div>
+
+          {/* Timeline */}
+          {(() => {
+            const steps = (t("contact.promiseSteps") as unknown as Array<{ time: string; label: string; desc: string }>) ?? [];
+            return (
+              <motion.div
+                initial="hidden"
+                whileInView="show"
+                viewport={{ once: true, amount: 0.15 }}
+                variants={stagger}
+                className="relative"
+              >
+                {/* Connecting line (desktop only, behind cards) */}
+                <div
+                  aria-hidden="true"
+                  className="hidden md:block absolute top-[42px] left-[8%] right-[8%] h-px bg-gradient-to-r from-transparent via-[#8B5E3C]/30 to-transparent"
+                />
+
+                <div
+                  style={{
+                    display: "grid",
+                    gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 240px), 1fr))",
+                    gap: "20px",
+                  }}
+                >
+                  {steps.map((s, i) => (
+                    <motion.div
+                      key={i}
+                      variants={fadeUp}
+                      className="relative flex flex-col items-center text-center px-3"
+                    >
+                      {/* Number badge */}
+                      <div className="relative z-10 mb-4">
+                        <div className="relative w-[72px] h-[72px] sm:w-[84px] sm:h-[84px] rounded-full bg-white border-2 border-[#8B5E3C]/20 flex items-center justify-center promise-pulse">
+                          <div className="absolute inset-2 rounded-full bg-gradient-to-br from-[#8B5E3C] to-[#A67043] flex items-center justify-center">
+                            <span className="font-display text-[18px] font-bold text-white tracking-tight">
+                              {s.time}
+                            </span>
+                          </div>
+                        </div>
+                        {/* Step number tiny indicator */}
+                        <div className="absolute -top-1 -right-1 w-6 h-6 rounded-full bg-white border border-[#8B5E3C]/20 flex items-center justify-center text-[9px] font-bold text-[#8B5E3C] shadow-sm">
+                          0{i + 1}
+                        </div>
+                      </div>
+
+                      {/* Label */}
+                      <p className="text-[9.5px] uppercase tracking-[0.22em] text-[#8B5E3C] font-bold mb-1.5">
+                        {s.label}
+                      </p>
+
+                      {/* Desc */}
+                      <p className="text-[12.5px] text-[#2D2D2D]/65 leading-relaxed max-w-[220px]">
+                        {s.desc}
+                      </p>
+                    </motion.div>
+                  ))}
+                </div>
+              </motion.div>
+            );
+          })()}
+
+          {/* Disclaimer */}
+          <motion.p
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.4 }}
+            className="text-[10.5px] text-[#2D2D2D]/40 leading-relaxed mt-10 text-center max-w-2xl mx-auto"
+          >
+            {t("contact.promiseDisclaimer") as string}
+          </motion.p>
+        </div>
+
+        <style jsx>{`
+          @keyframes promise-pulse-ring {
+            0%, 100% {
+              box-shadow: 0 0 0 0 rgba(139, 94, 60, 0.15), 0 4px 12px -4px rgba(139, 94, 60, 0.20);
+            }
+            50% {
+              box-shadow: 0 0 0 8px rgba(139, 94, 60, 0), 0 4px 16px -4px rgba(139, 94, 60, 0.30);
+            }
+          }
+          .promise-pulse {
+            animation: promise-pulse-ring 2.8s ease-in-out infinite;
+          }
+        `}</style>
+      </section>
+
+      {/* ════════════════ FAQ — FAQPage rich-results + UX self-serve ════════════════ */}
+      <section className="relative bg-[#F5F0E8] py-16 md:py-20 overflow-hidden">
+        <div
+          aria-hidden="true"
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            background:
+              "radial-gradient(ellipse 60% 50% at 50% 30%, rgba(139,94,60,0.06) 0%, transparent 70%)",
+          }}
+        />
+
+        <div className="container mx-auto px-5 sm:px-6 max-w-3xl relative z-10">
+          {/* Header */}
+          <motion.div
+            initial="hidden"
+            whileInView="show"
+            viewport={{ once: true, amount: 0.3 }}
+            variants={stagger}
+            className="text-center mb-10"
+          >
+            <motion.p
+              variants={fadeUp}
+              className="text-[#8B5E3C] text-[10.5px] font-bold tracking-[0.3em] uppercase mb-3 inline-flex items-center gap-2.5"
+            >
+              <span className="w-5 h-px bg-[#8B5E3C]/60" />
+              <HelpCircle className="h-3 w-3" strokeWidth={2} />
+              {t("contact.faqEyebrow") as string}
+              <span className="w-5 h-px bg-[#8B5E3C]/60" />
+            </motion.p>
+            <motion.h2
+              variants={fadeUp}
+              className="font-display text-2xl md:text-[32px] font-bold text-[#2D2D2D] leading-[1.08] tracking-tight mb-3"
+            >
+              {t("contact.faqHeading") as string}
+            </motion.h2>
+            <motion.p
+              variants={fadeUp}
+              className="text-[#2D2D2D]/55 text-[13.5px] leading-relaxed"
+            >
+              {t("contact.faqSub") as string}
+            </motion.p>
+          </motion.div>
+
+          {/* Accordion (single, only one open at a time → cleaner mobile UX) */}
+          {(() => {
+            const faqs = (t("contact.faqs") as unknown as Array<{ q: string; a: string }>) ?? [];
+            if (!Array.isArray(faqs) || faqs.length === 0) return null;
+            return (
+              <motion.div
+                initial={{ opacity: 0, y: 12 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0.1 }}
+                transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+              >
+                <Accordion
+                  type="single"
+                  collapsible
+                  className="rounded-2xl border border-[#8B5E3C]/15 bg-white divide-y divide-[#8B5E3C]/10 contact-faq-shadow"
+                >
+                  {faqs.map((item, i) => (
+                    <AccordionItem key={i} value={`faq-${i}`} className="border-none">
+                      <AccordionTrigger className="px-5 py-4 text-left hover:no-underline group">
+                        <span className="flex items-baseline gap-3 text-[14px] md:text-[14.5px] font-display font-medium text-[#2D2D2D] leading-snug pr-3">
+                          <span className="text-[10px] font-mono text-[#8B5E3C] tracking-tight shrink-0 mt-0.5">
+                            {String(i + 1).padStart(2, "0")}
+                          </span>
+                          <span className="group-hover:text-[#8B5E3C] transition-colors">
+                            {item.q}
+                          </span>
+                        </span>
+                      </AccordionTrigger>
+                      <AccordionContent className="px-5 pb-4 pl-[42px] text-[12.5px] md:text-[13px] text-[#2D2D2D]/65 leading-relaxed">
+                        {item.a}
+                      </AccordionContent>
+                    </AccordionItem>
+                  ))}
+                </Accordion>
+              </motion.div>
+            );
+          })()}
+
+          {/* Footer prompt */}
+          <motion.p
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.4 }}
+            className="text-center mt-8 text-[12px] text-[#2D2D2D]/50"
+          >
+            <span>Still have questions? </span>
+            <a href="#contact-form" className="text-[#8B5E3C] hover:underline font-semibold">
+              Send us a message →
+            </a>
+          </motion.p>
+        </div>
+
+        <style jsx>{`
+          .contact-faq-shadow {
+            box-shadow:
+              0 1px 2px rgba(139, 94, 60, 0.04),
+              0 8px 24px -8px rgba(139, 94, 60, 0.10);
+          }
+        `}</style>
       </section>
     </>
   );

@@ -1,6 +1,7 @@
 export const runtime = "edge";
 
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
+import { HOME_META, pickLangFromHeader } from "@/hooks/page-meta-config";
 import type { ReactNode } from "react";
 import { Suspense } from "react";
 import Script from "next/script";
@@ -31,14 +32,38 @@ import { Providers } from "./providers";
 import { GoogleAnalytics } from "./google-analytics";
 import "./globals.css";
 
-export const metadata: Metadata = {
-  metadataBase: new URL("https://dostac.com"),
-  title: {
-    default: "Korean Cosmetics OEM & ODM Manufacturer | Dostac",
-    template: "%s | Dostac",
+/* Localized metadata based on Accept-Language header — Korean users see Korean
+   title in search results, Japanese users see Japanese, etc. Falls back to EN. */
+export async function generateMetadata(): Promise<Metadata> {
+  const lang = await pickLangFromHeader();
+  const localized = HOME_META[lang];
+  return {
+    metadataBase: new URL("https://dostac.com"),
+    title: {
+      default: localized.title,
+      template: `%s | Dostac`,
+    },
+    description: localized.description,
+  keywords: [
+    "K-Beauty OEM", "Korean cosmetics manufacturer", "ODM cosmetics",
+    "private label skincare", "Korean OEM beauty", "K-Beauty wholesale",
+    "Korean cosmetics export", "Korean beauty OEM",
+    "OEM 화장품", "한국 화장품 제조", "K-뷰티 OEM",
+  ],
+  authors: [{ name: "Dostac Co., Ltd.", url: "https://dostac.com" }],
+  creator: "Dostac Co., Ltd.",
+  publisher: "Dostac Co., Ltd.",
+  alternates: {
+    canonical: "/",
+    languages: {
+      "x-default": "https://dostac.com/",
+      "en":    "https://dostac.com/",
+      "ko":    "https://dostac.com/",
+      "ja":    "https://dostac.com/",
+      "zh":    "https://dostac.com/",
+      "vi":    "https://dostac.com/",
+    },
   },
-  description:
-    "Dostac is a Korean cosmetics OEM/ODM manufacturer specializing in private label skincare, K-beauty formulation, and global distribution.",
   openGraph: {
     title: "Launch Your K-Beauty Brand — Korean OEM/ODM by Dostac",
     description:
@@ -82,29 +107,126 @@ export const metadata: Metadata = {
     ],
     apple: [{ url: "/apple-touch-icon.png" }],
   },
-};
+  };
+}
 
+/* JSON-LD graph: combines Organization + LocalBusiness for richer Knowledge Panel.
+   Uses @graph so both schemas register under one script tag. */
 const jsonLd = {
   "@context": "https://schema.org",
-  "@type": "Organization",
-  name: "Dostac",
-  url: "https://dostac.com",
-  logo: "https://dostac.com/favicon.svg",
-  description:
-    "Korean cosmetics OEM/ODM manufacturer specializing in private label skincare and K-beauty formulation for global brands.",
-  contactPoint: {
-    "@type": "ContactPoint",
-    contactType: "sales",
-    availableLanguage: ["English", "Korean", "Japanese", "Chinese", "Vietnamese"],
-    url: "https://dostac.com/contact",
-  },
-  areaServed: "Worldwide",
-  knowsAbout: [
-    "OEM Cosmetics",
-    "ODM Beauty Products",
-    "Private Label Skincare",
-    "K-Beauty Manufacturing",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": "https://dostac.com/#organization",
+      name: "Dostac Co., Ltd.",
+      alternateName: ["dostac", "도스탁", "ドスタック"],
+      url: "https://dostac.com",
+      logo: {
+        "@type": "ImageObject",
+        url: "https://dostac.com/favicon.svg",
+        width: 512,
+        height: 512,
+      },
+      image: "https://dostac.com/opengraph.png",
+      description:
+        "Korean cosmetics OEM/ODM manufacturer specializing in private label skincare and K-beauty formulation for global brands. Trusted by buyers across 47 countries.",
+      foundingDate: "2017",
+      founders: [{ "@type": "Person", name: "Dostac Founder" }],
+      sameAs: [
+        "https://www.linkedin.com/company/dostac",
+        "https://www.instagram.com/dostac.official",
+      ],
+      contactPoint: [
+        {
+          "@type": "ContactPoint",
+          contactType: "sales",
+          email: "official@dostac.com",
+          telephone: "+82-70-4334-7333",
+          availableLanguage: ["English", "Korean", "Japanese", "Chinese", "Vietnamese"],
+          areaServed: ["KR", "US", "JP", "CN", "VN", "AE", "SA", "EG", "FR", "DE", "GB"],
+          url: "https://dostac.com/contact",
+        },
+      ],
+      address: {
+        "@type": "PostalAddress",
+        streetAddress: "46-32, Neungpyeong-ro",
+        addressLocality: "Gwangju-si",
+        addressRegion: "Gyeonggi-do",
+        postalCode: "12772",
+        addressCountry: "KR",
+      },
+      areaServed: "Worldwide",
+      knowsAbout: [
+        "OEM Cosmetics", "ODM Beauty Products", "Private Label Skincare",
+        "K-Beauty Manufacturing", "Korean Cosmetics", "Cosmetic Formulation",
+        "Cosmetic Compliance KGMP", "Cosmetic Compliance ISO 22716",
+      ],
+      knowsLanguage: ["en", "ko", "ja", "zh", "vi"],
+    },
+    {
+      "@type": "LocalBusiness",
+      "@id": "https://dostac.com/#localbusiness",
+      name: "Dostac Co., Ltd.",
+      url: "https://dostac.com",
+      image: "https://dostac.com/opengraph.png",
+      telephone: "+82-70-4334-7333",
+      faxNumber: "+82-504-488-4345",
+      email: "official@dostac.com",
+      priceRange: "B2B Inquiry",
+      address: {
+        "@type": "PostalAddress",
+        streetAddress: "46-32, Neungpyeong-ro",
+        addressLocality: "Gwangju-si",
+        addressRegion: "Gyeonggi-do",
+        postalCode: "12772",
+        addressCountry: "KR",
+      },
+      geo: {
+        "@type": "GeoCoordinates",
+        latitude: 37.4116,
+        longitude: 127.2954,
+      },
+      openingHoursSpecification: [
+        {
+          "@type": "OpeningHoursSpecification",
+          dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+          opens: "09:00",
+          closes: "18:00",
+        },
+      ],
+      sameAs: [
+        "https://www.linkedin.com/company/dostac",
+        "https://www.instagram.com/dostac.official",
+      ],
+    },
+    {
+      "@type": "WebSite",
+      "@id": "https://dostac.com/#website",
+      url: "https://dostac.com",
+      name: "Dostac",
+      publisher: { "@id": "https://dostac.com/#organization" },
+      inLanguage: ["en", "ko", "ja", "zh", "vi"],
+      potentialAction: {
+        "@type": "SearchAction",
+        target: "https://dostac.com/products?search={search_term_string}",
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        "query-input": "required name=search_term_string",
+      },
+    },
   ],
+};
+
+/* Mobile-first viewport configuration */
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 5,
+  userScalable: true,
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#F5F0E8" },
+    { media: "(prefers-color-scheme: dark)",  color: "#0D1117" },
+  ],
+  viewportFit: "cover",
 };
 
 export default async function RootLayout({ children }: { children: ReactNode }) {

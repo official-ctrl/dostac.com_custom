@@ -2,6 +2,7 @@
 
 import React, { Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { useQuery, useQueryClient, keepPreviousData } from "@tanstack/react-query";
@@ -19,6 +20,34 @@ import { SectionNav } from "@/components/dostac/SectionNav";
 import { useT, useLang, LANGUAGES, useCategoryLabel, useSubCategoryLabel, normalizeCategory, normalizeSubCategory } from "@/components/dostac/i18n";
 import { getListPublicProductsQueryOptions } from "@workspace/api-client-react";
 import { PRODUCTS_META } from "@/hooks/page-meta-config";
+
+/* Image with fallback — for featured bento where primary may not exist yet */
+function ImageWithFallback({
+  primary,
+  fallback,
+  alt,
+  className,
+  sizes,
+}: {
+  primary: string;
+  fallback: string;
+  alt: string;
+  className?: string;
+  sizes?: string;
+}) {
+  const [src, setSrc] = useState(primary);
+  return (
+    <Image
+      src={src}
+      alt={alt}
+      fill
+      sizes={sizes ?? "(max-width: 768px) 100vw, 50vw"}
+      loading="lazy"
+      className={className}
+      onError={() => setSrc(fallback)}
+    />
+  );
+}
 
 const fadeUp = {
   hidden: { opacity: 0, y: 32 },
@@ -104,6 +133,7 @@ function ProductsContent() {
 
   const [selectedCategory, setSelectedCategory] = useState<string | null>(categoryFromUrl);
   const [selectedSubCategory, setSelectedSubCategory] = useState<string | null>(subCategoryFromUrl);
+  const [selectedCerts, setSelectedCerts] = useState<Set<string>>(new Set());
   const [activeSlug, setActiveSlug] = useState<string | null>(null);
   const [copiedCategory, setCopiedCategory] = useState(false);
   const copiedCategoryTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -290,6 +320,28 @@ function ProductsContent() {
     [categoryFilteredProducts, selectedSubCategory]
   );
 
+  /* Cert filter — applied last so cert counts reflect sub-category state */
+  const allCerts = useMemo(
+    () => Array.from(new Set(products.flatMap((p) => p.certs ?? []))).sort(),
+    [products]
+  );
+
+  const certFilteredProducts = useMemo(
+    () => selectedCerts.size === 0
+      ? filteredProducts
+      : filteredProducts.filter((p) => [...selectedCerts].every((c) => (p.certs ?? []).includes(c))),
+    [filteredProducts, selectedCerts]
+  );
+
+  const toggleCert = (cert: string) => {
+    setSelectedCerts((prev) => {
+      const next = new Set(prev);
+      if (next.has(cert)) next.delete(cert);
+      else next.add(cert);
+      return next;
+    });
+  };
+
   // ── Language-switch cross-fade ─────────────────────────────────────────────
   // isFadedOut drives opacity 1→0→1 on the content+nav wrappers.
   // displayedFiltered is a frozen snapshot of the rendered product list;
@@ -301,19 +353,19 @@ function ProductsContent() {
   const isPlaceholderDataRef = useRef(productsQuery.isPlaceholderData);
   isPlaceholderDataRef.current = productsQuery.isPlaceholderData;
 
-  const [displayedFiltered, setDisplayedFiltered] = useState(filteredProducts);
-  const latestFilteredRef = useRef(filteredProducts);
+  const [displayedFiltered, setDisplayedFiltered] = useState(certFilteredProducts);
+  const latestFilteredRef = useRef(certFilteredProducts);
 
   // Keep latestFilteredRef current whenever fresh (non-placeholder) data is ready.
   // When not in a lang transition, push it to displayedFiltered immediately so
-  // category/sub-category filter changes and same-language refreshes stay live.
+  // category/sub-category/cert filter changes and same-language refreshes stay live.
   useEffect(() => {
     if (productsQuery.isPlaceholderData) return;
-    latestFilteredRef.current = filteredProducts;
+    latestFilteredRef.current = certFilteredProducts;
     if (!isFadedOutRef.current) {
-      setDisplayedFiltered(filteredProducts);
+      setDisplayedFiltered(certFilteredProducts);
     }
-  }, [filteredProducts, productsQuery.isPlaceholderData]);
+  }, [certFilteredProducts, productsQuery.isPlaceholderData]);
 
   const prevLangRef = useRef(lang);
   useEffect(() => {
@@ -412,44 +464,399 @@ function ProductsContent() {
 
   return (
     <>
-      {/* HERO */}
-      <section className="relative w-full min-h-[480px] flex items-center">
+      {/* ════════════════ PREMIUM HERO ════════════════ */}
+      <section className="relative w-full overflow-hidden" style={{ backgroundColor: "#0D1117" }}>
+        {/* Background image with depth overlay */}
         <div className="absolute inset-0 z-0">
-          <img
+          <Image
             src={dostacImage("hero-products.webp")}
-            alt=""
-            fetchPriority="high"
-            loading="eager"
-            className="w-full h-full object-cover object-center"
+            alt="K-Beauty product catalogue — Dostac OEM/ODM skincare, sun care, and sheet masks"
+            fill
+            sizes="100vw"
+            priority
+            quality={75}
+            className="object-cover object-center"
+            style={{ transform: "scale(1.04)" }}
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-primary/65 via-primary/55 to-primary/72" />
+          {/* Multi-layer cinematic overlay */}
+          <div className="absolute inset-0 bg-gradient-to-b from-[#0D1117]/86 via-[#0D1117]/72 to-[#0D1117]/90" />
+          <div
+            className="absolute inset-0 pointer-events-none"
+            style={{
+              background:
+                "radial-gradient(ellipse 60% 50% at 30% 50%, rgba(139,94,60,0.20) 0%, transparent 65%)",
+            }}
+          />
         </div>
-        <div className="container relative z-10 mx-auto px-6 py-28 text-center text-white">
-          <motion.p
-            initial={{ opacity: 0, y: 16 }}
+
+        {/* Corner marks */}
+        <div aria-hidden="true" className="absolute top-24 left-6 w-5 h-5 border-l border-t border-[#8B5E3C]/45 z-10 hidden sm:block" />
+        <div aria-hidden="true" className="absolute top-24 right-6 w-5 h-5 border-r border-t border-[#8B5E3C]/45 z-10 hidden sm:block" />
+        <div aria-hidden="true" className="absolute bottom-6 left-6 w-5 h-5 border-l border-b border-[#8B5E3C]/45 z-10 hidden sm:block" />
+        <div aria-hidden="true" className="absolute bottom-6 right-6 w-5 h-5 border-r border-b border-[#8B5E3C]/45 z-10 hidden sm:block" />
+
+        <div className="container relative z-10 mx-auto px-5 sm:px-6 py-20 sm:py-24 md:py-32 min-h-[420px] sm:min-h-[480px] md:min-h-[540px] flex flex-col justify-center text-white max-w-5xl">
+          {/* Eyebrow with live pulse */}
+          <motion.div
+            initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
-            className="text-xs uppercase tracking-[0.4em] text-white/60 font-semibold mb-5"
+            className="flex items-center gap-3 mb-6"
           >
-            {t("products.heroLabel") as string}
-          </motion.p>
+            <span className="relative flex items-center justify-center">
+              <span className="absolute inline-flex h-2 w-2 rounded-full bg-[#E9A052] opacity-70 animate-ping" />
+              <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-[#E9A052]" />
+            </span>
+            <p className="text-[10.5px] uppercase tracking-[0.32em] text-[#E9A052] font-semibold">
+              {t("products.heroEyebrow") as string}
+            </p>
+          </motion.div>
+
+          {/* Premium headline */}
           <motion.h1
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 22 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.1 }}
-            className="font-display text-4xl md:text-5xl lg:text-6xl font-bold leading-tight mb-6 max-w-4xl mx-auto"
+            transition={{ duration: 0.65, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
+            className="font-display font-bold leading-[1.04] mb-6 tracking-tight"
+            style={{ fontSize: "clamp(2.5rem, 5.5vw, 4.5rem)" }}
           >
-            {t("products.heroTitle") as string}
+            {t("products.heroTitleLead") as string}
+            <br />
+            <span className="text-[#E9A052]/90 italic">
+              {t("products.heroTitleAccent") as string}
+            </span>
           </motion.h1>
+
+          {/* Sub */}
           <motion.p
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            className="text-lg md:text-xl text-white/80 max-w-3xl mx-auto leading-relaxed"
+            transition={{ duration: 0.65, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
+            className="text-[#F5F0E8]/70 leading-relaxed max-w-2xl mb-10"
+            style={{ fontSize: "clamp(1rem, 1.4vw, 1.15rem)" }}
           >
             {t("products.heroSub") as string}
           </motion.p>
+
+          {/* Trust strip */}
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
+            className="flex flex-wrap items-center gap-x-6 gap-y-2 pt-6 border-t border-[#F5F0E8]/15 max-w-2xl"
+          >
+            {((t("products.heroTrust") as unknown as string[]) ?? []).map((trust, i) => (
+              <div
+                key={i}
+                className="flex items-center gap-2 text-[11px] uppercase tracking-[0.2em] text-[#F5F0E8]/55 font-semibold"
+              >
+                <span className="text-[#E9A052]">✓</span>
+                {trust}
+              </div>
+            ))}
+          </motion.div>
         </div>
+      </section>
+
+      {/* ════════════════ FEATURED K-BEAUTY SHOWCASE ════════════════ */}
+      <section className="relative bg-[#F5F0E8] py-16 md:py-20 overflow-hidden">
+        {/* Soft terra wash */}
+        <div
+          aria-hidden="true"
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            background:
+              "radial-gradient(ellipse 70% 50% at 50% 30%, rgba(139,94,60,0.07) 0%, transparent 65%)",
+          }}
+        />
+
+        <div className="container mx-auto px-6 max-w-6xl relative z-10">
+          {/* Header */}
+          <motion.div
+            initial="hidden"
+            whileInView="show"
+            viewport={{ once: true, amount: 0.3 }}
+            variants={stagger}
+            className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-10"
+          >
+            <div>
+              <motion.p
+                variants={fadeUp}
+                className="text-[#8B5E3C] text-[10.5px] font-bold tracking-[0.3em] uppercase mb-3 flex items-center gap-2"
+              >
+                <span className="w-5 h-px bg-[#8B5E3C]/60" />
+                {t("products.featuredEyebrow") as string}
+              </motion.p>
+              <motion.h2
+                variants={fadeUp}
+                className="font-display text-2xl md:text-[32px] font-bold text-[#2D2D2D] leading-[1.1] tracking-tight max-w-2xl"
+              >
+                {t("products.featuredHeading") as string}
+              </motion.h2>
+            </div>
+            <motion.p
+              variants={fadeUp}
+              className="text-[#2D2D2D]/55 text-[13.5px] leading-relaxed max-w-sm md:text-right"
+            >
+              {t("products.featuredSub") as string}
+            </motion.p>
+          </motion.div>
+
+          {/* Bento grid — Row 1: 3:2 split (big + portrait) */}
+          {(() => {
+            const fp = products.slice(0, 5);
+            const getImg = (p: typeof fp[number] | undefined, idx: number) => {
+              if (p?.imageUrl) return p.imageUrl;
+              return dostacImage(`product-${String(((( p?.id ?? idx + 1) - 1) % 10) + 1).padStart(2, "0")}.webp`);
+            };
+            const getCat = (p: typeof fp[number] | undefined) =>
+              [catLabel(p?.category ?? ""), subLabel(p?.subCategory ?? "")].filter(Boolean).join(" · ");
+
+            if (productsQuery.isLoading) {
+              return (
+                <div className="animate-pulse">
+                  <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-4">
+                    <div className="md:col-span-3 rounded-2xl bg-slate-100 h-[360px]" />
+                    <div className="md:col-span-2 rounded-2xl bg-slate-100 h-[360px]" />
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    {[0,1,2].map(i => <div key={i} className="rounded-2xl bg-slate-100 h-[280px]" />)}
+                  </div>
+                </div>
+              );
+            }
+
+            return (
+              <motion.div
+                initial="hidden"
+                whileInView="show"
+                viewport={{ once: true, amount: 0.1 }}
+                variants={stagger}
+              >
+                {/* Row 1 */}
+                <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-4">
+                  <motion.div
+                    variants={fadeUp}
+                    whileHover={{ y: -4 }}
+                    transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+                    className="md:col-span-3 group relative overflow-hidden rounded-2xl bg-white featured-card-shadow"
+                  >
+                    <div className="relative h-[220px] sm:h-[240px] md:h-[300px] overflow-hidden bg-[#F5F0E8]">
+                      <Image
+                        src={getImg(fp[0], 0)}
+                        alt={fp[0]?.name ?? ""}
+                        fill
+                        sizes="(max-width: 768px) 100vw, 60vw"
+                        className="object-contain p-6 transition-transform duration-500 group-hover:scale-105"
+                      />
+                      <div className="absolute top-3 left-3 inline-flex items-center gap-1 rounded-full bg-white/90 backdrop-blur px-2.5 py-0.5 text-[9px] font-bold uppercase tracking-[0.16em] text-[#8B5E3C]">
+                        Featured
+                      </div>
+                    </div>
+                    <div className="p-5">
+                      <p className="text-[9.5px] uppercase tracking-[0.22em] text-[#8B5E3C] font-bold mb-1.5">
+                        {getCat(fp[0])}
+                      </p>
+                      <h3 className="font-display text-[18px] font-bold text-[#2D2D2D] leading-tight mb-1.5">
+                        {fp[0]?.name ?? ""}
+                      </h3>
+                      <p className="text-[11.5px] text-[#2D2D2D]/55 leading-relaxed">
+                        {fp[0]?.headline ?? ""}
+                      </p>
+                    </div>
+                  </motion.div>
+
+                  <motion.div
+                    variants={fadeUp}
+                    whileHover={{ y: -4 }}
+                    transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+                    className="md:col-span-2 group relative overflow-hidden rounded-2xl bg-white featured-card-shadow"
+                  >
+                    <div className="relative h-[220px] sm:h-[240px] md:h-[300px] overflow-hidden bg-[#F5F0E8]">
+                      <Image
+                        src={getImg(fp[1], 1)}
+                        alt={fp[1]?.name ?? ""}
+                        fill
+                        sizes="(max-width: 768px) 100vw, 40vw"
+                        className="object-contain p-6 transition-transform duration-500 group-hover:scale-105"
+                      />
+                    </div>
+                    <div className="p-5">
+                      <p className="text-[9.5px] uppercase tracking-[0.22em] text-[#8B5E3C] font-bold mb-1.5">
+                        {getCat(fp[1])}
+                      </p>
+                      <h3 className="font-display text-[16px] font-bold text-[#2D2D2D] leading-tight mb-1.5">
+                        {fp[1]?.name ?? ""}
+                      </h3>
+                      <p className="text-[11px] text-[#2D2D2D]/55 leading-relaxed">
+                        {fp[1]?.headline ?? ""}
+                      </p>
+                    </div>
+                  </motion.div>
+                </div>
+
+                {/* Row 2 — 3 equal cards */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  {[2, 3, 4].map((idx) => (
+                    <motion.div
+                      key={idx}
+                      variants={fadeUp}
+                      whileHover={{ y: -4 }}
+                      transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+                      className="group relative overflow-hidden rounded-2xl bg-white featured-card-shadow"
+                    >
+                      <div className="relative h-[180px] sm:h-[200px] md:h-[220px] overflow-hidden bg-[#F5F0E8]">
+                        <Image
+                          src={getImg(fp[idx], idx)}
+                          alt={fp[idx]?.name ?? ""}
+                          fill
+                          sizes="(max-width: 768px) 100vw, 33vw"
+                          className="object-contain p-5 transition-transform duration-500 group-hover:scale-105"
+                        />
+                      </div>
+                      <div className="p-4">
+                        <p className="text-[9px] uppercase tracking-[0.2em] text-[#8B5E3C] font-bold mb-1">
+                          {getCat(fp[idx])}
+                        </p>
+                        <h3 className="font-display text-[15px] font-bold text-[#2D2D2D] leading-tight mb-1">
+                          {fp[idx]?.name ?? ""}
+                        </h3>
+                        <p className="text-[10.5px] text-[#2D2D2D]/55 leading-relaxed">
+                          {fp[idx]?.headline ?? ""}
+                        </p>
+                      </div>
+                    </motion.div>
+                  ))}
+                </div>
+              </motion.div>
+            );
+          })()}
+        </div>
+
+        <style jsx>{`
+          .featured-card-shadow {
+            box-shadow:
+              0 1px 2px rgba(139, 94, 60, 0.04),
+              0 8px 24px -8px rgba(139, 94, 60, 0.10);
+            transition: box-shadow 0.3s ease-out;
+          }
+          .featured-card-shadow:hover {
+            box-shadow:
+              0 4px 12px rgba(139, 94, 60, 0.06),
+              0 16px 40px -10px rgba(139, 94, 60, 0.18);
+          }
+        `}</style>
+      </section>
+
+      {/* ════════════════ MARKET INTELLIGENCE ════════════════ */}
+      <section className="relative bg-white py-14 md:py-18 border-t border-[#8B5E3C]/8">
+        <div className="container mx-auto px-6 max-w-6xl">
+          {/* Header */}
+          <motion.div
+            initial="hidden"
+            whileInView="show"
+            viewport={{ once: true, amount: 0.3 }}
+            variants={stagger}
+            className="max-w-2xl mx-auto text-center mb-10"
+          >
+            <motion.p
+              variants={fadeUp}
+              className="text-[#8B5E3C] text-[10.5px] font-bold tracking-[0.3em] uppercase mb-3 inline-flex items-center gap-2.5"
+            >
+              <span className="w-5 h-px bg-[#8B5E3C]/60" />
+              {t("products.marketEyebrow") as string}
+              <span className="w-5 h-px bg-[#8B5E3C]/60" />
+            </motion.p>
+            <motion.h2
+              variants={fadeUp}
+              className="font-display text-2xl md:text-[34px] font-bold text-[#2D2D2D] leading-[1.08] tracking-tight mb-3"
+            >
+              {t("products.marketHeading") as string}
+            </motion.h2>
+            <motion.p
+              variants={fadeUp}
+              className="text-[#2D2D2D]/55 text-[14px] leading-relaxed"
+            >
+              {t("products.marketSub") as string}
+            </motion.p>
+          </motion.div>
+
+          {/* 4-card intelligence grid */}
+          {(() => {
+            const cards = (t("products.marketCards") as unknown as Array<{ label: string; insight: string; source: string }>) ?? [];
+            return (
+              <motion.div
+                initial="hidden"
+                whileInView="show"
+                viewport={{ once: true, amount: 0.15 }}
+                variants={stagger}
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 240px), 1fr))",
+                  gap: "16px",
+                }}
+              >
+                {cards.map((c, i) => (
+                  <motion.div
+                    key={i}
+                    variants={fadeUp}
+                    whileHover={{ y: -3 }}
+                    transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+                    className="relative rounded-2xl border border-[#8B5E3C]/12 bg-white p-5 market-card-shadow group"
+                  >
+                    {/* Verified badge */}
+                    <div className="absolute top-4 right-4 inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-[#8B5E3C]/8 border border-[#8B5E3C]/15 text-[8.5px] uppercase tracking-[0.18em] text-[#8B5E3C] font-bold">
+                      <span className="text-[#E9A052]">●</span>
+                      Verified
+                    </div>
+
+                    <div className="mt-1">
+                      <p className="font-display text-[15.5px] font-bold text-[#2D2D2D] leading-tight mb-2 pr-16">
+                        {c.label}
+                      </p>
+                      <p className="text-[12px] text-[#2D2D2D]/65 leading-relaxed mb-4">
+                        {c.insight}
+                      </p>
+                      <div className="pt-3 border-t border-[#8B5E3C]/8">
+                        <p className="text-[8.5px] uppercase tracking-[0.2em] text-[#2D2D2D]/35 font-semibold mb-1">
+                          Source
+                        </p>
+                        <p className="text-[10.5px] text-[#8B5E3C] font-medium leading-snug">
+                          {c.source}
+                        </p>
+                      </div>
+                    </div>
+                  </motion.div>
+                ))}
+              </motion.div>
+            );
+          })()}
+
+          {/* Source attribution */}
+          <motion.p
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.4 }}
+            className="text-[10.5px] text-[#2D2D2D]/40 leading-relaxed mt-8 text-center max-w-3xl mx-auto"
+          >
+            {t("products.marketSources") as string}
+          </motion.p>
+        </div>
+
+        <style jsx>{`
+          .market-card-shadow {
+            box-shadow:
+              0 1px 2px rgba(139, 94, 60, 0.03),
+              0 4px 12px -4px rgba(139, 94, 60, 0.08);
+            transition: box-shadow 0.3s ease-out;
+          }
+          .market-card-shadow:hover {
+            box-shadow:
+              0 2px 6px rgba(139, 94, 60, 0.05),
+              0 12px 28px -8px rgba(139, 94, 60, 0.15);
+          }
+        `}</style>
       </section>
 
       {/* CATEGORY FILTER BAR */}
@@ -643,6 +1050,44 @@ function ProductsContent() {
         </div>
       )}
 
+      {/* CERT FILTER BAR — Alibaba-style certification checkboxes */}
+      {allCerts.length > 0 && (
+        <div className="bg-[#F5F0E8] border-b border-[#2D2D2D]/[0.06]">
+          <div className="container mx-auto px-6 py-3 flex items-center gap-3 flex-wrap">
+            <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#2D2D2D]/40 shrink-0">
+              Certifications
+            </span>
+            {allCerts.map((cert) => {
+              const active = selectedCerts.has(cert);
+              return (
+                <button
+                  key={cert}
+                  type="button"
+                  onClick={() => toggleCert(cert)}
+                  className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[11px] font-bold transition-all duration-150 border ${
+                    active
+                      ? "bg-[#8B5E3C] border-[#8B5E3C] text-[#F5F0E8] shadow-sm"
+                      : "bg-white/70 border-[#2D2D2D]/15 text-[#2D2D2D]/60 hover:border-[#8B5E3C]/40 hover:text-[#8B5E3C]"
+                  }`}
+                >
+                  {active && <span className="text-[9px]">✓</span>}
+                  {cert}
+                </button>
+              );
+            })}
+            {selectedCerts.size > 0 && (
+              <button
+                type="button"
+                onClick={() => setSelectedCerts(new Set())}
+                className="ml-auto inline-flex items-center gap-1 text-[10px] font-semibold text-[#2D2D2D]/40 hover:text-[#2D2D2D]/70 transition-colors"
+              >
+                <X className="h-3 w-3" /> Clear
+              </button>
+            )}
+          </div>
+        </div>
+      )}
+
       {/* STICKY SUBMENU */}
       {displayedFiltered.length > 0 && (
         <motion.div
@@ -665,7 +1110,7 @@ function ProductsContent() {
         transition={{ duration: 0.2, ease: "easeInOut" }}
         onAnimationComplete={handleFadeComplete}
       >
-      <div className="bg-[#F5F7FA]">
+      <div className="bg-[#F5F0E8]">
         {productsQuery.isLoading ? (
           <div className="py-32 flex justify-center">
             <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
@@ -691,7 +1136,7 @@ function ProductsContent() {
                   if (el) sectionRefs.current.set(product.slug, el);
                   else sectionRefs.current.delete(product.slug);
                 }}
-                className={`scroll-mt-36 py-20 ${isOdd ? "bg-white" : "bg-[#F5F7FA]"}`}
+                className={`scroll-mt-36 py-20 ${isOdd ? "bg-white" : "bg-[#F5F0E8]"}`}
               >
                 <div className="container mx-auto px-6">
                   <motion.div
@@ -699,20 +1144,23 @@ function ProductsContent() {
                     whileInView="show"
                     viewport={{ once: true, amount: 0.15 }}
                     variants={stagger}
-                    className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center"
+                    className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center"
                   >
                     {/* IMAGE — always left on desktop */}
                     <motion.div
                       variants={fadeUp}
                       className="relative rounded-2xl overflow-hidden shadow-md"
                     >
-                      <img
-                        src={product.imageUrl ?? fallbackImg}
-                        alt={product.name}
-                        loading="lazy"
-                        className="w-full aspect-[4/3] object-cover object-center"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-primary/10 to-transparent" />
+                      {/* 1:1 square container — spec: 800×800px PNG/WebP, white bg, product fills 75-80% */}
+                      <div className="relative w-full aspect-square bg-white">
+                        <img
+                          src={product.imageUrl ?? fallbackImg}
+                          alt={product.name}
+                          loading="lazy"
+                          className="absolute inset-0 w-full h-full object-contain p-8"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/[0.04] to-transparent pointer-events-none" />
+                      </div>
                       <div className="absolute top-4 left-4 flex flex-wrap gap-1.5">
                         {product.category && (
                           <span className="inline-flex items-center rounded-full bg-white/90 backdrop-blur px-3 py-1 text-xs font-bold text-accent shadow-sm">
@@ -787,15 +1235,19 @@ function ProductsContent() {
                         </motion.ul>
                       )}
 
-                      {/* CERT BADGES */}
+                      {/* CERT BADGES — Alibaba-style verification badges */}
                       {product.certs.length > 0 && (
-                        <div className="flex flex-wrap gap-2 mb-7">
+                        <div className="flex flex-wrap gap-1.5 mb-7">
                           {product.certs.map((c, i) => (
                             <span
                               key={i}
-                              className="inline-flex items-center rounded-full border border-slate-200 bg-white px-3 py-1 text-xs font-medium text-slate-600"
+                              className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wide border transition-colors ${
+                                selectedCerts.has(c)
+                                  ? "bg-[#8B5E3C] border-[#8B5E3C] text-[#F5F0E8]"
+                                  : "bg-[#F5F0E8] border-[#8B5E3C]/30 text-[#8B5E3C]"
+                              }`}
                             >
-                              {c}
+                              <span className="text-[8px]">✓</span>{c}
                             </span>
                           ))}
                         </div>
@@ -830,7 +1282,7 @@ function ProductsContent() {
       </motion.div>
 
       {/* BOTTOM CTA */}
-      <section className="py-24 bg-[#0F172A] text-white text-center">
+      <section className="py-24 bg-[#2D2D2D] text-white text-center">
         <div className="container mx-auto px-6">
           <motion.div
             initial="hidden"

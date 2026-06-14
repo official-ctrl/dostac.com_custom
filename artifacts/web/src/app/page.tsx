@@ -36,9 +36,17 @@ import {
   useListPublicCategoryTranslations,
   useCreateContactInquiry,
 } from "@workspace/api-client-react";
+import Image from "next/image";
 import { MarqueeHero } from "@/components/dostac/home/MarqueeHero";
+import { GlobeHero } from "@/components/dostac/home/GlobeHero";
 import { StatsBar } from "@/components/dostac/home/StatsBar";
 import { TerraCta } from "@/components/dostac/home/TerraCta";
+import { LatestInsightsSection } from "@/components/dostac/home/LatestInsightsSection";
+import { IntelligenceSection } from "@/components/dostac/home/IntelligenceSection";
+import { SupplyChainSection } from "@/components/dostac/home/SupplyChainSection";
+import { TrendSection } from "@/components/dostac/home/TrendSection";
+import { VerificationSection } from "@/components/dostac/home/VerificationSection";
+import { MarketAnalysisSection } from "@/components/dostac/home/MarketAnalysisSection";
 
 /* ── Premium easing curve (Apple/Linear-style deceleration) ── */
 const EASE_OUT_EXPO = [0.16, 1, 0.3, 1] as const;
@@ -92,7 +100,7 @@ function TrustSection() {
   return (
     <>
       {/* ── Trust badges ── */}
-      <section className="py-10 bg-white border-b border-slate-100">
+      <section className="py-10 bg-[#F5F0E8]">
         <div className="container mx-auto px-6">
           <motion.div
             initial="hidden"
@@ -109,10 +117,10 @@ function TrustSection() {
                   variants={fadeUp}
                   className="flex flex-col items-center text-center gap-2 p-4 rounded-xl hover:bg-slate-50 transition-colors"
                 >
-                  <div className="w-11 h-11 rounded-full bg-accent/10 flex items-center justify-center mb-1">
-                    <Icon className="h-5 w-5 text-accent" />
+                  <div className="w-11 h-11 rounded-full bg-[#8B5E3C]/10 flex items-center justify-center mb-1">
+                    <Icon className="h-5 w-5 text-[#8B5E3C]" />
                   </div>
-                  <span className="text-sm font-bold text-[#0F172A]">{badge.label}</span>
+                  <span className="text-sm font-bold text-[#2D2D2D]">{badge.label}</span>
                   <span className="text-xs text-slate-500">{badge.sub}</span>
                 </motion.div>
               );
@@ -122,7 +130,7 @@ function TrustSection() {
       </section>
 
       {/* ── MOQ callout bar ── */}
-      <section className="py-6 bg-[#0F172A]">
+      <section className="py-6 bg-[#2D2D2D]">
         <div className="container mx-auto px-6">
           <motion.div
             initial="hidden"
@@ -138,7 +146,7 @@ function TrustSection() {
               <motion.div key={item.label} variants={fadeUp} className="flex items-baseline gap-2">
                 <span className="font-display text-2xl font-semibold text-white">{item.qty}</span>
                 <span className="text-xs text-slate-400">{item.unit}</span>
-                <span className="text-xs text-accent font-semibold">/ {item.label}</span>
+                <span className="text-xs text-[#8B5E3C] font-semibold">/ {item.label}</span>
               </motion.div>
             ))}
           </motion.div>
@@ -146,7 +154,7 @@ function TrustSection() {
       </section>
 
       {/* ── Partner logo strip ── */}
-      <section className="py-8 bg-slate-50 border-b border-slate-100">
+      <section className="py-8 bg-[#F5F0E8]">
         <div className="container mx-auto px-6">
           <motion.p
             initial={{ opacity: 0 }}
@@ -170,7 +178,7 @@ function TrustSection() {
                 variants={fadeUp}
                 className="flex flex-col items-center gap-0.5 opacity-50 hover:opacity-80 transition-opacity"
               >
-                <span className="text-xs font-bold tracking-widest text-[#0F172A]">{p.name}</span>
+                <span className="text-xs font-bold tracking-widest text-[#2D2D2D]">{p.name}</span>
                 <span className="text-[9px] text-slate-400 uppercase tracking-wider">{p.sub}</span>
               </motion.div>
             ))}
@@ -181,58 +189,7 @@ function TrustSection() {
   );
 }
 
-/* ─────────────────────────────────────────────
-   2. PRODUCTION FLOW (horizontal scroll timeline)
-───────────────────────────────────────────── */
-function ProductionFlowSection() {
-  const { t } = useT();
-  const flowSteps = t("homeNew.flowSteps") as Array<{ step: string; title: string; desc: string }>;
-
-  return (
-    <section className="py-20 md:py-28 bg-[#F5F7FA]">
-      <div className="container mx-auto px-6">
-        <motion.div
-          initial="hidden"
-          whileInView="show"
-          viewport={{ once: true, amount: 0.2 }}
-          variants={sectionHeaderStagger}
-          className="max-w-2xl mx-auto text-center mb-14"
-        >
-          <motion.p variants={fadeUp} className="uppercase tracking-[0.25em] text-xs font-bold text-accent mb-3">
-            {t("homeNew.flowEyebrow") as string}
-          </motion.p>
-          <motion.h2 variants={fadeUp} className="font-display text-3xl md:text-4xl font-bold text-[#0F172A] leading-tight">
-            {t("homeNew.flowHeading") as string}
-          </motion.h2>
-        </motion.div>
-
-        {/* Horizontal scroll timeline */}
-        <div className="overflow-x-auto -mx-6 px-6 no-scrollbar pb-4">
-          <div className="relative flex gap-6 md:gap-10 min-w-max">
-            {/* Connecting line spans full row */}
-            <div className="absolute top-[2.25rem] left-8 right-8 h-px bg-slate-300 pointer-events-none" />
-            {flowSteps.map((s, idx) => (
-              <motion.div
-                key={idx}
-                initial={{ opacity: 0, y: 12 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, amount: 0.3 }}
-                transition={{ duration: 0.5, delay: idx * 0.1 }}
-                className="relative flex flex-col items-center text-center w-40 md:w-48 flex-shrink-0 group"
-              >
-                <div className="relative z-10 w-[4.5rem] h-[4.5rem] rounded-full bg-white border-2 border-slate-200 flex items-center justify-center mb-5 shadow-sm group-hover:border-accent group-hover:shadow-accent/20 group-hover:shadow-md transition-all">
-                  <span className="font-display font-bold text-accent text-sm">{s.step}</span>
-                </div>
-                <h3 className="font-bold text-[#0F172A] text-sm mb-1.5">{s.title}</h3>
-                <p className="text-slate-500 text-xs leading-relaxed">{s.desc}</p>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-}
+/* ProductionFlowSection replaced by HorizontalTimeline (imported above) */
 
 /* ─────────────────────────────────────────────
    3. PRODUCT SHOWCASE (masonry grid)
@@ -280,7 +237,7 @@ function ProductShowcaseSection() {
         }));
 
   return (
-    <section className="py-20 md:py-28 bg-white">
+    <section className="py-20 md:py-28 bg-[#F5F0E8]">
       <div className="container mx-auto px-6">
         <motion.div
           initial="hidden"
@@ -289,10 +246,10 @@ function ProductShowcaseSection() {
           variants={sectionHeaderStagger}
           className="max-w-2xl mx-auto text-center mb-14"
         >
-          <motion.p variants={fadeUp} className="uppercase tracking-[0.25em] text-xs font-bold text-accent mb-3">
+          <motion.p variants={fadeUp} className="uppercase tracking-[0.25em] text-xs font-bold text-[#8B5E3C] mb-3">
             {t("homeNew.showcaseEyebrow") as string}
           </motion.p>
-          <motion.h2 variants={fadeUp} className="font-display text-3xl md:text-4xl font-bold text-[#0F172A] leading-tight mb-4">
+          <motion.h2 variants={fadeUp} className="font-display text-3xl md:text-4xl font-bold text-[#2D2D2D] leading-tight mb-4">
             {t("homeNew.showcaseHeading") as string}
           </motion.h2>
           <motion.p variants={fadeUp} className="text-slate-500 text-base">{t("homeNew.showcaseSub") as string}</motion.p>
@@ -314,28 +271,28 @@ function ProductShowcaseSection() {
                 transition={{ duration: 0.5, delay: (idx % 3) * 0.1 }}
                 className="break-inside-avoid mb-6"
               >
-                <div className="group rounded-2xl overflow-hidden border border-slate-100 hover:border-accent/30 hover:shadow-xl transition-all bg-white">
+                <div className="group rounded-2xl overflow-hidden border border-slate-100 hover:border-[#8B5E3C]/30 hover:shadow-xl transition-all bg-white">
                   <Link href={href} className="block">
-                    <div className={`${aspectClass} overflow-hidden bg-[#F5F7FA]`}>
-                      <img
+                    <div className={`${aspectClass} overflow-hidden bg-[#F5F0E8] relative`}>
+                      <Image
                         src={dostacImage(item.imageKey)}
                         alt={item.name}
-                        width={800}
-                        height={600}
+                        fill
+                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                         loading="lazy"
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                        className="object-cover group-hover:scale-105 transition-transform duration-500"
                       />
                     </div>
                   </Link>
                   <div className="p-5">
-                    <span className="inline-block text-xs font-bold text-accent bg-accent/10 px-2.5 py-0.5 rounded-full mb-3">
+                    <span className="inline-block text-xs font-bold text-[#8B5E3C] bg-[#8B5E3C]/10 px-2.5 py-0.5 rounded-full mb-3">
                       {item.badge}
                     </span>
                     <Link href={href} className="block mb-3">
-                      <h3 className="font-bold text-[#0F172A] text-base group-hover:text-accent transition-colors">{item.name}</h3>
+                      <h3 className="font-bold text-[#2D2D2D] text-base group-hover:text-[#8B5E3C] transition-colors">{item.name}</h3>
                     </Link>
                     {item.category && (
-                      <Link href={href} className="inline-flex items-center gap-1 text-xs font-semibold text-accent hover:underline w-fit">
+                      <Link href={href} className="inline-flex items-center gap-1 text-xs font-semibold text-[#8B5E3C] hover:underline w-fit">
                         {(t("homeNew.showcaseSeeAll") as string).replace("{cat}", item.name)}
                         <ArrowRight className="h-3 w-3" />
                       </Link>
@@ -351,7 +308,7 @@ function ProductShowcaseSection() {
           <Link href="/products">
             <Button
               size="lg"
-              className="rounded-full bg-accent hover:bg-accent/90 text-white h-12 px-10 text-sm font-semibold shadow-sm"
+              className="rounded-full bg-[#8B5E3C] hover:bg-[#8B5E3C]/90 text-white h-12 px-10 text-sm font-semibold shadow-sm"
             >
               {t("homeNew.showcaseCta") as string} <ArrowRight className="ml-2 h-4 w-4" />
             </Button>
@@ -372,7 +329,7 @@ function FactoryQualitySection() {
   const qcPoints = t("homeNew.qcPoints") as Array<{ title: string; desc: string }>;
 
   return (
-    <section className="py-20 md:py-28 bg-[#F5F7FA]">
+    <section className="py-20 md:py-28 bg-[#F5F0E8]">
       <div className="container mx-auto px-6">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           <motion.div
@@ -381,23 +338,23 @@ function FactoryQualitySection() {
             viewport={{ once: true, amount: 0.2 }}
             variants={sectionHeaderStagger}
           >
-            <motion.p variants={fadeUp} className="uppercase tracking-[0.25em] text-xs font-bold text-accent mb-3">
+            <motion.p variants={fadeUp} className="uppercase tracking-[0.25em] text-xs font-bold text-[#8B5E3C] mb-3">
               {t("homeNew.factoryEyebrow") as string}
             </motion.p>
-            <motion.h2 variants={fadeUp} className="font-display text-3xl md:text-4xl font-bold text-[#0F172A] leading-tight mb-5">
+            <motion.h2 variants={fadeUp} className="font-display text-3xl md:text-4xl font-bold text-[#2D2D2D] leading-tight mb-5">
               {t("homeNew.factoryHeading") as string}
             </motion.h2>
             <motion.p variants={fadeUp} className="text-slate-600 leading-relaxed mb-8">
               {t("homeNew.factoryBody") as string}
             </motion.p>
-            <motion.div variants={fadeUp} className="aspect-[16/10] rounded-2xl overflow-hidden bg-slate-200">
-              <img
+            <motion.div variants={fadeUp} className="aspect-[16/10] rounded-2xl overflow-hidden bg-slate-200 relative">
+              <Image
                 src={dostacImage("hero-production.webp")}
                 alt="Factory"
-                width={1408}
-                height={768}
+                fill
+                sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 720px"
                 loading="lazy"
-                className="w-full h-full object-cover"
+                className="object-cover"
               />
             </motion.div>
           </motion.div>
@@ -415,13 +372,13 @@ function FactoryQualitySection() {
                 <motion.div
                   key={idx}
                   variants={fadeUp}
-                  className="flex gap-5 p-5 rounded-2xl bg-white border border-slate-100 hover:border-accent/25 hover:shadow-md transition-all"
+                  className="flex gap-5 p-5 rounded-2xl bg-white border border-slate-100 hover:border-[#8B5E3C]/25 hover:shadow-md transition-all"
                 >
-                  <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-accent/10 flex items-center justify-center">
-                    <Icon className="h-5 w-5 text-accent" />
+                  <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-[#8B5E3C]/10 flex items-center justify-center">
+                    <Icon className="h-5 w-5 text-[#8B5E3C]" />
                   </div>
                   <div>
-                    <h3 className="font-bold text-[#0F172A] text-sm mb-1">{pt.title}</h3>
+                    <h3 className="font-bold text-[#2D2D2D] text-sm mb-1">{pt.title}</h3>
                     <p className="text-slate-500 text-sm leading-relaxed">{pt.desc}</p>
                   </div>
                 </motion.div>
@@ -540,7 +497,7 @@ function GlobalDistributionSection() {
   const exportRegions = t("homeNew.exportRegions") as Array<{ region: string; countries: string[] }>;
 
   return (
-    <section className="py-20 md:py-28 bg-[#0F172A] text-white overflow-hidden">
+    <section className="py-20 md:py-28 bg-[#2D2D2D] text-white overflow-hidden">
       <div className="container mx-auto px-6">
         <motion.div
           initial="hidden"
@@ -549,7 +506,7 @@ function GlobalDistributionSection() {
           variants={sectionHeaderStagger}
           className="max-w-2xl mx-auto text-center mb-14"
         >
-          <motion.p variants={fadeUp} className="uppercase tracking-[0.25em] text-xs font-bold text-accent mb-3">
+          <motion.p variants={fadeUp} className="uppercase tracking-[0.25em] text-xs font-bold text-[#8B5E3C] mb-3">
             {t("homeNew.globalEyebrow") as string}
           </motion.p>
           <motion.h2 variants={fadeUp} className="font-display text-3xl md:text-4xl font-bold leading-tight mb-4">
@@ -572,7 +529,7 @@ function GlobalDistributionSection() {
               variants={fadeUp}
               className="text-center p-6 rounded-2xl bg-white/5 border border-white/10"
             >
-              <div className="font-display text-3xl md:text-4xl font-bold text-accent mb-1">{stat.value}</div>
+              <div className="font-display text-3xl md:text-4xl font-bold text-[#8B5E3C] mb-1">{stat.value}</div>
               <div className="text-white/60 text-sm">{stat.label}</div>
             </motion.div>
           ))}
@@ -602,7 +559,7 @@ function GlobalDistributionSection() {
             <motion.div
               key={idx}
               variants={fadeUp}
-              className="p-5 rounded-2xl bg-white/5 border border-white/10 hover:border-accent/30 transition-colors"
+              className="p-5 rounded-2xl bg-white/5 border border-white/10 hover:border-[#8B5E3C]/30 transition-colors"
             >
               <div className={`w-full h-1.5 rounded-full bg-gradient-to-r ${REGION_COLORS[idx] ?? REGION_COLORS[0]} mb-4`} />
               <h3 className="font-bold text-white text-sm mb-3">{region.region}</h3>
@@ -612,7 +569,7 @@ function GlobalDistributionSection() {
                     key={c}
                     className="inline-flex items-center gap-1 text-xs text-white/60 bg-white/5 px-2 py-0.5 rounded-full border border-white/10"
                   >
-                    <span className="w-1.5 h-1.5 rounded-full bg-accent inline-block" />
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#8B5E3C] inline-block" />
                     {c}
                   </span>
                 ))}
@@ -635,7 +592,7 @@ function OEMServicesSection() {
   const serviceCards = t("homeNew.serviceCards") as Array<{ title: string; desc: string }>;
 
   return (
-    <section className="py-20 md:py-28 bg-white">
+    <section className="py-20 md:py-28 bg-[#F5F0E8]">
       <div className="container mx-auto px-6">
         <motion.div
           initial="hidden"
@@ -644,10 +601,10 @@ function OEMServicesSection() {
           variants={sectionHeaderStagger}
           className="max-w-2xl mx-auto text-center mb-14"
         >
-          <motion.p variants={fadeUp} className="uppercase tracking-[0.25em] text-xs font-bold text-accent mb-3">
+          <motion.p variants={fadeUp} className="uppercase tracking-[0.25em] text-xs font-bold text-[#8B5E3C] mb-3">
             {t("homeNew.servicesEyebrow") as string}
           </motion.p>
-          <motion.h2 variants={fadeUp} className="font-display text-3xl md:text-4xl font-bold text-[#0F172A] leading-tight mb-4">
+          <motion.h2 variants={fadeUp} className="font-display text-3xl md:text-4xl font-bold text-[#2D2D2D] leading-tight mb-4">
             {t("homeNew.servicesHeading") as string}
           </motion.h2>
           <motion.p variants={fadeUp} className="text-slate-500 text-base">{t("homeNew.servicesSub") as string}</motion.p>
@@ -666,12 +623,12 @@ function OEMServicesSection() {
               <motion.div
                 key={idx}
                 variants={fadeUp}
-                className="group p-7 rounded-2xl border border-slate-100 hover:border-accent/30 hover:shadow-xl transition-all bg-white"
+                className="group p-7 rounded-2xl border border-slate-100 hover:border-[#8B5E3C]/30 hover:shadow-xl transition-all bg-white"
               >
-                <div className="w-12 h-12 rounded-xl bg-accent/10 flex items-center justify-center mb-5 group-hover:bg-accent transition-colors">
-                  <Icon className="h-5 w-5 text-accent group-hover:text-white transition-colors" />
+                <div className="w-12 h-12 rounded-xl bg-[#8B5E3C]/10 flex items-center justify-center mb-5 group-hover:bg-[#8B5E3C] transition-colors">
+                  <Icon className="h-5 w-5 text-[#8B5E3C] group-hover:text-white transition-colors" />
                 </div>
-                <h3 className="font-bold text-[#0F172A] text-base mb-2">{card.title}</h3>
+                <h3 className="font-bold text-[#2D2D2D] text-base mb-2">{card.title}</h3>
                 <p className="text-slate-500 text-sm leading-relaxed">{card.desc}</p>
               </motion.div>
             );
@@ -680,7 +637,7 @@ function OEMServicesSection() {
           {/* CTA card */}
           <motion.div
             variants={fadeUp}
-            className="p-7 rounded-2xl bg-accent text-white flex flex-col justify-between"
+            className="p-7 rounded-2xl bg-[#8B5E3C] text-white flex flex-col justify-between"
           >
             <div>
               <h3 className="font-bold text-lg mb-3">{t("homeNew.servicesCtaTitle") as string}</h3>
@@ -691,7 +648,7 @@ function OEMServicesSection() {
             <Link href="/contact" onClick={() => trackCtaClick("Get OEM Quote", "rfq_section")}>
               <Button
                 size="sm"
-                className="rounded-full bg-white text-accent hover:bg-white/90 font-semibold w-full"
+                className="rounded-full bg-white text-[#8B5E3C] hover:bg-white/90 font-semibold w-full"
               >
                 {t("homeNew.servicesCtaBtn") as string} <ArrowRight className="ml-1 h-3.5 w-3.5" />
               </Button>
@@ -775,7 +732,7 @@ function ContactRFQSection() {
   };
 
   return (
-    <section className="py-20 md:py-28 bg-[#F5F7FA] scroll-mt-[5.5rem]" id="rfq">
+    <section className="py-20 md:py-28 bg-[#F5F0E8] scroll-mt-[5.5rem]" id="rfq">
       <div className="container mx-auto px-6">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
           <motion.div
@@ -784,10 +741,10 @@ function ContactRFQSection() {
             viewport={{ once: true, amount: 0.2 }}
             variants={sectionHeaderStagger}
           >
-            <motion.p variants={fadeUp} className="uppercase tracking-[0.25em] text-xs font-bold text-accent mb-3">
+            <motion.p variants={fadeUp} className="uppercase tracking-[0.25em] text-xs font-bold text-[#8B5E3C] mb-3">
               {t("homeNew.rfqEyebrow") as string}
             </motion.p>
-            <motion.h2 variants={fadeUp} className="font-display text-3xl md:text-4xl font-bold text-[#0F172A] leading-tight mb-5">
+            <motion.h2 variants={fadeUp} className="font-display text-3xl md:text-4xl font-bold text-[#2D2D2D] leading-tight mb-5">
               {t("homeNew.rfqHeading") as string}
             </motion.h2>
             <motion.p variants={fadeUp} className="text-slate-600 leading-relaxed mb-8">
@@ -796,7 +753,7 @@ function ContactRFQSection() {
             <motion.div variants={stagger} className="flex flex-col gap-4">
               {rfqBullets.map((bullet, i) => (
                 <motion.div key={i} variants={fadeUp} className="flex items-center gap-3">
-                  <CheckCircle2 className="h-5 w-5 text-accent flex-shrink-0" />
+                  <CheckCircle2 className="h-5 w-5 text-[#8B5E3C] flex-shrink-0" />
                   <span className="text-slate-700 text-sm">{bullet}</span>
                 </motion.div>
               ))}
@@ -820,10 +777,10 @@ function ContactRFQSection() {
                   transition={{ duration: 0.2, ease: "easeOut" }}
                   className="flex flex-col items-center text-center py-10 gap-4"
                 >
-                  <div className="w-14 h-14 rounded-full bg-accent/10 flex items-center justify-center">
-                    <CheckCircle2 className="h-7 w-7 text-accent" />
+                  <div className="w-14 h-14 rounded-full bg-[#8B5E3C]/10 flex items-center justify-center">
+                    <CheckCircle2 className="h-7 w-7 text-[#8B5E3C]" />
                   </div>
-                  <h3 className="font-bold text-[#0F172A] text-lg">
+                  <h3 className="font-bold text-[#2D2D2D] text-lg">
                     {t("homeNew.rfqSuccessTitle") as string}
                   </h3>
                   <p className="text-slate-500 text-sm max-w-xs leading-relaxed">
@@ -850,7 +807,7 @@ function ContactRFQSection() {
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="flex flex-col gap-1.5">
                       <Label htmlFor="rfq-name" className="text-sm font-semibold text-slate-700">
-                        {t("homeNew.rfqName") as string} <span className="text-accent">*</span>
+                        {t("homeNew.rfqName") as string} <span className="text-[#8B5E3C]">*</span>
                       </Label>
                       <Input
                         id="rfq-name"
@@ -863,7 +820,7 @@ function ContactRFQSection() {
                     </div>
                     <div className="flex flex-col gap-1.5">
                       <Label htmlFor="rfq-email" className="text-sm font-semibold text-slate-700">
-                        {t("homeNew.rfqEmail") as string} <span className="text-accent">*</span>
+                        {t("homeNew.rfqEmail") as string} <span className="text-[#8B5E3C]">*</span>
                       </Label>
                       <Input
                         id="rfq-email"
@@ -973,7 +930,7 @@ function ContactRFQSection() {
 
                   <div className="flex flex-col gap-1.5">
                     <Label htmlFor="rfq-message" className="text-sm font-semibold text-slate-700">
-                      {t("homeNew.rfqMessage") as string} <span className="text-accent">*</span>
+                      {t("homeNew.rfqMessage") as string} <span className="text-[#8B5E3C]">*</span>
                     </Label>
                     <Textarea
                       id="rfq-message"
@@ -993,7 +950,7 @@ function ContactRFQSection() {
                   <Button
                     type="submit"
                     disabled={createInquiry.isPending}
-                    className="rounded-full bg-accent hover:bg-accent/90 text-white h-11 font-semibold w-full mt-1"
+                    className="rounded-full bg-[#8B5E3C] hover:bg-[#8B5E3C]/90 text-white h-11 font-semibold w-full mt-1"
                   >
                     {createInquiry.isPending ? (
                       t("homeNew.rfqSending") as string
@@ -1021,15 +978,34 @@ function ContactRFQSection() {
 export default function Home() {
   return (
     <Layout>
+      {/* ── DEEP: Hero ── */}
       <MarqueeHero />
+      {/* GlobeHero kept importable for A/B fallback */}
+      {false && <GlobeHero />}
       <StatsBar />
-      <TrustSection />
-      <ProductShowcaseSection />
-      <ProductionFlowSection />
-      <FactoryQualitySection />
-      <GlobalDistributionSection />
-      <OEMServicesSection />
+
+      {/* ── CREAM: Platform pillars ── */}
+      <IntelligenceSection />
+
+      {/* ── DEEP: Supply chain network ── */}
+      <SupplyChainSection />
+
+      {/* ── CREAM: K-Beauty trends ── */}
+      <TrendSection />
+
+      {/* ── DEEP: Certification system ── */}
+      <VerificationSection />
+
+      {/* ── CREAM: Product categories ── */}
+      <MarketAnalysisSection />
+
+      {/* ── DEEP: Latest insights (AI) ── */}
+      <LatestInsightsSection />
+
+      {/* ── TERRA: CTA bridge ── */}
       <TerraCta />
+
+      {/* ── CREAM: RFQ contact ── */}
       <ContactRFQSection />
     </Layout>
   );

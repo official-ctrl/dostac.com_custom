@@ -1,5 +1,6 @@
 const WP_BASE = "https://blog.dostac.com/wp-json/wp/v2";
-const REVALIDATE = 3600; // 1시간 ISR
+// dev: no cache (always fresh) / production: 1 hour ISR
+const REVALIDATE = process.env.NODE_ENV === "development" ? 0 : 3600;
 
 export type WPPost = {
   id: number;
@@ -10,6 +11,18 @@ export type WPPost = {
   content?: { rendered: string };
   categories: number[];
   featured_media: number;
+  _embedded?: {
+    "wp:featuredmedia"?: Array<{
+      source_url?: string;
+      media_details?: {
+        sizes?: {
+          medium_large?: { source_url: string };
+          medium?: { source_url: string };
+          large?: { source_url: string };
+        };
+      };
+    }>;
+  };
 };
 
 export type WPCategory = {
@@ -50,7 +63,7 @@ export function formatDate(dateStr: string): string {
 export async function getPosts(perPage = 20): Promise<WPPost[]> {
   try {
     const res = await fetch(
-      `${WP_BASE}/posts?per_page=${perPage}&_fields=id,slug,date,title,excerpt,categories,featured_media&orderby=date&order=desc`,
+      `${WP_BASE}/posts?per_page=${perPage}&_embed=wp:featuredmedia&orderby=date&order=desc`,
       { next: { revalidate: REVALIDATE } }
     );
     if (!res.ok) return [];

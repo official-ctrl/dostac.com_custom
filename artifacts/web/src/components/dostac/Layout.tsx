@@ -191,8 +191,10 @@ function AboutDropdown({ active }: { active: boolean }) {
         aria-haspopup="menu"
         aria-expanded={open}
         aria-controls={menuId}
-        className={`inline-flex items-center gap-1 text-sm font-medium transition-colors outline-none focus-visible:ring-2 focus-visible:ring-accent rounded-sm ${
-          active ? "text-accent" : "text-slate-700 hover:text-primary"
+        className={`inline-flex items-center gap-1 text-sm font-medium transition-all duration-[80ms] outline-none focus-visible:ring-2 focus-visible:ring-[#8B5E3C] rounded-lg px-2.5 py-1.5 ${
+          active
+            ? "text-[#8B5E3C] bg-[#8B5E3C]/10"
+            : "text-slate-700 hover:bg-slate-100 hover:text-[#2D2D2D]"
         }`}
         data-testid="nav-about"
       >
@@ -215,7 +217,7 @@ function AboutDropdown({ active }: { active: boolean }) {
                 href={`/about#${s.hash}`}
                 role="menuitem"
                 data-testid={`nav-about-${s.hash}`}
-                className="px-3 py-2 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-50 hover:text-primary transition focus:bg-slate-100 focus:outline-none"
+                className="px-3 py-2 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-100 hover:text-[#2D2D2D] transition-all duration-[80ms] focus:bg-[#F5F0E8] focus:outline-none"
                 onClick={() => setOpen(false)}
               >
                 {t(`nav.aboutSub.${s.key}`) as string}
@@ -301,8 +303,10 @@ function ProcessDropdown({ active }: { active: boolean }) {
         aria-haspopup="menu"
         aria-expanded={open}
         aria-controls={menuId}
-        className={`inline-flex items-center gap-1 text-sm font-medium transition-colors outline-none focus-visible:ring-2 focus-visible:ring-accent rounded-sm ${
-          active ? "text-accent" : "text-slate-700 hover:text-primary"
+        className={`inline-flex items-center gap-1 text-sm font-medium transition-all duration-[80ms] outline-none focus-visible:ring-2 focus-visible:ring-[#8B5E3C] rounded-lg px-2.5 py-1.5 ${
+          active
+            ? "text-[#8B5E3C] bg-[#8B5E3C]/10"
+            : "text-slate-700 hover:bg-slate-100 hover:text-[#2D2D2D]"
         }`}
         data-testid="nav-production"
       >
@@ -325,7 +329,7 @@ function ProcessDropdown({ active }: { active: boolean }) {
                 href={`/production#${s.hash}`}
                 role="menuitem"
                 data-testid={`nav-process-${s.hash}`}
-                className="px-3 py-2 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-50 hover:text-primary transition focus:bg-slate-100 focus:outline-none"
+                className="px-3 py-2 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-100 hover:text-[#2D2D2D] transition-all duration-[80ms] focus:bg-[#F5F0E8] focus:outline-none"
                 onClick={() => setOpen(false)}
               >
                 {t(`nav.processSub.${s.key}`) as string}
@@ -351,6 +355,7 @@ function ProductsDropdown({ active }: { active: boolean }) {
   const leftPanelRef = useRef<HTMLDivElement | null>(null);
   const rightPanelRef = useRef<HTMLDivElement | null>(null);
   const closeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const catHoverTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const menuId = "products-dropdown-menu";
 
   const productsQuery = useQuery({
@@ -410,6 +415,7 @@ function ProductsDropdown({ active }: { active: boolean }) {
   useEffect(() => {
     return () => {
       if (closeTimerRef.current !== null) clearTimeout(closeTimerRef.current);
+      if (catHoverTimerRef.current !== null) clearTimeout(catHoverTimerRef.current);
     };
   }, []);
 
@@ -419,7 +425,15 @@ function ProductsDropdown({ active }: { active: boolean }) {
       closeTimerRef.current = null;
       setOpen(false);
       setHoveredCategory(null);
-    }, 150);
+    }, 300);
+  };
+
+  const setHoveredCategoryDelayed = (slug: string) => {
+    if (catHoverTimerRef.current !== null) clearTimeout(catHoverTimerRef.current);
+    catHoverTimerRef.current = setTimeout(() => {
+      catHoverTimerRef.current = null;
+      setHoveredCategory(slug);
+    }, 90);
   };
 
   const cancelClose = () => {
@@ -472,8 +486,10 @@ function ProductsDropdown({ active }: { active: boolean }) {
         aria-haspopup="menu"
         aria-expanded={open}
         aria-controls={menuId}
-        className={`inline-flex items-center gap-1 text-sm font-medium transition-colors outline-none focus-visible:ring-2 focus-visible:ring-accent rounded-sm ${
-          active ? "text-accent" : "text-slate-700 hover:text-primary"
+        className={`inline-flex items-center gap-1 text-sm font-medium transition-all duration-[80ms] outline-none focus-visible:ring-2 focus-visible:ring-[#8B5E3C] rounded-lg px-2.5 py-1.5 ${
+          active
+            ? "text-[#8B5E3C] bg-[#8B5E3C]/10"
+            : "text-slate-700 hover:bg-slate-100 hover:text-[#2D2D2D]"
         }`}
         data-testid="nav-products"
       >
@@ -499,9 +515,8 @@ function ProductsDropdown({ active }: { active: boolean }) {
                 href="/products"
                 role="menuitem"
                 data-testid="nav-products-all"
-                className="px-3 py-2 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-50 hover:text-primary transition focus:bg-slate-100 focus:outline-none"
+                className="px-3 py-2 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-100 hover:text-[#2D2D2D] transition-all duration-[80ms] focus:bg-[#F5F0E8] focus:outline-none"
                 onClick={close}
-                onMouseEnter={() => setHoveredCategory(null)}
               >
                 {t("products.filterAll") as string}
               </Link>
@@ -529,7 +544,7 @@ function ProductsDropdown({ active }: { active: boolean }) {
                     data-testid={`nav-products-cat-${slug}`}
                     aria-haspopup={hasSubs ? "menu" : undefined}
                     aria-expanded={hasSubs ? isHovered : undefined}
-                    onMouseEnter={() => setHoveredCategory(slug)}
+                    onMouseEnter={() => setHoveredCategoryDelayed(slug)}
                     onFocus={() => setHoveredCategory(slug)}
                     onClick={() => { router.push(`/products?category=${encodeURIComponent(slug)}`); close(); }}
                     onKeyDown={(e) => {
@@ -540,7 +555,7 @@ function ProductsDropdown({ active }: { active: boolean }) {
                       }
                     }}
                     className={`w-full flex items-center justify-between px-3 py-2 rounded-lg text-sm font-medium text-left transition focus:outline-none focus-visible:ring-2 focus-visible:ring-accent ${
-                      isHovered ? "bg-slate-50 text-primary" : "text-slate-700 hover:bg-slate-50 hover:text-primary"
+                      isHovered ? "bg-slate-100 text-[#2D2D2D]" : "text-slate-700 hover:bg-slate-100 hover:text-[#2D2D2D]"
                     }`}
                   >
                     <span>{label}</span>
@@ -559,6 +574,13 @@ function ProductsDropdown({ active }: { active: boolean }) {
                 role="menu"
                 aria-label={catLabel(hoveredCategory)}
                 className="w-48 flex flex-col py-2 px-1.5 rounded-xl border border-slate-200 bg-white shadow-xl"
+                onMouseEnter={() => {
+                  if (catHoverTimerRef.current !== null) {
+                    clearTimeout(catHoverTimerRef.current);
+                    catHoverTimerRef.current = null;
+                  }
+                  cancelClose();
+                }}
               >
                 <p className="px-3 pt-1 pb-2 text-[10px] font-semibold uppercase tracking-widest text-slate-400 select-none">
                   {catLabel(hoveredCategory)}
@@ -581,7 +603,7 @@ function ProductsDropdown({ active }: { active: boolean }) {
                           catBtn?.focus();
                         }
                       }}
-                      className="px-3 py-2 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-50 hover:text-primary transition focus:bg-slate-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent flex items-center justify-between gap-2"
+                      className="px-3 py-2 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-100 hover:text-[#2D2D2D] transition-all duration-[80ms] focus:bg-[#F5F0E8] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#8B5E3C] flex items-center justify-between gap-2"
                     >
                       <span>{subCatLabel(sub)}</span>
                       {count > 0 && (
@@ -760,13 +782,27 @@ function Header() {
         의존성 [] — 한 번만 등록, location 변경 시 재등록 없음.
         초기 딥링크 스크롤은 각 페이지 컴포넌트가 직접 처리. ── */
   useEffect(() => {
+    const scrollToHash = (hash: string) => {
+      const el = document.getElementById(hash);
+      if (el) {
+        el.scrollIntoView({ behavior: "smooth", block: "start" });
+        return true;
+      }
+      return false;
+    };
+
     const onHashScroll = () => {
-      // /contact 페이지는 자체 hashchange 핸들러가 있으므로 스킵
       if (window.location.pathname === "/contact") return;
       const hash = window.location.hash.replace("#", "");
       if (!hash) return;
-      const el = document.getElementById(hash);
-      if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+      // DOM이 아직 렌더되지 않은 경우 rAF 2회로 대기 후 재시도
+      if (!scrollToHash(hash)) {
+        requestAnimationFrame(() => {
+          if (!scrollToHash(hash)) {
+            requestAnimationFrame(() => scrollToHash(hash));
+          }
+        });
+      }
     };
     window.addEventListener("hashchange", onHashScroll);
     return () => window.removeEventListener("hashchange", onHashScroll);
@@ -804,8 +840,10 @@ function Header() {
               <Link
                 key={item.href}
                 href={item.href}
-                className={`text-sm font-medium transition-colors ${
-                  active ? "text-accent" : "text-slate-700 hover:text-primary"
+                className={`text-sm font-medium transition-all duration-[80ms] px-2.5 py-1.5 rounded-lg ${
+                  active
+                    ? "text-[#8B5E3C] bg-[#8B5E3C]/10"
+                    : "text-slate-700 hover:bg-slate-100 hover:text-[#2D2D2D]"
                 }`}
               >
                 {t(`nav.${item.key}`) as string}

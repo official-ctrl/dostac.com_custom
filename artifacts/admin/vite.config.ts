@@ -5,6 +5,9 @@ import path from "path";
 
 const port = Number(process.env.PORT ?? "5174");
 const basePath = process.env.BASE_PATH ?? "/admin";
+/* In dev, mirror the production nginx routing: /api/* → API server.
+   Override with VITE_API_PROXY if API runs on a non-default host. */
+const apiTarget = process.env.VITE_API_PROXY ?? "http://localhost:4000";
 
 export default defineConfig({
   base: basePath,
@@ -31,6 +34,13 @@ export default defineConfig({
     allowedHosts: true,
     fs: {
       strict: true,
+    },
+    proxy: {
+      "/api": {
+        target: apiTarget,
+        changeOrigin: true,
+        secure: false,
+      },
     },
   },
   preview: {

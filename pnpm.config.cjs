@@ -1,3 +1,3 @@
 module.exports = {
-  onlyBuiltDependencies: ['esbuild', '@swc/core', 'msw', 'unrs-resolver']
+  onlyBuiltDependencies: ['esbuild', 'sharp', 'workerd', '@swc/core', 'msw', 'unrs-resolver']
 }
