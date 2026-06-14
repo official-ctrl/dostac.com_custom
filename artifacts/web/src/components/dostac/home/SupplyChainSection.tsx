@@ -1,30 +1,10 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
-import dynamic from "next/dynamic";
+import React, { useEffect, useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowUpRight, Globe2, Activity } from "lucide-react";
-import type { HoverPayload } from "./GlobeCanvas";
+import type { HoverPayload, GlobeCanvasProps } from "./GlobeCanvas";
 import { CityHoverCard } from "./CityDossier";
-
-/* Lazy-load the heavy 811-line canvas component (no SSR, no need for SEO) */
-const GlobeCanvas = dynamic(
-  () => import("./GlobeCanvas").then((m) => m.GlobeCanvas),
-  {
-    ssr: false,
-    loading: () => (
-      <div
-        aria-hidden="true"
-        className="rounded-full opacity-20"
-        style={{
-          width: 320,
-          height: 320,
-          background: "radial-gradient(circle, rgba(232,160,82,0.18) 0%, transparent 65%)",
-        }}
-      />
-    ),
-  },
-);
 
 const EASE = [0.16, 1, 0.3, 1] as const;
 
@@ -131,6 +111,17 @@ export function SupplyChainSection() {
   const globeSize = useGlobeSize();
   const [hover, setHover] = useState<HoverPayload | null>(null);
   const { tick, visible } = useLiveFeed();
+
+  /* Lazy-load the heavy canvas component — avoids webpack async chunks in CF edge SSR */
+  type GlobeCanvasType = React.ComponentType<GlobeCanvasProps>;
+  const [GlobeCanvas, setGlobeCanvas] = useState<GlobeCanvasType | null>(null);
+  useEffect(() => {
+    let active = true;
+    import("./GlobeCanvas").then((m) => {
+      if (active) setGlobeCanvas(() => m.GlobeCanvas);
+    });
+    return () => { active = false; };
+  }, []);
 
   return (
     <section
@@ -488,16 +479,28 @@ export function SupplyChainSection() {
 
                 {/* Globe — faster rotation 0.08 (was 0.035) */}
                 <div className="relative flex items-center justify-center" style={{ padding: "20px" }}>
-                  <GlobeCanvas
-                    size={globeSize}
-                    initialRotation={-127}
-                    rotationSpeed={0.08}
-                    arcInterval={600}
-                    enableMouseTilt
-                    onCityHover={setHover}
-                  >
-                    {hover && <CityHoverCard payload={hover} />}
-                  </GlobeCanvas>
+                  {GlobeCanvas ? (
+                    <GlobeCanvas
+                      size={globeSize}
+                      initialRotation={-127}
+                      rotationSpeed={0.08}
+                      arcInterval={600}
+                      enableMouseTilt
+                      onCityHover={setHover}
+                    >
+                      {hover && <CityHoverCard payload={hover} />}
+                    </GlobeCanvas>
+                  ) : (
+                    <div
+                      aria-hidden="true"
+                      className="rounded-full opacity-20"
+                      style={{
+                        width: globeSize,
+                        height: globeSize,
+                        background: "radial-gradient(circle, rgba(232,160,82,0.18) 0%, transparent 65%)",
+                      }}
+                    />
+                  )}
                 </div>
               </div>
             </motion.div>
