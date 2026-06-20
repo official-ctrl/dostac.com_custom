@@ -38,6 +38,8 @@ onlyBuiltDependencies:
   - esbuild
   - msw
   - unrs-resolver
+  - sharp
+  - workerd
 
 overrides:
   '@esbuild-kit/esm-loader': npm:tsx@^4.21.0
