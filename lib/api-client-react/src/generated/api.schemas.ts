@@ -225,6 +225,8 @@ export type InquiryUpdateStatus =
 export const InquiryUpdateStatus = {
   new: "new",
   in_progress: "in_progress",
+  quoted: "quoted",
+  contracted: "contracted",
   completed: "completed",
 } as const;
 

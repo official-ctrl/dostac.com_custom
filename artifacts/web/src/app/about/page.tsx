@@ -1,8 +1,9 @@
 "use client";
 
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
+import Image from "next/image";
 import { Layout, dostacImage } from "@/components/dostac/Layout";
 import { useT, useLang, type Lang } from "@/components/dostac/i18n";
 import { SectionNav } from "@/components/dostac/SectionNav";
@@ -94,6 +95,7 @@ function pickItem(item: unknown, base: string, lang: Lang): string {
 
 function useScrollSpy(): SectionId {
   const [active, setActive] = useState<SectionId>("greeting");
+  const activeRef = useRef<SectionId>("greeting");
   useEffect(() => {
     const onScroll = () => {
       const offset = 160;
@@ -104,7 +106,11 @@ function useScrollSpy(): SectionId {
         const top = el.getBoundingClientRect().top;
         if (top - offset <= 0) current = s.id;
       }
-      setActive(current);
+      // 값이 실제로 변경됐을 때만 setState → 매 스크롤 리렌더 방지
+      if (current !== activeRef.current) {
+        activeRef.current = current;
+        setActive(current);
+      }
     };
     window.addEventListener("scroll", onScroll, { passive: true });
     onScroll();
@@ -476,6 +482,25 @@ function AboutContent() {
   const active = useScrollSpy();
   const { data } = useGetPublicAbout();
 
+  const scrollTo = (id: string) => {
+    const el = document.getElementById(id);
+    if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
+
+  // Handle deep-link hash on initial mount (e.g. /about#history from header dropdown)
+  useEffect(() => {
+    const hash = window.location.hash.replace("#", "");
+    if (!hash) return;
+    const attempt = () => {
+      const el = document.getElementById(hash);
+      if (el) { el.scrollIntoView({ behavior: "smooth", block: "start" }); return; }
+      requestAnimationFrame(attempt);
+    };
+    // Small delay to let React finish painting all sections
+    const timer = setTimeout(attempt, 80);
+    return () => clearTimeout(timer);
+  }, []);
+
   const greetingHtml = useMemo(
     () => pickByLang(data, "greetingMessage", lang),
     [data, lang],
@@ -511,12 +536,14 @@ function AboutContent() {
       {/* HERO */}
       <section className="relative w-full min-h-[420px] flex items-center">
         <div className="absolute inset-0 z-0">
-          <img
+          <Image
             src={dostacImage("hero-about.webp")}
-            alt=""
-            fetchPriority="high"
-            loading="eager"
-            className="w-full h-full object-cover"
+            alt="About Dostac — Korean cosmetics OEM/ODM manufacturer connecting global brands to K-Beauty"
+            fill
+            sizes="100vw"
+            priority
+            quality={75}
+            className="object-cover"
           />
           <div className="absolute inset-0 bg-gradient-to-b from-[#0F172A]/70 via-[#0F172A]/60 to-[#0F172A]/75" />
         </div>
@@ -551,6 +578,7 @@ function AboutContent() {
       <SectionNav
         items={SECTIONS.map((s) => ({ id: s.id, label: t(`about.sections.${s.id}`) as string }))}
         activeId={active}
+        onSelect={scrollTo}
         ariaLabel={t("about.sectionNavLabel") as string}
         testIdPrefix="about-tab-"
       />
@@ -568,7 +596,7 @@ function AboutContent() {
             <div className="aspect-[4/5] rounded-2xl overflow-hidden shadow-xl border bg-muted">
               <img
                 src={greetingImg}
-                alt=""
+                alt="Dostac CEO greeting — Korean K-Beauty OEM/ODM leadership"
                 loading="lazy"
                 className="w-full h-full object-cover"
               />
@@ -731,7 +759,7 @@ function AboutContent() {
               ) : data?.directionsImageUrl ? (
                 <img
                   src={data.directionsImageUrl}
-                  alt=""
+                  alt="Directions to Dostac office — Gwangju, Gyeonggi-do, South Korea"
                   className="w-full h-full object-cover"
                 />
               ) : (

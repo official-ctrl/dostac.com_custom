@@ -10,10 +10,21 @@ const nextConfig: NextConfig = {
     "@workspace/api-zod",
   ],
   images: {
+    /* Modern formats — AVIF first (best compression), fallback to WebP */
+    formats: ["image/avif", "image/webp"],
+    /* Responsive breakpoints (matches our useGlobeSize / hero pattern) */
+    deviceSizes: [360, 480, 640, 768, 1024, 1280, 1536, 1920],
+    imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
+    /* Cache optimized variants 31 days */
+    minimumCacheTTL: 60 * 60 * 24 * 31,
     remotePatterns: [
       { protocol: "https", hostname: "**" },
       { protocol: "http", hostname: "localhost" },
     ],
+  },
+  /* Tree-shake icon/animation packages — only used icons land in bundle */
+  experimental: {
+    optimizePackageImports: ["lucide-react", "framer-motion"],
   },
   async rewrites() {
     const apiUrl = process.env.INTERNAL_API_URL ?? "http://localhost:4000";

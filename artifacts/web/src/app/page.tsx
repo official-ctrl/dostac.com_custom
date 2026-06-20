@@ -1,11 +1,9 @@
 "use client";
 
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useState } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  ChevronLeft,
-  ChevronRight,
   ArrowRight,
   CheckCircle2,
   Shield,
@@ -31,16 +29,24 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Layout, dostacImage } from "@/components/dostac/Layout";
-import { useT, useLang, tFor, type Lang } from "@/components/dostac/i18n";
+import { useT, useLang, type Lang } from "@/components/dostac/i18n";
 import { HOME_META } from "@/hooks/page-meta-config";
 import { trackCtaClick, trackFormSubmit, trackFormSuccess, trackFormError } from "@/lib/analytics";
 import {
-  useListPublicBanners,
   useListPublicCategoryTranslations,
   useCreateContactInquiry,
-  type PublicBanner,
-  type CategoryTranslationRow,
 } from "@workspace/api-client-react";
+import Image from "next/image";
+import { MarqueeHero } from "@/components/dostac/home/MarqueeHero";
+import { GlobeHero } from "@/components/dostac/home/GlobeHero";
+import { StatsBar } from "@/components/dostac/home/StatsBar";
+import { TerraCta } from "@/components/dostac/home/TerraCta";
+import { LatestInsightsSection } from "@/components/dostac/home/LatestInsightsSection";
+import { IntelligenceSection } from "@/components/dostac/home/IntelligenceSection";
+import { SupplyChainSection } from "@/components/dostac/home/SupplyChainSection";
+import { TrendSection } from "@/components/dostac/home/TrendSection";
+import { VerificationSection } from "@/components/dostac/home/VerificationSection";
+import { MarketAnalysisSection } from "@/components/dostac/home/MarketAnalysisSection";
 
 /* ── Premium easing curve (Apple/Linear-style deceleration) ── */
 const EASE_OUT_EXPO = [0.16, 1, 0.3, 1] as const;
@@ -52,12 +58,6 @@ const fadeUp = {
     y: 0,
     transition: { duration: 0.65, ease: EASE_OUT_EXPO },
   },
-};
-
-/* Hero: fires after a short delay so the page renders first */
-const heroStagger = {
-  hidden: {},
-  show: { transition: { staggerChildren: 0.12, delayChildren: 0.15 } },
 };
 
 /* Sections: subtle initial delay so cards don't all pop at once */
@@ -72,315 +72,8 @@ const sectionHeaderStagger = {
   show: { transition: { staggerChildren: 0.1 } },
 };
 
-const LANG_FIELD: Record<
-  Lang,
-  { title: keyof PublicBanner["translations"]; desc: keyof PublicBanner["translations"] }
-> = {
-  ko: { title: "titleKo", desc: "descriptionKo" },
-  en: { title: "titleEn", desc: "descriptionEn" },
-  ja: { title: "titleJa", desc: "descriptionJa" },
-  zh: { title: "titleZh", desc: "descriptionZh" },
-  vi: { title: "titleVi", desc: "descriptionVi" },
-};
-
-function pickBannerText(b: PublicBanner, lang: Lang) {
-  const fields = LANG_FIELD[lang];
-  const title =
-    (b.translations[fields.title] as string | null | undefined) ??
-    b.translations.titleKo ??
-    "";
-  const description =
-    (b.translations[fields.desc] as string | null | undefined) ??
-    b.translations.descriptionKo ??
-    "";
-  return { title, description };
-}
-
 /* ─────────────────────────────────────────────
-   1. HERO SECTION (banner slider)
-───────────────────────────────────────────── */
-function HeroSection() {
-  const { lang } = useLang();
-  const { t } = useT();
-  const { data, isLoading } = useListPublicBanners();
-  const banners = data ?? [];
-  const [active, setActive] = useState(0);
-
-  useEffect(() => {
-    if (banners.length <= 1) return;
-    const id = window.setInterval(() => {
-      setActive((i) => (i + 1) % banners.length);
-    }, 6000);
-    return () => window.clearInterval(id);
-  }, [banners.length]);
-
-  useEffect(() => {
-    if (active >= banners.length) setActive(0);
-  }, [banners.length, active]);
-
-  const go = (next: number) =>
-    setActive(((next % banners.length) + banners.length) % banners.length);
-
-  if (isLoading || banners.length === 0) {
-    return (
-      <section className="relative w-full min-h-[92vh] [min-height:92svh] overflow-hidden bg-[#0F172A]">
-        <img
-          src={dostacImage("hero-home.webp")}
-          alt=""
-          width={1408}
-          height={768}
-          fetchPriority="high"
-          loading="eager"
-          className="absolute inset-0 w-full h-full object-cover opacity-30"
-        />
-        <div className="absolute inset-0 bg-gradient-to-b from-[#0F172A]/90 via-[#0F172A]/60 to-white/80" />
-        <HeroTextOverlay
-          title={t("homeNew.heroFallbackTitle") as string}
-          description={t("homeNew.heroFallbackDesc") as string}
-          lang={lang}
-          slideKey="fallback"
-        />
-      </section>
-    );
-  }
-
-  return (
-    <section
-      className="relative w-full min-h-[92vh] [min-height:92svh] overflow-hidden bg-[#0F172A]"
-      data-testid="home-slider"
-    >
-      {banners.map((b, i) => {
-        const text = pickBannerText(b, lang);
-        const isActive = i === active;
-        return (
-          <div
-            key={b.id}
-            className={`absolute inset-0 transition-opacity duration-700 ease-out ${
-              isActive ? "opacity-100" : "opacity-0 pointer-events-none"
-            }`}
-            aria-hidden={!isActive}
-          >
-            {/* Background: optional link wraps only the image/overlay */}
-            {b.linkUrl ? (
-              <a href={b.linkUrl} className="absolute inset-0 block z-0" tabIndex={-1} aria-hidden="true">
-                <img
-                  src={b.imageUrl ?? ""}
-                  alt=""
-                  fetchPriority={isActive ? "high" : "low"}
-                  loading="eager"
-                  className="absolute inset-0 w-full h-full object-cover object-center opacity-35"
-                  onError={(e) => {
-                    (e.target as HTMLImageElement).src = dostacImage("hero-home.webp");
-                  }}
-                />
-                <div className="absolute inset-0 bg-gradient-to-b from-[#0F172A]/85 via-[#0F172A]/55 to-white/75" />
-              </a>
-            ) : (
-              <>
-                {b.imageUrl && (
-                  <img
-                    src={b.imageUrl}
-                    alt=""
-                    fetchPriority={isActive ? "high" : "low"}
-                    loading="eager"
-                    className="absolute inset-0 w-full h-full object-cover object-center opacity-35"
-                    onError={(e) => {
-                      (e.target as HTMLImageElement).src = dostacImage("hero-home.webp");
-                    }}
-                  />
-                )}
-                <div className="absolute inset-0 bg-gradient-to-b from-[#0F172A]/85 via-[#0F172A]/55 to-white/75" />
-              </>
-            )}
-            {/* Text + CTAs: always outside the banner link */}
-            <HeroTextOverlay
-              title={text.title || (t("homeNew.heroFallbackTitle") as string)}
-              description={text.description || (t("homeNew.heroFallbackDesc") as string)}
-              lang={lang}
-              slideKey={b.id}
-              isActive={isActive}
-            />
-          </div>
-        );
-      })}
-
-      {banners.length > 1 && (
-        <>
-          <button
-            type="button"
-            onClick={() => go(active - 1)}
-            className="hidden md:inline-flex absolute left-8 top-1/2 -translate-y-1/2 z-20 h-11 w-11 items-center justify-center rounded-full bg-white/15 hover:bg-white/30 text-white backdrop-blur transition"
-            aria-label="Previous slide"
-            data-testid="banner-prev"
-          >
-            <ChevronLeft className="h-5 w-5" />
-          </button>
-          <button
-            type="button"
-            onClick={() => go(active + 1)}
-            className="hidden md:inline-flex absolute right-8 top-1/2 -translate-y-1/2 z-20 h-11 w-11 items-center justify-center rounded-full bg-white/15 hover:bg-white/30 text-white backdrop-blur transition"
-            aria-label="Next slide"
-            data-testid="banner-next"
-          >
-            <ChevronRight className="h-5 w-5" />
-          </button>
-          <div className="absolute bottom-10 left-0 right-0 z-20 flex items-center justify-center gap-2">
-            {banners.map((b, i) => (
-              <button
-                key={b.id}
-                type="button"
-                onClick={() => go(i)}
-                aria-label={`Go to slide ${i + 1}`}
-                data-testid={`banner-dot-${i}`}
-                className={`h-1.5 rounded-full transition-all ${
-                  i === active ? "w-8 bg-accent" : "w-2 bg-white/40 hover:bg-white/70"
-                }`}
-              />
-            ))}
-          </div>
-        </>
-      )}
-    </section>
-  );
-}
-
-function HeroTextOverlay({
-  title,
-  description,
-  lang,
-  slideKey,
-  isActive = true,
-}: {
-  title: string;
-  description: string;
-  lang: Lang;
-  slideKey: string | number;
-  isActive?: boolean;
-}) {
-  // ── Language-switch cross-fade ────────────────────────────────────────────
-  // isFadedOut drives opacity 1→0→1 on the entire text block.
-  // displayedTitle/Desc/Lang are frozen snapshots; they only update after the
-  // fade-out animation completes so old-language text is visible during exit
-  // and new-language text appears on the fade-in.
-  // Using displayedLang (via tFor) for eyebrow + CTA labels ensures they stay
-  // in sync with the title/desc freeze rather than snapping on the render that
-  // triggers the lang useEffect (which runs post-paint, after t() already
-  // returns new-lang values).
-  const [isFadedOut, setIsFadedOut] = useState(false);
-  const isFadedOutRef = useRef(false);
-  const [displayedTitle, setDisplayedTitle] = useState(title);
-  const [displayedDesc, setDisplayedDesc] = useState(description);
-  const [displayedLang, setDisplayedLang] = useState<Lang>(lang);
-  const latestTitleRef = useRef(title);
-  const latestDescRef = useRef(description);
-  const latestLangRef = useRef(lang);
-
-  // Keep latest refs current so handleFadeComplete always reads fresh values.
-  // Also push to displayed state immediately when not mid-fade (covers
-  // same-language data refreshes where no fade-out cycle is triggered).
-  useEffect(() => {
-    latestTitleRef.current = title;
-    latestDescRef.current = description;
-    if (!isFadedOutRef.current) {
-      setDisplayedTitle(title);
-      setDisplayedDesc(description);
-    }
-  }, [title, description]);
-
-  // Trigger fade-out on lang change.
-  const prevLangRef = useRef(lang);
-  useEffect(() => {
-    if (prevLangRef.current === lang) return;
-    prevLangRef.current = lang;
-    latestLangRef.current = lang;
-    isFadedOutRef.current = true;
-    setIsFadedOut(true);
-  }, [lang]);
-
-  // When fade-out animation completes, swap all displayed content and fade back in.
-  const handleFadeComplete = useCallback(() => {
-    if (!isFadedOutRef.current) return;
-    setDisplayedTitle(latestTitleRef.current);
-    setDisplayedDesc(latestDescRef.current);
-    setDisplayedLang(latestLangRef.current);
-    isFadedOutRef.current = false;
-    setIsFadedOut(false);
-  }, []);
-
-  return (
-    <div className="relative z-10 flex items-center min-h-[92vh] [min-height:92svh] w-full pointer-events-none">
-      <div className="container mx-auto px-6 py-24 max-w-5xl">
-        <AnimatePresence mode="sync">
-          {isActive && (
-            <motion.div
-              key={slideKey}
-              initial="hidden"
-              animate="show"
-              exit="hidden"
-              variants={heroStagger}
-              className="max-w-3xl pointer-events-auto"
-            >
-              {/* 1. Badge/Eyebrow + 2. Headline + 3. Subheadline + 4. CTAs: all fade out/in on language switch */}
-              <motion.div
-                animate={{ opacity: isFadedOut ? 0 : 1 }}
-                transition={{ duration: 0.3, ease: [0.4, 0, 0.6, 1] }}
-                onAnimationComplete={handleFadeComplete}
-              >
-                {/* 1. Badge / Eyebrow */}
-                <motion.p
-                  variants={fadeUp}
-                  className="uppercase tracking-[0.2em] md:tracking-[0.3em] text-[10px] md:text-xs text-accent font-bold mb-4 md:mb-5 line-clamp-1"
-                >
-                  {tFor(displayedLang, "homeNew.heroEyebrow") as string}
-                </motion.p>
-
-                {/* 2. Headline */}
-                <motion.h1
-                  variants={fadeUp}
-                  className="font-display text-4xl md:text-6xl lg:text-7xl font-bold text-white leading-[1.08] mb-6"
-                >
-                  {displayedTitle}
-                </motion.h1>
-
-                {/* 3. Subheadline */}
-                <motion.p
-                  variants={fadeUp}
-                  className="text-lg md:text-xl text-white/75 leading-relaxed mb-10 max-w-2xl"
-                >
-                  {displayedDesc}
-                </motion.p>
-
-                {/* 4. CTA Buttons */}
-                <motion.div variants={fadeUp} className="flex flex-wrap gap-4">
-                  <a href="#rfq" onClick={() => trackCtaClick("Get OEM Quote", "hero")}>
-                    <Button
-                      size="lg"
-                      className="rounded-full bg-accent hover:bg-accent/90 text-white h-13 px-8 text-base font-semibold shadow-lg shadow-accent/30 hover:shadow-accent/50 transition-shadow"
-                    >
-                      {tFor(displayedLang, "homeNew.heroCtaOem") as string} <ArrowRight className="ml-2 h-4 w-4" />
-                    </Button>
-                  </a>
-                  <Link href="/contact" onClick={() => trackCtaClick("Contact Us", "hero")}>
-                    <Button
-                      size="lg"
-                      variant="outline"
-                      className="rounded-full border-white/50 text-white bg-white/8 hover:bg-white/20 hover:text-white h-13 px-8 text-base font-semibold backdrop-blur-sm"
-                    >
-                      {tFor(displayedLang, "homeNew.heroCtaContact") as string}
-                    </Button>
-                  </Link>
-                </motion.div>
-              </motion.div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </div>
-    </div>
-  );
-}
-
-/* ─────────────────────────────────────────────
-   2. TRUST BADGES
+   1. TRUST BADGES
 ───────────────────────────────────────────── */
 const TRUST_ICONS = [Award, Shield, CheckCircle2, Globe2, FlaskConical];
 
@@ -407,7 +100,7 @@ function TrustSection() {
   return (
     <>
       {/* ── Trust badges ── */}
-      <section className="py-10 bg-white border-b border-slate-100">
+      <section className="py-10 bg-[#F5F0E8]">
         <div className="container mx-auto px-6">
           <motion.div
             initial="hidden"
@@ -424,10 +117,10 @@ function TrustSection() {
                   variants={fadeUp}
                   className="flex flex-col items-center text-center gap-2 p-4 rounded-xl hover:bg-slate-50 transition-colors"
                 >
-                  <div className="w-11 h-11 rounded-full bg-accent/10 flex items-center justify-center mb-1">
-                    <Icon className="h-5 w-5 text-accent" />
+                  <div className="w-11 h-11 rounded-full bg-[#8B5E3C]/10 flex items-center justify-center mb-1">
+                    <Icon className="h-5 w-5 text-[#8B5E3C]" />
                   </div>
-                  <span className="text-sm font-bold text-[#0F172A]">{badge.label}</span>
+                  <span className="text-sm font-bold text-[#2D2D2D]">{badge.label}</span>
                   <span className="text-xs text-slate-500">{badge.sub}</span>
                 </motion.div>
               );
@@ -437,7 +130,7 @@ function TrustSection() {
       </section>
 
       {/* ── MOQ callout bar ── */}
-      <section className="py-6 bg-[#0F172A]">
+      <section className="py-6 bg-[#2D2D2D]">
         <div className="container mx-auto px-6">
           <motion.div
             initial="hidden"
@@ -453,7 +146,7 @@ function TrustSection() {
               <motion.div key={item.label} variants={fadeUp} className="flex items-baseline gap-2">
                 <span className="font-display text-2xl font-semibold text-white">{item.qty}</span>
                 <span className="text-xs text-slate-400">{item.unit}</span>
-                <span className="text-xs text-accent font-semibold">/ {item.label}</span>
+                <span className="text-xs text-[#8B5E3C] font-semibold">/ {item.label}</span>
               </motion.div>
             ))}
           </motion.div>
@@ -461,7 +154,7 @@ function TrustSection() {
       </section>
 
       {/* ── Partner logo strip ── */}
-      <section className="py-8 bg-slate-50 border-b border-slate-100">
+      <section className="py-8 bg-[#F5F0E8]">
         <div className="container mx-auto px-6">
           <motion.p
             initial={{ opacity: 0 }}
@@ -485,7 +178,7 @@ function TrustSection() {
                 variants={fadeUp}
                 className="flex flex-col items-center gap-0.5 opacity-50 hover:opacity-80 transition-opacity"
               >
-                <span className="text-xs font-bold tracking-widest text-[#0F172A]">{p.name}</span>
+                <span className="text-xs font-bold tracking-widest text-[#2D2D2D]">{p.name}</span>
                 <span className="text-[9px] text-slate-400 uppercase tracking-wider">{p.sub}</span>
               </motion.div>
             ))}
@@ -496,62 +189,10 @@ function TrustSection() {
   );
 }
 
-/* ─────────────────────────────────────────────
-   3. PRODUCTION FLOW
-───────────────────────────────────────────── */
-function ProductionFlowSection() {
-  const { t } = useT();
-  const flowSteps = t("homeNew.flowSteps") as Array<{ step: string; title: string; desc: string }>;
-
-  return (
-    <section className="py-20 md:py-28 bg-[#F5F7FA]">
-      <div className="container mx-auto px-6">
-        <motion.div
-          initial="hidden"
-          whileInView="show"
-          viewport={{ once: true, amount: 0.2 }}
-          variants={sectionHeaderStagger}
-          className="max-w-2xl mx-auto text-center mb-14"
-        >
-          <motion.p variants={fadeUp} className="uppercase tracking-[0.25em] text-xs font-bold text-accent mb-3">
-            {t("homeNew.flowEyebrow") as string}
-          </motion.p>
-          <motion.h2 variants={fadeUp} className="font-display text-3xl md:text-4xl font-bold text-[#0F172A] leading-tight">
-            {t("homeNew.flowHeading") as string}
-          </motion.h2>
-        </motion.div>
-
-        <div className="relative">
-          <div className="hidden lg:block absolute top-[2.2rem] left-[10%] right-[10%] h-px bg-slate-300 z-0" />
-          <motion.div
-            initial="hidden"
-            whileInView="show"
-            viewport={{ once: true, amount: 0.2 }}
-            variants={stagger}
-            className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-5 gap-y-10 gap-x-4"
-          >
-            {flowSteps.map((s, idx) => (
-              <motion.div
-                key={idx}
-                variants={fadeUp}
-                className="relative flex flex-col items-center text-center group"
-              >
-                <div className="relative z-10 w-[4.5rem] h-[4.5rem] rounded-full bg-white border-2 border-slate-200 flex items-center justify-center mb-5 shadow-sm group-hover:border-accent group-hover:shadow-accent/20 group-hover:shadow-md transition-all">
-                  <span className="font-display font-bold text-accent text-sm">{s.step}</span>
-                </div>
-                <h3 className="font-bold text-[#0F172A] text-sm mb-1.5">{s.title}</h3>
-                <p className="text-slate-500 text-xs leading-relaxed">{s.desc}</p>
-              </motion.div>
-            ))}
-          </motion.div>
-        </div>
-      </div>
-    </section>
-  );
-}
+/* ProductionFlowSection replaced by HorizontalTimeline (imported above) */
 
 /* ─────────────────────────────────────────────
-   4. PRODUCT SHOWCASE
+   3. PRODUCT SHOWCASE (masonry grid)
 ───────────────────────────────────────────── */
 const PRODUCT_IMAGES = [
   "product-baby-wipes.webp",
@@ -570,6 +211,9 @@ const CAT_LANG_KEY: Record<Lang, CatNameKey> = {
   zh: "nameZh",
   vi: "nameVi",
 };
+
+/* Alternating aspect ratios create masonry height variation */
+const MASONRY_ASPECTS = ["aspect-[4/3]", "aspect-[3/4]", "aspect-[4/3]", "aspect-[3/4]", "aspect-[4/3]", "aspect-[3/4]"];
 
 function ProductShowcaseSection() {
   const { t } = useT();
@@ -593,7 +237,7 @@ function ProductShowcaseSection() {
         }));
 
   return (
-    <section className="py-20 md:py-28 bg-white">
+    <section className="py-20 md:py-28 bg-[#F5F0E8]">
       <div className="container mx-auto px-6">
         <motion.div
           initial="hidden"
@@ -602,50 +246,53 @@ function ProductShowcaseSection() {
           variants={sectionHeaderStagger}
           className="max-w-2xl mx-auto text-center mb-14"
         >
-          <motion.p variants={fadeUp} className="uppercase tracking-[0.25em] text-xs font-bold text-accent mb-3">
+          <motion.p variants={fadeUp} className="uppercase tracking-[0.25em] text-xs font-bold text-[#8B5E3C] mb-3">
             {t("homeNew.showcaseEyebrow") as string}
           </motion.p>
-          <motion.h2 variants={fadeUp} className="font-display text-3xl md:text-4xl font-bold text-[#0F172A] leading-tight mb-4">
+          <motion.h2 variants={fadeUp} className="font-display text-3xl md:text-4xl font-bold text-[#2D2D2D] leading-tight mb-4">
             {t("homeNew.showcaseHeading") as string}
           </motion.h2>
           <motion.p variants={fadeUp} className="text-slate-500 text-base">{t("homeNew.showcaseSub") as string}</motion.p>
         </motion.div>
 
-        <motion.div
-          initial="hidden"
-          whileInView="show"
-          viewport={{ once: true, amount: 0.15 }}
-          variants={stagger}
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-12"
-        >
+        {/* Masonry grid — CSS columns for column-major flow with varying heights */}
+        <div className="columns-1 sm:columns-2 lg:columns-3 gap-x-6 mb-12">
           {displayItems.map((item, idx) => {
             const href = item.category
               ? `/products?category=${encodeURIComponent(item.category)}`
               : "/products";
+            const aspectClass = MASONRY_ASPECTS[idx % MASONRY_ASPECTS.length];
             return (
-              <motion.div key={idx} variants={fadeUp}>
-                <div className="group rounded-2xl overflow-hidden border border-slate-100 hover:border-accent/30 hover:shadow-xl transition-all bg-white">
+              <motion.div
+                key={idx}
+                initial={{ opacity: 0, y: 16 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: (idx % 3) * 0.1 }}
+                className="break-inside-avoid mb-6"
+              >
+                <div className="group rounded-2xl overflow-hidden border border-slate-100 hover:border-[#8B5E3C]/30 hover:shadow-xl transition-all bg-white">
                   <Link href={href} className="block">
-                    <div className="aspect-[4/3] overflow-hidden bg-[#F5F7FA]">
-                      <img
+                    <div className={`${aspectClass} overflow-hidden bg-[#F5F0E8] relative`}>
+                      <Image
                         src={dostacImage(item.imageKey)}
                         alt={item.name}
-                        width={800}
-                        height={600}
+                        fill
+                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                         loading="lazy"
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                        className="object-cover group-hover:scale-105 transition-transform duration-500"
                       />
                     </div>
                   </Link>
                   <div className="p-5">
-                    <span className="inline-block text-xs font-bold text-accent bg-accent/10 px-2.5 py-0.5 rounded-full mb-3">
+                    <span className="inline-block text-xs font-bold text-[#8B5E3C] bg-[#8B5E3C]/10 px-2.5 py-0.5 rounded-full mb-3">
                       {item.badge}
                     </span>
                     <Link href={href} className="block mb-3">
-                      <h3 className="font-bold text-[#0F172A] text-base group-hover:text-accent transition-colors">{item.name}</h3>
+                      <h3 className="font-bold text-[#2D2D2D] text-base group-hover:text-[#8B5E3C] transition-colors">{item.name}</h3>
                     </Link>
                     {item.category && (
-                      <Link href={href} className="inline-flex items-center gap-1 text-xs font-semibold text-accent hover:underline w-fit">
+                      <Link href={href} className="inline-flex items-center gap-1 text-xs font-semibold text-[#8B5E3C] hover:underline w-fit">
                         {(t("homeNew.showcaseSeeAll") as string).replace("{cat}", item.name)}
                         <ArrowRight className="h-3 w-3" />
                       </Link>
@@ -655,13 +302,13 @@ function ProductShowcaseSection() {
               </motion.div>
             );
           })}
-        </motion.div>
+        </div>
 
         <div className="text-center">
           <Link href="/products">
             <Button
               size="lg"
-              className="rounded-full bg-accent hover:bg-accent/90 text-white h-12 px-10 text-sm font-semibold shadow-sm"
+              className="rounded-full bg-[#8B5E3C] hover:bg-[#8B5E3C]/90 text-white h-12 px-10 text-sm font-semibold shadow-sm"
             >
               {t("homeNew.showcaseCta") as string} <ArrowRight className="ml-2 h-4 w-4" />
             </Button>
@@ -682,7 +329,7 @@ function FactoryQualitySection() {
   const qcPoints = t("homeNew.qcPoints") as Array<{ title: string; desc: string }>;
 
   return (
-    <section className="py-20 md:py-28 bg-[#F5F7FA]">
+    <section className="py-20 md:py-28 bg-[#F5F0E8]">
       <div className="container mx-auto px-6">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           <motion.div
@@ -691,23 +338,23 @@ function FactoryQualitySection() {
             viewport={{ once: true, amount: 0.2 }}
             variants={sectionHeaderStagger}
           >
-            <motion.p variants={fadeUp} className="uppercase tracking-[0.25em] text-xs font-bold text-accent mb-3">
+            <motion.p variants={fadeUp} className="uppercase tracking-[0.25em] text-xs font-bold text-[#8B5E3C] mb-3">
               {t("homeNew.factoryEyebrow") as string}
             </motion.p>
-            <motion.h2 variants={fadeUp} className="font-display text-3xl md:text-4xl font-bold text-[#0F172A] leading-tight mb-5">
+            <motion.h2 variants={fadeUp} className="font-display text-3xl md:text-4xl font-bold text-[#2D2D2D] leading-tight mb-5">
               {t("homeNew.factoryHeading") as string}
             </motion.h2>
             <motion.p variants={fadeUp} className="text-slate-600 leading-relaxed mb-8">
               {t("homeNew.factoryBody") as string}
             </motion.p>
-            <motion.div variants={fadeUp} className="aspect-[16/10] rounded-2xl overflow-hidden bg-slate-200">
-              <img
+            <motion.div variants={fadeUp} className="aspect-[16/10] rounded-2xl overflow-hidden bg-slate-200 relative">
+              <Image
                 src={dostacImage("hero-production.webp")}
                 alt="Factory"
-                width={1408}
-                height={768}
+                fill
+                sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 720px"
                 loading="lazy"
-                className="w-full h-full object-cover"
+                className="object-cover"
               />
             </motion.div>
           </motion.div>
@@ -725,13 +372,13 @@ function FactoryQualitySection() {
                 <motion.div
                   key={idx}
                   variants={fadeUp}
-                  className="flex gap-5 p-5 rounded-2xl bg-white border border-slate-100 hover:border-accent/25 hover:shadow-md transition-all"
+                  className="flex gap-5 p-5 rounded-2xl bg-white border border-slate-100 hover:border-[#8B5E3C]/25 hover:shadow-md transition-all"
                 >
-                  <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-accent/10 flex items-center justify-center">
-                    <Icon className="h-5 w-5 text-accent" />
+                  <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-[#8B5E3C]/10 flex items-center justify-center">
+                    <Icon className="h-5 w-5 text-[#8B5E3C]" />
                   </div>
                   <div>
-                    <h3 className="font-bold text-[#0F172A] text-sm mb-1">{pt.title}</h3>
+                    <h3 className="font-bold text-[#2D2D2D] text-sm mb-1">{pt.title}</h3>
                     <p className="text-slate-500 text-sm leading-relaxed">{pt.desc}</p>
                   </div>
                 </motion.div>
@@ -814,7 +461,7 @@ function WorldMapSVG() {
           y1={KOREA_DOT.y}
           x2={dot.x}
           y2={dot.y}
-          stroke="#FF6A1A"
+          stroke="#8B5E3C"
           strokeWidth="0.6"
           strokeOpacity="0.25"
           strokeDasharray="3 4"
@@ -824,14 +471,14 @@ function WorldMapSVG() {
       {/* Export country dots */}
       {EXPORT_DOTS.map((dot) => (
         <g key={`dot-${dot.id}`}>
-          <circle cx={dot.x} cy={dot.y} r="5" fill="#FF6A1A" opacity="0.25" />
-          <circle cx={dot.x} cy={dot.y} r="3" fill="#FF6A1A" opacity="0.7" />
+          <circle cx={dot.x} cy={dot.y} r="5" fill="#8B5E3C" opacity="0.25" />
+          <circle cx={dot.x} cy={dot.y} r="3" fill="#8B5E3C" opacity="0.7" />
         </g>
       ))}
 
       {/* Korea HQ dot (larger, white) */}
-      <circle cx={KOREA_DOT.x} cy={KOREA_DOT.y} r="8" fill="#FF6A1A" opacity="0.2" />
-      <circle cx={KOREA_DOT.x} cy={KOREA_DOT.y} r="5" fill="#FF6A1A" opacity="0.9" />
+      <circle cx={KOREA_DOT.x} cy={KOREA_DOT.y} r="8" fill="#8B5E3C" opacity="0.2" />
+      <circle cx={KOREA_DOT.x} cy={KOREA_DOT.y} r="5" fill="#8B5E3C" opacity="0.9" />
       <circle cx={KOREA_DOT.x} cy={KOREA_DOT.y} r="2.5" fill="#ffffff" />
     </svg>
   );
@@ -850,7 +497,7 @@ function GlobalDistributionSection() {
   const exportRegions = t("homeNew.exportRegions") as Array<{ region: string; countries: string[] }>;
 
   return (
-    <section className="py-20 md:py-28 bg-[#0F172A] text-white overflow-hidden">
+    <section className="py-20 md:py-28 bg-[#2D2D2D] text-white overflow-hidden">
       <div className="container mx-auto px-6">
         <motion.div
           initial="hidden"
@@ -859,7 +506,7 @@ function GlobalDistributionSection() {
           variants={sectionHeaderStagger}
           className="max-w-2xl mx-auto text-center mb-14"
         >
-          <motion.p variants={fadeUp} className="uppercase tracking-[0.25em] text-xs font-bold text-accent mb-3">
+          <motion.p variants={fadeUp} className="uppercase tracking-[0.25em] text-xs font-bold text-[#8B5E3C] mb-3">
             {t("homeNew.globalEyebrow") as string}
           </motion.p>
           <motion.h2 variants={fadeUp} className="font-display text-3xl md:text-4xl font-bold leading-tight mb-4">
@@ -882,7 +529,7 @@ function GlobalDistributionSection() {
               variants={fadeUp}
               className="text-center p-6 rounded-2xl bg-white/5 border border-white/10"
             >
-              <div className="font-display text-3xl md:text-4xl font-bold text-accent mb-1">{stat.value}</div>
+              <div className="font-display text-3xl md:text-4xl font-bold text-[#8B5E3C] mb-1">{stat.value}</div>
               <div className="text-white/60 text-sm">{stat.label}</div>
             </motion.div>
           ))}
@@ -912,7 +559,7 @@ function GlobalDistributionSection() {
             <motion.div
               key={idx}
               variants={fadeUp}
-              className="p-5 rounded-2xl bg-white/5 border border-white/10 hover:border-accent/30 transition-colors"
+              className="p-5 rounded-2xl bg-white/5 border border-white/10 hover:border-[#8B5E3C]/30 transition-colors"
             >
               <div className={`w-full h-1.5 rounded-full bg-gradient-to-r ${REGION_COLORS[idx] ?? REGION_COLORS[0]} mb-4`} />
               <h3 className="font-bold text-white text-sm mb-3">{region.region}</h3>
@@ -922,7 +569,7 @@ function GlobalDistributionSection() {
                     key={c}
                     className="inline-flex items-center gap-1 text-xs text-white/60 bg-white/5 px-2 py-0.5 rounded-full border border-white/10"
                   >
-                    <span className="w-1.5 h-1.5 rounded-full bg-accent inline-block" />
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#8B5E3C] inline-block" />
                     {c}
                   </span>
                 ))}
@@ -945,7 +592,7 @@ function OEMServicesSection() {
   const serviceCards = t("homeNew.serviceCards") as Array<{ title: string; desc: string }>;
 
   return (
-    <section className="py-20 md:py-28 bg-white">
+    <section className="py-20 md:py-28 bg-[#F5F0E8]">
       <div className="container mx-auto px-6">
         <motion.div
           initial="hidden"
@@ -954,10 +601,10 @@ function OEMServicesSection() {
           variants={sectionHeaderStagger}
           className="max-w-2xl mx-auto text-center mb-14"
         >
-          <motion.p variants={fadeUp} className="uppercase tracking-[0.25em] text-xs font-bold text-accent mb-3">
+          <motion.p variants={fadeUp} className="uppercase tracking-[0.25em] text-xs font-bold text-[#8B5E3C] mb-3">
             {t("homeNew.servicesEyebrow") as string}
           </motion.p>
-          <motion.h2 variants={fadeUp} className="font-display text-3xl md:text-4xl font-bold text-[#0F172A] leading-tight mb-4">
+          <motion.h2 variants={fadeUp} className="font-display text-3xl md:text-4xl font-bold text-[#2D2D2D] leading-tight mb-4">
             {t("homeNew.servicesHeading") as string}
           </motion.h2>
           <motion.p variants={fadeUp} className="text-slate-500 text-base">{t("homeNew.servicesSub") as string}</motion.p>
@@ -976,12 +623,12 @@ function OEMServicesSection() {
               <motion.div
                 key={idx}
                 variants={fadeUp}
-                className="group p-7 rounded-2xl border border-slate-100 hover:border-accent/30 hover:shadow-xl transition-all bg-white"
+                className="group p-7 rounded-2xl border border-slate-100 hover:border-[#8B5E3C]/30 hover:shadow-xl transition-all bg-white"
               >
-                <div className="w-12 h-12 rounded-xl bg-accent/10 flex items-center justify-center mb-5 group-hover:bg-accent transition-colors">
-                  <Icon className="h-5 w-5 text-accent group-hover:text-white transition-colors" />
+                <div className="w-12 h-12 rounded-xl bg-[#8B5E3C]/10 flex items-center justify-center mb-5 group-hover:bg-[#8B5E3C] transition-colors">
+                  <Icon className="h-5 w-5 text-[#8B5E3C] group-hover:text-white transition-colors" />
                 </div>
-                <h3 className="font-bold text-[#0F172A] text-base mb-2">{card.title}</h3>
+                <h3 className="font-bold text-[#2D2D2D] text-base mb-2">{card.title}</h3>
                 <p className="text-slate-500 text-sm leading-relaxed">{card.desc}</p>
               </motion.div>
             );
@@ -990,7 +637,7 @@ function OEMServicesSection() {
           {/* CTA card */}
           <motion.div
             variants={fadeUp}
-            className="p-7 rounded-2xl bg-accent text-white flex flex-col justify-between"
+            className="p-7 rounded-2xl bg-[#8B5E3C] text-white flex flex-col justify-between"
           >
             <div>
               <h3 className="font-bold text-lg mb-3">{t("homeNew.servicesCtaTitle") as string}</h3>
@@ -1001,7 +648,7 @@ function OEMServicesSection() {
             <Link href="/contact" onClick={() => trackCtaClick("Get OEM Quote", "rfq_section")}>
               <Button
                 size="sm"
-                className="rounded-full bg-white text-accent hover:bg-white/90 font-semibold w-full"
+                className="rounded-full bg-white text-[#8B5E3C] hover:bg-white/90 font-semibold w-full"
               >
                 {t("homeNew.servicesCtaBtn") as string} <ArrowRight className="ml-1 h-3.5 w-3.5" />
               </Button>
@@ -1085,7 +732,7 @@ function ContactRFQSection() {
   };
 
   return (
-    <section className="py-20 md:py-28 bg-[#F5F7FA] scroll-mt-[5.5rem]" id="rfq">
+    <section className="py-20 md:py-28 bg-[#F5F0E8] scroll-mt-[5.5rem]" id="rfq">
       <div className="container mx-auto px-6">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
           <motion.div
@@ -1094,10 +741,10 @@ function ContactRFQSection() {
             viewport={{ once: true, amount: 0.2 }}
             variants={sectionHeaderStagger}
           >
-            <motion.p variants={fadeUp} className="uppercase tracking-[0.25em] text-xs font-bold text-accent mb-3">
+            <motion.p variants={fadeUp} className="uppercase tracking-[0.25em] text-xs font-bold text-[#8B5E3C] mb-3">
               {t("homeNew.rfqEyebrow") as string}
             </motion.p>
-            <motion.h2 variants={fadeUp} className="font-display text-3xl md:text-4xl font-bold text-[#0F172A] leading-tight mb-5">
+            <motion.h2 variants={fadeUp} className="font-display text-3xl md:text-4xl font-bold text-[#2D2D2D] leading-tight mb-5">
               {t("homeNew.rfqHeading") as string}
             </motion.h2>
             <motion.p variants={fadeUp} className="text-slate-600 leading-relaxed mb-8">
@@ -1106,7 +753,7 @@ function ContactRFQSection() {
             <motion.div variants={stagger} className="flex flex-col gap-4">
               {rfqBullets.map((bullet, i) => (
                 <motion.div key={i} variants={fadeUp} className="flex items-center gap-3">
-                  <CheckCircle2 className="h-5 w-5 text-accent flex-shrink-0" />
+                  <CheckCircle2 className="h-5 w-5 text-[#8B5E3C] flex-shrink-0" />
                   <span className="text-slate-700 text-sm">{bullet}</span>
                 </motion.div>
               ))}
@@ -1130,10 +777,10 @@ function ContactRFQSection() {
                   transition={{ duration: 0.2, ease: "easeOut" }}
                   className="flex flex-col items-center text-center py-10 gap-4"
                 >
-                  <div className="w-14 h-14 rounded-full bg-accent/10 flex items-center justify-center">
-                    <CheckCircle2 className="h-7 w-7 text-accent" />
+                  <div className="w-14 h-14 rounded-full bg-[#8B5E3C]/10 flex items-center justify-center">
+                    <CheckCircle2 className="h-7 w-7 text-[#8B5E3C]" />
                   </div>
-                  <h3 className="font-bold text-[#0F172A] text-lg">
+                  <h3 className="font-bold text-[#2D2D2D] text-lg">
                     {t("homeNew.rfqSuccessTitle") as string}
                   </h3>
                   <p className="text-slate-500 text-sm max-w-xs leading-relaxed">
@@ -1160,7 +807,7 @@ function ContactRFQSection() {
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="flex flex-col gap-1.5">
                       <Label htmlFor="rfq-name" className="text-sm font-semibold text-slate-700">
-                        {t("homeNew.rfqName") as string} <span className="text-accent">*</span>
+                        {t("homeNew.rfqName") as string} <span className="text-[#8B5E3C]">*</span>
                       </Label>
                       <Input
                         id="rfq-name"
@@ -1173,7 +820,7 @@ function ContactRFQSection() {
                     </div>
                     <div className="flex flex-col gap-1.5">
                       <Label htmlFor="rfq-email" className="text-sm font-semibold text-slate-700">
-                        {t("homeNew.rfqEmail") as string} <span className="text-accent">*</span>
+                        {t("homeNew.rfqEmail") as string} <span className="text-[#8B5E3C]">*</span>
                       </Label>
                       <Input
                         id="rfq-email"
@@ -1283,7 +930,7 @@ function ContactRFQSection() {
 
                   <div className="flex flex-col gap-1.5">
                     <Label htmlFor="rfq-message" className="text-sm font-semibold text-slate-700">
-                      {t("homeNew.rfqMessage") as string} <span className="text-accent">*</span>
+                      {t("homeNew.rfqMessage") as string} <span className="text-[#8B5E3C]">*</span>
                     </Label>
                     <Textarea
                       id="rfq-message"
@@ -1303,7 +950,7 @@ function ContactRFQSection() {
                   <Button
                     type="submit"
                     disabled={createInquiry.isPending}
-                    className="rounded-full bg-accent hover:bg-accent/90 text-white h-11 font-semibold w-full mt-1"
+                    className="rounded-full bg-[#8B5E3C] hover:bg-[#8B5E3C]/90 text-white h-11 font-semibold w-full mt-1"
                   >
                     {createInquiry.isPending ? (
                       t("homeNew.rfqSending") as string
@@ -1331,13 +978,34 @@ function ContactRFQSection() {
 export default function Home() {
   return (
     <Layout>
-      <HeroSection />
-      <TrustSection />
-      <ProductionFlowSection />
-      <ProductShowcaseSection />
-      <FactoryQualitySection />
-      <GlobalDistributionSection />
-      <OEMServicesSection />
+      {/* ── DEEP: Hero ── */}
+      <MarqueeHero />
+      {/* GlobeHero kept importable for A/B fallback */}
+      {false && <GlobeHero />}
+      <StatsBar />
+
+      {/* ── CREAM: Platform pillars ── */}
+      <IntelligenceSection />
+
+      {/* ── DEEP: Supply chain network ── */}
+      <SupplyChainSection />
+
+      {/* ── CREAM: K-Beauty trends ── */}
+      <TrendSection />
+
+      {/* ── DEEP: Certification system ── */}
+      <VerificationSection />
+
+      {/* ── CREAM: Product categories ── */}
+      <MarketAnalysisSection />
+
+      {/* ── DEEP: Latest insights (AI) ── */}
+      <LatestInsightsSection />
+
+      {/* ── TERRA: CTA bridge ── */}
+      <TerraCta />
+
+      {/* ── CREAM: RFQ contact ── */}
       <ContactRFQSection />
     </Layout>
   );

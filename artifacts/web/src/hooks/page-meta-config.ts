@@ -1,4 +1,48 @@
+import { headers } from "next/headers";
 import type { Lang } from "@/components/dostac/i18n";
+
+const VALID_LANGS: ReadonlyArray<Lang> = ["ko", "en", "ja", "zh", "vi"];
+
+/**
+ * Pick the best-matching site language from the request's Accept-Language header.
+ * Server-only — uses `next/headers`. Falls back to "en" when no match.
+ *
+ * Example:
+ *   Accept-Language: ko-KR,ko;q=0.9,en;q=0.8  →  "ko"
+ *   Accept-Language: zh-CN,zh;q=0.9            →  "zh"
+ *   Accept-Language: fr-FR                     →  "en" (fallback)
+ *   No header                                  →  "en"
+ */
+export async function pickLangFromHeader(): Promise<Lang> {
+  try {
+    const hdr = await headers();
+    const acceptLang = hdr.get("accept-language") ?? "";
+    if (!acceptLang) return "en";
+
+    /* Parse: "ko-KR,ko;q=0.9,en;q=0.8" — extract base lang code + q-value, sort by quality */
+    const tokens = acceptLang.split(",").map((raw) => {
+      const trimmed = raw.trim();
+      const semiIdx = trimmed.indexOf(";");
+      const tag = semiIdx === -1 ? trimmed : trimmed.slice(0, semiIdx);
+      const base = (tag.split("-")[0] ?? "").toLowerCase();
+      let q = 1;
+      if (semiIdx !== -1) {
+        const params = trimmed.slice(semiIdx + 1);
+        const qMatch = params.match(/q=([0-9.]+)/);
+        if (qMatch?.[1]) q = parseFloat(qMatch[1]);
+      }
+      return { lang: base, q };
+    });
+    tokens.sort((a, b) => b.q - a.q);
+
+    for (const { lang } of tokens) {
+      if (VALID_LANGS.includes(lang as Lang)) return lang as Lang;
+    }
+  } catch {
+    /* During static generation `headers()` may throw — fall through to default */
+  }
+  return "en";
+}
 
 interface MetaEntry {
   title: string;

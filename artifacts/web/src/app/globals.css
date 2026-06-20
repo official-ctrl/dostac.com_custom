@@ -4,7 +4,8 @@
 @plugin "@tailwindcss/typography";
 
 html {
-  scroll-behavior: smooth;
+  /* scroll-behavior is intentionally omitted here — all smooth scrolls are
+     driven by JS scrollIntoView({ behavior: "smooth" }) to avoid double-animation */
 }
 
 @custom-variant dark (&:is(.dark *));
@@ -352,5 +353,61 @@ html {
 @media (prefers-reduced-motion: no-preference) {
   .field-shake {
     animation: field-shake 0.45s ease-out;
+  }
+}
+
+/* ── Kinetic marquee animations ── */
+@keyframes dostac-marquee-left {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+@keyframes dostac-marquee-right {
+  from { transform: translateX(-50%); }
+  to   { transform: translateX(0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .dostac-marquee-inner { animation-play-state: paused !important; }
+}
+
+/* ─────────────────────────────────────────────────────────────
+   Mobile baseline hardening
+   ─────────────────────────────────────────────────────────── */
+html {
+  /* Prevent iOS auto-zoom on form fields */
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+body {
+  /* Prevent horizontal overflow on mobile */
+  overflow-x: hidden;
+}
+
+/* Stable viewport heights on iOS Safari (avoids URL-bar resize jumps) */
+.h-svh    { height: 100svh; }
+.min-h-svh { min-height: 100svh; }
+
+/* Remove gray tap highlight on iOS / Android (we have our own focus rings) */
+a, button, [role="button"] {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Globe canvas: allow vertical scroll-pan while still receiving touches */
+canvas.block { touch-action: pan-y; }
+
+/* Ensure form inputs hit the 44px touch-target minimum on mobile */
+@media (max-width: 640px) {
+  input[type="text"],
+  input[type="email"],
+  input[type="tel"],
+  input[type="search"],
+  textarea,
+  select {
+    font-size: 16px; /* prevents iOS zoom-on-focus */
+    min-height: 44px;
+  }
+  button[type="submit"],
+  .touch-target {
+    min-height: 44px;
   }
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
@@ -116,7 +116,7 @@ function LanguageSwitcher({ onDark }: { onDark?: boolean }) {
   );
 }
 
-function AboutDropdown({ active, scrolled }: { active: boolean; scrolled: boolean }) {
+function AboutDropdown({ active }: { active: boolean }) {
   const { t } = useT();
   const router = useRouter();
   const [open, setOpen] = useState(false);
@@ -191,8 +191,10 @@ function AboutDropdown({ active, scrolled }: { active: boolean; scrolled: boolea
         aria-haspopup="menu"
         aria-expanded={open}
         aria-controls={menuId}
-        className={`inline-flex items-center gap-1 text-sm font-medium transition-colors outline-none focus-visible:ring-2 focus-visible:ring-accent rounded-sm ${
-          active ? "text-accent" : "text-slate-700 hover:text-primary"
+        className={`inline-flex items-center gap-1 text-sm font-medium transition-all duration-[80ms] outline-none focus-visible:ring-2 focus-visible:ring-[#8B5E3C] rounded-lg px-2.5 py-1.5 ${
+          active
+            ? "text-[#8B5E3C] bg-[#8B5E3C]/10"
+            : "text-slate-700 hover:bg-slate-100 hover:text-[#2D2D2D]"
         }`}
         data-testid="nav-about"
       >
@@ -215,7 +217,7 @@ function AboutDropdown({ active, scrolled }: { active: boolean; scrolled: boolea
                 href={`/about#${s.hash}`}
                 role="menuitem"
                 data-testid={`nav-about-${s.hash}`}
-                className="px-3 py-2 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-50 hover:text-primary transition focus:bg-slate-100 focus:outline-none"
+                className="px-3 py-2 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-100 hover:text-[#2D2D2D] transition-all duration-[80ms] focus:bg-[#F5F0E8] focus:outline-none"
                 onClick={() => setOpen(false)}
               >
                 {t(`nav.aboutSub.${s.key}`) as string}
@@ -228,7 +230,7 @@ function AboutDropdown({ active, scrolled }: { active: boolean; scrolled: boolea
   );
 }
 
-function ProcessDropdown({ active, scrolled }: { active: boolean; scrolled: boolean }) {
+function ProcessDropdown({ active }: { active: boolean }) {
   const { t } = useT();
   const router = useRouter();
   const [open, setOpen] = useState(false);
@@ -301,8 +303,10 @@ function ProcessDropdown({ active, scrolled }: { active: boolean; scrolled: bool
         aria-haspopup="menu"
         aria-expanded={open}
         aria-controls={menuId}
-        className={`inline-flex items-center gap-1 text-sm font-medium transition-colors outline-none focus-visible:ring-2 focus-visible:ring-accent rounded-sm ${
-          active ? "text-accent" : "text-slate-700 hover:text-primary"
+        className={`inline-flex items-center gap-1 text-sm font-medium transition-all duration-[80ms] outline-none focus-visible:ring-2 focus-visible:ring-[#8B5E3C] rounded-lg px-2.5 py-1.5 ${
+          active
+            ? "text-[#8B5E3C] bg-[#8B5E3C]/10"
+            : "text-slate-700 hover:bg-slate-100 hover:text-[#2D2D2D]"
         }`}
         data-testid="nav-production"
       >
@@ -325,7 +329,7 @@ function ProcessDropdown({ active, scrolled }: { active: boolean; scrolled: bool
                 href={`/production#${s.hash}`}
                 role="menuitem"
                 data-testid={`nav-process-${s.hash}`}
-                className="px-3 py-2 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-50 hover:text-primary transition focus:bg-slate-100 focus:outline-none"
+                className="px-3 py-2 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-100 hover:text-[#2D2D2D] transition-all duration-[80ms] focus:bg-[#F5F0E8] focus:outline-none"
                 onClick={() => setOpen(false)}
               >
                 {t(`nav.processSub.${s.key}`) as string}
@@ -351,39 +355,48 @@ function ProductsDropdown({ active }: { active: boolean }) {
   const leftPanelRef = useRef<HTMLDivElement | null>(null);
   const rightPanelRef = useRef<HTMLDivElement | null>(null);
   const closeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const catHoverTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const menuId = "products-dropdown-menu";
 
   const productsQuery = useQuery({
     ...getListPublicProductsQueryOptions({ lang }),
     staleTime: 5 * 60 * 1000,
+    enabled: open, // 드롭다운 열릴 때만 fetch — 닫혀있을 때 API 호출 없음
   });
   const products = productsQuery.data ?? [];
 
-  const rawCategories = Array.from(
-    new Set(products.map((p) => p.category).filter((c): c is string => !!c))
+  const rawCategories = useMemo(
+    () => Array.from(new Set(products.map((p) => p.category).filter((c): c is string => !!c))),
+    [products]
   );
-  const localizedCategories = rawCategories.map((slug) => ({
-    slug,
-    label: catLabel(slug),
-  }));
+  const localizedCategories = useMemo(
+    () => rawCategories.map((slug) => ({ slug, label: catLabel(slug) })),
+    [rawCategories, catLabel]
+  );
 
   // Build a map of category → sorted list of unique sub-categories.
-  const subCatMap = products.reduce<Record<string, string[]>>((acc, p) => {
-    if (p.category && p.subCategory) {
-      if (!acc[p.category]) acc[p.category] = [];
-      if (!acc[p.category].includes(p.subCategory)) acc[p.category].push(p.subCategory);
-    }
-    return acc;
-  }, {});
+  const subCatMap = useMemo(
+    () => products.reduce<Record<string, string[]>>((acc, p) => {
+      if (p.category && p.subCategory) {
+        if (!acc[p.category]) acc[p.category] = [];
+        if (!acc[p.category].includes(p.subCategory)) acc[p.category].push(p.subCategory);
+      }
+      return acc;
+    }, {}),
+    [products]
+  );
 
   // Build a count map: category → subCategory → product count
-  const subCatCountMap = products.reduce<Record<string, Record<string, number>>>((acc, p) => {
-    if (p.category && p.subCategory) {
-      if (!acc[p.category]) acc[p.category] = {};
-      acc[p.category][p.subCategory] = (acc[p.category][p.subCategory] ?? 0) + 1;
-    }
-    return acc;
-  }, {});
+  const subCatCountMap = useMemo(
+    () => products.reduce<Record<string, Record<string, number>>>((acc, p) => {
+      if (p.category && p.subCategory) {
+        if (!acc[p.category]) acc[p.category] = {};
+        acc[p.category][p.subCategory] = (acc[p.category][p.subCategory] ?? 0) + 1;
+      }
+      return acc;
+    }, {}),
+    [products]
+  );
 
   const activeSubs = hoveredCategory ? (subCatMap[hoveredCategory] ?? []) : [];
 
@@ -402,6 +415,7 @@ function ProductsDropdown({ active }: { active: boolean }) {
   useEffect(() => {
     return () => {
       if (closeTimerRef.current !== null) clearTimeout(closeTimerRef.current);
+      if (catHoverTimerRef.current !== null) clearTimeout(catHoverTimerRef.current);
     };
   }, []);
 
@@ -411,7 +425,15 @@ function ProductsDropdown({ active }: { active: boolean }) {
       closeTimerRef.current = null;
       setOpen(false);
       setHoveredCategory(null);
-    }, 150);
+    }, 300);
+  };
+
+  const setHoveredCategoryDelayed = (slug: string) => {
+    if (catHoverTimerRef.current !== null) clearTimeout(catHoverTimerRef.current);
+    catHoverTimerRef.current = setTimeout(() => {
+      catHoverTimerRef.current = null;
+      setHoveredCategory(slug);
+    }, 90);
   };
 
   const cancelClose = () => {
@@ -464,8 +486,10 @@ function ProductsDropdown({ active }: { active: boolean }) {
         aria-haspopup="menu"
         aria-expanded={open}
         aria-controls={menuId}
-        className={`inline-flex items-center gap-1 text-sm font-medium transition-colors outline-none focus-visible:ring-2 focus-visible:ring-accent rounded-sm ${
-          active ? "text-accent" : "text-slate-700 hover:text-primary"
+        className={`inline-flex items-center gap-1 text-sm font-medium transition-all duration-[80ms] outline-none focus-visible:ring-2 focus-visible:ring-[#8B5E3C] rounded-lg px-2.5 py-1.5 ${
+          active
+            ? "text-[#8B5E3C] bg-[#8B5E3C]/10"
+            : "text-slate-700 hover:bg-slate-100 hover:text-[#2D2D2D]"
         }`}
         data-testid="nav-products"
       >
@@ -491,9 +515,8 @@ function ProductsDropdown({ active }: { active: boolean }) {
                 href="/products"
                 role="menuitem"
                 data-testid="nav-products-all"
-                className="px-3 py-2 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-50 hover:text-primary transition focus:bg-slate-100 focus:outline-none"
+                className="px-3 py-2 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-100 hover:text-[#2D2D2D] transition-all duration-[80ms] focus:bg-[#F5F0E8] focus:outline-none"
                 onClick={close}
-                onMouseEnter={() => setHoveredCategory(null)}
               >
                 {t("products.filterAll") as string}
               </Link>
@@ -521,7 +544,7 @@ function ProductsDropdown({ active }: { active: boolean }) {
                     data-testid={`nav-products-cat-${slug}`}
                     aria-haspopup={hasSubs ? "menu" : undefined}
                     aria-expanded={hasSubs ? isHovered : undefined}
-                    onMouseEnter={() => setHoveredCategory(slug)}
+                    onMouseEnter={() => setHoveredCategoryDelayed(slug)}
                     onFocus={() => setHoveredCategory(slug)}
                     onClick={() => { router.push(`/products?category=${encodeURIComponent(slug)}`); close(); }}
                     onKeyDown={(e) => {
@@ -532,7 +555,7 @@ function ProductsDropdown({ active }: { active: boolean }) {
                       }
                     }}
                     className={`w-full flex items-center justify-between px-3 py-2 rounded-lg text-sm font-medium text-left transition focus:outline-none focus-visible:ring-2 focus-visible:ring-accent ${
-                      isHovered ? "bg-slate-50 text-primary" : "text-slate-700 hover:bg-slate-50 hover:text-primary"
+                      isHovered ? "bg-slate-100 text-[#2D2D2D]" : "text-slate-700 hover:bg-slate-100 hover:text-[#2D2D2D]"
                     }`}
                   >
                     <span>{label}</span>
@@ -551,6 +574,13 @@ function ProductsDropdown({ active }: { active: boolean }) {
                 role="menu"
                 aria-label={catLabel(hoveredCategory)}
                 className="w-48 flex flex-col py-2 px-1.5 rounded-xl border border-slate-200 bg-white shadow-xl"
+                onMouseEnter={() => {
+                  if (catHoverTimerRef.current !== null) {
+                    clearTimeout(catHoverTimerRef.current);
+                    catHoverTimerRef.current = null;
+                  }
+                  cancelClose();
+                }}
               >
                 <p className="px-3 pt-1 pb-2 text-[10px] font-semibold uppercase tracking-widest text-slate-400 select-none">
                   {catLabel(hoveredCategory)}
@@ -573,7 +603,7 @@ function ProductsDropdown({ active }: { active: boolean }) {
                           catBtn?.focus();
                         }
                       }}
-                      className="px-3 py-2 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-50 hover:text-primary transition focus:bg-slate-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent flex items-center justify-between gap-2"
+                      className="px-3 py-2 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-100 hover:text-[#2D2D2D] transition-all duration-[80ms] focus:bg-[#F5F0E8] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#8B5E3C] flex items-center justify-between gap-2"
                     >
                       <span>{subCatLabel(sub)}</span>
                       {count > 0 && (
@@ -611,24 +641,29 @@ function MobileProductsAccordion({
   const productsQuery = useQuery({
     ...getListPublicProductsQueryOptions({ lang }),
     staleTime: 5 * 60 * 1000,
+    enabled: open, // 아코디언 열릴 때만 fetch
   });
   const products = productsQuery.data ?? [];
 
-  const rawCategories = Array.from(
-    new Set(products.map((p) => p.category).filter((c): c is string => !!c))
+  const rawCategories = useMemo(
+    () => Array.from(new Set(products.map((p) => p.category).filter((c): c is string => !!c))),
+    [products]
   );
-  const localizedCategories = rawCategories.map((slug) => ({
-    slug,
-    label: catLabel(slug),
-  }));
+  const localizedCategories = useMemo(
+    () => rawCategories.map((slug) => ({ slug, label: catLabel(slug) })),
+    [rawCategories, catLabel]
+  );
 
-  const subCatMap = products.reduce<Record<string, string[]>>((acc, p) => {
-    if (p.category && p.subCategory) {
-      if (!acc[p.category]) acc[p.category] = [];
-      if (!acc[p.category].includes(p.subCategory)) acc[p.category].push(p.subCategory);
-    }
-    return acc;
-  }, {});
+  const subCatMap = useMemo(
+    () => products.reduce<Record<string, string[]>>((acc, p) => {
+      if (p.category && p.subCategory) {
+        if (!acc[p.category]) acc[p.category] = [];
+        if (!acc[p.category].includes(p.subCategory)) acc[p.category].push(p.subCategory);
+      }
+      return acc;
+    }, {}),
+    [products]
+  );
 
   return (
     <div>
@@ -721,50 +756,69 @@ function Header() {
   const [mobileAboutOpen, setMobileAboutOpen] = useState(false);
   const [mobileProcessOpen, setMobileProcessOpen] = useState(false);
   const [mobileProductsOpen, setMobileProductsOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
+  const headerRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
     setMobileOpen(false);
   }, [location]);
 
+  /* ── Fix 1: DOM 직접 조작으로 스크롤 시 React 리렌더 완전 제거 ── */
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 10);
-    window.addEventListener("scroll", onScroll, { passive: true });
-    onScroll();
-    return () => window.removeEventListener("scroll", onScroll);
+    const el = headerRef.current;
+    if (!el) return;
+    const update = () => {
+      if (window.scrollY > 10) {
+        el.dataset.scrolled = "1";
+      } else {
+        delete el.dataset.scrolled;
+      }
+    };
+    window.addEventListener("scroll", update, { passive: true });
+    update();
+    return () => window.removeEventListener("scroll", update);
   }, []);
 
+  /* ── 동일 페이지 내 해시 변경만 처리: 페이지 이동과 충돌하지 않도록
+        의존성 [] — 한 번만 등록, location 변경 시 재등록 없음.
+        초기 딥링크 스크롤은 각 페이지 컴포넌트가 직접 처리. ── */
   useEffect(() => {
-    if (typeof window === "undefined") return;
-    const onHashScroll = () => {
-      const hash = window.location.hash.replace("#", "");
-      if (!hash) return;
+    const scrollToHash = (hash: string) => {
       const el = document.getElementById(hash);
       if (el) {
-        setTimeout(() => {
-          el.scrollIntoView({ behavior: "smooth", block: "start" });
-        }, 60);
+        el.scrollIntoView({ behavior: "smooth", block: "start" });
+        return true;
+      }
+      return false;
+    };
+
+    const onHashScroll = () => {
+      if (window.location.pathname === "/contact") return;
+      const hash = window.location.hash.replace("#", "");
+      if (!hash) return;
+      // DOM이 아직 렌더되지 않은 경우 rAF 2회로 대기 후 재시도
+      if (!scrollToHash(hash)) {
+        requestAnimationFrame(() => {
+          if (!scrollToHash(hash)) {
+            requestAnimationFrame(() => scrollToHash(hash));
+          }
+        });
       }
     };
     window.addEventListener("hashchange", onHashScroll);
-    onHashScroll();
     return () => window.removeEventListener("hashchange", onHashScroll);
-  }, [location]);
+  }, []);
 
   return (
     <>
     <header
-      className={`sticky top-0 z-50 transition-all duration-200 ${
-        scrolled
-          ? "bg-white/95 backdrop-blur-md border-b border-slate-200/70 shadow-sm"
-          : "bg-white border-b border-slate-200/70"
-      }`}
+      ref={headerRef}
+      className="sticky top-0 z-50 bg-white border-b border-slate-200/70 transition-[background-color,box-shadow] duration-200 data-[scrolled]:bg-white/95 data-[scrolled]:backdrop-blur-md data-[scrolled]:shadow-sm"
     >
       <div className="container mx-auto px-6 h-[4.5rem] flex items-center justify-between">
         <Link href="/" className="flex items-center" aria-label="Dostac home">
           <span
             className="font-black tracking-[-0.05em] text-[#0F172A] leading-none select-none"
-            style={{ fontFamily: "'Space Grotesk', 'Outfit', sans-serif", fontSize: "42px" }}
+            style={{ fontFamily: "var(--font-dm-sans, system-ui, sans-serif)", fontSize: "42px" }}
           >
             dostac
           </span>
@@ -774,10 +828,10 @@ function Header() {
           {NAV_ITEMS.map((item) => {
             const active = location === item.href || location.startsWith(`${item.href}/`);
             if (item.key === "about") {
-              return <AboutDropdown key={item.href} active={active} scrolled={scrolled} />;
+              return <AboutDropdown key={item.href} active={active} />;
             }
             if (item.key === "production") {
-              return <ProcessDropdown key={item.href} active={active} scrolled={scrolled} />;
+              return <ProcessDropdown key={item.href} active={active} />;
             }
             if (item.key === "product") {
               return <ProductsDropdown key={item.href} active={active} />;
@@ -786,8 +840,10 @@ function Header() {
               <Link
                 key={item.href}
                 href={item.href}
-                className={`text-sm font-medium transition-colors ${
-                  active ? "text-accent" : "text-slate-700 hover:text-primary"
+                className={`text-sm font-medium transition-all duration-[80ms] px-2.5 py-1.5 rounded-lg ${
+                  active
+                    ? "text-[#8B5E3C] bg-[#8B5E3C]/10"
+                    : "text-slate-700 hover:bg-slate-100 hover:text-[#2D2D2D]"
                 }`}
               >
                 {t(`nav.${item.key}`) as string}
@@ -958,7 +1014,7 @@ function Footer() {
           <div>
             <span
               className="font-black tracking-[-0.05em] text-white leading-none select-none block mb-1"
-              style={{ fontFamily: "'Space Grotesk', sans-serif", fontSize: "28px" }}
+              style={{ fontFamily: "var(--font-dm-sans, system-ui, sans-serif)", fontSize: "28px" }}
             >
               dostac
             </span>
@@ -986,7 +1042,7 @@ function Footer() {
         </div>
         <div className="border-t border-white/10 pt-5 flex flex-col sm:flex-row items-center justify-between gap-3">
           <p className="text-xs text-slate-500">
-            dostac Co., Ltd. &copy; 2026 — All Rights Reserved.
+            dostac Co., Ltd. &copy; {new Date().getFullYear()} — All Rights Reserved.
           </p>
           <Link href="/contact">
             <Button

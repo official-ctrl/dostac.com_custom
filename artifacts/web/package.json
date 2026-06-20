@@ -6,7 +6,7 @@
     "dev": "next dev -p 3000",
     "build": "next build",
     "build:cf": "CF_PAGES=1 next build && cp -r public .vercel/output/static/",
-    "pages:build": "CF_PAGES=1 npx @cloudflare/next-on-pages",
+    "pages:build": "CF_PAGES=1 pnpm dlx vercel build && node scripts/patch-cf-build.cjs && CF_PAGES=1 pnpm exec next-on-pages --skip-build",
     "start": "next start -p 3000",
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },

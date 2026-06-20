@@ -156,7 +156,17 @@ export default function InquiryDetail() {
                   )}
                 </InfoRow>
                 {inquiry.whatsapp && (
-                  <InfoRow icon={MessageSquare} label="WhatsApp" value={inquiry.whatsapp} />
+                  <InfoRow icon={MessageSquare} label="WhatsApp">
+                    <a
+                      href={`https://wa.me/${inquiry.whatsapp.replace(/\D/g, "")}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-accent hover:underline"
+                      data-testid="link-whatsapp"
+                    >
+                      {inquiry.whatsapp}
+                    </a>
+                  </InfoRow>
                 )}
                 {inquiry.country && (
                   <InfoRow icon={Globe} label="국가" value={inquiry.country} />
@@ -299,6 +309,22 @@ export default function InquiryDetail() {
                   <Mail className="h-4 w-4" /> 이메일 답장
                 </Button>
               </a>
+              {inquiry.whatsapp && (
+                <a
+                  href={`https://wa.me/${inquiry.whatsapp.replace(/\D/g, "")}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="block"
+                >
+                  <Button
+                    variant="outline"
+                    className="w-full justify-start gap-2"
+                    data-testid="button-whatsapp-reply"
+                  >
+                    <MessageSquare className="h-4 w-4" /> WhatsApp 채팅
+                  </Button>
+                </a>
+              )}
             </CardContent>
           </Card>
         </div>
