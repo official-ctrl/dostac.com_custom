@@ -71,6 +71,6 @@ overrides:
   rollup>@rollup/rollup-linux-x64-musl: '*'
 
 allowBuilds:
-  esbuild: true
+  esbuild: false
   sharp: true
   workerd: true
