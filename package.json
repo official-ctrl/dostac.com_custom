@@ -9,7 +9,7 @@
   },
   "private": true,
   "pnpm": {
-    "onlyBuiltDependencies": ["esbuild"]
+    "onlyBuiltDependencies": ["esbuild", "sharp", "workerd"]
   },
   "devDependencies": {
     "typescript": "~5.9.2",
