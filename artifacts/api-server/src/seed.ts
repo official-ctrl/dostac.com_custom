@@ -738,7 +738,15 @@ async function seed(): Promise<void> {
   const adminEmail = (process.env["ADMIN_EMAIL"] ?? "admin@dostac.co.kr")
     .toLowerCase()
     .trim();
-  const adminPassword = process.env["ADMIN_PASSWORD"] ?? "dostac1234!";
+  // 폴백을 두지 않는다. 아래 upsert 가 onConflictDoUpdate 로 기존 관리자의
+  // passwordHash 를 덮어쓰기 때문에, 폴백이 있으면 환경변수를 잊은 채 seed 를
+  // 돌리는 것만으로 운영 관리자 비밀번호가 알려진 값으로 초기화된다.
+  const adminPassword = process.env["ADMIN_PASSWORD"];
+  if (!adminPassword) {
+    throw new Error(
+      "ADMIN_PASSWORD is not set. Refusing to seed: it would overwrite the admin password.",
+    );
+  }
   const adminName = process.env["ADMIN_NAME"] ?? "DOSTAC Admin";
 
   const passwordHash = await hashPassword(adminPassword);
