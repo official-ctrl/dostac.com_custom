@@ -25,7 +25,7 @@ Full-stack DOSTAC corporate site (Korean cosmetic OEM/ODM) with multilingual pub
 
 - URL: `/admin/`
 - Email: `admin@dostac.co.kr`
-- Password: `dostac1234!`
+- Password: 환경변수 `ADMIN_PASSWORD` 로 주입 (`[REDACTED]`)
 - New inquiries trigger an email alert to `admin@dostac.co.kr` (fire-and-forget; visitor request always succeeds).
 
 ## Languages
